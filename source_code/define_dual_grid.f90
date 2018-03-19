@@ -6,7 +6,7 @@ use par_size
 
 integer :: cg_cysize(nzcpu),cg_cxsize(nycpu)
 integer :: fg_cysize(nzcpu),fg_cxsize(nycpu)
-integer :: rx,ry
+integer :: rx,ry,rz
 integer :: i,j
 
 npsix=exp_x*nx
@@ -18,6 +18,21 @@ if((rank.eq.0).and.((exp_x.ne.1).or.(exp_y.ne.1).or.(exp_z.ne.1))) then
  write(*,'(1x,a,4x,3(i5,2x))') 'Coarse grid: ',nx,ny,nz
  write(*,'(1x,a,4x,3(i5,2x))') 'Fine grid:   ',npsix,npsiy,npsiz
  write(*,*) '-----------------------------------------------------------------------'
+endif
+
+
+! fine grid size in physical space
+ry=mod(npsiy,nycpu)
+rz=mod(npsiz,nzcpu)
+
+fpypsi=int((npsiy-ry)/nycpu)
+if(mod(rank,nycpu).lt.ry)then
+ fpypsi=int((npsiy-ry)/nycpu)+1
+endif
+
+fpzpsi=int((npsiz-rz)/nzcpu)
+if(floor(real(rank)/real(nycpu)).lt.rz)then
+ fpzpsi=int((npsiz-rz)/nzcpu)+1
 endif
 
 
