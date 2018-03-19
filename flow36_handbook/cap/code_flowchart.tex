@@ -1,0 +1,465 @@
+\chapter{Code flowchart}
+\label{chap: flowchart}
+In this chapter a detailed overview of all the suborutines used in the code will be presented. This chapter is divided in five main sections, the first including all the subroutine of the main part of the code, the second one includes all the solver part subroutines, the third the details about physical to modal space tranforms and backwards,  the fourth the statistic calculation part and the latter describes all the modules included in the code.\\
+All the subroutine from a library (for example FFTW or MPI libraries) will not be included here; for further information and a detailed description, please refer to the library guide.
+
+\section{Main code}
+
+
+\subsection{\texttt{FLOW\_36}}
+This is the main program; it takes care of starting and terminating the MPI execution of the code. As shown in Figure \ref{fig: main_struct}, the first part of this script is the MPI parameter definition part: once the code is run on a determinate number of MPI processes, all the MPI processes are numbered and the total number of MPI processes is defined (the total number of MPI process is already defined when running the code, here its value is assigned to a variable). The number of MPI process in the $y$ and $z$ directions (\texttt{NYCPU} and \texttt{NZCPU}) and the number of grid points in the three directions are already defined in the module \texttt{commondata} as parameters, such that they are known before the input section. After the MPI initialization the code verifies that the number of MPI processes in the two directions and the grid are compatible, which means that each MPI process must always have at least one point in each direction. Due to the domain transposition and the Fourier transform the code must verify that \texttt{NYCPU} is smaller than \texttt{NX}/2 and \texttt{NY} and that \texttt{NZCPU} is smaller than \texttt{NZ} and \texttt{NY}. If this check is passed the code goes on with the execution, otherwise it will stop prompting an error message.\\
+The input part is performed with the call to the \texttt{read\_input} subroutine.\\
+Since the domain is divided in a Cartesian-like grid (for further details, refer to Chapter \ref{chap: dom_decomp}), a MPI Cartesian communicator is defined, such that all MPI communications can be strongly simplified (especially when it comes to find to which MPI process data must be sent and from which one must be received). Here are also defined the two MPI derived datatypes used for MPI input/output operation (for further details refer to Section \ref{sec: writeo}).\\
+\def\arraystretch{0.4}
+\begin{figure}[h!]
+\centering
+\caption{Scheme of main program \texttt{FLOW\_36}}
+\label{fig: main_struct}
+\[
+\begin{tikzcd}
+{\begin{array}{c}\textnormal{\textbf{program \texttt{FLOW\_36}}}  \\ \textnormal{module declaration} \end{array}}\arrow[d] \\
+{\begin{array}{c}\textnormal{\textbf{MPI initialization}} \\ \textnormal{define total number of MPI processes} \\ \textnormal{define MPI process numbering} \\ \textnormal{check whether the domain is compatible with the desired parallelization} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{Code initialization}} \\ \texttt{call read\_input}\\ \texttt{call define\_sizes} \\ \textnormal{create Cartesian communicator} \\ \textnormal{create derived datatype \texttt{ftype} and \texttt{stype} for MPI input/output} \\ \textnormal{create \texttt{FFTW} plans} \\ \textnormal{define grid}\\ \texttt{call dump\_grid} \\ \texttt{call wave\_numbers} \\  \texttt{call initialize} \\ \texttt{call initialize\_phi} \textnormal{ (if phase field is activated)} \\ \texttt{call initialize\_stats} \textnormal{ (if run time statistics are set to be calculated)} \\ \textnormal{save initial fields both in physical and modal space} \\ \texttt{call integral\_phi} \textnormal{ (if phase field is activated)} \\ \texttt{call initialize\_check} \textnormal{ (if not a restart)} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{Time advancement}} \\ \texttt{do} \textnormal{ loop over time} \end{array}}\arrow[d]\\
+{\begin{array}{c} \texttt{call solver} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{save fields in physical and/or in modal space (at set saving frequency)} \\ \textnormal{calculate statistics (at set saving frequency)} \\ \texttt{call integral\_phi} \textnormal{ (if phase field is activated)} \\ \texttt{call sim\_check}\\ \textnormal{save recovery files}\end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{End of time advancement}} \end{array}}\arrow[d] \arrow[LL]{uuu}{\text{time+$\Delta t$}}\\
+{\begin{array}{c} \textnormal{save final fields both in physical and modal space} \\ \textnormal{deallocation of all allocated variables} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{MPI finalization}} \end{array}}\arrow[d]\\
+{\begin{array}{c}\textnormal{\textbf{End of }}\textbf{\texttt{FLOW\_36}}\end{array}}\\
+\end{tikzcd}
+\]
+\end{figure}
+At this point it comes to the plan creation for the FFTW calls: this subroutine creates the plans that will be used when performing Fourier and Chebyshev transforms.\\
+The next step is the creation and saving of the axis arrays $x$, $y$ and $z$. $x$ and $y$ (the periodic directions, discretized with a Fourier series) have constant spacing among the grid points; $z$ axis, due to the Chebyshev discretization, uses Chebyshev nodes, defined as $\cos{[(k-1)\pi/(\texttt{NZ}-1)]}$ with $k$ spanning from 1 to \texttt{NZ}.\\
+After the plan creation, the array containing the wave numbers are defined in the subroutine \texttt{wave\_numbers}.\\
+The velocity field initialization is performed by the subroutine \texttt{initialize}, while the subroutine \texttt{initialize\_phi} initialize the phase field (if activated).\\
+Then the statistic calculation variables are set up by the subroutine \texttt{initialize\_stats}, while the subroutine \texttt{initialize\_check} initialize the simulation check parameters (bulk Reynolds number, \dots). Here there is also the first call to \texttt{integral\_phi}, which allows to check some useful phase field related quantities at run time, giving a general idea of the quality of the simulation.\\
+At this point the initial fields are saved both in physical and modal space and then the time iteration loop starts. During the time advancement, first the subroutine \texttt{solver} is called; then, according to their saving frequency, statistics and fields are saved. At the end of the time step  the simulation check subroutines \texttt{integral\_phi} and \texttt{sim\_check} are called.\\
+At the end of the time advancement the auxiliary files created for statistics calculation are deleted, the final fields are saved in physical and modal space and the allocated variables are deallocated (subroutines \texttt{destroy} and \texttt{destroy\_phi}). Then the FFTW plans (\texttt{destroy\_plan}), the MPI derived datatypes and the MPI Cartesian communicator are freed.\\
+The program concludes with the MPI finalization call.
+
+\subsection{\texttt{read\_input}}
+This subroutine reads the edited version of the file \texttt{input.f90}. If the simulation is a restart, the initial conditions on both the velocity and the phase field are forced to read from the \texttt{results} folder. This subroutine also checks that the parameters \texttt{matchedrho}, \texttt{rhor}, \texttt{matchedvis}, \texttt{visr} are coherent. At the end of the subroutine it calls the subroutine \texttt{print\_start} that print to screen all the informations about the simulation when it starts.
+
+\subsection{\texttt{define\_sizes}}
+This subroutine define the sizes of the data arrays for each MPI process, both in physical space (\texttt{fpy}, \texttt{fpz}) and in modal space (\texttt{spx}, \texttt{spy}); these sizes can differ from one MPI process to another.\\
+In physical space each rank holds an array \texttt{NX}$\times$\texttt{fpz}$\times$\texttt{fpy}, while in modal space this array has size \texttt{spx}$\times$\texttt{NZ}$\times$\texttt{spy}. Each of these sizes is defined in the following way (here a 1D case is presented for simplicity, the extension to 3D is straightforward): $N$ points must be divided in $N_t$ MPI processes. The MPI processes are numbered from 0 to $N_t-1$; if their identification number (also called rank) is lower than the remainder of the division of $N$ by $N_t$, $r=\mod(N,N_t)$, then they will hold $(N-r)/N_t+1$ points, otherwise only $(N-r)/N_t$ points.
+
+\subsection{\texttt{create\_plan}}
+This subroutine creates the plans for the Fourier and Chebyshev transform performed by the code. The conditional compilation flag \texttt{flag\_fftw} determines which algorithm will be chosen to perform the transforms. If a value of 0 is provided, the default algorithm will be chosen, otherwise if 1 is provided the creation plan will last much longer, and the best performing algorithm (for a determinate architecture, size of the arrays and memory distribution of the arrays) will be chosen. At the present time is still to be determined whether the
+flag 1 gives better performance than the flag 0. The FFTW library subroutines will not be reported here; if needed refer to \cite{fftw}.
+
+\subsection{\texttt{dump\_grid}}
+This subroutine saves the $x$, $y$ and $z$ arrays in the folder \texttt{set\_run/results}.
+
+\subsection{\texttt{wave\_numbers}}
+This subroutine creates the arrays containing the wave numbers in the $x$ and $y$ direction.
+\[
+k_x(i)=\frac{2\pi(i-1)}{L_x} \hspace{2cm} i=1,\dots,\frac{N_x}{2}+1
+\]
+
+\[
+k_y(j)=
+\begin{cases}
+\dfrac{2\pi(j-1)}{L_y} \hspace{2cm} j=1,\dots,\dfrac{N_y}{2}+1\\[3ex]
+-\dfrac{2\pi(N_y-j+1)}{L_y} \hspace{2cm} j=\dfrac{N_y}{2}+2,\dots,N_y\\
+\end{cases}
+\]
+Here are also defined some useful parameters:
+\[
+\gamma=\frac{\Delta t}{2\Re}
+\]
+
+\[
+k^2(i,j)=k_x^2(i)+k_y^2(j) \hspace{1.5cm} i=1,\dots,\frac{N_x}{2}+1 \hspace{0.2cm},\hspace{0.4cm}  j=1,\dots,N_y
+\]
+
+\subsection{\texttt{initialize}}
+This subroutine first allocate the velocity arrays both in physical and modal space, then calculate the mean pressure gradient in modal space. The following step is setting the initial conditions on the velocity; at the present moment the following initial conditions are implemented.
+\begin{enumerate}
+\item Zero velocity field.
+\item Laminar Poiseuille flow, generated by a unitary mean pressure gradient in $x$ direction.
+\item Random velocity field with values among $[-0.01,0.01]$.
+\item Read from an input file (either in physical space or in modal space, depending on which one is available). This is a parallel read (MPI input/output) and is the condition used for a restart.
+\item Read from an old input file (for retro-compatibility with the previous code).  This read is serial, every MPI process reads the whole flow field and keeps only its own part. May not work on clusters for large grids (not enough available memory in the node).
+\end{enumerate}
+Then, depending on the user choice, the boundary conditions on the velocity and the vorticity at the upper and lower walls are set.\\
+At the end of the subroutine the auxiliary problems for the influence matrix method are solved and included in the module \texttt{velocity}. For the influence matrix method refer to Section \ref{sec: infl_matrix}.
+
+\subsection{\texttt{initialize\_phi}}
+This subroutine allocates the phase field arrays in physical and modal space at first; then the paraemter \texttt{s\_coeff} is defined. This parameter is used for the splitting of the Cahn--Hilliard equation.
+\[
+\texttt{s\_coeff}=s=\sqrt{\frac{4\Pe\Ch^2}{\Delta t}}
+\]
+For the case of non-matched densities only, additional velocity arrays are allocated; they will be used to store the velocity of the previous time step, needed for the calculation of the non linear part of the time derivative. For further details on the solution algorithm refer to Section \ref{sec: solver} and to Chapter \ref{chap: num_met} for the equations solved.\\
+At this point the initial conditions on the phase field are defined:
+\begin{enumerate}
+\item $\phi=-1$ all over the domain.
+\item Read from input file (parallel read). This is the condition enforced in a restarted case.
+\item Serial read from input file for retro-compatibility with the previous code. This may not work on clusters for very large grids, as it may exceed the node memory as each MPI process loads the whole field.
+\item Initialize 2D single drop  on the $y-z$ plane (actually it is a cylinder with the axis in the $x$ direction). This condition is employed when performing 2D simulations. The initialization is done by the subroutine \texttt{drop\_2d}.
+\item Initialize 3D single drop. The initialization is done by the subroutine \texttt{drop\_3d}.
+\item The subroutine \texttt{stratified} is called and a stratified flow is initialized.
+\item Initialize a 2D array of 3D drops; done from the subroutine \texttt{drop\_array}.
+\end{enumerate}
+
+\subsubsection{\texttt{drop\_2d}}
+This subroutine reads from the \texttt{inpu\_phase\_field.f90} file the radius of the drop and the height of its center, and then initializes a cylinder with given radius and the axis at $y=L_y/2$ and $z=\texttt{height}$. The parameters \texttt{radius} and \texttt{height} must be specified in the \texttt{compile.sh} script.
+
+\subsubsection{\texttt{drop\_3d}}
+This subroutine reads from the \texttt{input\_phase\_field.f90} file the radius of the drop and the height of its center, and then initializes a sphere with given radius. The center of the sphere is at $(L_x/2,L_y/2,\texttt{height})$. The parameters \texttt{radius} and \texttt{height} must be specified in the \texttt{compile.sh} script.
+
+\subsubsection{\texttt{stratified}}
+This subroutine initializes a stratified flow with a wave perturbation in $x$ and $y$ directions and a random perturbation. It reads from the \texttt{input\_phase\_field.f90} file the wave amplitude and the wave frequency in $x$ and $y$ direction, the amplitude of the random perturbation and the mean height of the interface.
+\[
+\phi(x,y,z)=-\tanh\left(\frac{k(x,y,z)-z}{\sqrt{2}\Ch}\right)
+\]
+\[
+k(x,y,z)=h+A_x\sin(\omega_x x)+A_y \sin(\omega_y y)+A_r(2\textnormal{rand}-1)
+\]
+The input parameters $h=$\texttt{height}, $A_x=$\texttt{wave\_amp\_x}, $\omega_x=$\texttt{wave\_freq\_x}, $A_y=$\texttt{wave\_amp\_y}, $\omega_y=$\texttt{wave\_freq\_y} and $A_r=$\texttt{pert\_amp} must be specified in the \texttt{compile.sh} script.
+
+\subsubsection{\texttt{drop\_array}}
+This subroutine initializes a 2D array of 3D drops in a $x-y$ plane. The radius, the number of droplets and the height of this plane are specified in the \texttt{input\_phase\_field.f90} file. The distance between two drop centers must be at least $2(\texttt{radius}+5\sqrt{2}\Ch)$, otherwise the number of droplets in the direction where this condition is not met is reduced. The actual number of droplets used in the simulation is then printed at the beginning of the run.\\
+The input parameters that must specified in the \texttt{compile.sh} script are: the radius of the droplets (\texttt{radius}), the height of the $x-y$ plane (\texttt{height}), the number of droplets in the $x$ (\texttt{num\_x}) and $y$ (\texttt{num\_y}) directions.
+
+\subsection{\texttt{write\_failure}}
+This subroutine saves in the \texttt{results/backup} folder the fields, the checkpoint iteration number and the \texttt{time\_check.dat} file. These files can be used as a checkpoint to recover a stopped simulation. When updating the checkpoint, to the old checkpoint data is appended the \texttt{\_old} suffix.
+
+\subsection{\texttt{write\_output}, \texttt{write\_output\_spectral} and \texttt{write\_output\_recovery}}
+\label{sec: writeo}
+These subroutines use MPI input/output subroutines combined with MPI derived datatypes to write in parallel to an output file (either in physical space, either in modal space). Once opened a file and obtained its handle, each MPI process can access only to a part of the file, which is determined by the MPI derived datatype specified in the call to \texttt{mpi\_file\_set\_view} subroutine. After writing its own part of file, each MPI process close the file and goes on with the code execution. There is no need for MPI process synchronization during this task.\\
+The two subroutines differ only for the MPI derived datatype used: one saves the data in physical space, while the other in modal space.
+
+\subsection{\texttt{integral\_phi}}
+This subroutine integrates all over the domain the positive phase field variable $\phi>0$. This quantity is used to check the quality of the simulation by controlling the mass loss due to numerical diffusion. Reducing the Cahn number reduces the mass losses (but the interface must always be described by at least three points in each direction).
+
+\subsection{\texttt{initialize\_check}}
+This subroutine creates the simulation check file \texttt{time\_check.dat} and fill in the header of the file and the first line for the initial field.\\ 
+If the phase field is deactivated, the current time (in wall units, $t^+$) and the bulk Reynolds number will be written to the file. If the phase field is activated it will also write the mean value of $\phi$ all over the domain and the value of the volume integral on $\phi>0$.
+
+\subsection{\texttt{sim\_check}}
+This subroutine opens the already created file \texttt{time\_check.dat} and adds the line for the current time step. The data written to the file are the same indicated in the subroutine \texttt{initialize\_check} (exception made for the file header).
+
+
+\subsection{\texttt{destroy} and \texttt{destroy\_phi}}
+These two subroutines take care of deallocating all the fields array: \texttt{destroy} deallocates all the velocity (both in physical and modal space) arrays, while \texttt{destroy\_phi} deallocates all the phase field arrays.
+
+\subsection{\texttt{destroy\_plan}}
+This subroutine frees the plan created for the FFTW execution.
+
+\section{Solver}
+\label{sec: solver}
+This subroutine includes all the calls to the subroutines involved in the solution of the Navier--Stokes equations (and Cahn--Hilliard equation, if the phase field is activated). At the beginning of the subroutine the data at the current time step are provided and at the end of the subroutine these data are updated with those at the following time step.\\
+At first the arrays of the non-linear terms for the Navier--Stokes equation \texttt{s1}, \texttt{s2} and \texttt{s3} are allocated and they are initialized to zero. After that the subroutine \texttt{convective\_ns} is called; this subroutine calculates the non-linear term arising from the convective term in the Navier--Stokes equation and it includes also the additional term coming from the non-matched densities case.\\
+Then the mean pressure gradient in $x$ and $y$ direction is added to the non-linear term and, if the phase field is activated, the non-linear terms arising from the surface force, gravity and buoyancy force and the non-linear part of the time derivative are also added to the non-linear term.\\
+After this step the non-linear term is integrated explicitly using an explicit Euler algorithm at the first time step and an Adams--Bashforth one for the second time step on. The implicit part is discretized in time with a Crank--Nicolson algorithm.\\
+The old non-linear term is then updated with the new one and it will be used again in the following time iteration. The historical term (the right hand side of the equations for velocity and vorticity) starts to get assembled: the first part is an output of the time integration subroutine, then the second and last part is given in output from the subroutine \texttt{hist\_term}. Here the non-linear terms are also deallocated.\\
+Then, in order, there is the call to the subroutine \texttt{calculate\_w}, \texttt{calculate\_omega} and \texttt{calculate\_uv} which solve the Navier--Stokes equations, obtaining the velocity (and wall-normal vorticity values). These calls conclude the Navier--Stokes solution part.\\
+At this point, if the phase field is activated, the Cahn--Hilliard equation is solved: at first the non-linear term is formed in the subroutine \texttt{sterm\_ch} and then integrated in time explicitly with an explicit Euler (first time step) or an Adams--Bashforth algorithm (second time step on). The implicit part is integrated with an implicit Euler algorithm.\\
+Then the subroutine \texttt{calculate\_phi} is called and the \texttt{solver} part concludes; the velocity and phase field variables have been updated with the new values.
+\def\arraystretch{0.4}
+\begin{figure}[h!]
+\centering
+\caption{Scheme of subroutine \texttt{solver}}
+\label{fig: solver_struct}
+\[
+\begin{tikzcd}
+{\begin{array}{c}\textnormal{\textbf{subroutine \texttt{solver}}}  \end{array}}\arrow[d] \\
+{\begin{array}{c}\textnormal{allocation of \texttt{s1}, \texttt{s2} and \texttt{s3}} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{Assembling of non-linear term}} \\ \texttt{call convective\_ns}  \\ \textnormal{add mean pressure gradient} \\ \texttt{call phi\_non\_linear} \textnormal{ (if phase filed is activated)} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{Time integration and forming of historical term (N--S)}} \end{array} }\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{Solution of Navier--Stokes}} \\ \texttt{call calculate\_w} \\ \texttt{call calculate\_omega} \\ \texttt{call calculate\_uv} \end{array}}\arrow[d] \\
+{\begin{array}{c} \texttt{call sterm\_ch} \end{array}}\arrow[d] \\
+{\begin{array}{c} \textnormal{\textbf{Time integration and forming of historical term (C--H)}} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{Solution of Cahn--Hilliard}} \\ \texttt{call calculate\_phi} \end{array}}\arrow[d] \\
+{\begin{array}{c}\textnormal{\textbf{End of }}\textbf{\texttt{solver}}\end{array}}\\
+\end{tikzcd}
+\]
+\end{figure}
+\subsection{\texttt{convective\_ns}}
+This subroutine calculates the term $\left(1+(\phi+1)\frac{\alpha-1}{2}\right)\nabla(\mathbf{u}\otimes\mathbf{u})$. For the single phase case $\phi$ is not defined and $\alpha$ is equal to 1, so the first part is constant equal to 1.\\
+The convective term is calculated as $\nabla(\mathbf{u}\otimes\mathbf{u})$ instead of $(\mathbf{u}\cdot\nabla) \mathbf{u}$ since it requires less transforms (both from physical to modal and from modal to physical) than the usual way, but here the hypothesis of $\nabla\cdot \mathbf{u}$ has been settled.
+\[
+\nabla(\mathbf{u}\otimes\mathbf{u})=\nabla \left( 
+\begin{bmatrix}
+u \\
+v \\
+w\\
+\end{bmatrix}
+\begin{bmatrix}
+u & v & w \\
+\end{bmatrix}
+\right)=
+\begin{bmatrix}
+u\frac{\de u}{\de x}+v\frac{\de u}{\de y}+w\frac{\de u}{\de z}+u \nabla\cdot\mathbf{u}\\
+u\frac{\de v}{\de x}+v\frac{\de v}{\de y}+w\frac{\de v}{\de z}+v \nabla\cdot\mathbf{u}\\
+u\frac{\de w}{\de x}+v\frac{\de w}{\de y}+w\frac{\de w}{\de z}+w \nabla\cdot\mathbf{u}\\
+\end{bmatrix}
+\]
+\def\arraystretch{1}
+
+\subsection{\texttt{phi\_non\_linear}}
+This subroutine calculates all the non-linear terms of the Navier--Stokes equation which arises from the presence of the phase field.\\ 
+The first term calculated is the surface force, then the non-linear part of the viscous term, the gravity and buoyancy term and the non-linear part of the time derivative.\\
+The non linear-part of the viscous term is non-zero only for the non-matched viscosities case, while the gravity and buoyancy term and the non-linear part of the time derivative are non-zero only for the non-matched densities case.\\
+At the end of the subroutine these non-linear contributions are added to the non-linear terms \texttt{s1}, \texttt{s2} and \texttt{s3}.
+
+\subsection{\texttt{euler}, \texttt{adams\_bashforth}, \texttt{euler\_phi} and \texttt{adams\_bashforth\_phi}}
+This subroutine performs the explicit time integration of the non-linear terms, using an explicit Euler algorithm at the first time step and an Adams--Bashforth one from the second time step on. \texttt{euler} and \texttt{adams\_bashforth} are used for the Navier--Stokes non-linear term, while \texttt{euler\_phi} and \texttt{adams\_bashforth\_phi} for the Cahn--Hilliard non-linear term.
+
+\subsection{\texttt{hist\_term}}
+This subroutine assembles the right hand side of the fourth order equation for the wall-normal velocity and for the second order equation for the wall-normal vorticity.
+
+\subsection{\texttt{calculate\_w}}
+This subroutine solves the equation for the wall-normal component of the velocity. The fourth order equation is split in two second order Helmholtz like equations; due to the lack of boundary conditions on one of the two equations, the influence matrix method is used here.\\
+In this subroutine all the quantities needed to solve the Helmholtz problem are set up.
+
+\subsection{\texttt{calculate\_omega}}
+This subroutine sets up all the quantities needed to solve the second order Helmholtz equation for the wall-normal vorticity. At the end of the subroutine the new wall-normal vorticity is updated with the new value.
+
+\subsection{\texttt{calculate\_uv}}
+This subroutine calculates the streamwise and spanwise velocity components starting from the wall-normal velocity and the wall-normal vorticity. Here the continuity equation and the definition of wall normal vorticity are used.
+
+\subsection{\texttt{sterm\_ch}}
+This subroutine calculates the non-linear term of the Cahn--Hilliard equation; this term includes the convective term and part of the laplacian of the chemical potential. 
+\[
+S_\phi=-\mathbf{u}\cdot\nabla\phi+\frac{1}{\Pe}\nabla^2\phi^3-\frac{s+1}{\Pe}\nabla^2\phi
+\]
+The $s$ coefficient allows for the inclusion of part of the diffusive-like term in the non-linear term (to improve numerical stability) and it is defined as:
+\[
+s=\sqrt{\frac{4\Pe\Ch^2}{\Delta t}}
+\]
+
+\subsection{\texttt{calculate\_phi}}
+This subroutine first splits the fourth order equation for the phase variable in two second order Helmholtz equations and then solves these Helmholtz equations. Here there is no need for the influence matrix method, as enough boundary conditions are provided for both Helmholtz equations.
+
+\subsection{\texttt{courant\_check}}
+This subroutine calculates the maximum Courant number on the whole domain; if the calculated Courant exceeds the Courant limit, the simulation is stopped.
+
+\subsection{\texttt{dz} and \texttt{dz\_red}}
+These subroutines calculate the wall-normal derivative in the modal space. The only difference between the two subroutines resides in the passed array dimensions.\\
+Since there are dependencies between the input and output arrays, the arrays passed to the subroutine must not be the same, otherwise the output array will be wrongly calculated.
+
+\subsection{\texttt{helmholtz}, \texttt{helmholtz\_red} and \texttt{helmholtz\_rred}}
+All these subroutines solve the given Helmholtz problem; they differ only for the passed array dimensions. The input of the subroutine is the right hand side of the equation and, at the end of the subroutine, is replaced by the solution of the Helmholtz problem.\\
+The subroutine asssembles the matrices that will be passed to the Gauss solver. The coefficient matrix holds in the first two lines the boundary conditions at the upper and lower wall, then the rest of the matrix is a tridiagonal-like matrix that allows for a fast and efficient Gauss solver.
+
+\subsection{\texttt{gauss\_solver}, \texttt{gauss\_solver\_red} and \texttt{gauss\_solver\_rred}}
+These subroutines perform the Gauss back-substitution algorithm on the passed set of equations (matrix form) and return the solution. They only differ for the size of the arrays passed.
+
+\section{Transforms}
+The two most important subroutine used to shuttle data from physical to modal space and backward are \texttt{phys\_to\_spectral} and \texttt{spectral\_to\_phys}. These subroutines accept as arguments the input array in physical [modal] space, the output array in modal [physical] space and a flag for the dealiasing of the output array. The dealiasing follows the 2/3 rule, which means that only the 2/3 of the lower modes will be retained.
+
+\subsection{\texttt{phys\_to\_spectral}}
+At the beginning of this subroutine each MPI process holds an array containing all the data in the $x$ direction and only part of the data in the $y$ and $z$ directions; the array is in physical space. At first the subroutine \texttt{fftx\_fwd} performs a 1D Fourier transform in the $x$ direction. Since all data in a certain direction are needed when performing a transform, the subroutine \texttt{yz2z} takes care of exchanging data among the various MPI processes, such that, after this subroutine each MPI process holds all the data in the $y$ direction and only part of the data in the $x$ and $z$ directions. Now, the subroutine \texttt{ffty\_fwd} performs a 1D transform in the $y$ direction. At this point another subroutine \texttt{xz2xy} exchange data among the various MPI processes, such that each MPI process holds all the data in the $z$ direction. Finally the subroutine \texttt{dctz\_fwd} performs a discrete Chebyshev transform in the $z$ direction.\\
+At the end of the subroutine, the array is in modal space.
+
+
+
+\subsection{\texttt{fftx\_fwd}}
+\label{sec: fftx}
+This subroutine performs a discrete Fourier transforms in the $x$ direction on the input array. It is a real-to-complex transform: the input is a real array, while the output is a complex array. The output array is defined as a real in the code but the last index of the array determines whether it is the real or the imaginary part (1 corresponds to the real part, 2 to the imaginary part). According to the dealiasing flag, this subroutine can perform dealiasing in the $x$ direction.
+
+\subsection{\texttt{yz2xz}}
+This subroutine exchange data among MPI processes such that at the beginning of the subroutine each MPI process holds all data in the $x$ direction and only part in the $y$ and $z$ directions and at the end of the subroutine each MPI process holds all data in the $y$ direction and only part in the $x$ and $z$ directions. The MPI communications among the various MPI processes are easily handled by exploiting the Cartesian topology defined for the MPI processes.
+
+\subsection{\texttt{ffty\_fwd}}
+This subroutine performs a discrete Fourier transfoms in the $y$ direction. Both input and output arrays are complex, the last index of the array determines the real (1) and imaginary (2) part. According to the dealiasing flag, this subroutine can perform dealiasing in the $y$ direction.
+
+\subsection{\texttt{xz2xy}}
+This subroutine takes care of exchanging data among MPI processes, such that at the beginning of the subroutine each MPI process hold all data in the $y$ direction and only part in the $x$ and $z$ direction, while at the end of the subroutine each MPI process holds all data in the $z$ direction and part of them in the $x$ and $y$ directions. As before, a Cartesian topology is exploited during MPI communications.
+
+\subsection{\texttt{dctz\_fwd}}
+This subroutine performs a discrete Chebyshev tranforms in the wall-normal direction; it work on complex valued arrays and their storage in memory is the same as stated in Section \ref{sec: fftx}. According to the dealiasing flag, this subroutine can perform dealiasing in the $z$ direction.
+
+\subsection{\texttt{spectral\_to\_phys}}
+This subroutine shuttle the data array from modal space to physical space. At the beginning of the subroutine each rank holds all the data in the $z$ direction and only a part in the $x$ and $y$ directions. The subroutine \texttt{dctz\_bwd} perform an inverse Chebyshev transform in the $z$ direction; then the subroutine \texttt{xy2xz} exchange data among MPI processes, such that, after the subroutine execution, each MPI process holds all the data in the $y$ direction and only a part in the other two dimensions. Then the subroutine \texttt{ffty\_bwd} performs a 1D inverse Fourier transform on the data and the subroutine \texttt{xz2yz} exchange data among MPI processes in such a way that each MPI process holds all data in the $x$ direction. After the call to \texttt{fftx\_bwd}, which performs an inverse Fourier transform on the data, each MPI process holds the data in physical space.
+
+\subsection{\texttt{dctz\_bwd}}
+This subroutine performs an inverse discrete Chebyshev tranforms in the wall-normal directions; it works on complex valued arrays and their storage in memory is the same as stated in Section \ref{sec: fftx}. According to the dealiasing flag, this subroutine can perform dealiasing in the $x$ direction.
+
+\subsection{\texttt{xy2xz}}
+This subroutine exchange data among the MPI processes, such that in input each MPI process holds all data in the $z$ direction and only part in the $x$ and $y$ directions and in output each MPI process holds all data in the $y$ directions and only part in the $x$ and $z$ directions. The MPI communications are easily handled by using a Cartesian topology.
+
+\subsection{\texttt{ffty\_bwd}}
+This subroutine performs an inverse discrete Fourier transfoms in the $y$ direction. According to the dealiasing flag, this subroutine can perform dealiasing in the $y$ direction.
+
+\subsection{\texttt{xz2yz}}
+This subroutine exchange data among the MPI processes, such that in input each MPI process holds all data in the $y$ direction and only part in the $x$ and $z$ directions while in output each MPI process holds all data in the $x$ directions and only part in the $y$ and $z$ directions. The MPI communication are easily handled by using a Cartesian topology.
+
+\subsection{\texttt{fftx\_bwd}}
+This subroutine performs an inverse discrete Fourier transforms in the $x$ direction on the input array. It is a complex-to-real transform: the input is a complex array, while the output is a real array. According to the dealiasing flag, this subroutine can perform dealiasing in the $z$ direction.
+
+
+
+\section{Statistic calculation}
+This section is addressed to the run time statistics calculation; at the present moment the code can calculate mean, root mean square, skewness and flatness of the velocities, mean and root mean square for the pressure (without considering the mean pressure gradient), energy budget for a single phase channel flow (mean flow in the $x$ direction) and the power spectra of the velocity fluctutations at $z^+=5$, $z^+=15$ and $z^+=\Re$.
+
+\subsection{\texttt{initialize\_stats}}
+This subroutine initializes the statistic calculation; if the simulation is not a restart it initializes the counter \texttt{flowiter} to 0 and creates the files where statistics are saved. On the other hand, if the simulation is restarted, it reads the flowiter value from the files where statistic are saved and exit the subroutine.\\
+For the new simulation case, if the time step from where the statistics calculation starts is the initial time step the statistics are calculated, otherwise the statistics are initialized to zero and the counter is reduced by one.
+
+\subsection{\texttt{del\_old\_stats}}
+At the end of the time advancement cycle this subroutine deletes the old statistics file, denoted by the suffix \texttt{\_old.dat} in the results folder. This file are kept so that, if the simulation crashes when writing new statistics to the corresponding file, there is a backup and the simulation can be restarted from the previous time step available.
+
+\subsection{\texttt{statistics}}
+This subroutine is called during the time advancement cycle to calculate statistics at run time. At first the counter \texttt{flowiter} is incremented by one, then the previous statistics files are read and renamed adding the suffix \texttt{\_old}. Then the statistics at the current time step are read and a weighted time average with the old statistics is performed. At the end of the subroutine the new statistics are written to a file.\\
+Flow statistics (mean, root mean square, skewness and flatness) are written to \texttt{stats.dat}, pressure mean and root mean square and the energy budget are written to \texttt{budget.dat}, the streamwise power spectra are written to \texttt{power\_xspectra.dat} and the spanwise power spectra to \texttt{power\_yspectra.dat}.
+
+\subsection{\texttt{mean\_calc}}
+This subroutine calculates the mean, root mean square, skewness and flatness of the flow field. The results are gathered to the MPI process with number 0, which also takes care of reading and writing to file.
+
+\subsection{\texttt{budget\_calc}}
+This subroutine calculate the mean and the root mean square of the pressure and the energy budgets. Pressure is calculated with the hypothesis of single phase flow, while energy budgets are calculated for a fully developed flow with mean flow only in the $x$ direction and they do not consider the presence of another phase (for a two or more phases flow the pressure will be wrongly calculated and some energy budget terms, like the surface force, would be missing from the total energy budget). Here also, all the data are gathered to the MPI process 0 which writes them to a file.
+
+\subsection{\texttt{sterm\_pressure}}
+This subroutine calculates the non-linear term of the Navier--Stokes equation. These terms are calculated by scratch since the saved non-linear terms in the module \texttt{sterms} and the velocity data are shifted by one time step ($\Delta t$). 
+
+\subsection{\texttt{power\_spectra}}
+This subroutine calculates the streamwise and spanwise power spectra at three differents $z$ locations ($z^+=$5, 15 and $\Re$). All the power spectra data are gathered to the MPI process 0.
+
+
+\section{Modules}
+Here all the modules included in the code with the variables there defined will be introduced.
+\begin{itemize}
+\item \texttt{commondata}
+\begin{itemize}
+\item \texttt{nx} : number of grid points in $x$ direction (passed as a parameter)
+\item \texttt{ny} : number of grid points in $y$ direction (passed as a parameter)
+\item \texttt{nz} : number of grid points in $z$ direction (passed as a parameter)
+\item \texttt{nycpu} : number of MPI processes in which the $y$ direction is divided (physical space, passed as a parameter)
+\item \texttt{nzcpu} : number of MPI processes in which the $z$ direction is divided (physical space, passed as a parameter)
+\item \texttt{rank} : number of the MPI process (each MPI process has its own number, spanning from 0 to \texttt{ntask}$-1$)
+\item \texttt{ntask} : total number of MPI processes
+\item \texttt{ierr} : mandatory argument for all MPI subroutine calls (up to \texttt{use mpi}, in \texttt{use mpi\_f08} it is an optional argument)
+\item \texttt{cart\_comm} : Cartesian communicator for the MPI Cartesian topology
+\item \texttt{xl} : $x$ length of the domain
+\item \texttt{yl} : $y$ length of the domain
+\item \texttt{folder} : folder where results are saved (passed as a parameter)
+\end{itemize}
+\item \texttt{grid}
+\begin{itemize}
+\item \texttt{x} : array containing the $x$ axis
+\item \texttt{y} : array containing the $y$ axis
+\item \texttt{z} : array containing the $z$ axis
+\end{itemize}
+\item \texttt{velocity}
+\begin{itemize}
+\item \texttt{u} : array containing $u$ velocity (physical space, allocatable)
+\item \texttt{v} : array containing $v$ velocity (physical space, allocatable)
+\item \texttt{w} : array containing $w$ velocity (physical space, allocatable)
+\item \texttt{uc} : array containing $u$ velocity (modal space, allocatable)
+\item \texttt{vc} : array containing $v$ velocity (modal space, allocatable)
+\item \texttt{wc} : array containing $w$ velocity (modal space, allocatable)
+\item \texttt{wa2} : array containing the first auxiliary Helmholtz problem for the influence matrix method (allocatable)
+\item \texttt{wa3} : array containing the second auxiliary Helmholtz problem for the influence matrix method (allocatable)
+\item \texttt{sgradpx} : array containing the mean pressure gradient in the $x$ direction (modal space, allocatable)
+\item \texttt{sgradpy} : array containing the mean pressure gradient in the $y$ direction (modal space, allocatable)
+\end{itemize}
+\item \texttt{wavenumber}
+\begin{itemize}
+\item \texttt{kx} : array containing the $x$ wavenumbers
+\item \texttt{ky} : array containing the $y$ wavenumbers
+\item \texttt{k2} : array containing $k^2(i,j)=k_x^2(i)+k_y^2(j)$
+\end{itemize}
+\item \texttt{sim\_par}
+\begin{itemize}
+\item \texttt{pi} : value of $\pi$ (parameter)
+\item \texttt{Re} : Reynolds number
+\item \texttt{dt} : time step
+\item \texttt{gradpx} : mean pressure gradient in $x$ direction (physical space, scalar)
+\item \texttt{gradpy} : mean pressure gradient in $y$ direction (physical space, scalar)
+\item \texttt{Co} : limit Courant number
+\item \texttt{gamma} : $\Delta t/(2\Re)$
+\item \texttt{p\_u}, \texttt{q\_u}, \texttt{r\_u} : coefficients for the boundary conditions on $u$, written as 
+\[pu(\pm1)+q\left.\frac{\de u}{\de z}\right|_{z=\pm1}=r\]
+Used for the case where $k_x=k_y=k^2=0$ and it is not possible to calculate $u$ and $v$ as usual, and a Helmholtz equation must be solved for $u$.
+\item \texttt{p\_v}, \texttt{q\_v}, \texttt{r\_v} : coefficients for the boundary conditions on $v$, written as 
+\[pv(\pm1)+q\left.\frac{\de v}{\de z}\right|_{z=\pm1}=r\]
+Used for the case where $k_x=k_y=k^2=0$ and it is not possible to calculate $u$ and $v$ as usual, and a Helmholtz equation must be solved for $v$.
+\item \texttt{p\_w}, \texttt{q\_w}, \texttt{r\_w} : coefficients for the boundary conditions on $w$, written as 
+\[pw(\pm1)+q\left.\frac{\de w}{\de z}\right|_{z=\pm1}=r\]
+\item \texttt{p\_o}, \texttt{q\_o}, \texttt{r\_o} : coefficients for the boundary conditions on $\omega_z$, written as 
+\[p\omega_z(\pm1)+q\left.\frac{\de \omega_z}{\de z}\right|_{z=\pm1}=r\]
+\item \texttt{zp} : $z$ location of boundaries: $[-1,+1]$
+\item \texttt{bc\_up} : boundary condition at the upper boundary
+\item \texttt{bc\_low} : boundary condition at the lower boundary
+\item \texttt{restart} : restart flag
+\item \texttt{nt\_restart} : time step from which the simulation is restarted
+\item \texttt{in\_cond} : initial condition for the flow field
+\item \texttt{nstart} : starting time step
+\item \texttt{nend} : final time step
+\item \texttt{ndump} : saving frequency of solution in physical space
+\item \texttt{sdump} : saving frequency of solution in modal space
+\end{itemize}
+\item \texttt{phase\_field}
+\begin{itemize}
+\item \texttt{phi\_flag} : flag for the activation/deactivation of the phase field calculations
+\item \texttt{in\_cond\_phi} : initial condition for the phase variable
+\item \texttt{b\_type} : flag used to switch from:
+\begin{enumerate}
+\item no gravity case
+\item gravity and buoyancy case
+\item buoyancy case
+\end{enumerate}
+\item \texttt{rhor} : density ratio
+\item \texttt{visr}  : viscosity ratio
+\item \texttt{We} : Weber number
+\item \texttt{Ch} : Cahn number
+\item \texttt{Pe} : Peclet number
+\item \texttt{Fr} : Froud number
+\item \texttt{grav} : gravity versor
+\item \texttt{s\_coeff} : coefficient used for the splitting of the Cahn--Hilliard equation, $s=\sqrt{\frac{4\Pe\Ch^2}{\Delta t}}$
+\item \texttt{phi} : phase field variable (physical space, allocatable)
+\item \texttt{phic} : phase field variable (modal space, allocatable)
+\item \texttt{one\_s} : transform of a unit array in modal space (allocatable)
+\end{itemize}
+\item \texttt{velocity\_old}
+\begin{itemize}
+\item \texttt{ucp} : $u$ velocity at previous time step (modal space, allocatable)
+\item \texttt{vcp} : $v$ velocity at previous time step (modal space, allocatable)
+\item \texttt{wcp} : $w$ velocity at previous time step (modal space, allocatable)
+\end{itemize}
+\item \texttt{mpiIO}
+\begin{itemize}
+\item \texttt{ftype} : derived datatype, used for MPI input/output operations in physical space
+\item \texttt{stype} : derived datatype, used for MPI input/output operations in modal space
+\end{itemize}
+\item \texttt{par\_size}
+\begin{itemize}
+\item \texttt{fpy} : $y$ size of the field array in physical space (for parallelization)
+\item \texttt{fpz} : $z$ size of the field array in physical space (for parallelization)
+\item \texttt{spx} : $x$ size of the field array in modal space (for parallelization)
+\item \texttt{spy} : $y$ size of the field array in modal space (for parallelization)
+\item \texttt{cstart} : 3 element array containing the triplet of the lowest indexes in the global indexing system for arrays in physical space
+\item \texttt{fstart} : 3 element array containing the triplet of the lowest indexes in the global indexing system for arrays in modal space
+\end{itemize}
+\item \texttt{fftw3}
+\begin{itemize}
+\item \texttt{plan\_x\_fwd} : plan for 1D Fourier transform, $x$ direction
+\item \texttt{plan\_y\_fwd} : plan for 1D Fourier transform, $y$ direction
+\item \texttt{plan\_z\_fwd} : plan for 1D Chebyshev transform, $z$ direction
+\item \texttt{plan\_x\_bwd} : plan for 1D inverse Fourier transform, $x$ direction
+\item \texttt{plan\_y\_bwd} : plan for 1D inverse Fourier transform, $y$ direction
+\item \texttt{plan\_z\_bwd} : plan for 1D inverse Chebyshev transform, $z$ direction
+\end{itemize}
+\item \texttt{sterms}
+\begin{itemize}
+\item \texttt{s1\_o} : non-linear term, Navier--Stokes $x$ component, used to avoid to calculate again the old non-linear term at the following time step (modal space, allocatable)
+\item \texttt{s2\_o} : non-linear term, Navier--Stokes $y$ component, used to avoid to calculate again the old non-linear term at the following time step (modal space, allocatable)
+\item \texttt{s3\_o} : non-linear term, Navier--Stokes $z$ component, used to avoid to calculate again the old non-linear term at the following time step (modal space, allocatable)
+\item \texttt{sphi\_o} : non-linear term of Cahn--Hilliard equation, used to avoid to calculate again the old non-linear term at the following time step (modal space, allocatable)
+\end{itemize}
+\item \texttt{stats}
+\begin{itemize}
+\item \texttt{flowiter} : counter, keeps track of the number of field used for time averages
+\item \texttt{stat\_dump} : frequency of statistics calculation and saving
+\item \texttt{stat\_start} : time step from where start the statistics calculation
+\item \texttt{plane\_comm} : MPI Cartesian subcommunicator, used to exchange data among MPI processes in the same $x-y$ plane
+\item \texttt{col\_comm} : MPI Cartesian subcommunicator, used to exchange data among MPI processes that cover the same $x-y$ region (same ``column'')
+\end{itemize}
+\end{itemize}
+
+

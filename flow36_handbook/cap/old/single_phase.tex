@@ -1,0 +1,488 @@
+\chapter{Single phase flow}
+
+\section{Continuity equation}
+Hypothesis of uncompressible flow. $\mathbf u$ is the fluid velocity and it can be splitted in its three components: $u$, $v$ and $w$.
+\begin{equation}
+\nabla \cdot\mathbf u=\frac{\de u}{\de x}+\frac{\de v}{\de y} +\frac{\de w}{\de z}=0
+\end{equation}
+
+\section{Navier--Stokes equations}
+Hypothesis of uncompressible flow.
+\begin{equation}
+\rho \frac{\de \mathbf u}{\de t} +\rho \mathbf u \cdot \nabla \mathbf u =-\nabla p +\mu \Nabla^2 \mathbf u
+\end{equation}
+We define $\Nabla^2$ as:
+\[
+\Nabla^2=\frac{\de^2}{\de x^2}+\frac{\de^2}{\de y^2}+\frac{\de^2}{\de z^2}
+\]
+The product $\mathbf u \cdot \nabla \mathbf u$ has to be intended as $(\mathbf u\cdot\nabla)\mathbf u$:
+\renewcommand\arraystretch{1.5}
+\[
+\mathbf u \cdot \nabla \mathbf u=(\mathbf u\cdot\nabla)\mathbf u=\left( u\frac{\de}{\de x} +v\frac{\de}{\de y}+w\frac{\de}{\de z}\right) \mathbf u =
+\begin{bmatrix}
+u\frac{\de u}{\de x} +v\frac{\de u}{\de y}+w\frac{\de u}{\de z}\\
+u\frac{\de v}{\de x} +v\frac{\de v}{\de y}+w\frac{\de v}{\de z}\\
+u\frac{\de w}{\de x} +v\frac{\de w}{\de y}+w\frac{\de w}{\de z}\\
+\end{bmatrix}
+\]
+\renewcommand\arraystretch{1}
+
+\subsection{Nondimensionalization of Navier--Stokes equation}
+We introduce the generic length- and velocity-scale of the flow, respectively $L_c$ and $u_c$, then we start the nondimensionalization using these two quantities. The superscript $*$ denotes nodimensional quantities.
+\[
+\frac{u_c}{\frac{L_c}{u_c}} \frac{\de \mathbf u^*}{\de t^*}+u_c \mathbf u^* \cdot \frac{1}{L_c}\nabla^* u_c \mathbf u^*=-\frac{1}{\rho}\frac{1}{L_c}\rho u_c^2\nabla^* p^*+\frac{\mu}{\rho}\frac{1}{L_c^2}\Nabla^{*2} u_c \mathbf u^*
+\]
+Reworking the eqation, we obtain:
+\[
+\frac{\de \mathbf u^*}{\de t^*}+\mathbf u^* \cdot \nabla^* \mathbf u^*=-\nabla^* p^*+\frac{\mu}{\rho u_cL_c}\Nabla^{*2} \mathbf u^*
+\]
+The dimensionless group $u_cL_c\rho/\mu$ is the Reynolds number:
+\[
+\Re=\frac{\rho u_c L_c}{\mu}
+\]
+The nondimensional Navier--Stokes equation results in:
+\begin{equation}
+\frac{\de \mathbf u^*}{\de t^*}+\mathbf u^* \cdot \nabla^* \mathbf u^*=-\nabla^* p^*+\frac{1}{\Re}\Nabla^{*2} \mathbf u^*
+\end{equation}
+From now on we will use only nondimensional quantities, unless differently specified, so for a more compact notation the superscript $*$ will be dropped.\\
+At this point we introduce the domain used in the simulations (see Fig \ref{fig: domain_sketch}). Its size is $4\pi h\times2\pi h\times 2h$ in the $x$, $y$, $z$ directions\footnote{The $x$ and $y$ dimensions are chosen so that all the two-points correlation vanish from the inlet to the outlet.}; the main flow occurs in the $x$ direction. In the $x$ and $y$ directions are enforced periodic boundary conditions, while at $z=\mp1$ the boundary conditions depend on the case chosen (open channel, closed channel, ...).
+\begin{figure}[H]
+\centering
+\def\svgwidth{0.8\textwidth}
+\input{immagini/domain_sketch.pdf_tex}
+\caption{Sketch of the domain}
+\label{fig: domain_sketch}
+\end{figure}
+We define now the tho reference quantities previously stated: $L_c$ is the channel half-height $h$, while $u_c$ is the shear velocity $u_\tau$.
+\[
+\begin{array}{l}
+L_c=h \\ [3px]
+u_c=u_\tau=\sqrt{\dfrac{\tau_w}{\rho}}
+\end{array}
+\]
+The value of the shear stress at the wall $\tau_w$ can be easily obtained from a force balance and depends on the geometry studied:
+\begin{itemize}
+\item Open channel:
+\[
+\tau_wL_xL_y=\Delta\bar p L_y 2h
+\]
+\[
+\tau_w=2\frac{\Delta \bar p}{L_x}h
+\]
+\item Closed channel:
+\[
+2\tau_wL_xL_y=\Delta\bar p L_y 2h
+\]
+\[
+\tau_w=\frac{\Delta \bar p}{L_x}h
+\]
+\end{itemize}
+$\Delta \bar p$ is the time- and space-averaged pressure gradient in the flow direction $x$.\\
+The pressure gradient can be splitted in two components: a mean one and a fluctuating one.
+\[
+\nabla p=\nabla \bar p+\nabla p'=\Pi+\nabla p'
+\]
+This way the values of the wall shear stress can be rewritten as $\tau_w=2\Pi h$ for the open channel case and as $\tau_w=\Pi h$ for the closed channel case.\\
+In the code \texttt{FLOWSB} the mean pressure gradient in the $x$ direction is $\Pi=-1$.\\
+The shear Reynolds number Re$_\tau$ is defined as:
+\begin{equation}
+\Re_\tau=\frac{\rho u_\tau h}{\mu}
+\end{equation}
+For the open channel the shear velocity is:
+\begin{equation}
+u_\tau^{oc}=\sqrt{\frac{2\Pi h}{\rho}}
+\end{equation}
+while for the closed channel it is:
+\begin{equation}
+u_\tau^{cc}=\sqrt{\frac{\Pi h}{\rho}}
+\end{equation}
+We recall the dimensionless Navier--Stokes equation (the superscript $*$ has been dropped for brevity and the pressure gradient has been divided in a mean one and in a fluctuating one):
+\[
+\frac{\de \mathbf u}{\de t}=-\mathbf u\cdot \nabla \mathbf u-\nabla p'-\Pi+\frac{1}{\Re_\tau}\Nabla^2 \mathbf u
+\]
+We defiine $\mathbf S$ as:
+\renewcommand\arraystretch{1.5}
+\[
+\mathbf S=-\mathbf u \cdot \nabla \mathbf u-\Pi=
+\begin{bmatrix}
+-u\frac{\de u}{\de x}-v\frac{\de u}{\de y}-w\frac{\de u}{\de z}-\frac{\de \bar p}{\de x}\\
+-u\frac{\de v}{\de x}-v\frac{\de v}{\de y}-w\frac{\de v}{\de z}-\frac{\de \bar p}{\de y}\\
+-u\frac{\de w}{\de x}-v\frac{\de w}{\de y}-w\frac{\de w}{\de z}-\frac{\de \bar p}{\de z}\\
+\end{bmatrix}
+\]
+\renewcommand\arraystretch{1}
+The velocity space derivatives can be reworked in this way (we show the procedure just for the terms of the first row of $\mathbf S$, the other ones are analogous):
+\renewcommand\arraystretch{1.5}
+\[
+\begin{array}{lcl}
+\frac{\de (uu)}{\de x}=2u\frac{\de u}{\de x} & \Rightarrow & u\frac{\de u}{\de x}=\frac{\de (uu)}{\de x} -u\frac{\de u}{\de x}\\
+\frac{\de (uv)}{\de y}=v\frac{\de u}{\de y}+u\frac{\de v}{\de y} & \Rightarrow & v\frac{\de u}{\de y}=\frac{\de (uv)}{\de y} -u\frac{\de v}{\de y}\\
+\frac{\de (uw)}{\de z}=w\frac{\de u}{\de z}+u\frac{\de w}{\de z} & \Rightarrow & w\frac{\de u}{\de z}=\frac{\de (uw)}{\de z} -u\frac{\de w}{\de z}\\
+\end{array}
+\]
+\renewcommand\arraystretch{1}
+So the $\mathbf S$ term can be rewritten as (in the last part the hypthesis of uncompressible fluid has been settled and the value of the mean pressure gradient has been substituted):
+\renewcommand\arraystretch{1.5}
+\[
+\mathbf S=
+\begin{bmatrix}
+-\frac{\de (uu)}{\de x}-\frac{\de (uv)}{\de y}-\frac{\de (uw)}{\de z}+u(\nabla\cdot \mathbf u)-\frac{\de \bar p}{\de x}\\
+-\frac{\de (uv)}{\de x}-\frac{\de (vv)}{\de y}-\frac{\de (vw)}{\de z}+v(\nabla\cdot \mathbf u)-\frac{\de \bar p}{\de y}\\
+-\frac{\de (uw)}{\de x}-\frac{\de (vw)}{\de y}-w\frac{\de (ww)}{\de z}+w(\nabla\cdot \mathbf u)-\frac{\de \bar p}{\de z}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+-\frac{\de (uu)}{\de x}-\frac{\de (uv)}{\de y}-\frac{\de (uw)}{\de z}+1\\
+-\frac{\de (uv)}{\de x}-\frac{\de (vv)}{\de y}-\frac{\de (vw)}{\de z}\\
+-\frac{\de (uw)}{\de x}-\frac{\de (vw)}{\de y}-w\frac{\de (ww)}{\de z}\\
+\end{bmatrix}
+\]
+\renewcommand\arraystretch{1}
+Then we rewrite the Navier--Stokes equation as it is used in the code:
+\begin{equation}
+\frac{\de \mathbf u}{\de t}=\mathbf S-\nabla p'+\frac{1}{\Re_\tau}\Nabla^2 \mathbf u
+\end{equation}
+
+\section{$\curl$(N--S)}
+We take the curl of the Navier--Stokes equation:
+\[
+\curl\left(\frac{\de \mathbf u}{\de t}\right)=\curl\mathbf S-\curl\left(\nabla p'\right)+\curl\left(\frac{1}{\Re_\tau}\Nabla^2 \mathbf u\right)
+\]
+In our case the curl operator and the time and/or space derivatives can be switched, since $\mathbf u$ verifies the hypothesis of the Schwarz theorem\footnote{For the Schwarz theorem the order of partial derivatives can be interchanged (under certain conditions).}.\\
+Thus we recall the definition of the vorticity $\boldsymbol \omega$:
+\[
+\boldsymbol \omega=\curl\mathbf u
+\]
+\[
+\frac{\de (\curl \mathbf u)}{\de t}=\curl\mathbf S-\curl\left(\nabla p'\right)+\frac{1}{\Re_\tau}\Nabla^2\left(\curl \mathbf u\right)
+\]
+The curl of the gradient of a scalar field is zero (it can be easily proved when the Schwarz theorem holds), so the curl of the fluctuating pressure gradient is zero.
+\begin{equation}
+\frac{\de \boldsymbol \omega}{\de t}=\curl\mathbf S+\frac{1}{\Re_\tau}\Nabla^2\boldsymbol \omega
+\label{eq: vor2}
+\end{equation}
+The above equation is a second order equation for the vorticity $\boldsymbol \omega$.
+
+\section{$\curl(\curl$N--S$)$}
+At this point we take twice the curl of the Navier--Stokes equation:
+\[
+\curl\left(\curl\frac{\de \mathbf u}{\de t}\right)=\curl(\curl\mathbf S)-\curl\left(\curl\nabla p'\right)+\frac{1}{\Re_\tau}\curl\left(\curl\Nabla^2 \mathbf u\right)
+\]
+First of all we recall an useful vectorial identity:
+\[
+\curl(\curl \mathbf A)=\nabla(\nabla\cdot\mathbf A)-\Nabla^2\mathbf A
+\]
+As already stated the curl of the fluctuating pressure gradient is always zero, so we have:
+\[
+\nabla\left(\nabla\cdot\frac{\de \mathbf u}{\de t}\right)-\Nabla^2\frac{\de \mathbf u}{\de t}=\nabla(\nabla\cdot\mathbf S)-\Nabla^2\mathbf S+\frac{1}{\Re_\tau}\left[\nabla(\nabla\cdot\Nabla^2 \mathbf u)-\Nabla^2\Nabla^2 \mathbf u\right]
+\]
+\renewcommand\arraystretch{1.5}
+\[
+\begin{split}
+\nabla\cdot\Nabla^2 \mathbf u&=\nabla \cdot
+\begin{bmatrix}
+\frac{\de^2 u}{\de x^2}+\frac{\de^2 u}{\de y^2}+\frac{\de^2 u}{\de z^2}\\
+\frac{\de^2 v}{\de x^2}+\frac{\de^2 v}{\de y^2}+\frac{\de^2 v}{\de z^2}\\
+\frac{\de^2 w}{\de x^2}+\frac{\de^2 w}{\de y^2}+\frac{\de^2 w}{\de z^2}\\
+\end{bmatrix} =\\
+&=\frac{\de}{\de x}\left( \frac{\de^2 u}{\de x^2}+\frac{\de^2 u}{\de y^2}+\frac{\de^2 u}{\de z^2} \right) +
+\frac{\de}{\de y} \left( \frac{\de^2 v}{\de x^2}+\frac{\de^2 v}{\de y^2}+\frac{\de^2 v}{\de z^2} \right)+
+\frac{\de}{\de z} \left( \frac{\de^2 w}{\de x^2}+\frac{\de^2 w}{\de y^2}+\frac{\de^2 w}{\de z^2} \right)=\\
+&=\frac{\de^2}{\de x^2}\left( \frac{\de u}{\de x}+\frac{\de v}{\de y}+\frac{\de w}{\de z} \right)+
+\frac{\de^2}{\de y^2}\left( \frac{\de u}{\de x}+\frac{\de v}{\de y}+\frac{\de w}{\de z} \right)+
+\frac{\de^2}{\de z^2}\left( \frac{\de u}{\de x}+\frac{\de v}{\de y}+\frac{\de w}{\de z} \right)=\\
+&=\nabla^2 \nabla\cdot\mathbf u
+\end{split}
+\]
+\renewcommand\arraystretch{1}
+The above term is zero for an uncompressible flow.\\
+\renewcommand\arraystretch{1.5}
+\[
+\Nabla^2\Nabla^2\mathbf u=\Nabla^4 \mathbf u=
+\begin{bmatrix}
+\frac{\de^4 u}{\de x^4}+\frac{\de^4 u}{\de y^4}+\frac{\de^4 u}{\de z^4}+2\left( \frac{\de^4 u}{\de x^2\de y^2} + \frac{\de^4 u}{\de x^2\de z^2} +\frac{\de^4 u}{\de y^2\de z^2}\right)\\
+\frac{\de^4 v}{\de x^4}+\frac{\de^4 v}{\de y^4}+\frac{\de^4 v}{\de z^4}+2\left( \frac{\de^4 v}{\de x^2\de y^2} + \frac{\de^4 v}{\de x^2\de z^2} +\frac{\de^4 v}{\de y^2\de z^2}\right)\\
+\frac{\de^4 w}{\de x^4}+\frac{\de^4 w}{\de y^4}+\frac{\de^4 w}{\de z^4}+2\left( \frac{\de^4 w}{\de x^2\de y^2} + \frac{\de^4 w}{\de x^2\de z^2} +\frac{\de^4 w}{\de y^2\de z^2}\right)\\
+\end{bmatrix}
+\]
+\renewcommand\arraystretch{1}
+For an uncompressible flow the above equation results in a fourth-order equation for the velocity:
+\begin{equation}
+\frac{\de}{\de t}(\Nabla^2 \mathbf u)=\Nabla^2 \mathbf S -\nabla(\nabla\cdot\mathbf S)+\frac{1}{\Re_\tau}\Nabla^4 \mathbf u
+\end{equation}
+
+
+\section{Vectorial equations}
+Here are reported the four equations of the problem:
+\begin{equation}
+\begin{cases}
+\nabla\cdot\mathbf u=0 &\textnormal{continuity equation}\\
+\boldsymbol\omega=\curl\mathbf u&\textnormal{vorticity definition}\\
+\frac{\de \boldsymbol \omega}{\de t}=\curl\mathbf S+\frac{1}{\Re_\tau}\Nabla^2\boldsymbol \omega&\textnormal{2$^{nd}$ order equation for vorticity}\\
+\frac{\de}{\de t}(\Nabla^2 \mathbf u)=\Nabla^2 \mathbf S -\nabla(\nabla\cdot\mathbf S)+\frac{1}{\Re_\tau}\Nabla^4 \mathbf u&\textnormal{4$^{nd}$ order equation for velocity}\\
+\end{cases}
+\end{equation}
+The code solves the transport of velocity and vorticity only for the $z$ component and evaluates $u$ and $v$ using the continuity equation (scalar) and the third component of the vorticity definition $\omega_z$ (Eq. \ref{eq: scalarsystem}).
+\begin{equation}
+\begin{cases}
+\nabla\cdot\mathbf u=0 \\
+\omega_z=\frac{\de v}{\de x}-\frac{\de u}{\de y}\\
+\frac{\de \omega_z}{\de t}= \frac{\de S_2}{\de x}-\frac{\de S_1}{\de y}+\frac{1}{\Re_\tau}\left(\frac{\de^2 \omega_z}{\de x^2}+\frac{\de^2\omega_z}{\de y^2}+\frac{\de^2\omega_z}{\de z^2} \right) \\
+\begin{split}
+\frac{\de}{\de t}&\left( \frac{\de^2w}{\de x^2}+\frac{\de^2w}{\de y^2}+\frac{\de^2w}{\de z^2}  \right)=\frac{\de^2S_3}{\de x^2}+\frac{\de^2S_3}{\de y^2}+\frac{\de^2S_3}{\de z^2}-\left( \frac{\de^2 S_1 }{\de x \de z}+\frac{\de^2 S_2 }{\de y \de z} +\frac{\de^2 S_3 }{\de z^2} \right) +\\
+&+\frac{1}{\Re_\tau}\left[ \frac{\de^4 w}{\de x^4}+\frac{\de^4 w}{\de y^4}+\frac{\de^4 w}{\de z^4}+2\left( \frac{\de^4 w}{\de x^2\de y^2} + \frac{\de^4 w}{\de x^2\de z^2} +\frac{\de^4 w}{\de y^2\de z^2}\right) \right]  \\
+\end{split}
+\end{cases}
+\label{eq: scalarsystem}
+\end{equation}
+
+\section{Spatial discretization}
+$x$ and $y$ are periodical direction (in these directions are enforced periodic boundary conditions), so they can be discretized using Fourier series. $z$ direction is not periodical; in this direction Chebyshev polynomials are employed.\\
+\renewcommand\arraystretch{1.5}
+\[
+\begin{array}{lccl}
+x_i=(i-1)\dfrac{L_x}{N_x-1} & & i=1,...,N_x\\
+x_j=(j-1)\dfrac{L_x}{N_y-1} & & j=1,...,N_y\\
+z_k=\cos\left(\frac{k-1}{N_z-1}\right) && k=1,...,N_z\\
+\end{array}
+\]
+\renewcommand\arraystretch{1}
+We then define the wavenumbers $k_1$ and $k_2$ of the Fourier series:
+\[
+k_1=\frac{2\pi n_1}{L_x}
+\]
+\[
+k_2=\frac{2\pi n_2}{L_y}
+\]
+The Fourier transform of a general quantity (in this case one of the components of the velocity) is:
+\[
+u_k(x,y,z,t)=\sum_{n_1=N_1/2+1}^{N_1/2}\sum_{n_2=N_2/2+1}^{N_2/2}\sum_{n_3=0}^{N_3-1}\hat u_i(k_1,k_2,n_3,t)T_{n_3}(z)e^{i(k_1x+k_2y)}
+\]
+The \string^ symbol denotes the Fourier coefficients, while $T_k(z)$ is the $k^{th}$ Chebyshev polynomial. It can be seen that derivative can be easily taken in Fourier space.\\
+The discretized continuity equation results in:
+\begin{equation}
+\begin{split}
+\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[ \left(\vphantom{\frac{\de T_{n_3}(z)}{\de z}}\hat u(k_1,k_2,n_3,t)T_{n_3}(z)ik_1+\hat v(k_1,k_2,n_3,t)T_{n_3}(z)ik_2+\right .\right . \\
+\left .\left . +\hat w(k_1,k_2,n_3,t)\frac{\de T_{n_3}(z)}{\de z}\right) e^{i(k_1x+k_2y)} \right]=0
+\end{split}
+\end{equation}
+Similarly the vorticity definition is:
+\begin{equation}
+\begin{split}
+\sum_{n_1}\sum_{n_2}\sum_{n_3}\left(\hat\omega_z(k_1,k_2,n_3,t)T_{n_3}(z)e^{i(k_1x+k_2y)}  \right)=\\
+=\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\Big(\hat v(k_1,k_2,n_3,t)ik_1-\hat u(k_1,k_2,n_3,t)ik_2\Big)T_{n_3}(z)e^{i(k_1x+k_2y)}  \right]
+\end{split}
+\end{equation}
+The second order vorticity equation is:
+\[
+\begin{split}
+\frac{\de}{\de t}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left(\hat\omega_z(k_1,k_2,n_3,t)T_{n_3}(z)e^{i(k_1x+k_2y)}  \right)=\\
+=\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(\hat S_2(k_1,k_2,n_3,t)ik_1-\hat S_1(k_1,k_2,n_3,t)ik_2\right)T_{n_3}(z)e^{i(k_1x+k_2y)}  \right]+\\
++\frac{1}{\Re_\tau}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(-k_1^2T_{n_3}(z)-k_2^2T_{n_3}(z)+\frac{\de^2 T_{n_3}(z)}{\de z^2} \right)\hat\omega_z(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \right]
+\end{split}
+\]
+We define $k^2=k_1^2+k_2^2$.
+\begin{equation}
+\begin{split}
+\frac{\de}{\de t}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left(\hat\omega_z(k_1,k_2,n_3,t)T_{n_3}(z)e^{i(k_1x+k_2y)}  \right)=\\
+=\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(\hat S_2(k_1,k_2,n_3,t)ik_1-\hat S_1(k_1,k_2,n_3,t)ik_2\right)T_{n_3}(z)e^{i(k_1x+k_2y)}  \right]+\\
++\frac{1}{\Re_\tau}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(-k^2T_{n_3}(z)+\frac{\de^2 T_{n_3}(z)}{\de z^2} \right)\hat\omega_z(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \right]
+\end{split}
+\end{equation}
+The fourth order equation for velocity is:
+\[
+\begin{split}
+\frac{\de}{\de t}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(-k_1^2T_{n_3}(z)-k_2^2T_{n_3}(z)+\frac{\de T_{n_3}(z)}{\de z}\right)\hat w(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \right]=\\
+\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(-k_1^2T_{n_3}(z)-k_2^2T_{n_3}(z)+\frac{\de^2 T_{n_3}(z)}{\de z^2}\right)\hat S_3(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \right]-\\
+-\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(ik_1\frac{\de T_{n_3}(z)}{\de z}\hat S_1(k_1,k_2,n_3,t)+ik_2\frac{\de T_{n_3}(z)}{\de z}\hat S_2(k_1,k_2,n_3,t)+ \right.\right.\\
+\left.\left.+\frac{\de^2 T_{n_3}(z)}{\de z^2}\hat S_3(k_1,k_2,n_3,t)\right)e^{i(k_1x+k_2y)}  \right]+\\
++\frac{1}{\Re_\tau}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(k_1^4T_{n_3}(z)+k_2^4 T_{n_3}(z)+ \frac{\de^4 T_{n_3}(z)}{\de z^4}+2\left( k_1^2k_2^2-k_1^2\frac{\de^2 T_{n_3}(z)}{\de z^2}-k_2^2\frac{\de^2 T_{n_3}(z)}{\de z^2}\right)\right)\right. \\
+\left.\hat w(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \vphantom{\frac{\de^2 T_{n_3}(z)}{\de z^2}}\right]
+\end{split}
+\]
+Substituting the equation for $k$ we obtain:
+\begin{equation}
+\begin{split}
+\frac{\de}{\de t}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(-k^2T_{n_3}(z)+\frac{\de T_{n_3}(z)}{\de z} \right)\hat w(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \right]=\\
+\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(-k^2T_{n_3}(z)+\frac{\de^2 T_{n_3}(z)}{\de z^2}\right)\hat S_3(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \right]-\\
+-\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(ik_1\frac{\de T_{n_3}(z)}{\de z}\hat S_1(k_1,k_2,n_3,t)+ik_2\frac{\de T_{n_3}(z)}{\de z}\hat S_2(k_1,k_2,n_3,t)+ \right.\right.\\
+\left.\left.+\frac{\de^2 T_{n_3}(z)}{\de z^2}\hat S_3(k_1,k_2,n_3,t)\right)e^{i(k_1x+k_2y)}  \right]+\\
++\frac{1}{\Re_\tau}\sum_{n_1}\sum_{n_2}\sum_{n_3}\left[\left(k_1^4T_{n_3}(z)+k_2^4 T_{n_3}(z)+ \frac{\de^4 T_{n_3}(z)}{\de z^4}+2\left( k_1^2k_2^2-k^2\frac{\de^2 T_{n_3}(z)}{\de z^2}\right)\right)\right. \\
+\left.\hat w(k_1,k_2,n_3,t)e^{i(k_1x+k_2y)}  \vphantom{\frac{\de^2 T_{n_3}(z)}{\de z^2}}\right]
+\end{split}
+\end{equation}
+We now introduce a more compact notation:
+\[
+\hat q=\sum_{n_1}\sum_{n_2}\sum_{n_3}\hat q(k_1,k_2,n_3,t)T_{n_3}(z)e^{i(k_1x+k_2y)}
+\]
+\begin{itemize}
+\item Continuity equation
+\[
+ik_1\hat u+ik_2\hat v+\frac{\de \hat w}{\de z}=0
+\]
+\item Vorticity definition
+\[
+\hat \omega_z=ik_1\hat v-ik_2\hat u
+\]
+\item Vorticity equation (2$^{nd}$ order)
+\[
+\frac{\de\hat\omega_z}{\de t}=ik_1\hat S_2-ik_2\hat S_1+\frac{1}{\Re_\tau}\left(\frac{\de^2 \hat\omega_z}{\de z^2}-k^2\hat\omega_z  \right)
+\]
+\item Velocity equation ($4^{th}$ order)
+\[
+\begin{split}
+\frac{\de}{\de t}\left(\frac{\de^2\hat w}{\de z^2}-k^2\hat w  \right)=&-k^2\hat S_3-ik_1\frac{\de \hat S_1}{\de z}-ik_2\frac{\de \hat S_2}{\de z}+\\
+&+ \frac{1}{\Re_\tau}\left[k_1^4\hat w+k_2^4\hat w+\frac{\de^4 \hat w}{\de z^4}+2\left(k_1^2k_2^2\hat w-k_2\frac{\de^2\hat w}{\de z^2}  \right)\right]
+\end{split}
+\]
+\end{itemize}
+
+
+\section{Time discretization}
+For time discretization two differents algorithms are used: Crank--Nicolson and Adam--Bashforth. The first one is an implicit algorithm and it is used for the diffusive terms; being implicit it favours the method stability. The Adam--Bashforth algorithm instead is used for the convective terms and it is an explicit method. In the following the superscripts denotes the time-step: $n+1$ is the time-step that is going to be evaluated (unknown), $n$ is the current time-step (known) and $n-1$ is the previous time-step (known).
+
+\subsection{Crank--Nicolson}
+\[
+\frac{u^{n+1}-u^n}{\Delta t}=\frac{F^{n+1}+F^n}{2}
+\]
+
+\subsection{Adam--Bashforth}
+\[
+\frac{u^{n+1}-u^n}{\Delta t}=\frac 3 2 F^n-\frac 1 2 F^{n-1}
+\]
+Since at the first time-step ($n=0$) only the data for $n=0$ (initial conditions) are available (so there are no data for $n-1$), an explicit Euler algorithm is used:
+\[
+\frac{u^{n+1}-u^n}{\Delta t}=F^n
+\]
+
+
+\section{Equations solved}
+Since the continuity equation and the vorticity definition contain no time derivatives, their discretization is easy, so we will report only the final form without showing all the passages.
+
+\subsection{2$^{nd}$ order equation for vorticity}
+We can split the right hand side of this equation in two terms, a diffusive one $\psi$ and a convective one $\xi$.
+\[
+\begin{array}{l}
+\xi=ik_1\hat S_2-ik_2\hat S_2\\[2ex]
+\psi=\dfrac{1}{\Re_\tau}\left( \dfrac{\de^2 \hat \omega_z}{\de z^2}-k^2\hat\omega_z\right)
+\end{array}
+\]
+The resulting equation is:
+\[
+\frac{\de \hat\omega_z}{\de t}=\xi+\psi
+\]
+Applying the two time discretization algorithms presented before to the previous equation, we obtain:
+\[
+\frac{\hat\omega_z^{n+1}-\hat\omega_z^n}{\Delta t}=\frac 3 2 \xi^n-\frac 1 2 \xi^{n-1}+\frac{\psi^{n+1}+\psi^n}{2}
+\]
+Substituting the convective and diffusive terms into the equation we have:
+\[
+\begin{split}
+\hat\omega_z^{n+1}=&\hat\omega_z^n+\Delta t \left[ \frac 3 2 \left( i k_1\hat S_2^n -i k_2\hat S_1^n \right)-\frac{1}{2}\left( ik_1\hat S_2^{n-1}-ik_2\hat S_1^{n-1}  \right) \right]+\\
+&+\frac{\Delta t}{2\Re_\tau}\left( \frac{\de^2 \hat\omega_z^{n+1}}{\de z^2}-k^2\hat\omega_z^{n+1} +\frac{\de^2 \hat\omega_z^{n}}{\de z^2}-k^2\hat\omega_z^{n} \right)
+\end{split}
+\]
+At this point we substitute the definition of vorticity in $\hat\omega_z^n$:
+\[
+\hat\omega_z^n=ik_1\hat v^n-ik_2\hat u^n
+\]
+Rearranging all teh terms and defining the historical term $H_i^n$ as:
+\[
+H_i^n=\Delta t\left[\frac 3 2 \hat S_i^n-\frac 12 \hat S_i^{n-1}+\frac{1}{2\Re_\tau}\frac{\de^2 \hat u_i^n}{\de z^2}+\left(\frac{1}{\Delta t}-\frac{k^2}{2\Re_\tau} \right)\hat u_i^n  \right]
+\]
+we obtain:
+\begin{equation}
+\left(\frac{k^2\Delta t}{2\Re_\tau}+1 \right)\hat\omega_z^{n+1}-\frac{\Delta t}{2\Re_\tau}\frac{\de^2 \hat\omega_z^{n+1}}{\de z^2}=ik_1H_2^n-ik_2H_1^n
+\end{equation}
+
+\subsection{4$^{th}$ order equation for velocity}
+In the same way as we did for the vorticity transport equation, we can split this equation in a diffusive term and in a convective one.
+\[
+\begin{array}{l}
+\xi=-k^2 \hat S_3 -ik_1\dfrac{\de\hat S_1}{\de z}-ik_2\dfrac{\de\hat S_2}{\de z} \\[2ex]
+\psi=\dfrac{1}{\Re_\tau}\left[ k_1^4\hat w +k_2^4\hat w+2\left(k_1^2k_2^2\hat w-k^2\dfrac{\de^2 \hat w}{\de z^2}  \right) \right]
+\end{array}
+\]
+This way we obtain the follwing equation:
+\[
+\frac{\de}{\de t}\left(\frac{\de^2\hat w}{\de z^2}-k^2\hat w\right)=\xi+\psi
+\]
+We discretize this equation as seen before:
+\[
+\frac{1}{\Delta t}\left(\frac{\de^2\hat w^{n+1}}{\de z^2}-k^2\hat w^{n+1}-\frac{\de^2\hat w^n}{\de z^2}+k^2\hat w^n\right)=\frac 3 2 \xi^n-\frac 1 2 \xi^{n-1}+\frac{\psi^{n+1}+\psi^n}{2}
+\]
+\[
+\frac{\de^2\hat w^{n+1}}{\de z^2}-k^2\hat w^{n+1}-\frac{\Delta t}{2}\psi^{n+1}=\frac{\de^2\hat w^n}{\de z^2}-k^2\hat w^n+\Delta t\left( \frac 3 2 \xi^n-\frac 1 2 \xi^{n-1}+\frac{\psi^n}{2}\right)
+\]
+Now we substitute both the equation for the convective and the diffusive term in the equation:
+\[
+\begin{split}
+-\frac{\Delta t}{2\Re_\tau}\frac{\de^4\hat w^{n+1}}{\de z^4}+\left(1+\frac{\Delta t}{\Re_\tau}k^2 \right)\frac{\de^2 \hat w^{n+1}}{\de z^2}+ \left(-k^2-\frac{\Delta t}{2\Re_\tau}(k_1^4+k_2^4)-\frac{\Delta t}{\Re_\tau}k_1^2k_2^2  \right)\hat w^{n+1}=\\
+=\frac{\de^2 \hat w^n}{\de z^2}-k^2\hat w^n+\Delta t \left[ \frac 32 \left(-k^2\hat S_3^{n}-ik_1\frac{\de \hat S_1^{n}}{\de z}-ik_2\frac{\de \hat S_2^{n}}{\de z}  \right)- \right .\\
+\left.  -\frac 1 2 \left(-k^2\hat S_3^{n-1}-ik_1\frac{\de \hat S_1^{n-1}}{\de z}-ik_2\frac{\de \hat S_2^{n-1}}{\de z}  \right)+\right . \\
+\left.+\frac{1}{2\Re_\tau}\left(k_1^4\hat w^n+k_2^4\hat w^n+\frac{\de^4\hat w^n}{\de z^4}+2\left( k_1^2k_2^2\hat w^n -k^2\frac{\de^2 \hat w^n}{\de z^2} \right)  \right)  \right]
+\end{split}
+\]
+Rearranging the right-hand side of the equation we obtain:
+\[
+\begin{split}
+-\frac{\Delta t}{2\Re_\tau}\frac{\de^4\hat w^{n+1}}{\de z^4}+\left(1+\frac{\Delta t}{\Re_\tau}k^2 \right)\frac{\de^2 \hat w^{n+1}}{\de z^2}+ \left(-k^2-\frac{\Delta t}{2\Re_\tau}(k_1^4+k_2^4)-\frac{\Delta t}{\Re_\tau}k_1^2k_2^2  \right)\hat w^{n+1}=\\
+=\Delta t \left[\frac 32 \left(-ik_1\frac{\de \hat S_1^n}{\de z}\right)+\frac1 2 ik_1\frac{\de \hat S_1^{n-1}}{\de z} \right] +\Delta t \left[\frac 32 \left(-ik_2\frac{\de \hat S_2^n}{\de z}\right)+\frac1 2 ik_2\frac{\de \hat S_2^{n-1}}{\de z} \right]+\\
++\Delta t \left[ -\frac 32 k^2\hat S_3^n+\frac 1 2 k^2 \hat S_3^{n-1}+ \frac{1}{2\Re_\tau}\left(k_1^4\hat w^n+k_2^4\hat w^n+\frac{\de^4\hat w^n}{\de z^4}+2 k_1^2k_2^2\hat w^n -2k^2\frac{\de^2 \hat w^n}{\de z^2}  \right)  \right]
+\end{split}
+\]
+Now we recall the definition of the histry term $H_i^n$ and we differentiate it in $z$:
+\[
+\frac{\de H_i^n}{\de z}=\left(\frac 3 2\frac{\de \hat S_i^n}{\de z}-\frac 1 2 \frac{\de \hat S_i^{n-1}}{\de z}\right)\Delta t+\frac{\Delta t}{2\Re_\tau}\frac{\de^3\hat u_i^n}{\de z^3}+\left(1-\frac{\Delta t k^2}{2\Re_\tau}\right)\frac{\de \hat i_i^n}{\de z}
+\]
+Substituting this result in the 4$^{th}$ order equation for velocity and rearranging the terms, we have:
+\[
+\begin{split}
+-\frac{\Delta t}{2\Re_\tau}\frac{\de^4\hat w^{n+1}}{\de z^4}+\left(1+\frac{\Delta t}{\Re_\tau}k^2 \right)\frac{\de^2 \hat w^{n+1}}{\de z^2}+ \left(-k^2-\frac{\Delta t}{2\Re_\tau}(k_1^4+k_2^4)-\frac{\Delta t}{\Re_\tau}k_1^2k_2^2  \right)\hat w^{n+1}=\\
+=-ik_1\frac{\de H_1^n}{\de z}-ik_2\frac{\de H_2^n}{\de z}+\frac{\Delta t}{2\Re_\tau}\frac{\de^3}{\de z^3}\left(ik_1\hat u^n+ik_2\hat v^n+\frac{\de\hat w^n}{\de z}  \right)+\\
++\left(1-\frac{\Delta t k^2}{2\Re_\tau}\right)\frac{\de}{\de z}\left(ik_1\hat u^n+ik_2\hat v^n+\frac{\de\hat w^n}{\de z}  \right)-k^2H_3^n-\frac{\Delta t k^4}{2\Re_\tau}\hat w^n+\\
++\frac{\Delta t}{2\Re_\tau}(k_1^4+k_2^4+k_1^2k_2^2)\hat w^n
+\end{split}
+\]
+In this equation appears twice the continuity equation for an uncompressible flow, so it can be simplified in:
+\[
+\begin{split}
+-\frac{\Delta t}{2\Re_\tau}\frac{\de^4\hat w^{n+1}}{\de z^4}+\left(1+\frac{\Delta t}{\Re_\tau}k^2 \right)\frac{\de^2 \hat w^{n+1}}{\de z^2}+ \left(-k^2-\frac{\Delta t}{2\Re_\tau}(k_1^4+k_2^4)-\frac{\Delta t}{\Re_\tau}k_1^2k_2^2  \right)\hat w^{n+1}=\\
+=-ik_1\frac{\de H_1^n}{\de z}-ik_2\frac{\de H_2^n}{\de z}-k^2H_3^n
+\end{split}
+\]
+We now define a second history term $H^n$:
+\[
+H^n=ik_1\frac{\de H_1^n}{\de z}+ik_2\frac{\de H_2^n}{\de z}+k^2H_3^n
+\]
+This last equation has been checked and verified according to \cite{Guasti_2012}.
+\begin{equation}
+\frac{\Delta t}{2\Re_\tau}\frac{\de^4\hat w^{n+1}}{\de z^4}-\left(1+\frac{\Delta t}{\Re_\tau}k^2 \right)\frac{\de^2 \hat w^{n+1}}{\de z^2}+ k^2\left(1+\frac{\Delta t k^2}{2\Re_\tau} \right)\hat w^{n+1}=H^n
+\end{equation}
+
+
+
+\subsection{Discretized system of equations}
+Here is reported the discretized system of equations solved from the code.
+\begin{equation}
+\begin{cases}
+ik_1\hat u^{n+1}+ik_2\hat v^{n+1}+\dfrac{\de \hat w^{n+1}}{\de z}=0\\[2ex]
+\hat \omega_z^{n+1}=ik_1\hat v^{n+1}-ik_2\hat u^{n+1}\\[2ex]
+\left(\dfrac{k^2\Delta t}{2\Re_\tau}+1 \right)\hat\omega_z^{n+1}-\dfrac{\Delta t}{2\Re_\tau}\dfrac{\de^2 \hat\omega_z^{n+1}}{\de z^2}=ik_1H_2^n-ik_2H_1^n\\[4ex]
+\dfrac{\Delta t}{2\Re_\tau}\dfrac{\de^4\hat w^{n+1}}{\de z^4}-\left(1+\dfrac{\Delta t}{\Re_\tau}k^2 \right)\dfrac{\de^2 \hat w^{n+1}}{\de z^2}+ k^2\left(1+\dfrac{\Delta t k^2}{2\Re_\tau} \right)\hat w^{n+1}=H^n
+\end{cases}
+\end{equation}
+The continuity equation and the vorticity definition are solved after the 2$^{nd}$ order equation for vorticity and the 4$^{th}$ order equation for velocity, so once $\hat w^{n+1}$ and $\hat \omega_z^{n+1}$ are known.
+
+
+
+
+
+
+
+
+
+
+
+
+

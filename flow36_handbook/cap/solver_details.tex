@@ -1,0 +1,873 @@
+\chapter{Numerical method}
+\label{chap: num_met}
+
+\section{Problem description}
+The code is meant to solve a turbulent channel flow, either a closed channel case, either an open channel case; the basic formulation includes the incompressible Navier--Stokes equations, that can be coupled in the full formulation with the Cahn--Hilliard equation.\\
+In Figure \ref{fig: domain_sketch} the geometry of the channel is presented together with the reference frame used. The domain size is $n\pi h\times m\pi h \times 2h$ ($x\times y\times z$).
+\begin{figure}[H]
+\centering
+\def\svgwidth{0.8\textwidth}
+\input{immagini/domain_sketch.pdf_tex}
+\caption{Sketch of the domain}
+\label{fig: domain_sketch}
+\end{figure}
+The $x$ and $y$ directions are periodic directions, while $z=+h$ and $z=-h$ can be either a solid boundary, either a free-slip boundary, depending on the choice of the boundary conditions.
+
+\section{Single phase flow}
+For the single phase case (phase field deactivated) the incompressible Navier--Stokes equations are solved. The equations are made non-dimensional using the shear velocity $u_\tau$ and the channel half height $h$. The Reynolds number is defined as:
+\[
+\Re_\tau=\frac{\rho h u_\tau}{\mu}
+\]
+where $\rho$ is the fluid density and $\mu$ the dynamic viscosity.\\
+The dimensionless incompressible Navier--Stokes equations reads:
+\begin{equation}
+\begin{cases}
+\nabla\cdot \mathbf{u}=0\\[2ex]
+\dfrac{\de \mathbf{u}}{\de t}+\mathbf{u}\cdot\nabla \mathbf{u}=-\nabla p+\dfrac{1}{\Re_\tau}\Nabla^2\mathbf{u}
+\end{cases}
+\end{equation}
+The pressure gradient is then split in two part, a mean pressure gradient and a fluctuating part:
+\[
+\nabla p=\Pi+\nabla p'
+\]
+This splitting is done in order to remove the pressure as a problem unknown: the code solves the Navier--Stokes equation using the velocity--vorticity formulation, which means that the four variables are the three velocity components and the wall-normal component of the vorticity.\\
+The velocity--vorticity formulation solves a second order equation for the transport of vorticity and a fourth order equation for the wall-normal velocity; streamwise and spanwise velocity components are calculated from the continuity equation and the definition of the wall-normal vorticity. Before starting to derive all the equations, the Navier--Stokes equation will be rewritten in a more compact form:
+\[
+\begin{cases}
+\nabla\cdot \mathbf{u}=0\\[2ex]
+\dfrac{\de \mathbf{u}}{\de t}=\mathbf{S}-\nabla p'+\dfrac{1}{\Re_\tau}\Nabla^2\mathbf{u}
+\end{cases}
+\]
+The $\mathbf{S}$ term is the non-linear term of the Navier--Stokes equations (in the code its components are \texttt{s1}, \texttt{s2} and \texttt{s3}) and for a single phase flow is defined as:
+\[
+\mathbf{S}=-\mathbf{u}\cdot\nabla \mathbf{u}-\Pi
+\]
+The second oreder equation for the transport of the vorticity is obtained by taking the curl of the Navier--Stokes equations; the fourth order equation for the transport of wall-normal velocity is obtained by taking again the curl of the Navier--Stokes equations (basically, taking two times the curl of the Navier--Stokes equations). The full set of equations includes (in order): the second order equation for vorticity, the fourth order equation for wall-normal velocity, the continuity equation and the definition of wall-normal vorticity.
+\begin{equation}
+\begin{cases}
+\dfrac{\de \mathbf{\omega}}{\de t}=\nabla\times \mathbf{S}+\dfrac{1}{\Re_\tau}\Nabla^2\mathbf{\omega} & \textnormal{only $z$ component}\\[2ex]
+\dfrac{\de(\Nabla^2 \mathbf{u})}{\de t}= \Nabla^2\mathbf{S}-\nabla(\nabla\cdot\mathbf{S})+\dfrac{1}{\Re_\tau}\Nabla^4\mathbf{u}    & \textnormal{only $z$ component}\\[2ex]
+\dfrac{\de u}{\de x}+\dfrac{\de v}{\de y}+\dfrac{\de w}{\de z}=0\\[2ex]
+\omega_z=\dfrac{\de v}{\de x}-\dfrac{\de u}{\de y}\\
+\end{cases}
+\label{eq: phys_ns}
+\end{equation}
+The system of equations \ref{eq: phys_ns} is discretized in the code using a pseudospectral method and solved in modal space; here discrete Fourier transforms are used in the periodic directions ($x$ and $y$), while discrete Chebyshev transforms in the wall-normal direction ($z$). A detailed explanation of the pseudospectral discretization will be given in Section \ref{sec: pseudosp}, here only the results will be used.\\
+The discretized system of equation in modal space reads:
+\begin{equation}
+\begin{cases}
+\dfrac{\de \hat\omega_z}{\de t}=\textnormal{i} k_x\hat S_2 -\textnormal{i}k_y\hat S_1 +\dfrac{1}{\Re_\tau}\left(\dfrac{\de^2\hat\omega_z}{\de z^2}-k^2\hat\omega_z   \right)  \\[2ex]
+\dfrac{\de}{\de t}\left( \dfrac{\de^2 \hat w}{\de z^2}-k^2\hat w \right)=-k^2\hat S_3-\textnormal{i}k_x\dfrac{\de \hat S_1}{\de z}-\textnormal{i}k_y\dfrac{\de \hat S_2}{\de z} +\dfrac{1}{\Re_\tau}\left( k^4\hat w+\dfrac{\de^4 \hat w}{\de z^4}-2k^2\dfrac{\de^2 \hat w}{\de z^2}  \right) \\[2ex]
+\textnormal{i}k_x \hat u+\textnormal{i}k_y\hat v+\dfrac{\de\hat w}{\de z}=0 \\[2ex]
+\hat\omega_z=\textnormal{i}k_x\hat v-\textnormal{i} k_y\hat u
+\end{cases}
+\label{eq: spec_ns}
+\end{equation}
+The coefficient $k^2$ is given by $k^2=k_x^2+k_y^2$.\\
+The system of equations \ref{eq: spec_ns} is then discretized in time using a Crank--Nicolson scheme for the implicit part and an Adams--Bashforth for the explicit one (complete details on the time integration are given in Section \ref{sec: time_disc}).\\
+A more compact notation can be introduced with the historical terms $H_i^n$ with $i=1,2,3$ and $H^n$.
+\[
+H_i^n=\Delta t\left( \frac{3}{2}\hat S_i^n-\frac12\hat S_i^{n-1}+\frac{1}{2\Re_\tau}\frac{\de^2\hat u_i^n}{\de z^2}+\left(\frac{1}{\Delta t}-\frac{k^2}{2\Re_\tau}   \right)\hat u_i^n\right) \hspace{0.5cm} \textnormal{for }i=1,2,3
+\]
+\[
+H^n=\frac{\de}{\de z}\left(\textnormal{i}k_xH_1^n+\textnormal{i}k_yH_2^n\right) +k^2H_3^n
+\]
+The superscript $n$ denotes the current time step, $n+1$ is the time step for which the unknowns have to be calculated.\\
+Once defined the historical terms, the time and space discretized system of equation can be rewritten in a more compact form, highlighting the Helmholtz problems:
+\begin{equation}
+\begin{cases}
+\left(\dfrac{\de^2}{\de z^2}-\beta^2\right)\left(\dfrac{\de^2}{\de z^2}-k^2\right)\hat w^{n+1}=\dfrac{H^n}{\gamma}\\[3ex]
+\left(\dfrac{\de^2 }{\de z^2}-\beta^2\right)\hat\omega_z^{n+1}=-\dfrac{\textnormal{i}k_xH_2^n-\textnormal{i}k_yH_1^n}{\gamma}  \\[2ex]
+\textnormal{i}k_x \hat u+\textnormal{i}k_y\hat v+\dfrac{\de\hat w}{\de z}=0 \\[2ex]
+\hat\omega_z=\textnormal{i}k_x\hat v-\textnormal{i} k_y\hat u
+\end{cases}
+\end{equation}
+The coefficients $\gamma$ and $\beta^2$ are defined as:
+\[
+\gamma=\frac{\Delta t}{2\Re_\tau}
+\]
+\[
+\beta^2=\frac{1+\gamma k^2}{\gamma}
+\]
+The values of $\hat w$ and $\hat \omega_z$ can be obtained using the Chebyshev--Tau method and the influence matrix method. For the details on the resolution of these two variables, please refer to Sections \ref{sec: chebtau} and \ref{sec: infl_matrix}. \\
+Once the values of $\hat w^{n+1}$ and $\hat \omega_z^{n+1}$ have been calculated, the continuity equation and the definition of wall-normal vorticity can be used to obtain the values of $\hat u^{n+1}$ and $\hat v^{n+1}$.
+\[
+\begin{bmatrix}
+-\textnormal{i}k_y & \textnormal{i}k_x \\
+\textnormal{i}k_x & \textnormal{i}k_y \\
+\end{bmatrix}
+\begin{bmatrix}
+\hat u^{n+1}\\
+\hat v^{n+1}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\hat\omega_z^{n+1}\\
+-\dfrac{\de \hat w^{n+1}}{\de z}
+\end{bmatrix}
+\]
+This system of equation can be solved unless the determinant of the coefficient matrix is zero. In that case a different path must be sought.\\
+Starting from the fourth order equation for the velocity (vectorial equation) for the $x$ and $y$ components and with the hypothesis of $k_x=0$ and $k_y=0$ we obtain two fourth order equations for $\hat u$ and $\hat v$:
+\begin{equation}
+\begin{cases}
+\dfrac{\de^2\hat u}{\de z^2}-\dfrac{\hat u}{\gamma}=-\dfrac{H_1}{\gamma}\\[2ex]
+\dfrac{\de^2\hat v}{\de z^2}-\dfrac{\hat v}{\gamma}=-\dfrac{H_2}{\gamma}\\[2ex]
+\end{cases}
+\end{equation}
+Solving these two Helmholtz equations gives the solution for $\hat u$ and $\hat w$ for $k_x=k_y=0$.
+
+\section{Phase Field Model}
+If the phase field is activated in the code, an additional phase is included in the computations. This multiphase system is solved using the Phase Field Model. The interface between the two phases is a diffuse interface: all the variables varies smoothly across the interface, following an hyperbolic tangent profile. This approach is the opposite of the sharp interface one, where the interface is seen as a discontinuity and jump conditions across the interface are imposed on the variables. With the diffuse interface approach there is no need to introduce any jump condition across the interface, as the interface and the variables across the interface are resolved.\\
+With the introduction of the Phase Field Model an additional variable is introduced: the phase field $\phi$. The advection of this new variable is calculated by the Cahn--Hilliard equation. \\
+In this code the modified H model is implemented; this model allows the use of phases with different densities and viscosities, but still keeping the hypothesis of divergency free flow field. This hypothesis is exact in the bulk phases, but it is not correct at the interface; on the other hand the interface is a very limited portion of the whole domain. Another hypothesis of the modified H model is to neglect the density gradients; as before, this hypothesis is exact in the bulk phases. The variable density and viscosity are a function of the phase field variable $\phi$.\\
+The introduction of the Phase Field Model introduces some new terms in the Navier--Stokes equations:
+\begin{equation}
+\begin{cases}
+\nabla\cdot \mathbf{u}=0\\[2ex]
+\rho\dfrac{\de \mathbf{u}}{\de t}+\rho\mathbf{u}\cdot\nabla \mathbf{u}=-\nabla p+\dfrac{1}{\Re_\tau}\left( \mu(\nabla\mathbf{u}+\nabla\mathbf{u}^T)  \right)+\dfrac{1}{\Fr^2}\rho\mathbf{g}+\dfrac{3}{\sqrt{8}}\dfrac{1}{\We\Ch}\kappa\nabla\phi
+\end{cases}
+\end{equation}
+$\kappa$ is the chemical potential and is defined as $\kappa=\phi^3-\phi-\Ch^2\nabla^2\phi$, $\Fr$ is the Froud number, $\mathbf{g}$ is the gravity versor, $\We$ is the Weber number and $\Ch$ is the Cahn number. This quantities are defined as follows:
+\[
+\Fr=\frac{u_\tau}{\sqrt{gh}}
+\]
+\[
+\We=\dfrac{\widetilde{\rho} u_\tau^2 h}{\widetilde{\sigma}} 
+\]
+\[
+\Ch=\dfrac{\varepsilon}{h} 
+\]
+$\widetilde{\sigma}$ is the dimensional surface tension, $\varepsilon$ is a measure of the interface thickness and $h$ is the channel half height.\\
+Density and viscosity are made dimensionless using the values of the phase with $\phi=-1$.
+\[
+\rho=1+\frac{\alpha-1}{2}(\phi+1)
+\]
+\[
+\mu=1+\frac{\beta-1}{2}(\phi+1)
+\]
+$\alpha$ and $\beta$ are the density and the viscosity ratio, respectively.
+\[
+\alpha=\frac{\rho_{\phi=+1}}{\rho_{\phi=-1}}=\frac{\rho_+}{\rho_-}
+\]
+\[
+\beta=\frac{\mu_{\phi=+1}}{\mu_{\phi=-1}}=\frac{\mu_+}{\mu_-}
+\]
+It can be seen that $\rho$ and $\mu$ can be split easily in a constant part and in a $\phi$ dependent part.\\
+With the introduction of phase field and this definition for the density and the viscosity, the Navier--Stokes solving procedure is unchanged: the only change is in the non-linear term, to which other parts are added. The new Navier--Stokes non-linear term thus results in:
+\[
+\begin{split}
+\mathbf{S}=&-\frac{\alpha-1}{2}(\phi+1)\frac{\de\mathbf{u}}{\de t}-\left(1+\frac{\alpha-1}{2}(\phi+1)\right)\mathbf{u}\cdot\nabla\mathbf{u}-\Pi+ \\
+& +\frac{1}{\Re_\tau}\nabla\cdot\left(\frac{\beta-1}{2}(\phi+1)(\nabla\mathbf{u}+\nabla\mathbf{u}^T)\right)+\\
+&+\frac{1}{\Fr^2}\left(1+\frac{\alpha-1}{2}(\phi+1)\right)\mathbf{g}+\dfrac{3}{\sqrt{8}}\dfrac{1}{\We\Ch}\kappa\nabla\phi
+\end{split}
+\]
+For the the matched densities case $\alpha$ is equal to 1, so the time derivative term, the gravity and buoyancy terms and part of the convective terms vanish; for the matched viscosities case $\beta$ is equal to 1 and the viscous term in $\mathbf{S}$ vanishes.\\
+Thus, for the case of two phases with matched densities and viscosities the only added term to the original Navier--Stokes non-linear term is the surface force term.\\
+Once intrduced these new terms in the non-linear part of the equation, the solution algorithm is the same for the single phase case.
+
+\subsection{Cahn--Hilliard equation}
+The Cahn--Hilliard equation describes the advection of the phase field variable $\phi$ in the domain; the interface is advected by the flow field $\mathbf{u}$ and the shape of the interface is kept by the chemical potential $\kappa$.
+\begin{equation}
+\frac{\de \phi}{\de t}+\mathbf{u}\cdot\nabla\phi=\frac{1}{\Pe}\nabla(M\nabla\kappa)
+\end{equation}
+Here $M$ is the dimensionless mobility coefficient; in the code $M$ is assumed constant and equal to one (once made dimensionless):
+\[
+\frac{\de \phi}{\de t}+\mathbf{u}\cdot\nabla\phi=\frac{1}{\Pe}\nabla^2\kappa
+\]
+The Peclet number is defined as:
+\[
+\Pe=\dfrac{u_\tau h}{\widetilde{M}\widetilde{\kappa}} 
+\]
+where $\widetilde{M}$ is the dimensional mobility coefficient.\\
+Inserting the expression for the chemical potential in the Cahn--Hilliard equation, a fourth order equation for the phase variable is obtained:
+\[
+\frac{\de \phi}{\de t}+\mathbf{u}\cdot\nabla\phi=\frac{1}{\Pe}(\nabla^2\phi^3-\nabla^2\phi-\Ch^2\nabla^4\phi)
+\]
+To increase the stability of the numerical solution, the laplacian term is split in two parts, one that will be dealt with implicitly and the other explicitly:
+\[
+-\nabla^2\phi=s\nabla^2\phi-(1+s)\nabla^2\phi
+\]
+The $s$ coefficient is defined as:
+\[
+s=\sqrt{\frac{4\Pe\Ch^2}{\Delta t}}
+\]
+At this point the Cahn--Hilliard non-linear term can be highlighted:
+\[
+S_\phi=-\mathbf{u}\cdot\nabla\phi+\frac{1}{\Pe}\nabla^2\phi^3-\frac{1+s}{\Pe}\nabla^2\phi
+\]
+Thus, the Cahn--Hilliard equation in compact form reads:
+\[
+\frac{\de \phi}{\de t}=S_\phi+\frac{s}{\Pe}\nabla^2\phi-\frac{\Ch^2}{\Pe}\nabla^4\phi
+\]
+After the spatial discretization, the equation in modal space is:
+\[
+\frac{\de \hat\phi}{\de t}=\hat S_\phi +\left(\frac{\de^2}{\de z^2}-k^2\right)\left[\frac{s}{\Pe}-\frac{\Ch^2}{\Pe}\left(\frac{\de^2}{\de z^2}-k^2\right)\right]\hat \phi
+\]
+For the time discretization an implicit Euler method is used for the implicit part, while for the explicit part an Adams--Bashforth method is used, except for the first time step, where an explicit Euler algorithm is used.\\
+The following fourth order equation for the phase field is then obtained:
+\begin{equation}
+\left(\frac{\de^2}{\de z^2}-k^2-\frac{s}{2\Ch^2}\right)\left(\frac{\de^2}{\de z^2}-k^2-\frac{s}{2\Ch^2}\right)\hat \phi=\frac{H^n_\phi}{\gamma}
+\label{eq: mod_ch}
+\end{equation}
+The historical term $H^n_\phi$ is defined as:
+\[
+H^n_\phi=\frac{\Delta t}{2}(3\hat S^n-\hat S^{n-1})+\hat \phi^n
+\]
+Equation\ref{eq: mod_ch} can be split in two Helmholtz equation, each of them has its own known boundary conditions, as the boundary conditions for the phase field are on the first and third derivative.
+\begin{equation}
+\begin{array}{l}
+\begin{cases}
+\left(\dfrac{\de^2}{\de z^2}-k^2-\dfrac{s}{2\Ch^2}\right)\hat\phi^{n+1}=\theta \\[3ex]
+\left.\dfrac{\de \hat\phi^{n+1}}{\de z}\right|_{z=\pm1}=0
+\end{cases}
+\\[8ex]
+\begin{cases}
+\left(\dfrac{\de^2}{\de z^2}-k^2-\dfrac{s}{2\Ch^2}\right)\theta=\dfrac{H_\phi^n}{\gamma}\\[3ex]
+\left.\dfrac{\de \theta}{\de z}\right|_{z=\pm1}=0
+\end{cases}
+\end{array}
+\end{equation}
+First, the Helmholtz equation for the auxiliary variable $\theta$ is solved, then the value of the phase field is obtained from the other Helmholtz problem.
+
+\section{Boundary conditions}
+The boundary conditions on the phase field do not depend on the type of boundary (open or closed boundary) and they are:
+\[
+\begin{cases}
+\left.\dfrac{\de \phi}{\de z}\right|_{z_b}=0\\[4ex]
+\left.\dfrac{\de^3 \phi}{\de z^3}\right|_{z_b}=0\\
+\end{cases}
+\]
+On the other hand, the boundary conditions on the velocity and on the vorticity depend on the type of boundaries: In the code two different cases can be chosen: two solid boundaries (closed channel case) or one solid boundary and one open boundary (open channel case).
+
+\subsection{No--slip condition}
+The no--slip condition is enforced whenever there is a solid wall: in this case $u=v=w=0$ for each $x$, $y$ at the boundary. This way the continuity equation yelds to:
+\[
+\frac{\de u}{\de x}+\frac{\de v}{\de y}+\frac{\de w}{\de z}=\frac{\de w}{\de z}=0
+\]
+From the vorticity definition it results:
+\[
+\omega_z=\frac{\de v}{\de x}-\frac{\de u}{\de y}=0
+\]
+
+\subsection{Free--slip condition}
+For the free--slip condition $w=0$ at the boundary, while the derivatives of $u$ and $v$ along $z$ are zero (free--slip means that there is no shear stress at the boundary).\\
+The derivative in the wall-normal direction of the continuity equation yelds:
+\[
+\frac{\de^2 u}{\de x\de z}+\frac{\de^2 v}{\de y\de z}+\frac{\de^2 w}{\de z^2}=\frac{\de}{\de x}\frac{\de u}{\de z}+\frac{\de}{\de y}\frac{\de v}{\de z}+\frac{\de^2 w}{\de z^2}=\frac{\de^2 w}{\de z^2}=0
+\]
+Taking the derivative of the vorticity equation along the $z$ direction yelds:
+\[
+\frac{\de\omega_z}{\de z}=\frac{\de^2 v}{\de x\de z}-\frac{\de^2 u}{\de y\de z}=\frac{\de}{\de x}\frac{\de v}{\de z}-\frac{\de}{\de y}\frac{\de u}{\de z}=0
+\]
+
+\subsection{Recap of the boundary conditions for the Navier--Stokes equation}
+\renewcommand\arraystretch{2.5}
+\begin{table}[H]
+\centering
+\caption{Boundary conditions}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}| >{\centering\arraybackslash}p{8 cm} |>{\centering\arraybackslash}p{5.2cm}}
+\textbf{type} & \textbf{velocity} & \textbf{vorticity}\\
+\textbf{no--slip} & $w(z_b)=0$ ,\, $\left.\dfrac{\de w}{\de z}\right|_{z_b}=0$ & $\omega_z(z_b)=0$ \\
+\textbf{free--slip} &   $w(z_b)=0$ ,\, $\left.\dfrac{\de^2 w}{\de z^2}\right|_{z_b}=0$& $\left. \dfrac{\de \omega_z}{\de z} \right|_{z_b}=0$  \end{tabular}
+\end{table}
+\renewcommand\arraystretch{1}
+
+\subsection{Closed channel and open channel}
+The code uses the non-dimensionaliztion for the closed channel case: the shear velocity are different for the open channel and the closed channel cases. The shear velocity is defined as:
+\[
+u_c=u_\tau=\sqrt{\dfrac{\tau_w}{\rho}}
+\]
+where $\tau_w$ is the shear stress at the wall. Its value can be easily obtained from a force balance and depends on the geometry studied:
+\begin{itemize}
+\item Open channel:
+\[
+\tau_wL_xL_y=\Delta\bar p L_y 2h
+\]
+\[
+\tau_w=2\frac{\Delta \bar p}{L_x}h
+\]
+\item Closed channel:
+\[
+2\tau_wL_xL_y=\Delta\bar p L_y 2h
+\]
+\[
+\tau_w=\frac{\Delta \bar p}{L_x}h
+\]
+\end{itemize}
+$\Delta \bar p$ is the time and space averaged pressure gradient in the flow direction $x$. This mean component is $\Pi$ as seen in the previous sections, since we apply the following splitting to the pressure term:
+\[
+\nabla p=\nabla \bar p+\nabla p'=\Pi+\nabla p'
+\]
+This way the values of the wall shear stress can be rewritten as $\tau_w=2\Pi h$ for the open channel case and as $\tau_w=\Pi h$ for the closed channel case.\\
+Thus, for the open channel, the shear velocity is:
+\begin{equation}
+u_\tau^{oc}=\sqrt{\frac{2\Pi h}{\rho}}=\sqrt{2}u_\tau^{cc}
+\end{equation}
+while for the closed channel it is:
+\begin{equation}
+u_\tau^{cc}=\sqrt{\frac{\Pi h}{\rho}}
+\end{equation}
+Since the definition of the shear Reynolds number is unique in the code and is:
+\[
+\Re_\tau=\Re_\tau^{cc}=\frac{\rho u_\tau^{cc} h}{\mu}
+\]
+when performing an open channel simulation the input parameter in the \texttt{compile.sh} script is the closed channel shear Reynolds number. The actual shear Reynolds number for the open channel case is:
+\[
+\Re_\tau^{oc}=\frac{\rho u_\tau^{oc} 2h}{\mu}=2\sqrt{2}\frac{\rho u_\tau^{cc} h}{\mu}=2\sqrt{2}\Re_\tau^{cc}
+\]
+Usually, for the open channel case, the Reynolds number is defined on the channel height, not on the half channel height as done for the closed channel case.
+
+
+\section{Pseudospectral spatial discretization}
+\label{sec: pseudosp}
+The grid is uniform in the $x$ and $y$ directions, while for the $z$ direction the Chebyshev Gauss-Lobatto points are used. The grid points are thus defined as follows:
+\[
+\begin{cases}
+x_i=\dfrac{i-1}{N_x-1}L_x  & i=1,\dots,N_x \\[3ex]
+y_j=\dfrac{j-1}{N_y-1}L_y  & j=1,\dots,N_y \\[3ex]
+z_k=\cos \left(\dfrac{(k-1)\pi}{N_z-1}\right)  & k=1,\dots,N_z\\
+\end{cases}
+\]
+The use of Fourier discretization in the $x$ and $y$ directions implicitly forces a periodic boundary condition on the corresponding boundaries. Since in the wall-normal direction a periodic boundary condition can not be applied, Chebyshev polynomials are used to discretize variables in that direction.\\
+For the Fourier transforms in the two directions two sets of wave numbers can be defined, $k_x$ for the $x$ direction and $k_y$ for the $y$ direction. These wave numbers are directly used in the transforms.
+\[
+\begin{array}{ll}
+k_x(i)=\dfrac{2(i-1)\pi}{L_x} & \textnormal{with }i=1,\dots,N_x/2+1
+\end{array}
+\]
+\[
+k_y(j)=
+\begin{cases}
+\dfrac{2(j-1)\pi}{L_y} & \textnormal{with } j=1,\dots,N_y/2+1 \\
+-\dfrac{2(N_y-j+1)\pi}{L_y}  & \textnormal{with } j=N_y/2+2,\dots,N_y \\
+\end{cases}
+\]
+A generic variable $f(x,y,z,t)$ in physical space can be represented in the modal space as a function of the wave numbers and of the Chebyshev polynomials (truncated series). The coefficient $\hat f(k_x,k_y,k,t)$ represents the Fourier coefficient, while $T_k$ is the $k^{\textnormal{th}}$ Chebyshev polynomial. 
+\[
+f(x,y,z,t)=\sum_{i=0}^{N_x/2}\sum_{j=-N_y/2+1}^{N_y/2}\sum_{k=0}^{N_z-1}\hat f(k_x,k_y,k,t)T_{k}(z)e^{\textnormal{i}(k_xx+k_yy)}
+\]
+The adoption of a modal representation of the variables allows the exact calculation of the derivatives in the three directions. For the Fourier directions the derivative can be easily calculated by multiplying the variable for the imaginary unit $\textnormal{i}$ times the corresponding direction's wave numbers:
+\[
+\frac{\de f(x,y,z,t)}{\de x}=\sum_{i=0}^{N_x/2}\sum_{j=-N_y/2+1}^{N_y/2}\sum_{k=0}^{N_z-1}\hat f(k_x,k_y,k,t)T_{k}(z) \textnormal{i} k_x e^{\textnormal{i}(k_xx+k_yy)}
+\]
+\[
+\frac{\de f(x,y,z,t)}{\de y}=\sum_{i=0}^{N_x/2}\sum_{j=-N_y/2+1}^{N_y/2}\sum_{k=0}^{N_z-1}\hat f(k_x,k_y,k,t)T_{k}(z) \textnormal{i} k_y e^{\textnormal{i}(k_xx+k_yy)}
+\]
+For the wall-normal derivatives the derivative is not so immediate: to obtain the exact value the recursive relationship on the Chebyshev polynomials and their derivatives for the Chebyshev Gauss-Lobatto points must be exploited. \\
+First of all, the Chebyshev polynomials are defined as:
+\[
+\begin{array}{l}
+T_0(z)=1 \\
+T_1(z)=z \\
+T_{n}(z)=2zT_{n-1}(z)-T_{n-2}(z) \\
+\end{array}
+\]
+Their derivatives are recursively defined as:
+\[
+\begin{array}{l}
+\dfrac{\de T_0(z)}{\de z}=0 \\[2ex]
+\dfrac{\de T_1(z)}{\de z}=1 \\[2ex]
+\dfrac{\de T_{n}(z)}{\de z}=\dfrac{\de T_{n-2}}{\de z}+2nT_{n-1}\\
+\end{array}
+\]
+This way all spatial derivatives are exact and can be directly taken in modal space; this does not mean that there is no discretization error, which is actually introduced when truncating the infinite Fourier and Chebyshev series to a finite sum of interpolating functions.
+
+\section{Time discretization}
+\label{sec: time_disc}
+The time integration algorithm follows an implicit/explicit (IMEX) scheme. The non-linear term are discretized in time using either an explicit Euler scheme (for the first time step only) either an Adams--Bashforth scheme (from the second time step on). This is valid both for the Navier--Stokes and for the Cahn--Hilliard time discretization of the (non-linear) explicit terms.\\
+\[
+\begin{cases}
+\dfrac{u_{n+1}-u_n}{\Delta t}=F_n  &\textnormal{Explicit Euler}\\[2ex]
+\dfrac{u_{n+1}-u_n}{\Delta t}=\dfrac{3F_n-F_{n-1}}{2} & \textnormal{Adams--Bashforth}\\
+\end{cases}
+\]
+For the implicit part two different algorithms are used: for the Navier--Stokes equations the Crank--Nicolson algorithm is used, while for the Cahn--Hilliard equation the more dissipative impicit Euler is used.
+\[
+\begin{cases}
+\dfrac{u_{n+1}-u_n}{\Delta t}=F_{n+1}  &\textnormal{Implicit Euler}\\[2ex]
+\dfrac{u_{n+1}-u_n}{\Delta t}=\dfrac{F_{n+1}+F_n}{2} & \textnormal{Crank--Nicolson}\\
+\end{cases}
+\]
+
+
+
+
+\subsection{Dealiasing}
+Being a pseudospectral code, the products between variables are evaluated in physical space. To avoid the arising of aliasing when transforming variables back to modal space, dealiasing must be performed on the variables.\\
+In the code the dealiasing is performed directly by the subroutines \texttt{phys\_to\_spectral} and \texttt{spectral\_to\_phys} by the flag \texttt{aliasing}. If this flag is set equal to one, then dealiasing is performed; dealiasing occurs at the end of the subroutines that perform Fourier or Chebyshev transforms and at the beginning of the subroutines the perform inverse Fourier and Chebyshev transforms.\\
+The code follows the 2/3 rule (see \cite{CanutoHQZ06} for a detailed reference) for dealiasing. According to the 2/3 rule, all the modes with $|k|$ greater then 2/3 of $N$ (where $k$ is the mode number and $N$ is the total number of modes) are set to zero.\\
+Due to the particular ordering of the modes of the FFTW library, three different dealiasing procedures are applied in the code:
+\begin{itemize}
+\item \textbf{1D Fourier transform, $x$}: this is a real-to-complex transform, so the negative frequencies are the complex conjugate of the positive ones, thus they do not need to be saved. If $N_x$ is the number of points in the $x$ direction, the output of the Fourier transform will be $N_x/2+1$ complex numbers (the first and the last have zero imaginary part). The modes are stored in memory as: $0,1,2,\dots,N_x/2$ (due to Fortran array indexing, in the code they are shifted by one, so the corresponding array indexes are $1,2,3,\dots,N_x/2+1$). The index one corresponds to the zeroth mode (mean mode).\\
+When applying dealiasing the modes from 2/3$N_x/2$ to $N_x/2$ are set to zero.
+\item \textbf{1D Fourier transform, $y$}: this is a complex-to-complex transform. If $N_y$ is the number of points in the $y$ direction, the modes are stored as: $0,1,2,\dots,N_y/2,-N_y/2+1,-N_y/2+2,\dots,-1$, so first are stored the positive frequencies and then the negative ones in backward order. The corresponding array indexing is $1,2,3,\dots,N_y/2+1,N_y/2+2,N_y/2+3,\dots,N_y$. The first mode corresponds to the mean mode in the $y$ direction.\\
+When applying dealiasing the modes from 2/3$N_y/2$ to $N_y/2$ and from $-N_y/2+1$ to -2/3$N_y/2$ are set to zero.
+\item \textbf{1D Chebyshev transform, $z$}: this transform is formally a complex-to-complex transform, even though it can be considered as two real-to-real transforms. The real part of the array is transformed in a real array and the imaginary part in a real array. The modes are saved as $0,1,2,\dots,N_z-1$ (where $N_z$ is the number of points in the $z$ direction). The corresponding array indexing is $1,2,3,\dots,N_z$.\\
+When applying dealiasing the modes from 2/3$N_z$ to $N_z$ are set to zero.
+\end{itemize}
+
+\section{Chebyshev--Tau method}
+\label{sec: chebtau}
+\subsection{General method}
+The most general form of the Chebyshev--Tau method is presented here by applying it to the Burger equation. In the following equation the Burger equation is reported in strong form.
+\begin{equation}
+\frac{\de u}{\de t}+u\frac{\de u}{\de x}-\nu \frac{\de^2 u}{\de x^2}=0\hspace{1cm}  \forall t>0
+\end{equation}
+Strong form means that the equation must be verified at each point of the domain $\Omega$.\\
+A solution in $(-1,1)$ that verifies the following boundary conditions is sought:
+\[
+\begin{cases}
+u(-1,t)=u_L(t)\\
+u(1,t)=u_R(t)
+\end{cases}
+\]
+The Chebyshev--Tau method solves the equation in weak form, which means that the integral over the domain of the equation multiplied by a test function $v$ must be zero for each test function.
+\begin{equation}
+\int_\Omega \frac{\de u}{\de t}vdx+\int_\Omega u\frac{\de u}{\de x}vdx-\int_\Omega\nu\frac{\de^2 u}{\de x^2}vdx=0  \hspace{1cm}  \forall v\in X,\,\forall t>0
+\end{equation}
+The weak form is called also integral form.\\
+The discrete solution $u^N$ is:
+\[
+u^N(x,t)=\sum_{k=0}^N\hat u_k(t)T_k(x)
+\]
+We define now the following sets: the set $\mathbb{P}_N$ is the set of all the polynomials of degree lower or equal to $N$, the set $X_N$ which is a subset of $\mathbb{P}_N$ and the set $Y_N$ which is a subset of $\mathbb{P}_{N-2}$. \\
+The Chebyshev--Tau method enforces the equation in weak form using the test function of $Y_N$, $N-1$ test function (polynomials of degree from 0 to $N-2$). Since the discrete solution han $N+1$ coefficients we enforce the two boundary conditions to obtain the other two missing equations.\\
+This way we have $N+1$ equations for $N+1$ unknown coefficients $\hat u_k$.
+\begin{equation}\begin{array}{l}
+\displaystyle\int_{-1}^{1}\left( \dfrac{\de u_N}{\de t}+u_N\dfrac{\de u_N}{\de x}-\nu\dfrac{\de^2u_N}{\de x^2}  \right)T_k(x)\dfrac{1}{\sqrt{1-x^2}}dx=0  \hspace{1cm}  \forall \,k=0,...,N-2  
+\\[3ex]
+\begin{cases}
+u_N(-1,t)=u_L(t)\\
+u_N(1,t)=u_R(t)
+\end{cases}
+\end{array}
+\end{equation}
+The weight $w(x)=\frac{1}{\sqrt{1-x^2}}$ is required for the orthogonality condition of Chebyshev polynomials:
+\[
+\int_{-1}^1 T_k(x)T_j(x)w(x)dx=
+\begin{cases}
+0 &\textnormal{if } j\neq k\\
+\pi & \textnormal{if } j=k=0\\
+\frac{\pi}{2} & \textnormal{if } j=k\neq0
+\end{cases}
+\]
+
+\subsection{Application to the 2$^{nd}$ order equation for vorticity}
+The second order equation for vorticity reads:
+\[
+\frac{\de^2 \hat\omega_z^{n+1}}{\de z^2}-\beta^2\hat\omega_z^{n+1}=F^n
+\]
+with boundary conditions in physical space:
+\[
+\begin{cases}
+p_1\omega_z(x,y,-1)+q_1\frac{\de \omega_z(x,y,-1)}{\de z}=r_1(x,y)\\[2ex]
+p_2\omega_z(x,y,1)+q_2\frac{\de \omega_z(x,y,1)}{\de z}=r_2(x,y)\\
+\end{cases}
+\]
+In modal space these boundary conditions are:
+\[
+\begin{cases}
+p_1\hat\omega_z(k_1,k_2,-1)+q_1\frac{\de \hat\omega_z(k_1,k_2,-1)}{\de z}=\hat r_1(k_1,k_2)\\[2ex]
+p_2\hat\omega_z(k_1,k_2,1)+q_2\frac{\de \hat\omega_z(k_1,k_2,1)}{\de z}=\hat r_2(k_1,k_2)\\
+\end{cases}
+\]
+To apply the Chebyshev--Tau method a one-dimensional second order equation with mixed boundary conditions is needed; in this case these hypothesis are verified.\\
+The two functions $\hat\omega_z$ and $F$ can be written as a Chebyshev truncated serie:
+\[
+\hat\omega_z^{n+1}=\sum_{n=0}^N a_nT_n(z)
+\]
+\[
+F^n=\sum_{n=0}^N b_n T_n(z)
+\]
+The second order equation is then integrated in $z$ twice; the following property of Chebyshev polynomials can be exploited:
+\[
+\int_{-1}^z\sum_{n=0}^N a_nT_n(s)ds=\sum_{n=1}^{N+1}l_n T_n(z)
+\]
+$l_n$ can thus be expressed as a function of $a_n$:
+\[
+\begin{cases}
+l_{N+1}=\frac{a_N}{2(N+1)}\\
+l_N=\frac{a_{N}}{2N}\\
+l_n=\frac{1}{2N}(a_{n-1}-a_{n+1}) &\textnormal{for } n=1,...,N-1
+\end{cases}
+\]
+After integrating twice the vorticity transport equation, the resulting equation reads:
+\[
+\sum_{n=0}^N a_n T_n(z)-\beta^2\sum_{n=2}^{N+2} m_nT_n(z)=\sum_{n=2}^{N+2} f_n T_n(z) +AT_1(z)+BT_0(z)
+\]
+Where 
+\[
+A=\frac{\de\hat\omega_z(k_1,k_2,-1)}{\de z}
+\]
+and
+\[
+B=\frac{\de\hat\omega_z(k_1,k_2,-1)}{\de z}+\hat\omega_z(k_1,k_2,-1)
+\]
+$s_n$ is now defined as:
+\[
+s_n=a_n-\beta^2m_n-f_n
+\]
+This way, the equation can be rewritten as ($f_n$ comes from the double integration of the $F^n$ term, thus it depends on the $b_n$):
+\[
+(a_0-B)T_0(z)+(a_1-A)T_1(z)+\sum_{n=2}^N s_n T_n(z)-\sum_{n=N+1}^{N+2}\left( \beta^2m_n -f_n \right)T_n(z)=0
+\]
+The Chebyshev--Tau method is now applied, using $N-1$ Chebyshev polynomials as test function; in particular the test functions used are $T_n(z)w(z)$ with $n=2,...,N$.\\
+This choice implies that all the $s_n$ must be zero for $n=2,...,N$; this results comes from the orthogonality of the Chebyshev polynomials. Thanks to the integration property $s_n$ can be expressed as a linear combination of the $a_n$, while $f_n$ as a linear combination of the $b_n$.\\
+The remaining two missing equations are obtained from the boundary conditions:
+\[
+\begin{array}{l}
+p_1\sum\limits_{n=0}^N a_n T_n(-1)+q_1\sum\limits_{n=0}^N a_n\left.\frac{\de T_n}{\de z}\right|_{z=-1}=r_1\\[2ex]
+p_2\sum\limits_{n=0}^N a_n T_n(1)+q_2\sum\limits_{n=0}^N a_n\left.\frac{\de T_n}{\de z}\right|_{z=1}=r_2\\
+\end{array}
+\]
+The boundary conditions are then rewritten in a more compact form gathering the unknowns:
+\[
+\begin{array}{l}
+\sum\limits_{n=0}^N d_n a_n=r_1\\[2ex]
+\sum\limits_{n=0}^N e_n a_n=r_2
+\end{array}
+\]
+This way a $N+1$ linear equations system with $N+1$ unknowns is obtained:
+\[
+\begin{bmatrix}
+d_1 &d_2 &d_3&d_4&d_5& d_6&d_7& d_8&... &d_n\\
+e_1 &e_2&e_3& e_4&e_5& e_6&e_7&e_8&... &e_n\\
+s_1&0 &v_1& 0 & t_1& 0 & 0&0&... &0\\
+0 & s_2 & 0 & v_2 & 0 & t_2& 0&0&... &0\\
+0&0 & s_3 & 0 & v_3 & 0 & t_3& 0&... &0\\
+\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&...&\vdots\\
+0&0&0&0&0&0&0&0&...&v_N\\
+\end{bmatrix}\
+\begin{bmatrix}
+a_0\\
+a_1\\
+a_2\\
+a_3\\
+a_4\\
+\vdots\\
+a_N\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+r_1\\
+r_2\\
+g_1\\
+g_2\\
+g_3\\
+\vdots\\
+g_N
+\end{bmatrix}
+\]
+The matrix coefficients are:
+\[
+\begin{cases}
+s_{n-2}=-k^2n & n=3,\dots,N+1\\
+v_{n-2}=4n(n-1)(n-2)+2(n-1)k^2 &n=3,\dots,N+1\\
+t_{n-2}=-k^2(n-2) & n=3,\dots,N-1\\
+g_{n-2}=n b_{n-2}-2(n-1)b_n+(n+2)b_{n+2} &n=3,\dots,N-1\\
+g_{N-1}=(N-1)b_{N-3}-2(N-2)b_{N-1}\\
+g_{N}=Nb_{N-2}-2(N-1)b_N
+\end{cases}
+\]
+The coefficient matrix obtained has the first two rows full, then from the third to the $N+1$ row is a tridiagonal matrix; the system can be easily solved using a Gauss elimination algorithm.
+
+\subsection{Application to the 4$^{th}$ order equation for velocity}
+The velocity transport equation is a fourth-order equation, so the Chebishev--Tau algorithm cannot be applied directly: first this equation must be split in two Helmholtz equations.\\
+The auxiliary variable $\theta$ is thus defined as:
+\[
+\theta^{n+1}=\frac{\de^2\hat w^{n+1}}{\de z^2}-k^2\hat w^{n+1}
+\]
+This way two Helmholtz for $\hat w$ and $\theta$ are obtained:
+\[
+\begin{cases}
+\dfrac{\de^2\omega^{n+1}}{\de z^2}-\beta^2\theta^{n+1}=F^{n}\\[2ex]
+\dfrac{\de^2\hat w^{n+1}}{\de z^2}-k^2\hat w^{n+1}=\theta^{n+1}
+\end{cases}
+\]
+The Helmholtz problem for $\hat w$ has known boundary conditions in physical space but there are no \textit{a priori} known boundary conditions for the auxiliary variable $\theta$, as they are a function of the unknown velocity. The influence matrix method must thus be applied to solve these two Helmholtz problems; the detailed procedure used to calculate $\hat w$ is reported in Section \ref{sec: inf_mat_w}.\\
+It must be noticed that when $k^2=0$ the Helmholtz equations for the wall-normal velocity degenerates; in that case the solution for $k^2=0$ is always zero. This comes from the point that $k^2=0$ implies $k_x=0$ and $k_y=0$, which is the mean mode of the wall-normal velocity in the $x$ and $y$ directions, which is zero for each $z$ value. 
+
+\section{Influence matrix}
+\label{sec: infl_matrix}
+
+\subsection{General method}
+The influence matrix method is employed in differential problems where one of the boundary conditions depends on an unknown function.\\
+Be $\Omega$ a generic domain and $\Gamma=\de\Omega$ its boundary; we define then three linear differential operators $\mathbb{F}$, $\mathbb{G}$ and $\mathbb{H}$.\\
+The following problem $[P]$ has boundary conditions for $f$ which depends on the unknown function $h$:
+\begin{equation}
+[P]
+\begin{cases}
+\mathbb{F}[f(x)]=g(x) & \textnormal{in }\Omega\\
+\mathbb{G}[h(x)]=f(x) & \textnormal{in }\Omega\\
+f(x)=\mathbb{H}[h(x)] & \textnormal{in }\Gamma\\
+h(x)=h_\Gamma(x) & \textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+$f$ and $h$ are the two unknown functions, $g$ is a known function and $h_\Gamma$ is a known boundary condition for $h$.\\
+Using the influence matrix method we can evaluate the boundary conditions for $f$ so that we can resolve the problem $[P]$.\\
+Let's introduce another problem $[\widetilde{P}]$; the only difference from the formulation of $[P]$ is the boundary condition on $\widetilde{f}$. $\widetilde{f}_\Gamma(x)$ is an arbitrary distribution on $\Gamma$.
+\begin{equation}
+[\widetilde{P}]
+\begin{cases}
+\mathbb{F}[\widetilde{f}(x)]=g(x) & \textnormal{in }\Omega\\
+\mathbb{G}[\widetilde{h}(x)]=\widetilde{f}(x) & \textnormal{in }\Omega\\
+\widetilde{f}(x)=\widetilde{f}_\Gamma(x) & \textnormal{in }\Gamma\\
+\widetilde{h}(x)=h_\Gamma(x) & \textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+The problem $[\widetilde{P}]$ has an unique solution $(\widetilde{f},\widetilde{h})$, which does not necessarily verify the boundary condition $\widetilde{f}(x)=\mathbb{H}[\widetilde{h}(x)]$ in $\Gamma$.\\
+We define now two functions, $\bar f$ and $\bar h$ and the problem $[\bar P]$ as the difference between the problems $[P]$ and $[\widetilde{P}]$.
+\[
+\begin{array}{l}
+\bar f=f-\widetilde{f}\\[1ex]
+\bar h=h-\widetilde{h}
+\end{array}
+\]
+\begin{equation}
+[P]-[\widetilde{P}]=[\bar P]
+\begin{cases}
+\mathbb{F}[\bar f(x)]=0 & \textnormal{in }\Omega\\
+\mathbb{G}[\bar h(x)]=\bar f(x) & \textnormal{in }\Omega\\
+\bar f(x)=\mathbb{H}[\bar h(x)]+\mathbb{H}[\widetilde{h}(x)]-\widetilde{f}_\Gamma(x)& \textnormal{in }\Gamma\\
+\bar h(x)=0 &\textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+We can split problem $[\bar P]$ in $N$ sub-problems $[\bar P_k]$ with $k=1,...,N$ and each one of these sub-problems has its own solution $(\bar f_k, \bar h_k)$.\\
+This way we have:
+\[
+\begin{array}{l}
+\bar f(x)=\sum\limits_{k=1}^N \lambda_k\bar f_k(x)\\[2ex]
+\bar h(x)=\sum\limits_{k=1}^N \lambda_k\bar h_k(x)\\
+\end{array}
+\]
+The generic problem $[\bar P_k]$ is (in the following the boundary has been discretized in $N$ points $x_l=1,...,N$):
+\begin{equation}
+[\bar P_k]
+\begin{cases}
+\mathbb{F}[\bar f_k(x_l)]=0 & \textnormal{in }\Omega\\
+\mathbb{G}[\bar h_k(x_l)]=\bar f_k(x_l) & \textnormal{in }\Omega\\
+\bar f_k(x_l)=\delta_{kl} & \textnormal{in }\Gamma\\
+\bar h_k(x_l)=0 &\textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+The $\lambda_k$ coefficients are unknown and they can be calculated from the third equation of the problem $[\bar P]$ evaluated at each point $x_l$, substituting in $\bar f$ and $\bar h$ the sub-problems solutions.
+\[
+\sum_{k=1}^N\lambda_k\bar f_k(x)-\mathbb{H}\left[\sum_{k=1}^N\lambda_k \bar h_k(x) \right] =-\widetilde{f}(x)+\mathbb{H}[\widetilde{h}(x)]
+\]
+Since $\mathbb{H}$ is a linear operator we can write:
+\[
+\sum_{k=1}^N\lambda_k\left(\bar f_k(x)-\mathbb{H}[\bar h_k(x)] \right) =-\widetilde{f}(x)+\mathbb{H}[\widetilde{h}(x)]
+\]
+This equation holds for each $x_l$ with $l=1,...,N$, so we have a linear equations system:
+\begin{equation}
+\begin{bmatrix}
+\bar f_1(x_1)-\mathbb{H}[\bar h_1(x_1) & ... & \bar f_N(x_1)-\mathbb{H}[\bar h_N(x_1)\\
+\bar f_1(x_2)-\mathbb{H}[\bar h_1(x_2) & ... & \bar f_N(x_2)-\mathbb{H}[\bar h_N(x_2)\\
+\vdots & &\vdots\\
+\bar f_1(x_N)-\mathbb{H}[\bar h_1(x_N) & ... & \bar f_N(x_N)-\mathbb{H}[\bar h_N(x_N)\\
+\end{bmatrix}
+\begin{bmatrix}
+\lambda_1\\
+\lambda_2\\
+\vdots\\
+\lambda_N\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+-\widetilde{f}(x_1)+\mathbb{H}[\widetilde{h}(x_1)]\\
+-\widetilde{f}(x_2)+\mathbb{H}[\widetilde{h}(x_2)]\\
+\vdots\\
+-\widetilde{f}(x_N)+\mathbb{H}[\widetilde{h}(x_N)]\\
+\end{bmatrix}
+\end{equation}
+Using the definitions of $\bar f$ and $\bar h$ we have:
+\[
+\begin{array}{l}
+f(x)=\widetilde{f}(x)+\bar f(x)=\widetilde{f}(x)+\sum\limits_{k=1}^N\lambda_k\bar f_k(x)\\[2ex]
+h(x)=\widetilde{h}(x)+\bar h(x)=\widetilde{h}(x)+\sum\limits_{k=1}^N\lambda_k\bar h_k(x)
+\end{array}
+\]
+Using problems $[\bar P]$ and $[\widetilde{P}]$ we have:
+\[
+f(x)=\widetilde{f}(x)+\bar f(x)=\mathbb{G}[\widetilde{h}(x)]+\sum_{k=1}^N \lambda_k \mathbb{G}[\bar h_k(x)]
+\]
+
+\subsection{Application to the 4$^{th}$ order equation for $\hat w$}
+\label{sec: inf_mat_w}
+The influence matrix method is needed as the boundary conditions on one of the two Helmholtz problems (obtained from the splitting of the fourth order equation for the wall-normal velocity) are missing. The original fourth order equation reads: 
+\begin{equation}
+\left(\frac{\de^2}{\de z^2}-k^2\right)\left(\frac{\de^2}{\de z^2}-\beta^2\right)\hat w= H
+\label{eq: 4thw}
+\end{equation}
+The $\hat \cdot$ denotes quantities in modal space; for ease of notation in this section the $\hat \cdot$ notation will be dropped.\\
+For the closed channel case the boundary conditions are on the velocity value and on its first derivative at the wall:
+\begin{equation}
+\begin{cases}
+w(z=\pm1)=0 \\[1ex]
+\left.\dfrac{\de w}{\de z}\right|_{z=\pm1}=0\\
+\end{cases}
+\end{equation}
+For the open channel case the boundary conditions on the open boundary are on the velocity value and on its wall-normal second derivative; in this case there are the boundary conditions for the auxiliary problem, but only at one boundary. For the other boundary, the closed boundary, the boundary conditions for the auxiliary problem are still missing.\\
+Equation \ref{eq: 4thw} can be splitted in two Helmholtz equations (the previous section notation is kept: $\Omega$ denotes the domain, $\Gamma=\delta\Omega$ is the border of the domain):
+\begin{equation}
+\begin{array}{l}
+\begin{cases}
+\left( \dfrac{\de^2}{\de z^2}-k^2\right) w=\psi  & \textnormal{in }\Omega \\
+w=w_\gamma & \textnormal{in } \Gamma
+\end{cases}
+\\[5ex] 
+\begin{cases}
+\left( \dfrac{\de^2}{\de z^2}-\beta^2 \right) \psi=H & \textnormal{in }\Omega \\
+\psi=f(w) & \textnormal{in } \Gamma
+\end{cases}
+\end{array}
+\end{equation}
+The boundary conditions on the $\psi$ problem are unknown, as they are a function of the wall-normal velocity $w$. As seen for the general case, these Helmholtz problems can be split in a subproblem that do not necessarily verifies the boundary conditions and two other subproblems that verify the boundary conditions on one of the two boundaries (one subproblem satisfies the boundary condition at $z=+1$, while the other at $z=-1$).
+\begin{equation}
+\begin{cases}
+w=w_1+Aw_2+Bw_3 \\
+\psi=\psi_1+A\psi_2+B\psi_3
+\end{cases}
+\end{equation}
+Problem with subscript 1 has a unique solution that does not necessarily verify the boundary conditions on $\psi$, problem with subscript 2 verifies the boundary conditions on $\psi$ at $z=-1$, while problem with subscript 3 verifies the boundary conditions on $\psi$ at $z=+1$. The three subproblems are thus:
+\begin{equation}
+\begin{array}{l}
+[P_1]=
+\begin{cases}
+\dfrac{\de^2 w_1}{\de z^2}-k^2w_1=\psi_1 & \textnormal{in }\Omega \\
+w_1=w_\gamma & \textnormal{in }\Gamma \\
+\dfrac{\de^2 \psi_1}{\de z^2}-\beta^2 \psi_1 =H & \textnormal{in } \Omega \\
+\psi_1=\psi_\gamma & \textnormal{in }\Gamma \\
+\end{cases}\\[9ex]
+[P_2]=
+\begin{cases}
+\dfrac{\de^2 w_2}{\de z^2}-k^2w_2=\psi_2 & \textnormal{in }\Omega \\
+w_2=0 & \textnormal{in }\Gamma \\
+\dfrac{\de^2 \psi_2}{\de z^2}-\beta^2 \psi_2 =0 & \textnormal{in } \Omega \\
+\psi_2(-1)=1 \hspace{0.5cm} \psi_2(+1)=0
+\end{cases}\\[9ex]
+[P_3]=
+\begin{cases}
+\dfrac{\de^2 w_3}{\de z^2}-k^2w_3=\psi_3 & \textnormal{in }\Omega \\
+w_3=0 & \textnormal{in }\Gamma \\
+\dfrac{\de^2 \psi_3}{\de z^2}-\beta^2 \psi_3 =0 & \textnormal{in } \Omega \\
+\psi_3(-1)=0 \hspace{0.5cm} \psi_3(+1)=1
+\end{cases}
+\end{array}
+\end{equation}
+The boundary condition on $\psi_1$ is arbitrary; in the code $\psi_1=0$ in $\Gamma$ was selected. The problems $[P_2]$ and $[P_3]$ are not time dependent, so they are solved at the beginning of the simulation and stored in the arrays \texttt{wa2} and \texttt{wa3} (only the auxiliary solution for $w$ is kept); the problem $[P_1]$ is time dependent (the $H$ term is time dependent), so it is calculated during the time cycle.\\
+Once splitted the original Helmholtz problems in three subproblems, the boundary conditions on $w$ are applied:
+\[
+\begin{cases}
+p_1w(-1)+q_1\left.\dfrac{\de w}{\de z}\right|_{z=-1}=r_1\\[3ex]
+p_2w(+1)+q_2\left.\dfrac{\de w}{\de z}\right|_{z=+1}=r_2
+\end{cases}
+\]
+The variable $w$ can be split in a linear combination of $w_1$, $w_2$ and $w_3$:
+\[
+\begin{cases}
+p_1\left(w_1(-1)+Aw_2(-1)+Bw_3(-1)\right)+q_1\left(\dfrac{\de w_1(-1)}{\de z}+A\dfrac{\de w_2(-1)}{\de z}+B\dfrac{\de w_3(-1)}{\de z}\right)=r_1\\[3ex]
+p_2\left(w_1(+1)+Aw_2(+1)+Bw_3(+1)\right)+q_2\left(\dfrac{\de w_1(+1)}{\de z}+A\dfrac{\de w_2(+1)}{\de z}+B\dfrac{\de w_3(+1)}{\de z}\right)=r_2
+\end{cases}
+\]
+Since the three subproblems have an unique solution and verify the Chebyshev--Tau method hypothesis, they can be solved using the Chebyshev--Tau method and then the values of the coefficient $A$ and $B$ can be calculated:
+\[
+\begin{bmatrix}
+p_1w_2(-1)+q_1\dfrac{\de w_2(-1)}{\de z} & p_1w_3(-1)+q_1\dfrac{\de w_3(-1)}{\de z} \\
+p_2w_2(+1)+q_2\dfrac{\de w_2(+1)}{\de z} & p_1w_3(+1)+q_1\dfrac{\de w_3(+1)}{\de z} \\
+\end{bmatrix}
+\begin{bmatrix}
+A\\
+B\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+r_1-p_1w_1(-1)-q_1\dfrac{\de w_1(-1)}{\de z}\\
+r_2-p_2w_1(+1)-q_2\dfrac{\de w_1(+1)}{\de z}\\
+\end{bmatrix}
+\]
+To solve for $w_i$ with $i=1,2,3$, first the Helmholtz problem for $\psi_i$ is solved, then the right hand side of the Helmoltz equations for $w_i$ is known.\\
+Since the code works in modal space, $w_1$ is a complex valued function, while $w_2$ and $w_3$ are real valued fuction; thus $A$ and $B$ must be complex valued coefficients.
+\[
+\underbrace{
+\begin{bmatrix}
+a_{11} & a_{12}\\
+a_{21} & a_{22}\\
+\end{bmatrix}
+}_\text{$\mathbb{R}$}
+\underbrace{
+\begin{bmatrix}
+A\\
+B\\
+\end{bmatrix}
+}_\text{$\mathbb{C}$}
+=
+\underbrace{
+\begin{bmatrix}
+b_1\\
+b_2\\
+\end{bmatrix}
+}_\text{$\mathbb{C}$}
+\]
+\begin{equation}
+\begin{array}{l}
+\begin{bmatrix}
+a_{11} & a_{12}\\
+a_{21} & a_{22}\\
+\end{bmatrix}
+\begin{bmatrix}
+\operatorname{\mathbb{R}e}(A) \\
+\operatorname{\mathbb{R}e}(B) \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\operatorname{\mathbb{R}e}(b_1)\\
+\operatorname{\mathbb{R}e}(b_2)\\
+\end{bmatrix}
+\\[5ex]
+\begin{bmatrix}
+a_{11} & a_{12}\\
+a_{21} & a_{22}\\
+\end{bmatrix}
+\begin{bmatrix}
+\operatorname{\mathbb{I}m}(A)\\
+\operatorname{\mathbb{I}m}(B)\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\operatorname{\mathbb{I}m}(b_1)\\
+\operatorname{\mathbb{I}m}(b_2)\\
+\end{bmatrix}
+\end{array}
+\end{equation}
+Once $A$ and $B$ have been calculated, the value of $w$ can be obtained as:
+\begin{equation}
+\begin{cases}
+\operatorname{\mathbb{R}e}(w)=\operatorname{\mathbb{R}e}(w_1)+\operatorname{\mathbb{R}e}(A)w_2+\operatorname{\mathbb{R}e}(B) w_3\\
+\operatorname{\mathbb{I}m}(w)=\operatorname{\mathbb{I}m}(w_1)+\operatorname{\mathbb{I}m}(A)w_2+\operatorname{\mathbb{I}m}(B) w_3
+\end{cases}
+\end{equation}
+
+\section{Wall units and outer units}
+In the code two different dimensionless categories are used: outer units and wall units. The first ones are denoted using the superscript $-$, while the second ones using the superscript $+$. \\
+Outer units are obtained making physical units dimensionless with the channel half-height $h$ and the shear velocity: $u_\tau$
+\[
+\begin{array}{ccccc}
+\mathbf{x}^-=\dfrac{\mathbf{x}}{h} && \mathbf{u}^-=\dfrac{\mathbf{u}}{u_\tau} & &t^-=\dfrac{tu_\tau}{h}
+\end{array}
+\]
+On the other hand wall units are obtained nondimensionalizing physical units with the shear velocity $u_\tau$ and the kinematic viscosity $\nu$ (typical turbulence related quantities):
+\[
+\begin{array}{ccccc}
+\mathbf{x}^+=\dfrac{\mathbf{x}u_\tau}{\nu} && \mathbf{u}^+=\dfrac{\mathbf{u}}{u_\tau} & &t^+=\dfrac{tu_\tau^2}{\nu}
+\end{array}
+\]
+So, the dimensionless velocity is the same in both wall units and outer units, while for the spatial coordinate we have:
+\[
+\mathbf{x}^+=\frac{\mathbf{x}u_\tau}{\nu}=\frac{\mathbf{x}}{h}\frac{hu_\tau}{\nu}=\mathbf{x}^- \Re_\tau
+\]
+We have the same result for time:
+\[
+t^+=\frac{tu_\tau^2}{\nu}=\frac{tu_\tau}{h}\frac{hu_\tau}{\nu}=t^-\Re_\tau
+\]
+

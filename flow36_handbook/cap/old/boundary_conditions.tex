@@ -1,0 +1,81 @@
+\chapter{Boundary conditions}
+In this chapter all the boundary conditions for $w$ and $\omega_z$ required for the solving of the equation system \ref{eq: scalarsystem} will be explored. In the following section we denote with $z_b$ a generic point belonging to the boundary.
+
+\section{No--slip contition}
+The no--slip condition is enforced whenever there is a solid wall: in this case we have $u=v=w=0$ for each $x$, $y$ at the boundary. This way the continuity equation yelds to:
+\[
+\frac{\de u}{\de x}+\frac{\de v}{\de y}+\frac{\de w}{\de z}=\frac{\de w}{\de z}=0
+\]
+From the vorticity definition we have:
+\[
+\omega_z=\frac{\de v}{\de x}-\frac{\de u}{\de y}=0
+\]
+
+\section{Free--slip condition}
+Also for the free--slip condition we have $w=0$ at the boundary, while for the free--slip the derivatives of $u$ and $v$ along $z$ are zero (free--slip means that there is no shear stress at the boundary).\\
+If we derive the continuity equation in $z$ we get:
+\[
+\frac{\de^2 u}{\de x\de z}+\frac{\de^2 v}{\de y\de z}+\frac{\de^2 w}{\de z^2}=\frac{\de}{\de x}\frac{\de u}{\de z}+\frac{\de}{\de y}\frac{\de v}{\de z}+\frac{\de^2 w}{\de z^2}=\frac{\de^2 w}{\de z^2}=0
+\]
+If we derive the vorticity equation along $z$ direction we have:
+\[
+\frac{\de\omega_z}{\de z}=\frac{\de^2 v}{\de x\de z}-\frac{\de^2 u}{\de y\de z}=\frac{\de}{\de x}\frac{\de v}{\de z}-\frac{\de}{\de y}\frac{\de u}{\de z}=0
+\]
+
+\section{Imposed flow condition}
+In this case a velocity distribution is imposed at the boundary: we have $u(x,y,z_b)=F_1(x,y)$, $v(x,y,z_b)=F_2(x,y)$ and $w(z_b)=0$.
+From the continuity equation we get:
+\[
+\frac{\de w}{\de z}=-\frac{\de u}{\de x}-\frac{\de v}{\de y}=-\frac{\de F_1}{\de x}-\frac{\de F_2}{\de y}
+\]
+while for the vorticity definition:
+\[
+\omega_z=\frac{\de v}{\de x}-\frac{\de u}{\de y}=\frac{\de F_2}{\de x}-\frac{\de F_1}{\de y}
+\]
+
+\section{Mixed boundary condition}
+Mixed boundary conditions impose the value of a linear combination of speed and its first derivative:
+\[
+au(x,y,z_b)+b\left.\frac{\de u}{\de z}\right|_{z_b}=F_1(x,y)
+\]
+\[
+av(x,y,z_b)+b\left.\frac{\de v}{\de z}\right|_{z_b}=F_2(x,y)
+\]
+The wall-normal velocity is always zero at the boundary.\\
+Substituing in the continuity equation we have:
+\[
+\frac{1}{a}\left( \frac{\de F_1}{\de x}-b\frac{\de^2 u}{\de x\de z}+\frac{\de F_2}{\de y}-b\frac{\de^2 v}{\de y\de z} \right)+\frac{\de w}{\de z}=\frac{1}{a}\left[ \frac{\de F_1}{\de x}+\frac{\de F_2}{\de y}-b\frac{\de}{\de z}\left(\frac{\de u}{\de x}+\frac{\de v}{\de y} \right)\right]+\frac{\de w}{\de z}=0
+\]
+Rearranging the various terms we have:
+\[
+a\frac{\de w}{\de z}+b\frac{\de^2 w}{\de z^2}=-\dfrac{\de F_1}{\de x}-\dfrac{\de F_2}{\de y} 
+\]
+The vorticity definition yelds:
+\[
+\omega_z=\frac{\de v}{\de x}-\frac{\de u}{\de y}=\frac{1}{a}\left[ \frac{\de F_2}{\de x}-\frac{\de F_1}{\de y}-b\frac{\de}{\de z}\left(\frac{\de v}{\de x}-\frac{\de u}{\de y}   \right)  \right]
+\]
+Thus for the vorticity we obtain:
+\[
+a\omega_z(z_b)+b\left.\frac{\de \omega_z}{\de z}\right|_{z_b}=\frac{\de F_2}{\de x}-\frac{\de F_1}{\de y}
+\]
+
+
+\section{Recap of the boundary conditions}
+\renewcommand\arraystretch{2.5}
+\begin{table}[H]
+\centering
+\caption{Boundary conditions}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}| >{\centering\arraybackslash}p{8 cm} |>{\centering\arraybackslash}p{5.2cm}}
+\textbf{type} & \textbf{velocity} & \textbf{vorticity}\\
+\textbf{no--slip} & $w(z_b)=0$ ,\, $\left.\dfrac{\de w}{\de z}\right|_{z_b}=0$ & $\omega_z(z_b)=0$ \\
+\textbf{free--slip} &   $w(z_b)=0$ ,\, $\left.\dfrac{\de^2 w}{\de z^2}\right|_{z_b}=0$& $\left. \dfrac{\de \omega_z}{\de z} \right|_{z_b}=0$  \\
+\textbf{imposed flow} & $w(z_b)=0$ ,\, $\left.\dfrac{\de w}{\de z}\right|_{z_b}=-\dfrac{\de F_1}{\de x}-\dfrac{\de F_2}{\de y} $ & $\omega_z(z_b)=\dfrac{\de F_2}{\de x}-\dfrac{\de F_1}{\de y}$  \\ 
+\textbf{mixed} & $w(z_b)=0$ ,\, $a\left.\dfrac{\de w}{\de z}\right|_{z_b}+b\left.\dfrac{\de^2 w}{\de z^2}\right|_{z_b}=-\dfrac{\de F_1}{\de x}-\dfrac{\de F_2}{\de y} $ & $a\omega_z(z_b)+b\left.\dfrac{\de \omega_z}{\de z}\right|_{z_b}=\dfrac{\de F_2}{\de x}-\dfrac{\de F_1}{\de y}$\\
+\end{tabular}
+\end{table}
+\renewcommand\arraystretch{1}
+
+
+
+
+

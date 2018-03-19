@@ -1,0 +1,213 @@
+\documentclass[a4paper,11pt]{book}
+%\documentclass[a4paper,11pt,twoside]{report}
+\usepackage{etex}
+\usepackage[english]{babel}
+\usepackage{multicol}
+\usepackage[T1]{fontenc}     %%%%%%%%%% Riga da togliere se si compila con PDFLaTeX
+\usepackage[utf8]{inputenc} 
+\frenchspacing 
+\usepackage{graphicx}
+\usepackage{textcomp}          
+\usepackage{amsmath, amsfonts, amssymb}
+\graphicspath{{./immagini/},{./Frontespizio/}}
+\usepackage{float}
+\usepackage{array}
+\usepackage[makeroom]{cancel}
+\title{}
+\author{}
+\date{}
+\usepackage{tabularx}
+\usepackage{bigstrut}
+\setcounter{secnumdepth}{5}
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{bm}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{cd}
+\usetikzlibrary{arrows.new}
+\usetikzlibrary{quotes}
+%\usepackage{subfig}
+\usepackage{./package/mcode}
+%\usepackage[bw]{./package/mcode}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage[figuresleft]{rotating}
+
+
+\makeatletter
+\tikzset{
+  RL/.style={% without calc
+    rounded corners={1pt},
+    to path={% we asume that you use this path only on nodes (otherwise it will get tricky)
+      \pgfextra
+        \pgf@process{\pgfpointanchor{\tikztostart}{east}}%
+        \pgf@xa\pgf@x\pgf@ya\pgf@y
+        \pgf@process{\pgfpointanchor{\tikztotarget}{east}}%
+        \pgf@xb\pgf@x\pgf@yb\pgf@y
+        \ifdim\pgf@xb>\pgf@xa
+          \pgf@xa\pgf@xb
+        \fi
+        \pgfmathsetlength\pgf@xc{#1}%
+        \advance\pgf@xa\pgf@xc
+      \endpgfextra
+      -- (+\pgf@xa,+\pgf@ya) -- (+\pgf@xa,+\pgf@yb) \tikztonodes -- (\tikztotarget)
+    }
+  },
+  RL/.default=0.7cm}
+
+
+\tikzset{
+  LL/.style={% without calc
+    rounded corners={1pt},
+    to path={% we asume that you use this path only on nodes (otherwise it will get tricky)
+      \pgfextra
+        \pgf@process{\pgfpointanchor{\tikztostart}{west}}%
+        \pgf@xa\pgf@x\pgf@ya\pgf@y
+        \pgf@process{\pgfpointanchor{\tikztotarget}{west}}%
+        \pgf@xb\pgf@x\pgf@yb\pgf@y
+        \ifdim\pgf@xb>\pgf@xa
+          \pgf@xa\pgf@xb
+        \fi
+        \pgfmathsetlength\pgf@xc{#1}%
+        \advance\pgf@xa\pgf@xc
+      \endpgfextra
+      -- (+\pgf@xa,+\pgf@ya) -- (+\pgf@xa,+\pgf@yb) \tikztonodes -- (\tikztotarget)
+    }
+  },
+  LL/.default=-5cm}
+
+\usepackage{booktabs}
+\newsavebox\ltmcbox
+
+\usepackage{enumerate}
+\usepackage{longtable}
+\usepackage{footnote}
+
+%\usepackage{float}
+\usepackage{multirow}
+\usepackage{enumitem}
+%\setlist{nolistsep}
+\pgfplotsset{compat=1.3}
+
+
+%\usepackage[top=1.2in, bottom=0.8in, left=1.2in, right=0.8in]{geometry}
+\usepackage[top=3.5cm, bottom=2.5cm, left=4cm, right=2.5cm]{geometry}
+
+%\usepackage[all]{xy}
+
+\usepackage[ocgcolorlinks,hidelinks]{hyperref}
+\usepackage{xcolor}
+% for coloured links
+%\hypersetup{
+%    colorlinks,
+%    linkcolor={red!0!black},
+%    citecolor={blue!50!black},
+%    urlcolor={blue!80!black}
+%}
+
+% for printing compile with this
+\hypersetup{
+    colorlinks,
+    linkcolor={red!0!black},
+    citecolor={blue!0!black},
+    urlcolor={blue!0!black}
+}
+
+
+
+\usepackage{./package/structuralanalysis}
+
+% frontespizio
+\usepackage[]{lmodern}
+\usepackage[]{microtype}
+\usepackage {lettrine}
+\usepackage {epigraph}
+\usepackage {url}
+\usepackage {mathrsfs}
+\usepackage {sidecap}	      
+\usepackage {caption}
+\usepackage{lmodern}
+\usepackage{booktabs}    
+
+
+
+% draw lines for legend in caption
+\def\drwln#1#2{\raise 2.5pt\vbox{\hrule width #1pt height #2pt}}
+\def\solid{\drwln{24}{1.0}\ }
+\def\spc#1{\hskip #1pt}
+\def\dashed{\hbox {\drwln{4}{1.0}\spc{2}
+                   \drwln{4}{1.0}\spc{2}\drwln{4}{1.0}}\nobreak\ }
+\def\dashdot{\hbox {\drwln{8}{1.0}\spc{2}
+                   \drwln{2}{1.0}\spc{2}\drwln{8}{1.0}}\nobreak\ }
+\def\dotted{\hbox {\drwln{1}{1.0}\spc{2}
+                   \drwln{1}{1.0}\spc{2}\drwln{1}{1.0}}\nobreak\ }
+\def\ldash{\hbox {\drwln{8}{1.0}\spc{2}
+                  \drwln{8}{1.0}\spc{2}\drwln{8}{1.0}}\nobreak\ } 
+\def\dashcirc{\hbox {\drwln{8}{1.0}\spc{2}
+                   $\circ$\spc{2}\drwln{8}{1.0}}\nobreak\ }   
+\def\dashsqr{\hbox {\drwln{8}{1.0}\spc{2}
+                   $\square$\spc{2}\drwln{8}{1.0}}\nobreak\ }              
+\def\colrule{\\[-7.5pt]\hline\\[-5pt]}
+\def\botrule{\\[-7.7pt]\hline}
+\def\dashrule{\\[-7.5pt]\dashed\\[-5pt]}
+ 
+
+
+\newcommand{\de}{\partial}
+\newcommand{\Nabla}{\bar\nabla}
+\newcommand{\curl}{\nabla\times}
+\renewcommand{\Re}{\textnormal{Re}}
+\newcommand{\Pe}{\textnormal{Pe}}
+\newcommand{\Ch}{\textnormal{Ch}}
+\newcommand{\Fr}{\textnormal{Fr}}
+\newcommand{\We}{\textnormal{We}}
+
+\DeclareRobustCommand{\univsc}[1]{\Large\textsc{\textls[75]{#1}}}
+\DeclareRobustCommand{\titlesc}[1]{\linespread{1.2}\LARGE{\textls[50]{\uppercase{#1}}\linespread{1}}}
+\DeclareRobustCommand{\subtitlesc}[1]{\Large\textsc{\textls[50]{#1}}}
+\DeclareRobustCommand{\namesc}[1]{\large\textsc{\textls[35]{#1}}} 
+
+\usepackage[bordercolor=black,linecolor=black,backgroundcolor=white,textwidth=3.5cm]{todonotes}
+\reversemarginpar
+
+\usepackage[round]{natbib}
+\usepackage{commath}
+ 
+
+\title{}
+\author{Giovanni Soligo}
+\date{July 2017}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\input{cap/frontespizio}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\frontmatter
+\setcounter{page}{1}
+\date{\today}
+\input{cap/version}
+
+\tableofcontents
+
+\mainmatter
+\input{cap/gettingstarted}
+\input{cap/code_flowchart}
+\input{cap/solver_details}
+\input{cap/2D_dec}
+\input{cap/validation}
+
+
+% references
+\nocite{*}
+\bibliographystyle{plainnat}
+\bibliography{cap/biblio}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\listoffigures
+\listoftables
+
+\end{document}

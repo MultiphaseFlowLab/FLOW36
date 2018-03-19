@@ -1,0 +1,132 @@
+\chapter{Getting started}
+The executable \texttt{compile.sh} includes all the parameters needed to run a simulation. In Section \ref{sec: compile} is reported a detailed guide about this file, its structure and how to modify it.\\
+When running the \texttt{compile.sh} in its own folder, it sets up all the files and folders needed for the simulation in the \texttt{set\_run} folder.
+Once the \texttt{compile.sh} has finished without error, go to the \texttt{set\_run} folder and launch the executable \texttt{go.sh}; at this point the simulation should start.\\
+The main folder of the code includes the following files and subfolders:
+\begin{itemize}
+\item \texttt{initial\_fields} : contains the initial fields (velocity and phase, if dealing with a multiphase simulation) used if the initial condition is set to read the initial fields (both in its serial or parallel version). These files, during the execution of \texttt{compile.sh}, are copied into the \texttt{set\_run/initial\_fields} folder, so they can be removed or modified even when the simulation is running.
+\item \texttt{Marconi} : contains the \texttt{makefile} needed when running on Marconi A1 partition. It is copied in the main folder by the \texttt{compile.sh} script when needed.
+\item \texttt{paraview\_output} : contains the code that can be used to generate Paraview compatible output file (using a rectilinear grid).
+\item \texttt{set\_run} : contains all the files and subfolders needed for a simulation and its output.
+\item \texttt{source\_code} : contains all the subroutine and the main file used to compile the executable file; each subroutine will be described in detail in Chapter \ref{chap: flowchart}.
+\item \texttt{stats\_calc} : contains the code that can be used to extract velocity statistics from the simulation output files (mean, root mean square, skewness and flatness). These statistics can also be calculated runtime as will be seen in Section \ref{sec: compile}.
+\item \texttt{VSC-3} : contains the \texttt{makefile} needed when running on VSC-3. It is copied in the main folder by the \texttt{compile.sh} script when needed.
+\item \texttt{compile.sh} : this file is used to generate the simulation folder and executable. It also includes all the parameter declaration part.
+\item \texttt{go.sh} : its edited version is copied during \texttt{compile.sh} execution in the \texttt{set\_run} folder and used to launch the simulation.
+\item \texttt{input.f90} : its edited version is copied during \texttt{compile.sh} execution in the \texttt{set\_run/sc\_compiled} folder and it is used as an input file for the simulation parameters.
+\item \texttt{makefile} : called during \texttt{compile.sh} execution to create the executable of the code.
+\end{itemize}
+On a local machine the code can be compiled and run just by executing the \texttt{compile.sh} script. On a cluster, since there is always a job scheduler that handles all the submitted jobs the last lines of the \texttt{compile.sh} script must be commented out (especially the call to the script \texttt{go.sh}). When running on a cluster, first run the \texttt{compile.sh} script, then move to the \texttt{set\_run} directory and submit the jobscript \texttt{go.sh}. If you want to compile and run several simulation with different parameters, after the compilation, copy the folder \texttt{set\_run} somewhere else and then submit the jobscribt to the job scheduler there.\\
+
+\section{Output of a simulation}
+Depending on the parameters choice when compiling the code, the code can give as an output different data, that will be all saved in the subfolder \texttt{results} inside the \texttt{set\_run} folder.\\
+The code will always save the initial and final velocity fields (and the phase field, if it is activated) both in physical and modal space, the $x$, $y$, $z$ axis arrays and a time check file. This latter file will include the simulation current time, the bulk Reynolds number and, for the phase field case only, also the mean value of $\phi$ all over the domain and the integral of the phase $\phi=+1$ (to check the mass losses).\\
+In addition the output of the simulation includes:
+\begin{itemize}
+\item Flow field data (and phase field, if activated) in physical space: \texttt{[variable name]\_[number of time step].dat}
+\item Flow field data (and phase field, if activated) in modal space: \texttt{[variable name]c\_[number of time step].dat}
+\item Mean, root mean square, skewness and flatness for the flow field ($u$, $v$, $w$) (single array in the wall-normal direction). Single formatted file \texttt{stats.dat}.
+\item Mean pressure and root mean square of pressure fluctuations (single array in the wall-normal direction). The mean pressure value does not include the mean pressure gradient in $x$ and $y$ directions. The pressure solver works for a fully-developed channel flow with a non-zero mean velocity in the $x$ direction and for a single phase flow. Single formatted file \texttt{budget.dat}; the first lines of the file expain its content.
+\item Energy budgets. For the pressure--strain correlation the pressure calculated above is used, so they do not consider the presence of multiple phases (the energy balance may not be zero for a multiphase flow, since some terms are missing/not properly calculated). The energy budgets are saved in the same file as the pressure (\texttt{budget.dat}).
+\item Streamwise and spanwise power spectra for $u'$, $v'$ and $w'$ at $z^+=5$, $z^+=15$ and $z^+=\Re$. Power spectra in $x$ direction are saved in the file \texttt{power\_xspectra.dat}, while those in $y$ direction in the file \texttt{power\_yspectra.dat}.
+\end{itemize}
+Velocity and eventually phase field are saved in a binary file, written with the same endianness and format as the MPI implementation of the machine where the simulation was run.\\
+In future others output may be added to the code.
+
+\section{Post-processing}
+At the present time two codes are available for direct post-processing of the output data; the first one, in the folder \texttt{stats\_calc} evaluate the statistics of the flow field (can be done also at run-time), while the other, \texttt{paraview\_output}, generates Paraview compatible output file. Both these codes use either data in physical space, either in modal space.\\
+The statistics calculation runs alway on three MPI processes, one handle $u$ data, another $v$ data and the third $w$ data. The Paraview output generation can work independently on several cores: each core takes care of writing the output at a certain time-step. Use the input file to modify some parameters of the program to better handle the output.
+
+\section{The \texttt{compile.sh} file}
+\label{sec: compile}
+The script \texttt{compile.sh} is divided in several parts: input parameters declaration, cleaning of \texttt{set\_run} folder, copying and editing files in the \texttt{set\_run} folder, compilation of the code and, only on a local machine, running the \texttt{go.sh} in the proper folder.
+
+\subsection{Parameters declaration}
+When running a simulation this is the only part that should be modified; unless needed (e.g. code modification, \dots) all the rest of the script should be left untouched.\\
+Always pay attention to the parameter type (integer, real, double, \dots) when editing values.
+\begin{itemize}
+\item \texttt{machine} : declare which machine is used for the simulation (local machine, Marconi A1 Broadwell, VSC3, \dots). According to the machine chosen, the proper modules are loaded and (on a supercomputer) the proper batch scheduler instructions will be selected in the \texttt{go.sh} script.
+\item \texttt{fftw\_flag} : can be 0 or 1; if 0 the plans for the Fourier and Chebyshev transforms will be created using the default algorithm. On the other hand, if 1 is selected, the plan creation will take much more time, but it will choose the optimal algorithm to perform the transforms. A value equal to 1 will results in a much higher time for the \texttt{FFTW} plan creation, but it should choose the most performing algorithm according to the size of the transforms and the machine where the simulation are run.
+\item \texttt{ix} : the number of points is always a power of two: the number of points in $x$ direction is $\texttt{NX}=2^\texttt{ix}$.
+\item \texttt{iy} : same as \texttt{ix}, but for the $y$ direction: the number of points in $y$ direction is $\texttt{NY}=2^\texttt{iy}$.
+\item \texttt{iz} : number of points in $z$ direction is expressed as $\texttt{NZ}=2^\texttt{iz}+1$, since Chebyshev transforms are faster on an odd number of points.
+\item \texttt{NYCPU} : number of division of the domain for parallelization ($y$ direction in physical space, $z$ direction in modal space). In physical space each MPI process holds roughly $N_z\times N_y/N_{y,cpu} \times N_z/N_{z,cpu}$ points (for the exact method please refer to Chapter \ref{chap: dom_decomp}). In modal space each MPI process holds roughly $N_x/N_{y,cpu}\times N_y/N_{z,cpu}\times N_z$. When running 2D simulation always run on a $x-y$ plane so the value of \texttt{NYCPU} must be set to 1.
+\item \texttt{NZCPU} : number of division of the domain for parallelization ($z$ direction when in physical space, $y$ direction when in modal space).
+\item \texttt{NNT} : total number of MPI processes used to run the code; equal to \texttt{NYCPU}$\times$\texttt{NZCPU}.
+\item \texttt{restart} : if equal to 0 the simulation is a new simulation, otherwise a previous simulation is restarted. When restarting a new simulation the code will automatically set the proper initial conditions for the flow field and for the phase field (if active). All the other parameters can be modified freely. The \texttt{restart} flag determines also which files will be kept and which deleted (please refer to Section \ref{sec: restart} for a complete description).
+\item \texttt{nt\_restart} : time step from which restarting the simulation; the code will thus read the corresponding flow (and phase) fields.
+\item \texttt{incond} : defines which is the initial condition of the simulation. The complete list of initial condition are reported in the \texttt{compile.sh} script. Some examples are:
+\begin{enumerate}
+\item zero velocity all over the domain
+\item laminar Poiseuille flow in $x$ direction (generated from a unitary pressure gradient)
+\item random velocity value for $u$, $v$, $w$
+\item read input from file (parallel read)
+\item read input from file (serial read, used for retro-compatibility with legacy data files)
+\item \dots
+\end{enumerate}
+\item \texttt{Re} : $\Re$ number used for the simulation.
+\item \texttt{Co} : Courant number threshold value, if the Courant number exceeds this value the simulation is stopped.
+\item \texttt{gradpx} : mean pressure gradient along $x$ direction, defined as $\overline{\frac{\de P}{\de x}}$.
+\item \texttt{gradpy} : mean pressure gradient along $y$ direction, defined as $\overline{\frac{\de P}{\de y}}$.
+\item \texttt{lx} : size of the domain ($x$ direction) normalized by $\pi$.
+\item \texttt{ly} : size of the domain ($y$ direction) normalized by $\pi$.
+\item \texttt{nstart} : initial time step of the simulation.
+\item \texttt{nend} : final time step of the simulation.
+\item \texttt{dump} : saving frequency of fields (velocity and eventually phase variable) in physical space. If a value of $-1$ is provided no fields data will be saved during the time cycle.
+\item \texttt{sdump} : saving frequency of fields (velocity and eventually phase variable) in modal space. If a value of $-1$s is provided no fields data will be saved during the time cycle.
+\item \texttt{failure\_dump} : saving frequency of fields (in modal space). These files are not kept and they are meant to be used only as a checkpoint if the simulation stops. The saving frequency should be higher than the normal saving frequency.
+\item \texttt{st\_dump} : calculation and saving frequency of flow statistics at run time.
+\item \texttt{stat\_starts} : time step from which starting the statistics calculation.
+\item \texttt{mean\_flag} : if equal to 0 the code does not calculate the mean, root mean square, skewness and flatness of the flow field at run time, otherwise if equal to 1 it will calculate these statistics with \texttt{st\_dump} frequency.
+\item \texttt{budget\_flag} : if equal to 0 the code will skip pressure statistics and energy budgets calculation; if equal to 1 these statistics will be calculated and saved.
+\item \texttt{spectra\_flag} : if equal to 0 the code will not calculate any velocity power spectra, otherwise if equal to 1 it will calculate them.
+\item \texttt{dt} : value of the time step used for time advancement.
+\item \texttt{bc\_upb} : boundary conditions on the upper wall, if 0 applies no-slip condition, if 1 applies free-slip condition.
+\item \texttt{bc\_lb} : boundary conditions on the lower wall, if 0 applies no-slip condition, if 1 applies free-slip condition.
+\item \texttt{phi\_flag} : if equal to 0 the phase field part is deactivated and the Cahn--Hilliard equation will not be solved; if equal to 1 the phase field part is activated and the Cahn--Hilliard equation is solved. All the following part is used only when the phase field is activated.
+\item \texttt{matchedrho} : if equal to zero the two phases have different densities; if equal to 1 their densities are equal. Warning: this value and the following one must be coherent, otherwise the code will stop (if \texttt{matchedrho}=0, \texttt{rhor} must be different from 1).
+\item \texttt{rhor} : density ratio of the phase $\phi=+1$ over the phase $\phi=-1$ (density ratio of one phase with respect to the carrier, for example density of the drop over density of the carrier fluid).
+\item \texttt{matchedvis} : if equal to zero the two phases have different viscosities; if equal to 1 their viscosities are equal. Warning: this value and the following one must be coherent, otherwise the code will stop (if \texttt{matchedvis}=0, \texttt{visr} must be different from 1).
+\item \texttt{visr} : viscosity ratio of the phase $\phi=+1$ over the phase $\phi=-1$ (viscosity ratio of one phase with respect to the carrier, for example viscosity of the drop over viscosity of the carrier fluid).
+\item \texttt{We} : value of Weber number.
+\item \texttt{Ch} : value of Cahn number. Defines the width of the interface; always make sure that the interface contains at least three points.
+\item \texttt{Pe} : value of Peclet number.
+\item \texttt{Fr} : value of Froud number.
+\item \texttt{in\_condphi}
+\begin{enumerate}
+\item only phase $\phi=-1$
+\item read input from file (parallel read)
+\item read input from file (serial read, for retro-compatibility with old legacy data files)
+\item 2D drop; accepted input values are radius and height ($z$ coordinate)
+\item 3D drop; accepted input values are radius and height ($z$ coordinate)
+\item stratified flow; accepted input values are mean height of the wave, sine wave amplitude ($x$, $y$ direction), sine wave frequency ($x$, $y$ direction) and random perturbation amplitude
+\item 3D drop array; accepted input values are radius of the single drop, height of the drop array ($z$ coordinate), number of drops in $x$ direction and number of drops in $y$ direction. The distance among two drop centers must be at least 2(radius+5$\sqrt{2}\Ch$), otherwise the number of drops will be reduced to fit this constraint.
+\end{enumerate}
+\item \texttt{gravdir} : define direction of gravity.
+\begin{itemize}[label={$\circ$}]
+\item $+1$ : positive $x$ direction
+\item $-1$ : negative $x$ direction
+\item $+2$ : positive $z$ direction
+\item $-2$ : negative $z$ direction
+\item $+3$ : positive $y$ direction
+\item $-3$ : negative $y$ direction
+\end{itemize}
+\item \texttt{buoyancy} : defines which gravity formulation the code will use.
+\begin{itemize}[label={$\circ$}]
+\item 0 : no gravity
+\item 1 : buoyancy and weight effects
+\item 2 : only buoyancy effects
+\end{itemize}
+\end{itemize}
+
+\subsection{Cleaning of \texttt{set\_run} folder}
+\label{sec: restart}
+This part of the script delete old simulation files in the \texttt{set\_run} folder, to make it ready for a new run. The following files and folders are removed: \texttt{go.sh}, \texttt{sc\_compiled}, \texttt{paraview\_output}, \texttt{stats\_calc}, \texttt{nohup.out}; if it is a new simulation also the folder \texttt{results} is removed, otherwise it is left untouched.\\
+The restarted case will read the initial fields from the \texttt{results} folder at the beginning of the simulation.
+
+\subsection{Copying and editing}
+First of all the script \texttt{go.sh} is copied in the \texttt{set\_run} folder and the correct value of MPI process to be used for the run \texttt{NNT} is replaced in the copied version. Then, the input file \texttt{input.f90} is copied in the \texttt{set\_run/sc\_compiled} folder and all the parameter are replaced in the file with the correct vaue.\\
+At this point all the source files of the code are copied from the folder \texttt{source\_code} to the folder \texttt{set\_run/sc\_compiled}. Also the two folders \texttt{paraview\_output} and \texttt{stats\_calc} are copied into the folder \texttt{set\_run}.\\
+If the phase field is activated, an input file for the phase field initial condition is created (\texttt{input\_phase\_field.f90}); this input file is different for the differents initial condition that can be chosen.\\
+Lastly all the flags for the conditional compilation are replaced in the copied source files of the code; this way, depending on the parameters choice, the code will be compiled in different ways including or omitting some parts. This is done to avoid unneeded \texttt{if} clauses in the execution of the code as they will reduce performance (especially in \texttt{do} loops). After this step the code will be compiled and all the mdule files will be created in the folder \texttt{set\_run/sc\_compiled}, together with the executable.\\
+If you are running on a local machine, you can leave uncommented the last three lines of the script, such that the \texttt{compile.sh} script will switch to the \texttt{set\_run} folder, run the \texttt{go.sh} file and then switch back to the main folder.
