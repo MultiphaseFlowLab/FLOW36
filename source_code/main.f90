@@ -107,6 +107,13 @@ else
   call mpi_type_commit(stype,ierr)
 
 
+! define dual grid sizes
+  call define_dual_grid(cxsize,cysize)
+
+! define dual grid communication pattern
+  call define_address
+
+
   ! create fftw plans
   if(rank.eq.0) then
     write(*,*) 'Starting FFTW plan creation ...'

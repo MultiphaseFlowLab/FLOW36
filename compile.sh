@@ -81,11 +81,16 @@ ix="5" # integer
 iy="5" # integer
 iz="5" # integer
 
+# dual grid for surfactant, expansion factors:
+exp_x="1" # integer, (2**ix)*exp_x
+exp_y="1" # integer, (2**iy)*exp_y
+exp_z="2" # integer, (2**iz)*exp_z+1
+
 NX="$((2**$ix))"
 NY="$((2**$iy))"
 NZ="$(((2**$iz)+1))"
-NYCPU="1" # integer
-NZCPU="4" # integer
+NYCPU="2" # integer
+NZCPU="2" # integer
 
 NNT="$(($NYCPU*$NZCPU))"
 
@@ -532,6 +537,9 @@ cp ./source_code/sterm_surf.f90 ./set_run/sc_compiled/
 cp ./source_code/initialize_temp.f90 ./set_run/sc_compiled/
 cp ./source_code/sterm_temp.f90 ./set_run/sc_compiled/
 cp ./source_code/hist_term_temp.f90 ./set_run/sc_compiled/
+cp ./source_code/define_address.f90 ./set_run/sc_compiled/
+cp ./source_code/define_dual_grid.f90 ./set_run/sc_compiled/
+cp ./source_code/swap_grid.f90 ./set_run/sc_compiled/
 
 
 cp -r ./paraview_output ./set_run
@@ -647,6 +655,12 @@ sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/print_start.f90
 sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/write_output.f90
+sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/module.f90
+sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/module.f90
+sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
+sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -693,6 +707,12 @@ sed -i "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/print_start.f90
 sed -i "s/machineflag/$machine/g" ./set_run/sc_compiled/write_output.f90
+sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/module.f90
+sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/module.f90
+sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
+sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
 fi
 
 if [ "$machine" == "4" ]; then

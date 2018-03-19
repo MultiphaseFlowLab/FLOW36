@@ -118,3 +118,15 @@ module stats
  integer :: flowiter,stat_dump,stat_start
  integer :: plane_comm,col_comm
 end module stats
+
+
+
+module dual_grid
+  use commondata
+  integer, parameter :: exp_x=expansionx, exp_y=expansiony, exp_z=expansionz
+  integer :: npsix,npsiy,npsiz
+  integer :: cg_size(nycpu,nzcpu,5),fg_size(nycpu,nzcpu,5)
+  integer :: spxpsi,spypsi
+  integer :: cstartpsi(3)
+  integer :: c2fadd(nycpu*nzcpu,2),f2cadd(nycpu*nzcpu,2)
+end module dual_grid
