@@ -1,0 +1,55 @@
+This is BibTeX, Version 0.99d (TeX Live 2016)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: flow36_handbook.aux
+A level-1 auxiliary file: source/slab_ph.aux
+A level-1 auxiliary file: source/slab_sp.aux
+A level-1 auxiliary file: source/pencil_ph.aux
+A level-1 auxiliary file: source/pencil_sp.aux
+The style file: plainnat.bst
+Database file #1: cap/biblio.bib
+Warning--entry type for "fftw" isn't style-file defined
+--line 12 of file cap/biblio.bib
+Warning--entry type for "thtlab" isn't style-file defined
+--line 21 of file cap/biblio.bib
+You've used 4 entries,
+            2773 wiz_defined-function locations,
+            621 strings with 5273 characters,
+and the built_in function-call counts, 1497 in all, are:
+= -- 126
+> -- 69
+< -- 3
++ -- 25
+- -- 21
+* -- 104
+:= -- 237
+add.period$ -- 12
+call.type$ -- 4
+change.case$ -- 18
+chr.to.int$ -- 4
+cite$ -- 8
+duplicate$ -- 71
+empty$ -- 140
+format.name$ -- 25
+if$ -- 308
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 3
+newline$ -- 28
+num.names$ -- 16
+pop$ -- 47
+preamble$ -- 1
+purify$ -- 15
+quote$ -- 0
+skip$ -- 57
+stack$ -- 0
+substring$ -- 39
+swap$ -- 4
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 39
+warning$ -- 0
+while$ -- 14
+width$ -- 0
+write$ -- 57
+(There were 2 warnings)

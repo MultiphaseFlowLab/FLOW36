@@ -1,0 +1,173 @@
+\chapter{Chebyshev--Tau method}
+We show the Chebyshev--Tau method by applying to the Burger equation. In the following equation the Burger equation is reported in strong form.
+\begin{equation}
+\frac{\de u}{\de t}+u\frac{\de u}{\de x}-\nu \frac{\de^2 u}{\de x^2}=0\hspace{1cm}  \forall t>0
+\end{equation}
+Strong form means that the equation must be verified at each point of the domain $\Omega$.\\
+We seek for a solution in $(-1,1)$ that verifies the following boundary conditions:
+\[
+\begin{cases}
+u(-1,t)=u_L(t)\\
+u(1,t)=u_R(t)
+\end{cases}
+\]
+The Chebyshev--Tau method solves the equation in weak form, which means that the integral over the domain of the equation multiplied for a test function $v$ must be zero for each test function.
+\begin{equation}
+\int_\Omega \frac{\de u}{\de t}vdx+\int_\Omega u\frac{\de u}{\de x}vdx-\int_\Omega\nu\frac{\de^2 u}{\de x^2}vdx=0  \hspace{1cm}  \forall v\in X,\,\forall t>0
+\end{equation}
+The weak form is called also integral form.\\
+The discrete solution $u^N$ is:
+\[
+u^N(x,t)=\sum_{k=0}^N\hat u_k(t)T_k(x)
+\]
+We define now the following sets: the set $\mathbb{P}_N$ is the set of all the polynomial of degree $\leq N$, $X_N$ which is a subset of $\mathbb{P}_N$ and $Y_N$ which is a subset of $\mathbb{P}_{N-2}$. \\
+The Chebyshev--Tau method enforces the equation in weak form using the test function of $Y_N$, $N-1$ test function (polynomial of degree from 0 to $N-2$). Since the discrete solution han $N+1$ coefficients we enforce the two boundary conditions to obtain the other two equations.\\
+This way we have $N+1$ equations for $N+1$ unknown coefficients $\hat u_k$.
+\[
+\int_{-1}^{1}\left( \frac{\de u_N}{\de t}+u_N\frac{\de u_N}{\de x}-\nu\frac{\de^2u_N}{\de x^2}  \right)T_k(x)\frac{1}{\sqrt{1-x^2}}dx=0  \hspace{1cm}  \forall k=0,...,N-2
+\]
+\[
+\begin{cases}
+u_N(-1,t)=u_L(t)\\
+u_N(1,t)=u_R(t)
+\end{cases}
+\]
+The weight $w(x)=\frac{1}{\sqrt{1-x^2}}$ is required for the ortogonality condition of Chebyshev polynomial:
+\[
+\int_{-1}^1 T_k(x)T_j(x)w(x)dx=
+\begin{cases}
+0 &\textnormal{if } j\neq k\\
+\pi & \textnormal{if } j=k=0\\
+\frac{\pi}{2} & \textnormal{if } j=k\neq0
+\end{cases}
+\]
+
+\section{Application to the 2$^{nd}$ order equation for vorticity}
+The equation reads:
+\[
+\frac{\de^2 \hat\omega_z^{n+1}}{\de z^2}-\beta^2\hat\omega_z^{n+1}=F^n
+\]
+The boundary conditions in physical space are:
+\[
+\begin{array}{l}
+p_1\omega_z(x,y,-1)+q_1\frac{\de \omega_z(x,y,-1)}{\de z}=r_1(x,y)\\[2ex]
+p_2\omega_z(x,y,1)+q_2\frac{\de \omega_z(x,y,1)}{\de z}=r_2(x,y)\\
+\end{array}
+\]
+In the wavenumber space these boundary conditions are:
+\[
+\begin{array}{l}
+p_1\hat\omega_z(k_1,k_2,-1)+q_1\frac{\de \hat\omega_z(k_1,k_2,-1)}{\de z}=\hat r_1(k_1,k_2)\\[2ex]
+p_2\hat\omega_z(k_1,k_2,1)+q_2\frac{\de \hat\omega_z(k_1,k_2,1)}{\de z}=\hat r_2(k_1,k_2)\\
+\end{array}
+\]
+To apply the Chebyshev--Tau method we need a one-dimensional second order equation with mixed boundary conditions; in this case these hypothesis are verified.\\
+We then write the two functions of the vorticity equation as a Chebyshev truncated serie:
+\[
+\hat\omega_z^{n+1}=\sum_{n=0}^N a_nT_n(z)
+\]
+\[
+F^n=\sum_{n=0}^N b_n T_n(z)
+\]
+Now we integrate in $z$ twice taking advantage of the following property of Chebyshev polynomial:
+\[
+\int_{-1}^z\sum_{n=0}^N a_nT_n(s)ds=\sum_{n=1}^{N+1}l_n T_n(z)
+\]
+$l_n$ can be expressed as a function of $a_n$:
+\[
+\begin{cases}
+l_{N+1}=\frac{a_N}{2(N+1)}\\
+l_N=\frac{a_{N}}{2N}\\
+l_n=\frac{1}{2N}(a_{n-1}-a_{n+1}) &\textnormal{for } n=1,...,N-1
+\end{cases}
+\]
+After integrating twice the vorticity transport equation we obtain:
+\[
+\sum_{n=0}^N a_n T_n(z)-\beta^2\sum_{n=2}^{N+2} m_nT_n(z)=\sum_{n=2}^{N+2} f_n T_n(z) +AT_1(z)+BT_0(z)
+\]
+Where 
+\[
+A=\frac{\de\hat\omega_z(k_1,k_2,-1)}{\de z}
+\]
+and
+\[
+B=\frac{\de\hat\omega_z(k_1,k_2,-1)}{\de z}+\hat\omega_z(k_1,k_2,-1)
+\]
+We now define $s_n$ as:
+\[
+s_n=a_n-\beta^2m_n-f_n
+\]
+This way, the equation can be rewritten as ($f_n$ comes from the double intagration of the $F^n$ term, thus it depends on the $b_n$):
+\[
+(a_0-B)T_0(z)+(a_1-A)T_1(z)+\sum_{n=2}^N s_n T_n(z)-\sum_{n=N+1}^{N+2}\left( \beta^2m_n -f_n \right)T_n(z)=0
+\]
+We apply the Chebyshev--Tau method using $N-1$ Chebyshev polynomials as test function, in particular we use as test function $T_n(z)w(z)$ with $n=2,...,N$.\\
+This choice implies that all the $s_n$ must be zero for $n=2,...,N$.\\
+The remaining two missing equations are obtained from the boundary conditions:
+\[
+\begin{array}{l}
+p_1\sum\limits_{n=0}^N a_n T_n(-1)+q_1\sum\limits_{n=0}^N a_n\left.\frac{\de T_n}{\de z}\right|_{z=-1}=r_1\\[2ex]
+p_2\sum\limits_{n=0}^N a_n T_n(1)+q_2\sum\limits_{n=0}^N a_n\left.\frac{\de T_n}{\de z}\right|_{z=1}=r_2\\
+\end{array}
+\]
+We can write the boundary conditions in a more compact form gathering the unknowns:
+\[
+\begin{array}{l}
+\sum\limits_{n=0}^N d_n a_n=r_1\\[2ex]
+\sum\limits_{n=0}^N e_n a_n=r_2
+\end{array}
+\]
+This way we obtain a $N+1$ linear equations system with $N+1$ unknowns:
+\[
+\begin{bmatrix}
+d_1 &d_2 &d_3&d_4&d_5& d_6&d_7& d_8&... &d_n\\
+e_1 &e_2&e_3& e_4&e_5& e_6&e_7&e_8&... &e_n\\
+s_1&0 &v_1& 0 & t_1& 0 & 0&0&... &0\\
+0 & s_2 & 0 & v_2 & 0 & t_2& 0&0&... &0\\
+0&0 & s_3 & 0 & v_3 & 0 & t_3& 0&... &0\\
+\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&\vdots&...&\vdots\\
+0&0&0&0&0&0&0&0&...&v_N\\
+\end{bmatrix}\
+\begin{bmatrix}
+a_0\\
+\vdots\\
+a_N\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+r_1\\
+r_2\\
+g_2\\
+\vdots\\
+g_N
+\end{bmatrix}
+\]
+The coefficient matrix obtained has the first two rows full, then from the third to the $N+1$ is a pentadiagonal matrix; the system can be easily solved a Guss elimination algorithm.
+
+\section{Application to the 4$^{nd}$ order equation for velocity}
+The velocity transport equation is a fourth-order equation, so the Chebishev--Tau algorithm cannot be applied directly: first we must split this equation in two Helmholtz equations.\\
+We thus define $\theta$ as:
+\[
+\theta^{n+1}=\frac{\de^2\hat w^{n+1}}{\de z^2}-k^2\hat w^{n+1}
+\]
+This way we obtain two Helmholtz for $\hat w$ and $\theta$:
+\[
+\begin{cases}
+\dfrac{\de^2\omega^{n+1}}{\de z^2}-\beta^2\theta^{n+1}=F^{n}\\[2ex]
+\dfrac{\de^2\hat w^{n+1}}{\de z^2}-k^2\hat w^{n+1}=\theta^{n+1}
+\end{cases}
+\]
+For the velocity we have physical known boundary condition, while for $\theta$ we have boundary conditions as a function of the unknown velocity, so we have to use the influence matrix method. The application of this method to the fourth order equation is reported in a detailed way in Section \ref{sec: infm_app}; here we recall only the result.\\
+Once obtained the set of boundary conditions for $\theta$ we can solve the two equations with the Chebyshev--Tau method.\todo{in realt\`a con il metodo della matrice di influenza risolvo i problemi tilde e bar, per cui ho gi\`a la soluzione di $w$}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,103 @@
+\chapter{Modified H model}
+
+\todo{scrivere introduzione, presentare equazione, differenze H model/ modified H model, ...}
+
+
+\todo{forse nel capitolo H model}
+
+The dimensional set of equations includes (in order): the Navier--Stokes equation, the continuity equation, the phase transport equation and the definition of the chemical potential. $\rho$ is the local density, $\mu$ the local dynamic viscosity, $\phi$ is the phase variable ($\phi \in [-\sqrt{b/a},\sqrt{b/a}]$), $\mathbf g$ is the gravity vector, $\Lambda$ the chemical potential and $M$ the mobility coefficient. Here we use a constant mobility coefficient [citare fonti]. $a$, $b$ and $k$ are three numerical coefficients. 
+\todo{scrivere cosa sono vari termini}
+\begin{equation}
+\begin{cases}
+\rho \dfrac{\de \mathbf u}{\de t} +\rho \mathbf u \cdot \nabla \mathbf u =-\nabla p +\Nabla\cdot[\mu (\Nabla\mathbf u+\Nabla\mathbf u^T)]+\rho\mathbf g+\Lambda \nabla\phi\\[1ex]
+\nabla\cdot \mathbf u =0\\[1ex]
+\dfrac{\de \phi}{\de t} +\mathbf u \cdot \nabla \phi=\nabla\cdot(M\nabla \Lambda) \\[1ex]
+\Lambda=a \phi^3-b \phi-k\nabla^2 \phi
+\end{cases}
+\label{eq: dim_modh}
+\end{equation}
+Now we non-dimensionalize these equations using the following reference quantities: $u_c$, $L_c$, $M_c$, $\phi_c$, $b_c$, $\rho_c$, $\mu_c$ and $\sigma_c$ ($\sigma_c$ is a reference surface tension). We can thus define these non-dimensional numbers:
+\[
+\begin{array}{ccccccccc}
+\Re=\dfrac{\rho_c u_cL_c}{\mu_c} &&\Pe=\dfrac{L_cu_c}{M_c b_c} && \Ch=\dfrac{\varepsilon}{L_c}&& \Fr=\dfrac{u_c}{\sqrt{gL_c}}&& \We=\dfrac{\rho_cu_c^2L_c}{\sigma_c}
+\end{array}
+\]
+\todo{scrivere significato cifre adimensionali}
+We also state the following equalities:
+\[
+\begin{array}{l}
+\phi_c=\sqrt{\dfrac{b_c}{a}}\\[2ex]
+\varepsilon=\sqrt{\dfrac{k}{b}}\\[2ex]
+b_c=b
+\end{array}
+\]
+Once the phase variable is normalized by $\phi_c$, it varies between -1 and 1: $\phi^*\in[-1,1]$, with the superscript $*$ denoting non-dimensional quantities.\\
+In this problem both the density and the dynamic viscosity vary between the two phases $\phi^*=-1$ and $\phi^*=1$; we assume a linear variation in the phase variable:
+\[
+\begin{array}{l}
+\rho=\dfrac{\rho_++\rho_-}{2}+\dfrac{\rho_+-\rho_-}{2}\phi^*\\[2ex]
+\mu=\dfrac{\mu_++\mu_-}{2}+\dfrac{\mu_+-\mu_-}{2}\phi^*\\
+\end{array}
+\]
+The subscripts + and -- denote respectively the phase with $\phi^*=1$ and the one with $\phi^*=-1$.\\
+Choosing the phase $\phi^*=-1$ as the reference one, we have $\rho_c=\rho_-$ and $\mu_c=\mu_-$; we can thus define the density and viscosity ratios $\alpha$ and $\beta$.
+\[
+\begin{array}{l}
+\alpha=\dfrac{\rho_+}{\rho_-}\\[2ex]
+\beta=\dfrac{\mu_+}{\mu_-}
+\end{array}
+\]
+The dimensionless density and viscosity are:
+\[
+\begin{array}{l}
+\rho^*=\dfrac{\alpha+1}{2}+\dfrac{\alpha-1}{2}\phi^*\\[2ex]
+\mu^*=\dfrac{\beta+1}{2}+\dfrac{\beta-1}{2}\phi^*\\
+\end{array}
+\]
+We decided to rearrange the dimensionless density (or viscosity) as unity plus a function of the density (or viscosity) ratio and of the phase variable:
+\[
+\begin{array}{l}
+\rho^*=1+f(\alpha,\phi^*)=1+\dfrac{\alpha-1}{2}(\phi^*+1)\\[2ex]
+\mu^*=1+f(\beta,\phi^*)=1+\dfrac{\beta-1}{2}(\phi^*+1)\\
+\end{array}
+\]
+The equations system \ref{eq: dim_modh} is non-dimensionalized using the reference quantities previously stated; this way we can highlight the dimensionless numbers the problem depends on. The superscript $*$ denotes dimensionless quantities.
+\[
+\begin{cases}
+\rho^* \dfrac{\de \mathbf u^*}{\de t^*} +\rho^* \mathbf u^* \cdot \nabla^* \mathbf u^* =-\nabla^* p^* +\dfrac{1}{\Re} \Nabla^*\cdot[\mu^*\Nabla^*( \mathbf u^*+\mathbf u^{*,T})]+\dfrac{1}{\Fr^2}\rho^*\mathbf g^*+\dfrac{3}{\sqrt8}\dfrac{1}{\We\Ch}\Lambda^* \nabla^*\phi^*\\[1ex]
+\nabla^*\cdot \mathbf u^* =0\\[1ex]
+\dfrac{\de \phi^*}{\de t^*} +\mathbf u^* \cdot \nabla^* \phi^*=\dfrac{1}{\Pe}\nabla^*\cdot(M^*\nabla^* \Lambda^*) \\[1ex]
+\Lambda^*=\phi^{*,3}- \phi^*-\Ch^2\nabla^{*,2} \phi^*
+\end{cases}
+\]
+$\mathbf g^*$ is the unit vector of $\mathbf g$: $\mathbf g=\norm{\mathbf g} \mathbf g^*$; we furthermore assume $M_c=M$, such that $M^*=1$.\\
+From now on the $*$ superscript will be dropped to get a more compact notation; all the quantities from now on will be dimensionless unless differently stated.
+The complete dimensionless set of equations reads:
+\begin{equation}
+\begin{cases}
+\rho \dfrac{\de \mathbf u}{\de t} +\rho \mathbf u \cdot \nabla \mathbf u =-\nabla p +\dfrac{1}{\Re} \Nabla\cdot[\mu\Nabla( \mathbf u+\mathbf u^{T})]+\dfrac{1}{\Fr^2}\rho\mathbf g+\dfrac{3}{\sqrt8}\dfrac{1}{\We\Ch}\Lambda \nabla\phi\\[1ex]
+\nabla\cdot \mathbf u =0\\[1ex]
+\dfrac{\de \phi}{\de t} +\mathbf u \cdot \nabla \phi=\dfrac{1}{\Pe}\nabla^2 \Lambda \\[1ex]
+\Lambda=\phi^{3}- \phi-\Ch^2\nabla^{2} \phi\\[1ex]
+\rho=1+\dfrac{\alpha-1}{2}(\phi+1)\\[2ex]
+\mu=1+\dfrac{\beta-1}{2}(\phi+1)\\
+\end{cases}
+\end{equation}
+
+
+
+
+
+
+\todo{pressure splitting}
+
+\todo{velocity/vorticity formulation}
+
+\todo{numerical scheme}
+
+\todo{time integration}
+
+
+
+
+

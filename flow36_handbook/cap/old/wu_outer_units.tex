@@ -1,0 +1,22 @@
+\chapter{Wall units and outer units}
+In the code two different dimensionless categories are used: outer units and wall units. The first ones are denoted using the superscript $-$, while the second ones using the superscript $+$. \\
+Outer units are obtained making physical units dimensionless with the channel half-height $h$ and the shear velocity: $u_\tau$
+\[
+\begin{array}{ccccc}
+\mathbf{x}^-=\dfrac{\mathbf{x}}{h} && \mathbf{u}^-=\dfrac{\mathbf{u}}{u_\tau} & &t^-=\dfrac{tu_\tau}{h}
+\end{array}
+\]
+On the other hand wall units are obtained nondimensionalizing physical units with the shear velocity $u_\tau$ and the kinematic viscosity $\nu$ (typical turbulence related quantities):
+\[
+\begin{array}{ccccc}
+\mathbf{x}^+=\dfrac{\mathbf{x}u_\tau}{\nu} && \mathbf{u}^+=\dfrac{\mathbf{u}}{u_\tau} & &t^+=\dfrac{tu_\tau^2}{\nu}
+\end{array}
+\]
+So the dimensionless velocity is the same in both wall units and outer units, while for the spatial coordinate we have:
+\[
+\mathbf{x}^+=\frac{\mathbf{x}u_\tau}{\nu}=\frac{\mathbf{x}}{h}\frac{hu_\tau}{\nu}=\mathbf{x}^- \Re_\tau
+\]
+We have the same result for time:
+\[
+t^+=\frac{tu_\tau^2}{\nu}=\frac{tu_\tau}{h}\frac{hu_\tau}{\nu}=t^-\Re_\tau
+\]

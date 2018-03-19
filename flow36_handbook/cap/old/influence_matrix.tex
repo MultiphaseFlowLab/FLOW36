@@ -1,0 +1,205 @@
+\chapter{Influence matrix method}
+
+\section{General method}
+The influence matrix method is employed in differential problems where one of the boundary conditions depends on an unknown function.\\
+Be $\Omega$ a generic domain and $\Gamma=\de\Omega$ its boundary; we define then three linear differential operators $\mathbb{F}$, $\mathbb{G}$ and $\mathbb{H}$.\\
+The following problem $[P]$ has boundary conditions for $f$ which depends on the unknown function $h$:
+\begin{equation}
+[P]
+\begin{cases}
+\mathbb{F}[f(x)]=g(x) & \textnormal{in }\Omega\\
+\mathbb{G}[h(x)]=f(x) & \textnormal{in }\Omega\\
+f(x)=\mathbb{H}[h(x)] & \textnormal{in }\Gamma\\
+h(x)=h_\Gamma(x) & \textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+$f$ and $h$ are the two unknown functions, $g$ is a known function and $h_\Gamma$ is a known boundary condition for $h$.\\
+Using the influence matrix method we can evaluate the boundary conditions for $f$ so that we can resolve the problem $[P]$.\\
+Let's introduce another problem $[\widetilde{P}]$; the only difference from the formulation of $[P]$ is the boundary condition on $\widetilde{f}$. $\widetilde{f}_\Gamma(x)$ is an arbitrary distribution on $\Gamma$.
+\begin{equation}
+[\widetilde{P}]
+\begin{cases}
+\mathbb{F}[\widetilde{f}(x)]=g(x) & \textnormal{in }\Omega\\
+\mathbb{G}[\widetilde{h}(x)]=\widetilde{f}(x) & \textnormal{in }\Omega\\
+\widetilde{f}(x)=\widetilde{f}_\Gamma(x) & \textnormal{in }\Gamma\\
+\widetilde{h}(x)=h_\Gamma(x) & \textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+The problem $[\widetilde{P}]$ has an unique solution $(\widetilde{f},\widetilde{h})$, which does not necessarily verify the boundary condition $\widetilde{f}(x)=\mathbb{H}[\widetilde{h}(x)]$ in $\Gamma$.\\
+We define now two functions, $\bar f$ and $\bar h$ and the problem $[\bar P]$ as the difference between the problems $[P]$ and $[\widetilde{P}]$.
+\[
+\begin{array}{l}
+\bar f=f-\widetilde{f}\\[1ex]
+\bar h=h-\widetilde{h}
+\end{array}
+\]
+\begin{equation}
+[P]-[\widetilde{P}]=[\bar P]
+\begin{cases}
+\mathbb{F}[\bar f(x)]=0 & \textnormal{in }\Omega\\
+\mathbb{G}[\bar h(x)]=\bar f(x) & \textnormal{in }\Omega\\
+\bar f(x)=\mathbb{H}[\bar h(x)]+\mathbb{H}[\widetilde{h}(x)]-\widetilde{f}_\Gamma(x)& \textnormal{in }\Gamma\\
+\bar h(x)=0 &\textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+We can split problem $[\bar P]$ in $N$ sub-problems $[\bar P_k]$ with $k=1,...,N$ and each one of these sub-problems has its own solution $(\bar f_k, \bar h_k)$.\\
+This way we have:
+\[
+\begin{array}{l}
+\bar f(x)=\sum\limits_{k=1}^N \lambda_k\bar f_k(x)\\[2ex]
+\bar h(x)=\sum\limits_{k=1}^N \lambda_k\bar h_k(x)\\
+\end{array}
+\]
+The generic problem $[\bar P_k]$ is (in the following the boundary has been discretized in $N$ points $x_l=1,...,N$):
+\begin{equation}
+[\bar P_k]
+\begin{cases}
+\mathbb{F}[\bar f_k(x_l)]=0 & \textnormal{in }\Omega\\
+\mathbb{G}[\bar h_k(x_l)]=\bar f_k(x_l) & \textnormal{in }\Omega\\
+\bar f_k(x_l)=\delta_{kl} & \textnormal{in }\Gamma\\
+\bar h_k(x_l)=0 &\textnormal{in }\Gamma\\
+\end{cases}
+\end{equation}
+The $\lambda_k$ coefficients are unknown and they can be calculated from the third equation of the problem $[\bar P]$ evaluated at each point $x_l$, substituting in $\bar f$ and $\bar h$ the sub-problems solutions.
+\[
+\sum_{k=1}^N\lambda_k\bar f_k(x)-\mathbb{H}\left[\sum_{k=1}^N\lambda_k \bar h_k(x) \right] =-\widetilde{f}(x)+\mathbb{H}[\widetilde{h}(x)]
+\]
+Since $\mathbb{H}$ is a linear operator we can write:
+\[
+\sum_{k=1}^N\lambda_k\left(\bar f_k(x)-\mathbb{H}[\bar h_k(x)] \right) =-\widetilde{f}(x)+\mathbb{H}[\widetilde{h}(x)]
+\]
+This equation holds for each $x_l$ with $l=1,...,N$, so we have a linear equations system:
+\begin{equation}
+\begin{bmatrix}
+\bar f_1(x_1)-\mathbb{H}[\bar h_1(x_1) & ... & \bar f_N(x_1)-\mathbb{H}[\bar h_N(x_1)\\
+\bar f_1(x_2)-\mathbb{H}[\bar h_1(x_2) & ... & \bar f_N(x_2)-\mathbb{H}[\bar h_N(x_2)\\
+\vdots & &\vdots\\
+\bar f_1(x_N)-\mathbb{H}[\bar h_1(x_N) & ... & \bar f_N(x_N)-\mathbb{H}[\bar h_N(x_N)\\
+\end{bmatrix}
+\begin{bmatrix}
+\lambda_1\\
+\lambda_2\\
+\vdots\\
+\lambda_N\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+-\widetilde{f}(x_1)+\mathbb{H}[\widetilde{h}(x_1)]\\
+-\widetilde{f}(x_2)+\mathbb{H}[\widetilde{h}(x_2)]\\
+\vdots\\
+-\widetilde{f}(x_N)+\mathbb{H}[\widetilde{h}(x_N)]\\
+\end{bmatrix}
+\end{equation}
+Using the definitions of $\bar f$ and $\bar h$ we have:
+\[
+\begin{array}{l}
+f(x)=\widetilde{f}(x)+\bar f(x)=\widetilde{f}(x)+\sum\limits_{k=1}^N\lambda_k\bar f_k(x)\\[2ex]
+h(x)=\widetilde{h}(x)+\bar h(x)=\widetilde{h}(x)+\sum\limits_{k=1}^N\lambda_k\bar h_k(x)
+\end{array}
+\]
+Using problems $[\bar P]$ and $[\widetilde{P}]$ we have:
+\[
+f(x)=\widetilde{f}(x)+\bar f(x)=\mathbb{G}[\widetilde{h}(x)]+\sum_{k=1}^N \lambda_k \mathbb{G}[\bar h_k(x)]
+\]
+
+\section{Application to the 4$^{th}$ order equation for the velocity}
+\label{sec: infm_app}
+To apply the Chebyshev-Tau method to the equation for the velocity transport we need a second order equation; so we have to split the fourth order equation in two second order equations.
+\[
+\frac{\de^2 \hat w^{n+1}}{\de z^2}-k^2\hat w^{n+1}=\theta^{n+1}
+\]
+\[
+\frac{\de^2 \theta^{n+1}}{\de z^2}-\beta^2\theta^{n+1}=H^n
+\]
+For $\hat w$ the boundary conditions are known in advance and they depend on the physical problem studied, while for $\theta$ the boundary conditions depend on $\hat w$.\\
+In the following we drop the \string^ symbol and the time superscript for a more compact notation.\\
+As seen before we can define the four problems; we start by splitting the two unknowns:
+\[
+\begin{array}{l}
+\theta=\widetilde{\theta}+\bar\theta\\
+w=\widetilde{w}+\bar w\\
+\end{array}
+\]
+We define now the problems $[P]$, $[\widetilde{P}]$, $[\bar P]$ and the sub-problems $[\bar P_k]$.
+\[
+[P]
+\begin{cases}
+\frac{\de^2 w}{\de z^2}-k^2w=\theta &\textnormal{in }\Omega\\
+\frac{\de^2\theta}{\de z^2}-\beta^2 \theta=H &\textnormal{in }\Omega\\
+w=w_\Gamma &\textnormal{in }\Gamma\\
+\theta=\mathbb{H}[w] & \textnormal{in }\Gamma\\
+\end{cases}
+\]
+
+\[
+[\widetilde{P}]
+\begin{cases}
+\frac{\de^2 \widetilde{w}}{\de z^2}-k^2\widetilde{w}=\widetilde{\theta} &\textnormal{in }\Omega\\
+\frac{\de^2\widetilde{\theta}}{\de z^2}-\beta^2\widetilde{\theta}=H &\textnormal{in }\Omega\\
+\widetilde{w}=w_\Gamma &\textnormal{in }\Gamma\\
+\widetilde{\theta}=\widetilde{\theta}_\Gamma & \textnormal{in }\Gamma\\
+\end{cases}
+\]
+
+\[
+[\bar P]
+\begin{cases}
+\frac{\de^2 \bar w}{\de z^2}-k^2\bar w=\bar\theta &\textnormal{in }\Omega\\
+\frac{\de^2\bar\theta}{\de z^2}-\beta^2 \bar\theta=0 &\textnormal{in }\Omega\\
+\bar w=0 &\textnormal{in }\Gamma\\
+\bar\theta-\mathbb{H}[\bar w]=-\widetilde{\theta}_\Gamma+\mathbb{H}[\widetilde{h}] & \textnormal{in }\Gamma\\
+\end{cases}
+\]
+Our boundary in the $z$ direction consists of $z=-1$ and $z=1$, so of two points. This way the problem $[\bar P]$ will be splitted in two sub-problems:
+\[
+\begin{array}{l}
+\bar \theta=A\theta_2+B\theta_3\\
+\bar w=Aw_2+Bw_3
+\end{array}
+\]
+Here we follow the notation used in \cite{Guasti_2012}, where the subscript 1 corresponds to the problem $[\widetilde{P}]$, while the subscripts 2 and 3 to the problems $[P_k]$ with $k=1,2$ respectively.
+\[
+[\bar P_2]
+\begin{cases}
+\frac{\de^2 \bar w_2}{\de z^2}-k^2\bar w_2=\bar\theta_2 &\textnormal{in }\Omega\\
+\frac{\de^2\bar\theta_2}{\de z^2}-\beta^2 \bar\theta_2=0 &\textnormal{in }\Omega\\
+\bar w_2=0 &\textnormal{in }\Gamma\\
+\bar\theta_2(-1)=1 \ ,\  \bar\theta_2(1)=0 & \textnormal{in }\Gamma\\
+\end{cases}
+\]
+
+\[
+[\bar P_3]
+\begin{cases}
+\frac{\de^2 \bar w_3}{\de z^2}-k^2\bar w_3=\bar\theta_3 &\textnormal{in }\Omega\\
+\frac{\de^2\bar\theta_3}{\de z^2}-\beta^2 \bar\theta_3=0 &\textnormal{in }\Omega\\
+\bar w_3=0 &\textnormal{in }\Gamma\\
+\bar\theta_3(-1)=0 \ ,\  \bar\theta_3(1)=1 & \textnormal{in }\Gamma\\
+\end{cases}
+\]
+Once known the solutions $\widetilde{w}$, $\bar w_2$ and $\bar w_3$ we have to compute the coefficients $A$ and $B$. To do so we can use the other boundary condition on the velocity: the Dirichlet boundary condition (imposed value at the boundary) has already been used in the problem $[P]$. The other boundary condition now will be expressed in the most general way, with mixed boundary conditions:
+\[
+a\frac{\de w}{\de z}+b\frac{\de^2 w}{\de z^2}=F(z)
+\]
+The coefficients $a$ and $b$ are typical of the physical boundary condition imposed (\textit{e.g.} for a no-slip condition we have $a\neq0$, $b=0$ and $F(z)=0$).\\
+To determine the values of the two coefficients $A$ and $B$ we have to solve the following linear system:
+\renewcommand\arraystretch{3}
+\[
+\begin{bmatrix}
+\left.a\dfrac{\de w_2}{\de z}\right|_{z=-1}+\left.b\dfrac{\de^2 w_2}{\de z^2}\right|_{z=-1} && \left.a\dfrac{\de w_3}{\de z}\right|_{z=-1}+\left.b\dfrac{\de^2 w_3}{\de z^2}\right|_{z=-1}\\
+\left.a\dfrac{\de w_2}{\de z}\right|_{z=1}+\left.b\dfrac{\de^2 w_2}{\de z^2}\right|_{z=1} & &\left.a\dfrac{\de w_3}{\de z}\right|_{z=1}+\left.b\dfrac{\de^2 w_3}{\de z^2}\right|_{z=1}\\
+\end{bmatrix}
+\begin{bmatrix}
+A\\
+B\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+F(-1)-\left.a\dfrac{\de w_1}{\de z}\right|_{z=-1}-\left.b\dfrac{\de^2 w_1}{\de z^2}\right|_{z=-1} \\
+F(1)-\left.a\dfrac{\de w_1}{\de z}\right|_{z=1}-\left.b\dfrac{\de^2 w_1}{\de z^2}\right|_{z=1} 
+\end{bmatrix}
+\]
+\renewcommand\arraystretch{1}
+
+
+
