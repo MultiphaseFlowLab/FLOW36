@@ -239,7 +239,7 @@ buoyancy="0" # integer
 
 # Surfactant only
 # surfactant flag, 0 : surfactant deactivated, 1 : surfactant activated
-psi_flag="0" # integer
+psi_flag="1" # integer
 
 # surfactant Peclet number
 Pe_psi="100.0" # real (double)
