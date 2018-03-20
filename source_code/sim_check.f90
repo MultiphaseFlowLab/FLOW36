@@ -5,6 +5,7 @@ use sim_par
 use velocity
 use phase_field
 use surfactant
+use dual_grid
 
 integer :: i
 
@@ -22,7 +23,7 @@ re_bulk=2.0d0*re/dble(2*nx*ny)*((uc(1,1,1,1))**2+(vc(1,1,1,1))**2+(wc(1,1,1,1)**
 #if phiflag == 1
 int_phi=phic(1,1,1,1)/dble(2*nx*ny)
 #if psiflag == 1
-int_psi=psic(1,1,1,1)/dble(2*nx*ny)
+int_psi=psic_fg(1,1,1,1)/dble(2*npsix*npsiy)
 #endif
 #endif
 
@@ -61,6 +62,7 @@ use sim_par
 use velocity
 use phase_field
 use surfactant
+use dual_grid
 
 double precision :: time,re_bulk,int_phi,int_1,int_psi
 double precision :: tau_wm1,tau_wp1,nu_wm1,nu_wp1
@@ -76,7 +78,7 @@ re_bulk=2.0d0*re/dble(2*nx*ny)*((uc(1,1,1,1))**2+(vc(1,1,1,1))**2+(wc(1,1,1,1)**
 #if phiflag == 1
 int_phi=phic(1,1,1,1)/dble(2*nx*ny)
 #if psiflag == 1
-int_psi=psic(1,1,1,1)/dble(2*nx*ny)
+int_psi=psic_fg(1,1,1,1)/dble(2*npsix*npsiy)
 #endif
 #endif
 
