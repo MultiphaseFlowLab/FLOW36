@@ -180,7 +180,7 @@ deallocate(hpsi)
 
 ! only temporary, while surface force in NS is calc. on coarse grid
 call fine2coarse(psic_fg,psic)
-call phys_to_spectral(psic,psi,1)
+call spectral_to_phys(psic,psi,1)
 
 
 #endif
