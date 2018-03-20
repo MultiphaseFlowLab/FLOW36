@@ -39,7 +39,6 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
 call spectral_to_phys(a1,a1f,1)
 
 do j=1,fpy
@@ -64,7 +63,6 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
 call spectral_to_phys(a1,a1f,1)
 
 do j=1,fpy
@@ -84,7 +82,6 @@ sphi=sphi-a1
 
 call dz(phic,a1)
 
-call spectral_to_phys(wc,w,1)
 call spectral_to_phys(a1,a1f,1)
 
 do j=1,fpy

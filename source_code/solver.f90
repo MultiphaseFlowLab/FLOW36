@@ -9,6 +9,7 @@ use grid
 use phase_field
 use surfactant
 use temperature
+use dual_grid
 
 double precision, allocatable, dimension(:,:,:,:) :: s1, s2, s3, sphi,hphi,spsi,hpsi,stheta,htheta
 double precision, dimension(spx,nz,spy,2) :: h1, h2, h3, h, omega
@@ -20,6 +21,9 @@ integer :: ntime
 #define tempflag tempcompflag
 #define boussinnesq boussinnesqcompflag
 #define match_dens matched_density
+#define expx expansionx
+#define expy expansiony
+#define expz expansionz
 
 allocate(s1(spx,nz,spy,2))
 allocate(s2(spx,nz,spy,2))
@@ -95,7 +99,30 @@ call calculate_omega(h1,h2,omega)
 ! calculate u,v from continuity and vorticity definition
 call calculate_uv(omega,h1,h2)
 
-
+! only if surfactant calculated on finer grid than phase field
+#if expx != 1 || expy != 1 || expz != 1
+! for phase field calculation
+call spectral_to_phys(uc,u,1)
+call spectral_to_phys(vc,v,1)
+call spectral_to_phys(wc,w,1)
+! for surfactant calculation
+call coarse2fine(uc,uc_fg)
+call spectral_to_phys_fg(uc_fg,u_fg,1)
+call coarse2fine(vc,vc_fg)
+call spectral_to_phys_fg(vc_fg,v_fg,1)
+call coarse2fine(wc,wc_fg)
+call spectral_to_phys_fg(wc_fg,w_fg,1)
+#else
+call spectral_to_phys(uc,u,1)
+call spectral_to_phys(vc,v,1)
+call spectral_to_phys(wc,w,1)
+uc_fg=uc
+vc_fg=vc
+wc_fg=wc
+u_fg=u
+v_fg=v
+w_fg=w
+#endif
 
 ! Cahn-Hilliard equation solution
 #if phiflag == 1
@@ -126,8 +153,8 @@ deallocate(hphi)
 
 ! Cahn-Hilliard equation for surfactant
 #if psiflag == 1
-allocate(spsi(spx,nz,spy,2))
-allocate(hpsi(spx,nz,spy,2))
+allocate(spsi(spxpsi,npsiz,spypsi,2))
+allocate(hpsi(spxpsi,npsiz,spypsi,2))
 ! calculate non-linear terms of surfactant Cahn-Hilliard equation
 call sterm_surf(spsi)
 
@@ -146,7 +173,7 @@ hpsi=hpsi+psic
 call calculate_psi(hpsi)
 
 if (rank.eq.0) then
-  print*,'Average Concentration Surfactant (Not Normalized):',psic(1,1,1,1)
+  print*,'Average Concentration Surfactant: ',psic_fg(1,1,1,1)/dble(2*npsix*npsiy)
 endif
 
 deallocate(hpsi)

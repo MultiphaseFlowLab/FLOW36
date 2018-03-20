@@ -36,6 +36,8 @@ end module grid
 module velocity
  double precision, allocatable :: u(:,:,:), v(:,:,:), w(:,:,:)
  double precision, allocatable :: uc(:,:,:,:), vc(:,:,:,:), wc(:,:,:,:)
+ double precision, allocatable, dimension(:,:,:) :: u_fg, v_fg, w_fg
+ double precision, allocatable, dimension(:,:,:,:) :: uc_fg, vc_fg, wc_fg
  double precision, allocatable :: wa2(:,:,:), wa3(:,:,:)
  double precision, allocatable, dimension(:,:,:,:) :: sgradpx,sgradpy
 end module velocity

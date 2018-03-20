@@ -7,6 +7,7 @@ use grid
 use velocity
 use sterms
 use wavenumber
+use dual_grid
 
 double precision, dimension(nx,fpz,fpy) :: fgradpx,fgradpy
 double precision :: beta2(spx,spy),k2l(spx,spy)
@@ -25,6 +26,14 @@ allocate(w(nx,fpz,fpy))
 allocate(uc(spx,nz,spy,2))
 allocate(vc(spx,nz,spy,2))
 allocate(wc(spx,nz,spy,2))
+
+allocate(u_fg(npsix,fpzpsi,fpypsi))
+allocate(v_fg(npsix,fpzpsi,fpypsi))
+allocate(w_fg(npsix,fpzpsi,fpypsi))
+
+allocate(uc_fg(spxpsi,npsiz,spypsi,2))
+allocate(vc_fg(spxpsi,npsiz,spypsi,2))
+allocate(wc_fg(spxpsi,npsiz,spypsi,2))
 
 allocate(s1_o(spx,nz,spy,2))
 allocate(s2_o(spx,nz,spy,2))
@@ -307,6 +316,14 @@ deallocate(w)
 deallocate(uc)
 deallocate(vc)
 deallocate(wc)
+
+deallocate(u_fg)
+deallocate(v_fg)
+deallocate(w_fg)
+
+deallocate(uc_fg)
+deallocate(vc_fg)
+deallocate(wc_fg)
 
 deallocate(s1_o)
 deallocate(s2_o)

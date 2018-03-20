@@ -661,6 +661,9 @@ sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
 sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/swap_grid.f90
 sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/swap_grid.f90
 sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -713,6 +716,9 @@ sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
 sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/swap_grid.f90
 sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/swap_grid.f90
 sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 fi
 
 if [ "$machine" == "4" ]; then
