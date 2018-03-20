@@ -332,8 +332,9 @@ use par_size
 use surfactant
 use sim_par
 use wavenumber
+use dual_grid
 
-double precision :: hpsi(spx,nz,spy,2),beta2(spx,spy),gammapsi
+double precision :: hpsi(spxpsi,npsiz,spypsi,2),beta2(spxpsi,spypsi),gammapsi
 
 integer :: i,j
 
@@ -341,16 +342,16 @@ gammapsi=dt*P_i/pe_psi
 
 hpsi=-hpsi/gammapsi
 
-do j=1,spy
-  do i=1,spx
-    beta2(i,j)=1.0d0/gammapsi+k2(i+cstart(1),j+cstart(3))
+do j=1,spypsi
+  do i=1,spxpsi
+    beta2(i,j)=1.0d0/gammapsi+k2psi(i+cstartpsi(1),j+cstartpsi(3))
   enddo
 enddo
 
 
-call helmholtz(hpsi,beta2,[0.0d0,0.0d0],[1.0d0,1.0d0],[0.0d0,0.0d0],zp)
+call helmholtz_fg(hpsi,beta2,[0.0d0,0.0d0],[1.0d0,1.0d0],[0.0d0,0.0d0],zp)
 
-psic=hpsi
+psic_fg=hpsi
 
 
 return

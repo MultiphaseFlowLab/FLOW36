@@ -168,7 +168,7 @@ spsi_o=spsi
 
 deallocate(spsi)
 
-hpsi=hpsi+psic
+hpsi=hpsi+psic_fg
 
 call calculate_psi(hpsi)
 
