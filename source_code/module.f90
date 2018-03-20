@@ -14,6 +14,18 @@ end module commondata
 
 
 
+module dual_grid
+ use commondata
+ integer, parameter :: exp_x=expansionx, exp_y=expansiony, exp_z=expansionz
+ integer :: npsix,npsiy,npsiz
+ integer :: cg_size(nycpu,nzcpu,5),fg_size(nycpu,nzcpu,5)
+ integer :: spxpsi,spypsi,fpypsi,fpzpsi
+ integer :: cstartpsi(3)
+ integer :: c2fadd(nycpu*nzcpu,2),f2cadd(nycpu*nzcpu,2)
+end module dual_grid
+
+
+
 module grid
  use commondata
  double precision :: x(nx),y(ny),z(nz)
@@ -33,6 +45,7 @@ end module velocity
 module wavenumber
  use commondata
  double precision :: kx(nx/2+1),ky(ny),k2(nx/2+1,ny)
+ double precision, allocatable :: kxpsi(:),kypsi(:),k2psi(:,:)
 end module wavenumber
 
 
@@ -120,15 +133,3 @@ module stats
  integer :: flowiter,stat_dump,stat_start
  integer :: plane_comm,col_comm
 end module stats
-
-
-
-module dual_grid
-  use commondata
-  integer, parameter :: exp_x=expansionx, exp_y=expansiony, exp_z=expansionz
-  integer :: npsix,npsiy,npsiz
-  integer :: cg_size(nycpu,nzcpu,5),fg_size(nycpu,nzcpu,5)
-  integer :: spxpsi,spypsi,fpypsi,fpzpsi
-  integer :: cstartpsi(3)
-  integer :: c2fadd(nycpu*nzcpu,2),f2cadd(nycpu*nzcpu,2)
-end module dual_grid

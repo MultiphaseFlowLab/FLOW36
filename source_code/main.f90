@@ -11,6 +11,7 @@ use phase_field
 use stats
 use surfactant
 use temperature
+use wavenumber
 
 
 integer :: i,j,k
@@ -432,6 +433,9 @@ endif
 #if tempflag == 1
   call destroy_theta
 #endif
+  deallocate(kxpsi)
+  deallocate(kypsi)
+  deallocate(k2psi)
 
 
   ! destroy fftw plans

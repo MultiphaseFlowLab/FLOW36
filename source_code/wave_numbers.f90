@@ -4,6 +4,7 @@ use commondata
 use wavenumber
 use sim_par
 use phase_field
+use dual_grid
 
 integer :: i,j
 
@@ -25,6 +26,28 @@ do j=1,ny
     k2(i,j)=kx(i)*kx(i)+ky(j)*ky(j)
   enddo
 enddo
+
+allocate(kxpsi(npsix/2+1))
+allocate(kypsi(npsiy))
+allocate(k2psi(npsix/2+1,npsiy))
+
+kxpsi(1)=0.0d0
+do i=2,npsix/2+1
+  kxpsi(i)=dble(i-1)*2.0d0*pi/xl
+enddo
+
+kypsi(1)=0.0d0
+do i=2,npsiy/2+1
+  kypsi(npsiy-i+2)=-dble(i-1)*2.0d0*pi/yl
+  kypsi(i)=dble(i-1)*2.0d0*pi/yl
+enddo
+
+do j=1,npsiy
+  do i=1,npsix/2+1
+    k2psi(i,j)=kxpsi(i)*kxpsi(i)+kypsi(j)*kypsi(j)
+  enddo
+enddo
+
 
 #if match_dens == 2
 gamma=dt/(2.0d0*re*rhor)
