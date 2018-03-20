@@ -255,7 +255,7 @@ npx=nsx
  allocate(uc(nsx,npz,npsiy,2))
 
 
- call yz2xz(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
+ call yz2xz_fg(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
 
  deallocate(wa)
 
@@ -295,7 +295,7 @@ rz=mod(npsiz,nzcpu)
  deallocate(uc)
  allocate(uc(nsx,npsiz,npy,2))
 
- call xz2xy(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xz2xy_fg(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
 
  deallocate(wa)
 #else

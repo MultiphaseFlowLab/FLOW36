@@ -82,9 +82,9 @@ iy="5" # integer
 iz="5" # integer
 
 # dual grid for surfactant, expansion factors:
-exp_x="1" # integer, (2**ix)*exp_x
-exp_y="1" # integer, (2**iy)*exp_y
-exp_z="1" # integer, (2**iz)*exp_z+1
+exp_x="2" # integer, (2**ix)*exp_x
+exp_y="2" # integer, (2**iy)*exp_y
+exp_z="2" # integer, (2**iz)*exp_z+1
 
 NX="$((2**$ix))"
 NY="$((2**$iy))"
