@@ -67,6 +67,7 @@ module phase_field
  integer :: phi_flag,in_cond_phi,b_type
  double precision :: rhor,visr,We,Ch,Pe,Fr,grav(3),s_coeff
  double precision, allocatable :: phi(:,:,:), phic(:,:,:,:)
+ double precision, allocatable :: phi_fg(:,:,:), phic_fg(:,:,:,:)
 end module phase_field
 
 
@@ -76,6 +77,7 @@ module surfactant
  integer :: psi_flag, in_cond_psi
  double precision :: Ex, Pe_psi, P_i, El
  double precision, allocatable :: psi(:,:,:),psic(:,:,:,:)
+ double precision, allocatable :: psi_fg(:,:,:),psic_fg(:,:,:,:)
 end module surfactant
 
 

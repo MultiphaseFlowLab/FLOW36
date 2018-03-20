@@ -8,6 +8,7 @@ use velocity_old
 use velocity
 use sterms
 use sim_par
+use dual_grid
 
 
 logical :: checkf,checks
@@ -16,6 +17,9 @@ character(len=8) :: time
 
 allocate(phi(nx,fpz,fpy))
 allocate(phic(spx,nz,spy,2))
+allocate(phi_fg(npsix,fpzpsi,fpypsi))
+allocate(phic_fg(spxpsi,npsiz,spypsi,2))
+
 allocate(sphi_o(spx,nz,spy,2))
 
 #define match_dens matched_density
@@ -438,6 +442,9 @@ use sterms
 
 deallocate(phi)
 deallocate(phic)
+deallocate(phi_fg)
+deallocate(phic_fg)
+
 deallocate(sphi_o)
 
 #define match_dens matched_density
