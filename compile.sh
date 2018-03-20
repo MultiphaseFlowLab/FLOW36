@@ -239,7 +239,7 @@ buoyancy="0" # integer
 
 # Surfactant only
 # surfactant flag, 0 : surfactant deactivated, 1 : surfactant activated
-psi_flag="0" # integer
+psi_flag="1" # integer
 
 # surfactant Peclet number
 Pe_psi="100.0" # real (double)
@@ -260,7 +260,7 @@ El="0.5" # real (double)
 # 3: equilibrium profile multiplied with Y gradient
 # 4: equilibrium profile multiplied with Z gradient
 # 5: Diffusione Test, angular distribuction
-in_condpsi="5" # integer
+in_condpsi="2" # integer
 psi_mean="0.01" # real (double)
 psi_bulk="0.01" # real (double)
 
