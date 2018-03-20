@@ -110,7 +110,7 @@ read(66,'(f16.6)') psi_k
 close(66,status='keep')
 
 call coarse2fine(phic,phic_fg)
-call spectral_to_phys(phic_fg,phi_fg,0)
+call spectral_to_phys_fg(phic_fg,phi_fg,0)
 
 do j=1,fpypsi
   do k=1,fpzpsi
