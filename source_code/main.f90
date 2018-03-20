@@ -121,6 +121,7 @@ else
   endif
   stime=mpi_wtime()
   call create_plan
+  call create_plan_fg
   etime=mpi_wtime()
   dtime=etime-stime
   call mpi_reduce(dtime,mtime,1,mpi_double,mpi_sum,0,mpi_comm_world,ierr)

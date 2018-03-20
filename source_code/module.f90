@@ -104,6 +104,8 @@ module fftw3
  include 'fftw3.f03'
  type(c_ptr) :: plan_x_fwd,plan_y_fwd,plan_z_fwd
  type(c_ptr) :: plan_x_bwd,plan_y_bwd,plan_z_bwd
+ type(c_ptr) :: plan_x_fwd_fg,plan_y_fwd_fg,plan_z_fwd_fg
+ type(c_ptr) :: plan_x_bwd_fg,plan_y_bwd_fg,plan_z_bwd_fg
 end module fftw3
 
 
