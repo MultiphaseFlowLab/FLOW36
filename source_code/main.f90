@@ -456,21 +456,3 @@ call mpi_finalize(ierr)
 
 
 end program FLOW_36
-
-
-
-
-
-!!!!!!!!!!!!!!!!!!!
-! MISSING PARTS
-! TO DO LIST
-
-
-!!!!!!!!call Read_Sample
-
-!!!!!!!!if ( concentr == 1 ) then
-!!!!!!!!   call Read_SampleC(C,Cr,SC_old, startC, SampIN_C, Init_C)
-!!!!!!!!endif
-!!!!!!!!if ( concentr2 == 1 ) then
-!!!!!!!!   call Read_SampleC(C2,C2r,SC2_old, startC2, SampIN_C2, Init_C2)
-!!!!!!!!endif
