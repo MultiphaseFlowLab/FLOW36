@@ -172,7 +172,7 @@ dims(2)=nycpu
 
 allocate(u(spxpsi,npsiz,spypsi,2))
 u=uc
-call dctz_bwd(u,u,spxpsi,npsiz,spypsi,aliasing)
+call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -237,7 +237,7 @@ endif
 ! 3)    ifft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_bwd(u,u,spxpsi,npz,npsiy,aliasing)
+call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to y-z
@@ -279,7 +279,7 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-call fftx_bwd(u,uout,npsix,fpzpsi,fpypsi,aliasing)
+call fftx_bwd_fg(u,uout,npsix,fpzpsi,fpypsi,aliasing)
 
 deallocate(u)
 

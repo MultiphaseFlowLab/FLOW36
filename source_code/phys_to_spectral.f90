@@ -218,7 +218,7 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(uc(npx,npz,npy,2))
-call fftx_fwd(u,uc,npsix,npz,npy,aliasing)
+call fftx_fwd_fg(u,uc,npsix,npz,npy,aliasing)
 !call fftx_fwd(u,uc,nx,npz,npy,0)
 
 
@@ -267,7 +267,7 @@ npx=nsx
 ! 3)    fft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_fwd(uc,uc,nsx,npz,npsiy,aliasing)
+call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing)
 !call ffty_fwd(uc,uc,nsx,npz,ny,0)
 
 
@@ -306,7 +306,7 @@ rz=mod(npsiz,nzcpu)
 ! 5)    dct z direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call dctz_fwd(uc,uout,nsx,npsiz,npy,aliasing)
+call dctz_fwd_fg(uc,uout,nsx,npsiz,npy,aliasing)
 
 
 deallocate(uc)

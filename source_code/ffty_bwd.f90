@@ -45,4 +45,38 @@ uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
 uo=uo/dble(ny)
 
 return
-end 
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine ffty_bwd_fg(ui,uo,nsx,npz,ny,aliasing)
+
+use fftw3
+implicit none
+
+integer(c_int) :: nsx,ny,npz
+integer :: aliasing
+
+real(c_double) :: ui(nsx,npz,ny,2),uo(nsx,npz,ny,2)
+complex(c_double_complex) :: wt(nsx,npz,ny),wot(nsx,npz,ny)
+
+! dealiasing
+if(aliasing.eq.1)then
+ ui(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1))+1:ny-floor(2.0/3.0*real(ny/2)),1)=0.0d0
+ ui(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1))+1:ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
+endif
+
+wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
+
+call fftw_execute_dft(plan_y_bwd_fg,wt,wot)
+
+
+uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
+uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
+
+uo=uo/dble(ny)
+
+return
+end
