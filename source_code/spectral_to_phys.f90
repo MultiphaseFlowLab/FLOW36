@@ -76,7 +76,7 @@ endif
  deallocate(u)
  allocate(u(spx,npz,ny,2))
 
- call xy2xz_fg(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xy2xz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
 
  deallocate(wa)
 
@@ -120,7 +120,7 @@ endif
  deallocate(u)
  allocate(u(nx/2+1,npz,npy,2))
 
- call xz2yz_fg(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xz2yz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
 
  deallocate(wa)
 
@@ -225,7 +225,7 @@ endif
  deallocate(u)
  allocate(u(spxpsi,npz,npsiy,2))
 
- call xy2xz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xy2xz_fg(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
 
  deallocate(wa)
 
@@ -266,7 +266,7 @@ endif
  deallocate(u)
  allocate(u(npsix/2+1,npz,npy,2))
 
- call xz2yz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xz2yz_fg(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
 
  deallocate(wa)
 
