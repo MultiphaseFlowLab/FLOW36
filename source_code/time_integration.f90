@@ -71,8 +71,9 @@ subroutine euler_psi(spsi,hpsi)
 use commondata
 use sim_par
 use par_size
+use dual_grid
 
-double precision :: spsi(spx,nz,spy,2), hpsi(spx,nz,spy,2)
+double precision, dimension(spxpsi,npsiz,spypsi,2) :: spsi, hpsi
 
 hpsi=dt*spsi
 
@@ -87,8 +88,9 @@ use commondata
 use sim_par
 use par_size
 use sterms
+use dual_grid
 
-double precision :: spsi(spx,nz,spy,2), hpsi(spx,nz,spy,2)
+double precision, dimension(spxpsi,npsiz,spypsi,2) :: spsi, hpsi
 
 hpsi=0.5d0*dt*(3.0d0*spsi-spsi_o)
 
