@@ -77,9 +77,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="5" # integer
-iy="5" # integer
-iz="5" # integer
+ix="6" # integer
+iy="6" # integer
+iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="2" # integer, (2**ix)*exp_x
@@ -120,8 +120,8 @@ gradpx="-1.0" # real (double)
 gradpy="0.0" # real (double)
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
-lx="4.0" # real (double)
-ly="2.0" # real (double)
+lx="0.5" # real (double)
+ly="0.5" # real (double)
 
 # initial time step
 nstart="0" # integer
@@ -188,7 +188,7 @@ visr="1.0" # real (double)
 We="1.0" # real (double)
 
 # Cahn number
-Ch="0.02" # real (double)
+Ch="0.05" # real (double)
 
 # Peclet number
 Pe="150.0" # real (double)
@@ -208,8 +208,8 @@ Fr="0.1" # real (double)
 #                 otherwise number of drops will be reduced
 # 7: Drop attached to the bottom wall z_c=-1 (radius)
 # 8: 2x 2D Droplets in kissing mode. (radius, ygap , zgap)
-in_condphi="6" # integer
-radius="0.15" # real (double)
+in_condphi="4" # integer
+radius="0.4" # real (double)
 height="0.0" # real (double)
 wave_amp_x="0.0" # real (double)
 wave_freq_x="0.0" # real (double)

@@ -109,7 +109,7 @@ varf=0.0d0
 
 
 ! renormalize
-varf=varf*dble(nx)/dble(npsix)*dble(ny)/dble(npsiy)
+varf=varf*dble(exp_x*exp_y)
 
 return
 end
@@ -228,7 +228,7 @@ varc=0.0d0
 
 
 ! renormalize
-varc=varc*dble(npsix)/dble(nx)*dble(npsiy)/dble(ny)
+varc=varc/dble(exp_x*exp_y)
 
 return
 end

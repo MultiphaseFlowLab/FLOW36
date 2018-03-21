@@ -60,7 +60,7 @@ elseif(in_cond_psi.eq.2)then
   call psi_eq
   call phys_to_spectral_fg(psi_fg,psic_fg,0)
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,0)
+  call spectral_to_phys(psic,psi,1)
 elseif(in_cond_psi.eq.3)then
   if(rank.eq.0) write(*,*) 'Initializing equilibrium profile multiplied with Y gradient'
   ! linear profile, calculated on coarse grid
