@@ -69,6 +69,8 @@ sigma=1.0d0
 ! Langmuir EOS for surface tension
 call spectral_to_phys(psic,psi,1)
 sigma=1.0d0+el*log(1.0d0-psi)
+! eventually check if sigma.lt.05: sigma=max(sigma,0.5d0), avoid unphysical
+! value of surface tension (easier way)
 #endif
 
 
