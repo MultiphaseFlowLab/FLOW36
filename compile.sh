@@ -127,7 +127,7 @@ ly="0.5" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="2" #integer (up to 8 digits)
+nend="5" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space (save only last time step if value lower than 1)
 dump="500" # integer

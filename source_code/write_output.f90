@@ -262,6 +262,7 @@ call write_output_recovery_s(wc,'wc   ')
 #if phiflag == 1
 call write_output_recovery_s(phic,'phic ')
 #if psiflag == 1
+call fine2coarse(psic_fg,psic)
 call write_output_recovery_s(psic,'psic ')
 #endif
 #endif
@@ -279,6 +280,7 @@ call write_output_recovery(w,'w    ')
 call spectral_to_phys(phic,phi,0)
 call write_output_recovery(phi,'phi  ')
 #if psiflag == 1
+call fine2coarse(psic_fg,psic)
 call spectral_to_phys(psic,psi,0)
 call write_output_recovery(psi,'psi  ')
 #endif
