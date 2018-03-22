@@ -8,6 +8,7 @@ use velocity
 use sim_par
 use velocity_old
 use surfactant
+use dual_grid
 
 
 double precision, dimension(spx,nz,spy,2) :: s1,s2,s3
@@ -26,66 +27,80 @@ integer :: i,j,k
 #define match_dens matched_density
 #define b_type buoyancytype
 
-! calculate surface force
+! debug only
+! allocate(a4f(npsix,fpzpsi,fpypsi))
+! a4f=psi_fg
+! call phys_to_spectral_fg(psi_fg,psic_fg,0)
+! call fine2coarse(psic_fg,psic)
+! call coarse2fine(psic,psic_fg)
+! call spectral_to_phys_fg(psic_fg,psi_fg,0)
+! write(*,*) rank,maxval(a4f),minval(a4f),maxval(psi_fg-a4f),minval(psi_fg-a4f)
+! deallocate(a4f)
+
+! phi on coarse grid, physical space needed after surface force calculation
 call spectral_to_phys(phic,phi,1)
 
-allocate(gradphix(spx,nz,spy,2))
-allocate(gradphiy(spx,nz,spy,2))
-allocate(gradphiz(spx,nz,spy,2))
-allocate(fgradphix(nx,fpz,fpy))
-allocate(fgradphiy(nx,fpz,fpy))
-allocate(fgradphiz(nx,fpz,fpy))
+! calculate surface force
+call coarse2fine(phic,phic_fg)
+call spectral_to_phys_fg(phic_fg,phi_fg,1)
+
+allocate(gradphix(spxpsi,npsiz,spypsi,2))
+allocate(gradphiy(spxpsi,npsiz,spypsi,2))
+allocate(gradphiz(spxpsi,npsiz,spypsi,2))
+allocate(fgradphix(npsix,fpzpsi,fpypsi))
+allocate(fgradphiy(npsix,fpzpsi,fpypsi))
+allocate(fgradphiz(npsix,fpzpsi,fpypsi))
 
 
 ! calculate gradient of phi
 ! x and y component
-do j=1,spy
-  do k=1,nz
-    do i=1,spx
-      gradphix(i,k,j,1)=-kx(i+cstart(1))*phic(i,k,j,2)
-      gradphix(i,k,j,2)=+kx(i+cstart(1))*phic(i,k,j,1)
-      gradphiy(i,k,j,1)=-ky(j+cstart(3))*phic(i,k,j,2)
-      gradphiy(i,k,j,2)=+ky(j+cstart(3))*phic(i,k,j,1)
+do j=1,spypsi
+  do k=1,npsiz
+    do i=1,spxpsi
+      gradphix(i,k,j,1)=-kxpsi(i+cstartpsi(1))*phic_fg(i,k,j,2)
+      gradphix(i,k,j,2)=+kxpsi(i+cstartpsi(1))*phic_fg(i,k,j,1)
+      gradphiy(i,k,j,1)=-kypsi(j+cstartpsi(3))*phic_fg(i,k,j,2)
+      gradphiy(i,k,j,2)=+kypsi(j+cstartpsi(3))*phic_fg(i,k,j,1)
     enddo
   enddo
 enddo
 
-call spectral_to_phys(gradphix,fgradphix,1)
-call spectral_to_phys(gradphiy,fgradphiy,1)
+call spectral_to_phys_fg(gradphix,fgradphix,1)
+call spectral_to_phys_fg(gradphiy,fgradphiy,1)
 
 ! z component
-call dz(phic,gradphiz)
+call dz_fg(phic_fg,gradphiz)
 
-call spectral_to_phys(gradphiz,fgradphiz,1)
+call spectral_to_phys_fg(gradphiz,fgradphiz,1)
 
 ! phi gradient in physical space in fgradphix,fgradphiy,fgradphiz
 
-allocate(sigma(nx,fpz,fpy))
+allocate(sigma(npsix,fpzpsi,fpypsi))
 
 #if psiflag == 0
 ! constant fixed surface tension, no surfactant
 sigma=1.0d0
 #elif psiflag == 1
 ! Langmuir EOS for surface tension
-call spectral_to_phys(psic,psi,1)
-sigma=1.0d0+el*log(1.0d0-psi)
+call spectral_to_phys_fg(psic_fg,psi_fg,1)
+sigma=1.0d0+el*log(1.0d0-psi_fg)
 ! eventually check if sigma.lt.05: sigma=max(sigma,0.5d0), avoid unphysical
 ! value of surface tension (easier way)
 #endif
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
+allocate(a4f(npsix,fpzpsi,fpypsi))
+allocate(a5f(npsix,fpzpsi,fpypsi))
+allocate(a6f(npsix,fpzpsi,fpypsi))
+allocate(a4(spxpsi,npsiz,spypsi,2))
+allocate(a5(spxpsi,npsiz,spypsi,2))
+allocate(a6(spxpsi,npsiz,spypsi,2))
 
 
 ! assemble x component of surface tension force
-do j=1,fpy
-  do k=1,fpz
-    do i=1,nx
+do j=1,fpypsi
+  do k=1,fpzpsi
+    do i=1,npsix
       a4f(i,k,j)=sigma(i,k,j)*((fgradphiy(i,k,j))**2+(fgradphiz(i,k,j))**2)
       a5f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiy(i,k,j)
       a6f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiz(i,k,j)
@@ -93,25 +108,27 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,gradphix,1)
-call phys_to_spectral(a5f,gradphiy,1)
-call phys_to_spectral(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1)
+call phys_to_spectral_fg(a5f,gradphiy,1)
+call phys_to_spectral_fg(a6f,gradphiz,1)
 
-call dz(gradphiz,a4)
+call dz_fg(gradphiz,a4)
 
-do j=1,spy
-  do k=1,nz
-    do i=1,spx
-      a4(i,k,j,1)=a4(i,k,j,1)-kx(i+cstart(1))*gradphix(i,k,j,2)-ky(j+cstart(3))*gradphiy(i,k,j,2)
-      a4(i,k,j,2)=a4(i,k,j,2)+kx(i+cstart(1))*gradphix(i,k,j,1)+ky(j+cstart(3))*gradphiy(i,k,j,1)
+do j=1,spypsi
+  do k=1,npsiz
+    do i=1,spxpsi
+      a4(i,k,j,1)=a4(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix(i,k,j,2) &
+                           & -kypsi(j+cstartpsi(3))*gradphiy(i,k,j,2)
+      a4(i,k,j,2)=a4(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix(i,k,j,1) &
+                           & +kypsi(j+cstartpsi(3))*gradphiy(i,k,j,1)
     enddo
   enddo
 enddo
 
 ! assemble y component of surface tension force
-do j=1,fpy
-  do k=1,fpz
-    do i=1,nx
+do j=1,fpypsi
+  do k=1,fpzpsi
+    do i=1,npsix
       a4f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiy(i,k,j)
       a5f(i,k,j)=sigma(i,k,j)*((fgradphix(i,k,j))**2+(fgradphiz(i,k,j))**2)
       a6f(i,k,j)=-sigma(i,k,j)*fgradphiy(i,k,j)*fgradphiz(i,k,j)
@@ -119,25 +136,27 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,gradphix,1)
-call phys_to_spectral(a5f,gradphiy,1)
-call phys_to_spectral(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1)
+call phys_to_spectral_fg(a5f,gradphiy,1)
+call phys_to_spectral_fg(a6f,gradphiz,1)
 
-call dz(gradphiz,a5)
+call dz_fg(gradphiz,a5)
 
-do j=1,spy
-  do k=1,nz
-    do i=1,spx
-      a5(i,k,j,1)=a5(i,k,j,1)-kx(i+cstart(1))*gradphix(i,k,j,2)-ky(j+cstart(3))*gradphiy(i,k,j,2)
-      a5(i,k,j,2)=a5(i,k,j,2)+kx(i+cstart(1))*gradphix(i,k,j,1)+ky(j+cstart(3))*gradphiy(i,k,j,1)
+do j=1,spypsi
+  do k=1,npsiz
+    do i=1,spxpsi
+      a5(i,k,j,1)=a5(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix(i,k,j,2) &
+                           & -kypsi(j+cstartpsi(3))*gradphiy(i,k,j,2)
+      a5(i,k,j,2)=a5(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix(i,k,j,1) &
+                           & +kypsi(j+cstartpsi(3))*gradphiy(i,k,j,1)
     enddo
   enddo
 enddo
 
 ! assemble z component of surface tension force
-do j=1,fpy
-  do k=1,fpz
-    do i=1,nx
+do j=1,fpypsi
+  do k=1,fpzpsi
+    do i=1,npsix
       a4f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiz(i,k,j)
       a5f(i,k,j)=-sigma(i,k,j)*fgradphiy(i,k,j)*fgradphiz(i,k,j)
       a6f(i,k,j)=sigma(i,k,j)*((fgradphix(i,k,j))**2+(fgradphiy(i,k,j))**2)
@@ -145,9 +164,9 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,gradphix,1)
-call phys_to_spectral(a5f,gradphiy,1)
-call phys_to_spectral(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1)
+call phys_to_spectral_fg(a5f,gradphiy,1)
+call phys_to_spectral_fg(a6f,gradphiz,1)
 
 deallocate(fgradphix)
 deallocate(fgradphiy)
@@ -157,35 +176,53 @@ deallocate(a4f)
 deallocate(a5f)
 deallocate(a6f)
 
-call dz(gradphiz,a6)
+call dz_fg(gradphiz,a6)
 
-do j=1,spy
-  do k=1,nz
-    do i=1,spx
-      a6(i,k,j,1)=a6(i,k,j,1)-kx(i+cstart(1))*gradphix(i,k,j,2)-ky(j+cstart(3))*gradphiy(i,k,j,2)
-      a6(i,k,j,2)=a6(i,k,j,2)+kx(i+cstart(1))*gradphix(i,k,j,1)+ky(j+cstart(3))*gradphiy(i,k,j,1)
+do j=1,spypsi
+  do k=1,npsiz
+    do i=1,spxpsi
+      a6(i,k,j,1)=a6(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix(i,k,j,2) &
+                           & -kypsi(j+cstartpsi(3))*gradphiy(i,k,j,2)
+      a6(i,k,j,2)=a6(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix(i,k,j,1) &
+                           & +kypsi(j+cstartpsi(3))*gradphiy(i,k,j,1)
     enddo
   enddo
 enddo
 
 
+deallocate(gradphix)
+deallocate(gradphiy)
+deallocate(gradphiz)
+! a4, a5, a6 on fine grid
+! allocate variable in coarse grid for coupling with NS
+allocate(gradphix(spx,nz,spy,2))
+allocate(gradphiy(spx,nz,spy,2))
+allocate(gradphiz(spx,nz,spy,2))
+
+! take a4,a5,a6 from fine to coarse grid, then add to NS S term
+call fine2coarse(a4,gradphix)
+call fine2coarse(a5,gradphiy)
+call fine2coarse(a6,gradphiz)
+
+deallocate(a4)
+deallocate(a5)
+deallocate(a6)
+
 #if match_dens == 2
 ! rescale NS equation if rhor > 1 for improved stability
-s1=s1+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*a4
-s2=s2+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*a5
-s3=s3+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*a6
+s1=s1+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*gradphix
+s2=s2+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*gradphiy
+s3=s3+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*gradphiz
 #else
-s1=s1+3.0d0/sqrt(8.0d0)*Ch/(we)*a4
-s2=s2+3.0d0/sqrt(8.0d0)*Ch/(we)*a5
-s3=s3+3.0d0/sqrt(8.0d0)*Ch/(we)*a6
+s1=s1+3.0d0/sqrt(8.0d0)*Ch/(we)*gradphix
+s2=s2+3.0d0/sqrt(8.0d0)*Ch/(we)*gradphiy
+s3=s3+3.0d0/sqrt(8.0d0)*Ch/(we)*gradphiz
 #endif
 
 deallocate(gradphix)
 deallocate(gradphiy)
 deallocate(gradphiz)
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
+
 
 
 ! only for non-matched viscosities

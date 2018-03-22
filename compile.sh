@@ -287,7 +287,7 @@ F="-1.0" # real (double)
 
 # initial conditons for the temperature
 # 0 : initialize constant temperature (mean_t)
-# 1 :read from data file (parallel read)
+# 1 : read from data file (parallel read)
 in_cond_temp="1" # integer
 temp_mean="0.0" # real (double)
 
