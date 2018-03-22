@@ -284,6 +284,7 @@ endif
       namevar='phi'
       call write_output(phi,i,namevar)
 #if psiflag == 1
+      call fine2coarse(psic_fg,psic)
       call spectral_to_phys(psic,psi,0)
       namevar='psi'
       call write_output(psi,i,namevar)
@@ -312,6 +313,7 @@ endif
       namevar='phic'
       call write_output_spectral(phic,i,namevar)
 #if psiflag == 1
+      call fine2coarse(psic_fg,psic)
       namevar='psic'
       call write_output_spectral(psic,i,namevar)
 #endif
@@ -377,6 +379,7 @@ endif
     namevar='phi'
     call write_output(phi,nend,namevar)
 #if psiflag == 1
+    call fine2coarse(psic_fg,psic)
     call spectral_to_phys(psic,psi,0)
     namevar='psi'
     call write_output(psi,nend,namevar)
@@ -401,6 +404,7 @@ endif
     namevar='phic'
     call write_output_spectral(phic,nend,namevar)
 #if psiflag == 1
+    call fine2coarse(psic_fg,psic)
     namevar='psic'
     call write_output_spectral(psic,nend,namevar)
 #endif
