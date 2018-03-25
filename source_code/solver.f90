@@ -99,6 +99,10 @@ call calculate_omega(h1,h2,omega)
 ! calculate u,v from continuity and vorticity definition
 call calculate_uv(omega,h1,h2)
 
+call chop_modes(uc)
+call chop_modes(vc)
+call chop_modes(wc)
+
 ! only if surfactant calculated on finer grid than phase field
 #if expx != 1 || expy != 1 || expz != 1
 ! for phase field calculation
@@ -149,6 +153,7 @@ call calculate_phi(hphi)
 
 deallocate(hphi)
 
+call chop_modes(phic)
 
 
 ! Cahn-Hilliard equation for surfactant
@@ -177,6 +182,8 @@ if (rank.eq.0) then
 endif
 
 deallocate(hpsi)
+
+call chop_modes_fg(psi_fg)
 
 #endif
 
@@ -210,16 +217,12 @@ call calculate_theta(htheta)
 
 deallocate(htheta)
 
+call chop_modes(thetac)
+
 #endif
 
 
 
-!call chop_modes(uc)
-!call chop_modes(vc)
-!call chop_modes(wc)
-!#if phiflag == 1
-!call chop_modes(phic)
-!#endif
 
 return
 end
