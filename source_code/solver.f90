@@ -183,7 +183,7 @@ endif
 
 deallocate(hpsi)
 
-call chop_modes_fg(psi_fg)
+call chop_modes_fg(psic_fg)
 
 #endif
 
