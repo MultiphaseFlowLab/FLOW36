@@ -3,11 +3,15 @@ subroutine define_dual_grid(cg_cxsize,cg_cysize)
 use commondata
 use dual_grid
 use par_size
+use mpi
+use mpiIO
 
 integer :: cg_cysize(nzcpu),cg_cxsize(nycpu)
 integer :: fg_cysize(nzcpu),fg_cxsize(nycpu)
+integer :: fg_pysize(nycpu),fg_pzsize(nzcpu)
 integer :: rx,ry,rz
 integer :: i,j
+integer :: mx,my
 
 npsix=exp_x*nx
 npsiy=exp_y*ny
@@ -34,6 +38,26 @@ fpzpsi=int((npsiz-rz)/nzcpu)
 if(floor(real(rank)/real(nycpu)).lt.rz)then
  fpzpsi=int((npsiz-rz)/nzcpu)+1
 endif
+
+
+fg_pysize=int((npsiy-ry)/nycpu)
+do i=1,nycpu
+  if(mod(i-1,nycpu).lt.ry) fg_pysize(i)=fg_pysize(i)+1
+enddo
+
+fg_pzsize=int((npsiz-rz)/nzcpu)
+do j=1,nzcpu
+  if(floor(real(nycpu*(j-1))/real(nycpu)).lt.rz) fg_pzsize(j)=fg_pzsize(j)+1
+enddo
+
+fstartpsi=[0,0,0]
+
+do i=1,mod(rank,nycpu)
+  fstartpsi(3)=fstartpsi(3)+fg_pysize(i)
+enddo
+do i=1,floor(real(rank)/real(nycpu))
+  fstartpsi(2)=fstartpsi(2)+fg_pzsize(i)
+enddo
 
 
 ! coarse grid: rank, cxsize, cysize
@@ -110,6 +134,24 @@ cstartpsi(3)=fg_size(i,j,5)-1
 ! write(*,*) rank,cg_size(i,j,1),i,j
 ! write(*,*) rank,cstartpsi(1),spxpsi,cstartpsi(3),spypsi
 
+
+! create datatype for MPI I/O operations on fine grid
+! physical space
+call mpi_type_create_subarray(3,[npsix,npsiz,npsiy],[npsix,fpzpsi,fpypsi], &
+&     fstartpsi,mpi_order_fortran, &
+&     mpi_double_precision,ftype_fg,ierr)
+
+call mpi_type_commit(ftype_fg,ierr)
+
+! spectral space, save only dealiased grid
+mx=floor(2.0d0/3.0d0*dble(npsix/2+1))
+my=floor(2.0d0/3.0d0*dble(npsiy/2+1))+floor(2.0d0/3.0d0*dble(npsiy/2))
+
+call mpi_type_create_subarray(4,[npsix/2+1,npsiz,npsiy,2],[spxpsi,npsiz,spypsi,2], &
+ &     [cstartpsi(1),cstartpsi(2),cstartpsi(3),0],mpi_order_fortran, &
+ &     mpi_double_precision,stype_fg,ierr)
+
+call mpi_type_commit(stype_fg,ierr)
 
 return
 end

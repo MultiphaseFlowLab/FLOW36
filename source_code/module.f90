@@ -20,7 +20,7 @@ module dual_grid
  integer :: npsix,npsiy,npsiz
  integer :: cg_size(nycpu,nzcpu,5),fg_size(nycpu,nzcpu,5)
  integer :: spxpsi,spypsi,fpypsi,fpzpsi
- integer :: cstartpsi(3)
+ integer :: cstartpsi(3),fstartpsi(3)
  integer :: c2fadd(nycpu*nzcpu,2),f2cadd(nycpu*nzcpu,2)
 end module dual_grid
 
@@ -102,6 +102,7 @@ end module velocity_old
 
 module mpiIO
  integer :: ftype,stype
+ integer :: ftype_fg,stype_fg
 end module mpiIo
 
 

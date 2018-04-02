@@ -212,11 +212,11 @@ else
     namevar='phic'
     call write_output_spectral(phic,nstart,namevar)
 #if psiflag == 1
-    call spectral_to_phys(psic,psi,0)
+    call spectral_to_phys_fg(psic_fg,psi_fg,0)
     namevar='psi'
-    call write_output(psi,nstart,namevar)
+    call write_output_fg(psi_fg,nstart,namevar)
     namevar='psic'
-    call write_output_spectral(psic,nstart,namevar)
+    call write_output_spectral_fg(psic_fg,nstart,namevar)
 #endif
 #endif
 #if tempflag == 1
@@ -284,10 +284,9 @@ endif
       namevar='phi'
       call write_output(phi,i,namevar)
 #if psiflag == 1
-      call fine2coarse(psic_fg,psic)
-      call spectral_to_phys(psic,psi,0)
+      call spectral_to_phys_fg(psic_fg,psi_fg,0)
       namevar='psi'
-      call write_output(psi,i,namevar)
+      call write_output(psi_fg,i,namevar)
 #endif
 #endif
 #if tempflag == 1
@@ -313,9 +312,8 @@ endif
       namevar='phic'
       call write_output_spectral(phic,i,namevar)
 #if psiflag == 1
-      call fine2coarse(psic_fg,psic)
       namevar='psic'
-      call write_output_spectral(psic,i,namevar)
+      call write_output_spectral_fg(psic_fg,i,namevar)
 #endif
 #endif
 #if tempflag == 1
@@ -379,10 +377,9 @@ endif
     namevar='phi'
     call write_output(phi,nend,namevar)
 #if psiflag == 1
-    call fine2coarse(psic_fg,psic)
-    call spectral_to_phys(psic,psi,0)
+    call spectral_to_phys_fg(psic_fg,psi_fg,0)
     namevar='psi'
-    call write_output(psi,nend,namevar)
+    call write_output_fg(psi_fg,nend,namevar)
 #endif
 #endif
 #if tempflag == 1
@@ -404,9 +401,8 @@ endif
     namevar='phic'
     call write_output_spectral(phic,nend,namevar)
 #if psiflag == 1
-    call fine2coarse(psic_fg,psic)
     namevar='psic'
-    call write_output_spectral(psic,nend,namevar)
+    call write_output_spectral_fg(psic_fg,nend,namevar)
 #endif
 #endif
 #if tempflag == 1

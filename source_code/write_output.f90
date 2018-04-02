@@ -80,6 +80,90 @@ end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+subroutine write_output_fg(u,nt,namevar)
+
+use mpi
+use commondata
+use par_size
+use mpiIo
+use dual_grid
+
+double precision :: u(npsix,fpzpsi,fpypsi)
+
+integer :: nt
+integer :: f_handle ! file handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+write(time,'(I8.8)') nt
+
+fname=trim(folder)//'/'//trim(namevar)//'_fg_'//time//'.dat'
+
+offset=0
+
+call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,u,npsix*fpypsi*fpzpsi,mpi_double_precision,mpi_status_ignore,ierr)
+
+
+call mpi_file_close(f_handle,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine write_output_spectral_fg(uc,nt,namevar)
+
+use mpi
+use commondata
+use par_size
+use mpiIo
+use dual_grid
+
+double precision :: uc(spxpsi,npsiz,spypsi,2)
+
+integer :: nt
+integer :: f_handle ! file handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+write(time,'(I8.8)') nt
+
+fname=trim(folder)//'/'//trim(namevar)//'_fg_'//time//'.dat'
+
+offset=0
+
+call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,uc,spxpsi*spypsi*npsiz*2,mpi_double_precision,mpi_status_ignore,ierr)
+
+
+call mpi_file_close(f_handle,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 !subroutine write_output_many(u,nt,namevar)
 
 !use commondata
@@ -161,7 +245,7 @@ if(rank.eq.0)then
 #if phiflag == 1
     ren=rename(trim(folder)//'/backup/phic.dat'//C_NULL_CHAR,trim(folder)//'/backup/phic_old.dat'//C_NULL_CHAR)
 #if psiflag == 1
-    ren=rename(trim(folder)//'/backup/psic.dat'//C_NULL_CHAR,trim(folder)//'/backup/psic_old.dat'//C_NULL_CHAR)
+    ren=rename(trim(folder)//'/backup/psic_fg.dat'//C_NULL_CHAR,trim(folder)//'/backup/psic_fg_old.dat'//C_NULL_CHAR)
 #endif
 #endif
 #if tempflag == 1
@@ -174,7 +258,7 @@ if(rank.eq.0)then
 #if phiflag == 1
     ren=rename(trim(folder)//'/backup/phi.dat'//C_NULL_CHAR,trim(folder)//'/backup/phi_old.dat'//C_NULL_CHAR)
 #if psiflag == 1
-    ren=rename(trim(folder)//'/backup/psi.dat'//C_NULL_CHAR,trim(folder)//'/backup/psi_old.dat'//C_NULL_CHAR)
+    ren=rename(trim(folder)//'/backup/psi_fg.dat'//C_NULL_CHAR,trim(folder)//'/backup/psi_fg_old.dat'//C_NULL_CHAR)
 #endif
 #endif
 #if tempflag == 1
@@ -215,7 +299,7 @@ if(rank.eq.0)then
 #if phiflag == 1
     call rename(trim(folder)//'/backup/phic.dat',trim(folder)//'/backup/phic_old.dat')
 #if psiflag == 1
-    call rename(trim(folder)//'/backup/psic.dat',trim(folder)//'/backup/psic_old.dat')
+    call rename(trim(folder)//'/backup/psic_fg.dat',trim(folder)//'/backup/psic_fg_old.dat')
 #endif
 #endif
 #if tempflag == 1
@@ -228,7 +312,7 @@ if(rank.eq.0)then
 #if phiflag == 1
     call rename(trim(folder)//'/backup/phi.dat',trim(folder)//'/backup/phi_old.dat')
 #if psiflag == 1
-    call rename(trim(folder)//'/backup/psi.dat',trim(folder)//'/backup/psi_old.dat')
+    call rename(trim(folder)//'/backup/psi_fg.dat',trim(folder)//'/backup/psi_fg_old.dat')
 #endif
 #endif
 #if tempflag == 1
@@ -263,7 +347,7 @@ call write_output_recovery_s(wc,'wc   ')
 call write_output_recovery_s(phic,'phic ')
 #if psiflag == 1
 call fine2coarse(psic_fg,psic)
-call write_output_recovery_s(psic,'psic ')
+call write_output_recovery_s_fg(psic_fg,'psic ')
 #endif
 #endif
 #if tempflag == 1
@@ -282,7 +366,7 @@ call write_output_recovery(phi,'phi  ')
 #if psiflag == 1
 call fine2coarse(psic_fg,psic)
 call spectral_to_phys(psic,psi,0)
-call write_output_recovery(psi,'psi  ')
+call write_output_recovery_fg(psi_fg,'psi  ')
 #endif
 #endif
 #if tempflag == 1
@@ -361,6 +445,83 @@ call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'internal',mpi
 !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
 
 call mpi_file_write_all(f_handle,uc,spx*spy*nz*2,mpi_double_precision,mpi_status_ignore,ierr)
+
+
+call mpi_file_close(f_handle,ierr)
+
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine write_output_recovery_fg(u,namevar)
+
+use mpi
+use commondata
+use par_size
+use mpiIo
+use dual_grid
+
+double precision :: u(npsix,fpzpsi,fpypsi)
+
+integer :: f_handle ! file handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=40) :: fname
+character(len=5) :: namevar
+
+
+fname=trim(folder)//'/backup/'//trim(namevar)//'_fg.dat'
+
+offset=0
+
+call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'internal',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,u,npsix*fpypsi*fpzpsi,mpi_double_precision,mpi_status_ignore,ierr)
+
+
+call mpi_file_close(f_handle,ierr)
+
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine write_output_recovery_s_fg(uc,namevar)
+
+use mpi
+use commondata
+use par_size
+use mpiIo
+use dual_grid
+
+double precision :: uc(spxpsi,npsiz,spypsi,2)
+
+integer :: f_handle ! file handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=40) :: fname
+character(len=5) :: namevar
+
+
+fname=trim(folder)//'/backup/'//trim(namevar)//'_fg.dat'
+
+offset=0
+
+call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,uc,spxpsi*spypsi*npsiz*2,mpi_double_precision,mpi_status_ignore,ierr)
 
 
 call mpi_file_close(f_handle,ierr)

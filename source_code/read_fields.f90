@@ -40,9 +40,7 @@ call mpi_file_close(f_handle,ierr)
 return
 end
 
-
-
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 subroutine read_fields_s(u,nt,namevar,restart)
 
@@ -84,8 +82,94 @@ return
 end
 
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine read_fields_fg(u,nt,namevar,restart)
+
+use commondata
+use mpi
+use mpiIO
+use par_size
+use dual_grid
+
+double precision :: u(npsix,fpzpsi,fpypsi)
+
+integer :: nt,restart
+integer :: f_handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+if(restart.eq.0)then
+ fname='./initial_fields/'//trim(namevar)//'_fg.dat'
+else
+ write(time,'(I8.8)') nt
+ fname=trim(folder)//'/'//trim(namevar)//'_fg_'//time//'.dat'
+endif
+
+offset=0
+
+call mpi_file_open(mpi_comm_world,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
 
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'native',mpi_info_null,ierr)
+
+call mpi_file_read_all(f_handle,u,npsix*fpypsi*fpzpsi,mpi_double_precision,mpi_status_ignore,ierr)
+
+
+call mpi_file_close(f_handle,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine read_fields_s_fg(u,nt,namevar,restart)
+
+use commondata
+use mpi
+use mpiIO
+use par_size
+use dual_grid
+
+double precision :: u(spxpsi,npsiz,spypsi,2)
+
+integer :: nt
+integer :: f_handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+if(restart.eq.0)then
+ fname='./initial_fields/'//trim(namevar)//'_fg.dat'
+else
+ write(time,'(I8.8)') nt
+ fname=trim(folder)//'/'//trim(namevar)//'_fg_'//time//'.dat'
+endif
+
+offset=0
+
+call mpi_file_open(mpi_comm_world,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'internal',mpi_info_null,ierr)
+
+call mpi_file_read_all(f_handle,u,spxpsi*spypsi*npsiz*2,mpi_double_precision,mpi_status_ignore,ierr)
+
+
+call mpi_file_close(f_handle,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 subroutine read_fields_serial(u,nt,namevar,restart)
 

@@ -260,6 +260,7 @@ El="0.5" # real (double)
 # 3: equilibrium profile multiplied with Y gradient
 # 4: equilibrium profile multiplied with Z gradient
 # 5: Diffusione Test, angular distribuction
+# 6: read input from file (parallel read, fine grid)
 in_condpsi="2" # integer
 psi_mean="0.01" # real (double)
 psi_bulk="0.01" # real (double)
@@ -540,6 +541,7 @@ cp ./source_code/hist_term_temp.f90 ./set_run/sc_compiled/
 cp ./source_code/define_address.f90 ./set_run/sc_compiled/
 cp ./source_code/define_dual_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/swap_grid.f90 ./set_run/sc_compiled/
+cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 
 
 cp -r ./paraview_output ./set_run

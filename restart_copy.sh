@@ -31,19 +31,28 @@ printf -v it "%08d" $it
 
 if [ "$spectral" == "1" ]; then
  echo "Restarting file from iteration $it complex space"
- printf -v it "c_$it" $it
+ # printf -v it "$it" $it
  sp="c"
 elif [ "$spectral" == "0" ]; then
  echo "Restarting file from iteration $it real space"
- printf -v it "_$it" $it
+ # printf -v it "_$it" $it
 sp=""
 fi
 
 echo " "
 
-cp "./u"$sp".dat" "../u"$it".dat"
-cp "./v"$sp".dat" "../v"$it".dat"
-cp "./w"$sp".dat" "../w"$it".dat"
-cp "./phi"$sp".dat" "../phi"$it".dat"
-cp "./psi"$sp".dat" "../psi"$it".dat"
-cp "./T"$sp".dat" "../T"$it".dat"
+if [ "$old" == "0" ]; then
+  cp "./u"$sp".dat" "../u"$sp"_"$it".dat"
+  cp "./v"$sp".dat" "../v"$sp"_"$it".dat"
+  cp "./w"$sp".dat" "../w"$sp"_"$it".dat"
+  cp "./phi"$sp".dat" "../phi"$sp"_"$it".dat"
+  cp "./psi"$sp"_fg.dat" "../psi"$sp"_fg_"$it".dat"
+  cp "./T"$sp".dat" "../T"$sp"_"$it".dat"
+elif [ "$old" == "1" ]; then
+  cp "./u"$sp"_old.dat" "../u"$sp"_"$it".dat"
+  cp "./v"$sp"_old.dat" "../v"$sp"_"$it".dat"
+  cp "./w"$sp"_old.dat" "../w"$sp"_"$it".dat"
+  cp "./phi"$sp"_old.dat" "../phi"$sp"_"$it".dat"
+  cp "./psi"$sp"_fg_old.dat" "../psi"$sp"_fg_"$it".dat"
+  cp "./T"$sp"_old.dat" "../T"$sp"_"$it".dat"
+fi

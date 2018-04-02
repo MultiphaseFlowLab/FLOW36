@@ -80,7 +80,7 @@ double precision :: Lx,Ly
   nstart=nt_restart
   in_cond=3
   in_cond_phi=1
-  in_cond_psi=1
+  in_cond_psi=6
   in_cond_theta=1
  endif
 
