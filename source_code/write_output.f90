@@ -45,8 +45,9 @@ use mpi
 use commondata
 use par_size
 use mpiIo
+use shrink_grid
 
-double precision :: uc(spx,nz,spy,2)
+double precision :: uc(spx,nz,spy,2),ucd(dimc(1),dimc(2),dimc(3),2)
 
 integer :: nt
 integer :: f_handle ! file handle
@@ -57,20 +58,25 @@ character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
 
+
+call shrink_domain(uc,ucd)
+
 write(time,'(I8.8)') nt
 
 fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+! call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+call mpi_file_open(sp_save_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
 !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
 call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'internal',mpi_info_null,ierr)
 !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
 
-call mpi_file_write_all(f_handle,uc,spx*spy*nz*2,mpi_double_precision,mpi_status_ignore,ierr)
+! call mpi_file_write_all(f_handle,uc,spx*spy*nz*2,mpi_double_precision,mpi_status_ignore,ierr)
+call mpi_file_write_all(f_handle,ucd,dimc(1)*dimc(2)*dimc(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
 
 
 call mpi_file_close(f_handle,ierr)
@@ -437,7 +443,8 @@ fname=trim(folder)//'/backup/'//trim(namevar)//'.dat'
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+! call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+call mpi_file_open(sp_save_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
 !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)

@@ -3,6 +3,9 @@ subroutine read_fields(nstep)
 use commondata
 
 integer :: nstep
+integer :: mx,my,mz,myl,myu
+
+double precision, allocatable :: tmp(:,:,:,:)
 
 character(len=40) :: namedir,namefile
 character(len=8) :: numfile
@@ -12,6 +15,14 @@ logical :: check
 namedir='../results/'
 write(numfile,'(i8.8)') nstep
 
+mx=floor(2.0d0/3.0d0*dble(nx/2+1))
+my=floor(2.0d0/3.0d0*dble(ny/2+1))+floor(2.0d0/3.0d0*dble(ny/2))
+mz=floor(2.0d0/3.0d0*dble(nz))
+
+myl=floor(2.0d0/3.0d0*dble(ny/2+1))
+myu=ny-floor(2.0d0/3.0d0*dble(ny/2))+1
+
+allocate(tmp(mx,mz,my,2))
 
 if(spectral.eq.0)then
  namefile=trim(namedir)//'u_'//numfile//'.dat'
@@ -67,40 +78,58 @@ else
   ! reading u
   write(*,*) 'Reading step ',nstep,' out of ',nend
   open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(666) uc
+  read(666) tmp
   close(666,status='keep')
+  uc=0.0d0
+  uc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+  uc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
   ! reading v
   namefile=trim(namedir)//'vc_'//numfile//'.dat'
   open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(667) vc
+  read(667) tmp
   close(667,status='keep')
+  vc=0.0d0
+  vc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+  vc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
   ! reading w
   namefile=trim(namedir)//'wc_'//numfile//'.dat'
   open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(668) wc
+  read(668) tmp
   close(668,status='keep')
+  wc=0.0d0
+  wc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+  wc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
   if(phiflag.eq.1)then
     ! reading phi
     namefile=trim(namedir)//'phic_'//numfile//'.dat'
     open(669,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-    read(669) phic
+    read(669) tmp
     close(669,status='keep')
+    phic=0.0d0
+    phic(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+    phic(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
     call spectral_to_phys(phic,phi,0)
   endif
   if(psiflag.eq.1)then
     ! reading psi
     namefile=trim(namedir)//'psic_'//numfile//'.dat'
     open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-    read(670) psic
+    read(670) tmp
     close(670,status='keep')
+    psic=0.0d0
+    psic(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+    psic(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
     call spectral_to_phys(psic,psi,0)
   endif
   if(tempflag.eq.1)then
     ! reading theta
     namefile=trim(namedir)//'thetac_'//numfile//'.dat'
     open(671,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-    read(671) thetac
+    read(671) tmp
     close(671,status='keep')
+    thetac=0.0d0
+    thetac(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+    thetac(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
     call spectral_to_phys(thetac,theta,0)
   endif
   ! transform variables to physical space
@@ -111,6 +140,8 @@ else
   call generate_output(nstep)
  endif
 endif
+
+deallocate(tmp)
 
 return
 end

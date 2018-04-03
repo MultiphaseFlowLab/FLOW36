@@ -100,16 +100,15 @@ else
 
   call mpi_type_commit(ftype,ierr)
 
-! spectral space saving
-  call mpi_type_create_subarray(4,[nx/2+1,nz,ny,2],[spx,nz,spy,2], &
-   &     [cstart(1),cstart(2),cstart(3),0],mpi_order_fortran, &
-   &     mpi_double_precision,stype,ierr)
-
-  call mpi_type_commit(stype,ierr)
+! spectral space saving (coarse grid)
+  call shrink_mapping
 
 
 ! define dual grid sizes
   call define_dual_grid(cxsize,cysize)
+
+! spectral space saving (fine grid)
+  call shrink_mapping_fg
 
 ! define dual grid communication pattern
   call define_address

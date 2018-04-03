@@ -103,6 +103,7 @@ end module velocity_old
 module mpiIO
  integer :: ftype,stype
  integer :: ftype_fg,stype_fg
+ integer :: sp_save_comm,sp_save_comm_fg
 end module mpiIo
 
 
@@ -138,3 +139,12 @@ module stats
  integer :: flowiter,stat_dump,stat_start
  integer :: plane_comm,col_comm
 end module stats
+
+
+
+module shrink_grid
+ integer :: sx1,sx2,sy1,sy2,sy3,sy4
+ integer :: sx1_fg,sx2_fg,sy1_fg,sy2_fg,sy3_fg,sy4_fg
+ integer, dimension(3) :: dimc,dimc_fg
+ integer :: up,up_fg
+end module shrink_grid
