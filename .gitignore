@@ -2,3 +2,4 @@ set_run/
 initial_fields/
 /makefile
 grid_check/grid_check
+paraview_output/*.mod
