@@ -18,3 +18,7 @@
 0               ! 0 to skip phase variable, 1 to include it
 0               ! 0 to skip surfactant, 1 to include it
 0               ! 0 to skip temperature, 1 to include it
+
+2               ! expansion coefficient x
+2               ! expansion coefficient y
+2               ! expansion coefficient z
