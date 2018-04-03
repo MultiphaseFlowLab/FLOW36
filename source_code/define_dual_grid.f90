@@ -11,7 +11,6 @@ integer :: fg_cysize(nzcpu),fg_cxsize(nycpu)
 integer :: fg_pysize(nycpu),fg_pzsize(nzcpu)
 integer :: rx,ry,rz
 integer :: i,j
-integer :: mx,my
 
 npsix=exp_x*nx
 npsiy=exp_y*ny
@@ -144,14 +143,14 @@ call mpi_type_create_subarray(3,[npsix,npsiz,npsiy],[npsix,fpzpsi,fpypsi], &
 call mpi_type_commit(ftype_fg,ierr)
 
 ! spectral space, save only dealiased grid
-mx=floor(2.0d0/3.0d0*dble(npsix/2+1))
-my=floor(2.0d0/3.0d0*dble(npsiy/2+1))+floor(2.0d0/3.0d0*dble(npsiy/2))
-
-call mpi_type_create_subarray(4,[npsix/2+1,npsiz,npsiy,2],[spxpsi,npsiz,spypsi,2], &
- &     [cstartpsi(1),cstartpsi(2),cstartpsi(3),0],mpi_order_fortran, &
- &     mpi_double_precision,stype_fg,ierr)
-
-call mpi_type_commit(stype_fg,ierr)
+! mx=floor(2.0d0/3.0d0*dble(npsix/2+1))
+! my=floor(2.0d0/3.0d0*dble(npsiy/2+1))+floor(2.0d0/3.0d0*dble(npsiy/2))
+!
+! call mpi_type_create_subarray(4,[npsix/2+1,npsiz,npsiy,2],[spxpsi,npsiz,spypsi,2], &
+!  &     [cstartpsi(1),cstartpsi(2),cstartpsi(3),0],mpi_order_fortran, &
+!  &     mpi_double_precision,stype_fg,ierr)
+!
+! call mpi_type_commit(stype_fg,ierr)
 
 return
 end

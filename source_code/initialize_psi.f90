@@ -93,17 +93,17 @@ elseif(in_cond_psi.eq.6)then
   if(checkf.eqv..true.)then
     call read_fields_fg(psi_fg,nt_restart,'psi  ',restart)
     ! transform physical variable to spectral space
-    call phys_to_spectral_fg(psi_fg,psic_fg)
+    call phys_to_spectral_fg(psi_fg,psic_fg,0)
   elseif(checks.eqv..true.)then
     call read_fields_s_fg(psic_fg,nt_restart,'psic ',restart)
     ! transform to physical space
-    call spectral_to_phys_fg(psic_fg,psi_fg)
+    call spectral_to_phys_fg(psic_fg,psi_fg,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing surfactant input file ',time,' , stopping simulation'
     call exit(0)
   endif
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi)
+  call spectral_to_phys(psic,psi,0)
 else
   if(rank.eq.0)write(*,*) 'Check initial condition value on psi'
   stop

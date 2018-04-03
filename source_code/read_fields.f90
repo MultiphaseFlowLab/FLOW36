@@ -48,8 +48,9 @@ use commondata
 use mpi
 use mpiIO
 use par_size
+use shrink_grid
 
-double precision :: u(spx,nz,spy,2)
+double precision :: u(spx,nz,spy,2),ucd(dimc(1),dimc(2),dimc(3),2)
 
 integer :: nt
 integer :: f_handle
@@ -69,14 +70,15 @@ endif
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+call mpi_file_open(sp_save_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
 call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'internal',mpi_info_null,ierr)
 
-call mpi_file_read_all(f_handle,u,spx*spy*nz*2,mpi_double_precision,mpi_status_ignore,ierr)
-
+call mpi_file_read_all(f_handle,ucd,dimc(1)*dimc(2)*dimc(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
 
 call mpi_file_close(f_handle,ierr)
+
+call expand_domain(ucd,u)
 
 return
 end
@@ -136,8 +138,9 @@ use mpi
 use mpiIO
 use par_size
 use dual_grid
+use shrink_grid
 
-double precision :: u(spxpsi,npsiz,spypsi,2)
+double precision :: u(spxpsi,npsiz,spypsi,2),ucd(dimc_fg(1),dimc_fg(2),dimc_fg(3),2)
 
 integer :: nt
 integer :: f_handle
@@ -157,14 +160,15 @@ endif
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+call mpi_file_open(sp_save_comm_fg,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
 call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'internal',mpi_info_null,ierr)
 
-call mpi_file_read_all(f_handle,u,spxpsi*spypsi*npsiz*2,mpi_double_precision,mpi_status_ignore,ierr)
-
+call mpi_file_read_all(f_handle,ucd,dimc_fg(1)*dimc_fg(2)*dimc_fg(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
 
 call mpi_file_close(f_handle,ierr)
+
+call expand_domain_fg(ucd,u)
 
 return
 end
