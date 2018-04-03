@@ -4,8 +4,11 @@ use commondata
 
 integer :: nstep
 integer :: mx,my,mz,myl,myu
+integer :: mx_fg,my_fg,mz_fg,myl_fg,myu_fg
 
-double precision, allocatable :: tmp(:,:,:,:)
+double precision, allocatable, dimension(:,:,:,:) :: tmp,tmp_fg
+double precision :: psi_fg(exp_x*nx,exp_z*(nz-1)+1,exp_y*ny)
+double precision :: psic_fg((exp_x*nx)/2+1,exp_z*(nz-1)+1,exp_y*ny,2)
 
 character(len=40) :: namedir,namefile
 character(len=8) :: numfile
@@ -22,7 +25,15 @@ mz=floor(2.0d0/3.0d0*dble(nz))
 myl=floor(2.0d0/3.0d0*dble(ny/2+1))
 myu=ny-floor(2.0d0/3.0d0*dble(ny/2))+1
 
+mx_fg=floor(2.0d0/3.0d0*dble((exp_x*nx)/2+1))
+my_fg=floor(2.0d0/3.0d0*dble(exp_y*ny/2+1))+floor(2.0d0/3.0d0*dble(exp_y*ny/2))
+mz_fg=floor(2.0d0/3.0d0*dble(exp_z*(nz-1)+1))
+
+myl_fg=floor(2.0d0/3.0d0*dble(exp_y*ny/2+1))
+myu_fg=exp_y*ny-floor(2.0d0/3.0d0*dble(exp_y*ny/2))+1
+
 allocate(tmp(mx,mz,my,2))
+allocate(tmp_fg(mx_fg,mz_fg,my_fg,2))
 
 if(spectral.eq.0)then
  namefile=trim(namedir)//'u_'//numfile//'.dat'
@@ -53,11 +64,19 @@ if(spectral.eq.0)then
     close(669,status='keep')
   endif
   if(psiflag.eq.1)then
-    ! reading psi
-    namefile=trim(namedir)//'psi_'//numfile//'.dat'
+    ! ! reading psi
+    ! namefile=trim(namedir)//'psi_'//numfile//'.dat'
+    ! open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    ! read(670) psi
+    ! close(670,status='keep')
+    ! reading psi fine grid
+    namefile=trim(namedir)//'psi_fg_'//numfile//'.dat'
     open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-    read(670) psi
+    read(670) psi_fg
     close(670,status='keep')
+    call phys_to_spectral_fg(psi_fg,psic_fg,0)
+    call fine2coarse(psic_fg,psic)
+    call spectral_to_phys(psic,psi,0)
   endif
   if(tempflag.eq.1)then
     ! reading theta
@@ -111,14 +130,24 @@ else
     call spectral_to_phys(phic,phi,0)
   endif
   if(psiflag.eq.1)then
-    ! reading psi
-    namefile=trim(namedir)//'psic_'//numfile//'.dat'
+    ! ! reading psi
+    ! namefile=trim(namedir)//'psic_'//numfile//'.dat'
+    ! open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    ! read(670) tmp
+    ! close(670,status='keep')
+    ! psic=0.0d0
+    ! psic(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+    ! psic(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
+    ! call spectral_to_phys(psic,psi,0)
+    ! reading psi fg
+    namefile=trim(namedir)//'psic_fg_'//numfile//'.dat'
     open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-    read(670) tmp
+    read(670) tmp_fg
     close(670,status='keep')
-    psic=0.0d0
-    psic(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
-    psic(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
+    psic_fg=0.0d0
+    psic_fg(1:mx_fg,1:mz_fg,1:myl_fg,:)=tmp_fg(:,:,1:myl_fg,:)
+    psic_fg(1:mx_fg,1:mz_fg,myu_fg:ny*exp_y,:)=tmp_fg(:,:,myl_fg+1:my_fg,:)
+    call fine2coarse(psic_fg,psic)
     call spectral_to_phys(psic,psi,0)
   endif
   if(tempflag.eq.1)then

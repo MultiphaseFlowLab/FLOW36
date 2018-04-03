@@ -29,9 +29,7 @@ if(phiflag.eq.1)then
 endif
 if(psiflag.eq.1)then
  allocate(psi(nx,nz,ny))
- if(spectral.eq.1)then
-  allocate(psic(nx/2+1,nz,ny,2))
- endif
+ allocate(psic(nx/2+1,nz,ny,2))
 endif
 if(tempflag.eq.1)then
  allocate(theta(nx,nz,ny))
@@ -54,9 +52,8 @@ allocate(z(nz))
 
 call read_grid
 
-if(spectral.eq.1)then
- call create_plan
-endif
+call create_plan
+call create_plan_fg
 
 if(spectral.eq.1)then
  dump=sdump

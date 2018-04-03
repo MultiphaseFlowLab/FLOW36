@@ -60,7 +60,10 @@ double precision :: Lx,Ly
  read(68,'(i5)') phiflag
  read(68,'(i5)') psiflag
  read(68,'(i5)') tempflag
-
+ read(68,*)
+ read(68,'(i5)') exp_x
+ read(68,'(i5)') exp_y
+ read(68,'(i5)') exp_z
 
  x_start=max(x_start,1)
  if(x_end.eq.0) x_end=nx
