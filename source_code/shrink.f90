@@ -99,6 +99,7 @@ integer :: my,mz
 my=floor(2.0d0/3.0d0*dble(npsiy/2+1))+floor(2.0d0/3.0d0*dble(npsiy/2))
 mz=floor(2.0d0/3.0d0*dble(npsiz))
 
+full=0.0d0
 if((sx1_fg.ne.-1).and.(sy1_fg.ne.-1))then
   if(up_fg.eq.0) then
     full(sx1_fg:sx2_fg,1:mz,sy1_fg:sy2_fg,:)=dealiased(sx1_fg:sx2_fg,1:mz,sy1_fg:sy2_fg,:)
