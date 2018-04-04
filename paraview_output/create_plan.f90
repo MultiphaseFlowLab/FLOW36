@@ -283,9 +283,9 @@ plan_z_fwd_fg=fftw_plan_r2r_1d(nfz,tin,tout, FFTW_REDFT00, FFTW_PATIENT)
 
 ! bwd
 #if flag_fftw == 0
-plan_z_bwd_fg=fftw_plan_r2r_1d(nz,tout,tin, FFTW_REDFT00, FFTW_ESTIMATE)
+plan_z_bwd_fg=fftw_plan_r2r_1d(nfz,tout,tin, FFTW_REDFT00, FFTW_ESTIMATE)
 #elif flag_fftw == 1
-plan_z_bwd_fg=fftw_plan_r2r_1d(nz,tout,tin, FFTW_REDFT00, FFTW_PATIENT)
+plan_z_bwd_fg=fftw_plan_r2r_1d(nfz,tout,tin, FFTW_REDFT00, FFTW_PATIENT)
 #endif
 
 

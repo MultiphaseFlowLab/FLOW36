@@ -15,7 +15,7 @@ character(len=8) :: numfile
 
 logical :: check
 
-namedir='../results/'
+namedir='../set_run/results/'
 write(numfile,'(i8.8)') nstep
 
 mx=floor(2.0d0/3.0d0*dble(nx/2+1))
@@ -184,19 +184,19 @@ use commondata
 
 character(len=40) :: namefile
 
- write(namefile,'(a)') '../results/x.dat'
+ write(namefile,'(a)') '../set_run/results/x.dat'
  open(1,file=trim(namefile),form='unformatted',access='stream',status='old')
  read(1) x
  close(1,status='keep')
 
 
- write(namefile,'(a)') '../results/y.dat'
+ write(namefile,'(a)') '../set_run/results/y.dat'
  open(2,file=trim(namefile),form='unformatted',access='stream',status='old')
  read(2) y
  close(2,status='keep')
 
 
- write(namefile,'(a)') '../results/z.dat'
+ write(namefile,'(a)') '../set_run/results/z.dat'
  open(3,file=trim(namefile),form='unformatted',access='stream',status='old')
  read(3) z
  close(3,status='keep')

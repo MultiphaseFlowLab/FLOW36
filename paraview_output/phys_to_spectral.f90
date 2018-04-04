@@ -35,6 +35,7 @@ call ffty_fwd_fg(varc,varc,npx,nfz,nfy,aliasing)
 
 call dctz_fwd_fg(varc,uout,npx,nfz,nfy,aliasing)
 
+
 deallocate(varc)
 
 return
