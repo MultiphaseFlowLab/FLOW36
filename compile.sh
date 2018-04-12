@@ -172,18 +172,19 @@ bc_lb="0" # integer
 # phase field flag, 0: phase field deactivated, 1: phase field activated
 phi_flag="1" # integer
 
-#correction on phi to improve mass conservation
-#0 OFF...1 only profile ...2 profile+flux
+# Correction on phi to improve mass conservation
+# 0: classic PFM, 1: profile-corrected PFM, 2: flux-corrected PFM
 phicor_flag="2" # integer
 
-#Value of the parametr lambda used to correct the phi profile (only for phicor_flag 1 or 2) Lam=0.3/Ch
-lamcorphi="15.0" # real (double)
+# Value of the parameter lambda used to correct the phi profile (only for phicor_flag 1 or 2)
+# Lam=0.3/Ch
+lamcorphi="6.0" # real (double)
 
 # matched densities: 1 for matched densities, 0 for rhor < 1, 2 for rhor > 1
-matchedrho="2" # integer
+matchedrho="1" # integer
 
 # density ratio, phase +1 over phase -1
-rhor="10.0" # real (double)
+rhor="1.0" # real (double)
 
 #matched dynamic viscosities: 1 for matched viscosities, 0 otherwise
 matchedvis="1" # integer

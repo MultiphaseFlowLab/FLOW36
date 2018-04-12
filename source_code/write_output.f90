@@ -278,7 +278,6 @@ if(rank.eq.0)then
 #endif
 #endif
   endif
-  write(*,*) 'Writing checkpoint'
   in=trim(folder)//'/time_check.dat'
   out=trim(folder)//'/backup/time_check.dat'
   call copy_append(in,out,nt)
@@ -332,7 +331,6 @@ if(rank.eq.0)then
 #endif
 #endif
   endif
-  write(*,*) 'Writing checkpoint'
   call system('cp '//trim(folder)//'/time_check.dat '//trim(folder)//'/backup/time_check.dat')
 #if stat_dump > 0
   call rename(trim(folder)//'/backup/stats.dat',trim(folder)//'/backup/stats_old.dat')
@@ -386,6 +384,8 @@ call spectral_to_phys(thetac,theta,0)
 call write_output_recovery(theta,'T    ')
 #endif
 #endif
+
+if(rank.eq.0) write(*,*) 'Checkpoint written'
 
 return
 end

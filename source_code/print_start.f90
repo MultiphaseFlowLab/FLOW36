@@ -135,6 +135,15 @@ elseif(in_cond_phi.eq.8)then
   write(*,'(1x,a40,f8.5)') 'Ex : ',Ex
   write(*,'(1x,a40,f8.5)') 'Pi : ',P_i
   write(*,'(1x,a40,f8.5)') 'El : ',El
+  if (phicor_flag.eq.0) then
+    write(*,'(1x,a)')      'Classic PFM'
+  elseif (phicor_flag.eq.1) then
+    write(*,'(1x,a40,f8.3)') 'Profile-corrected PFM          Lambda : ',lamphi
+  elseif (phicor_flag.eq.2) then
+    write(*,'(1x,a40,f8.3)') 'Flux-corrected PFM             Lambda : ',lamphi
+  endif
+
+
  endif
 endif
 
