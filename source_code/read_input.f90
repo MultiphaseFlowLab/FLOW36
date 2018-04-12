@@ -43,6 +43,8 @@ double precision :: Lx,Ly
  read(66,'(i5)') bc_low
  read(66,*)
  read(66,'(i5)') phi_flag
+ read(66,'(i5)') phicor_flag
+ read(66,'(f16.6)') lamphi
  read(66,'(i5)') match_dens
  read(66,'(f16.6)') rhor
  read(66,'(i5)') match_visc

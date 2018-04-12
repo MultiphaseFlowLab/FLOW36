@@ -172,6 +172,13 @@ bc_lb="0" # integer
 # phase field flag, 0: phase field deactivated, 1: phase field activated
 phi_flag="1" # integer
 
+#correction on phi to improve mass conservation
+#0 OFF...1 only profile ...2 profile+flux
+phicor_flag="2" # integer
+
+#Value of the parametr lambda used to correct the phi profile (only for phicor_flag 1 or 2) Lam=0.3/Ch
+lamcorphi="15.0" # real (double)
+
 # matched densities: 1 for matched densities, 0 for rhor < 1, 2 for rhor > 1
 matchedrho="2" # integer
 
@@ -410,6 +417,8 @@ sed -i "" "s/delta_t/$dt/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/bc_upbound/$bc_upb/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/bc_lowbound/$bc_lb/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/phasephiflag/$phi_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/phaseprofflag/$phicor_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/lamcorphi/$lamcorphi/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/matcheddens/$matchedrho/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/densratio/$rhor/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/matchedvisc/$matchedvis/g" ./set_run/sc_compiled/input.f90
@@ -461,6 +470,8 @@ sed -i "s/delta_t/$dt/g" ./set_run/sc_compiled/input.f90
 sed -i "s/bc_upbound/$bc_upb/g" ./set_run/sc_compiled/input.f90
 sed -i "s/bc_lowbound/$bc_lb/g" ./set_run/sc_compiled/input.f90
 sed -i "s/phasephiflag/$phi_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "s/phaseprofflag/$phicor_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "s/lamcorphi/$lamcorphi/g" ./set_run/sc_compiled/input.f90
 sed -i "s/matcheddens/$matchedrho/g" ./set_run/sc_compiled/input.f90
 sed -i "s/densratio/$rhor/g" ./set_run/sc_compiled/input.f90
 sed -i "s/matchedvisc/$matchedvis/g" ./set_run/sc_compiled/input.f90
@@ -637,6 +648,7 @@ sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
@@ -692,6 +704,7 @@ sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
