@@ -285,7 +285,7 @@ endif
 #if psiflag == 1
       call spectral_to_phys_fg(psic_fg,psi_fg,0)
       namevar='psi'
-      call write_output(psi_fg,i,namevar)
+      call write_output_fg(psi_fg,i,namevar)
 #endif
 #endif
 #if tempflag == 1
@@ -443,8 +443,15 @@ endif
 
   ! destroy MPI I/O derived datatype
   call mpi_type_free(ftype,ierr)
-  call mpi_type_free(stype,ierr)
+  call mpi_type_free(ftype_fg,ierr)
 
+  if(sp_save_comm.ne.MPI_comm_null) then
+    call mpi_type_free(stype,ierr)
+  endif
+
+  if(sp_save_comm_fg.ne.MPI_comm_null) then
+    call mpi_type_free(stype_fg,ierr)
+  endif
 
   ! destroy cartesian communicator
   call mpi_comm_free(cart_comm,ierr)

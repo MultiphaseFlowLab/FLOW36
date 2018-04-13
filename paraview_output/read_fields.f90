@@ -15,7 +15,7 @@ character(len=8) :: numfile
 
 logical :: check
 
-namedir='../set_run/results/'
+namedir='../results/'
 write(numfile,'(i8.8)') nstep
 
 mx=floor(2.0d0/3.0d0*dble(nx/2+1))
@@ -206,7 +206,7 @@ character(len=40) :: namefile
 
  x=x*re
  y=y*re
- z=z*re
+ z=(z+1.0d0)*re
 
 return
 end

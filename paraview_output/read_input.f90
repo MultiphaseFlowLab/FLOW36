@@ -5,7 +5,7 @@ use commondata
 integer :: temp_s,temp_e
 double precision :: Lx,Ly
 
- open(unit=66,file='../set_run/sc_compiled/input.f90',form='formatted',status='old',action='read')
+ open(unit=66,file='../sc_compiled/input.f90',form='formatted',status='old',action='read')
 
  read(66,*)
  read(66,*)

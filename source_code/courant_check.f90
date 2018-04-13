@@ -5,11 +5,16 @@ use mpi
 use sim_par
 use par_size
 use grid
+use phase_field
+use surfactant
 
 double precision, dimension(nx,fpz,fpy) :: u,v,w
 double precision :: lcomax,gcomax
 
 integer :: i,j,k
+
+#define phi_flag phicompflag
+#define psi_flag psicompflag
 
 
 lcomax=0.0d0
@@ -23,12 +28,18 @@ do j=2,fpy
   enddo
 enddo
 
+#if phi_flag == 1
+if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+#if psi_flag == 1
+if(isnan(psic_fg(1,1,1,1)).eqv..true.) lcomax=7.0d0
+#endif
+#endif
 
 call mpi_allreduce(lcomax,gcomax,1,mpi_double,mpi_max,mpi_comm_world,ierr)
 
 if(rank.eq.0) write(*,'(1x,a,es8.2)') 'check on Courant number : ',gcomax
 
-if(gcomax.gt.co)then
+if((gcomax.gt.co).or.(isnan(gcomax).eqv..true.))then
   if(rank.eq.0) write(*,'(1x,a,es8.2,a,f8.3)') 'Courant number exceeds maximum value : ',gcomax,'>',co
   call exit(0)
 endif

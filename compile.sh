@@ -127,7 +127,7 @@ ly="0.5" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="5" #integer (up to 8 digits)
+nend="10" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space (save only last time step if value lower than 1)
 dump="500" # integer
@@ -649,12 +649,14 @@ sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/buoyancytype/$buoyancy/g" ./set_run/sc_compiled/phi_non_linear.f90
@@ -705,12 +707,14 @@ sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/buoyancytype/$buoyancy/g" ./set_run/sc_compiled/phi_non_linear.f90
