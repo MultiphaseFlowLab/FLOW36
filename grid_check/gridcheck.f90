@@ -55,7 +55,7 @@ write(*,'(2x,3(a,f10.3,7x))') 'dx+=',dxp,' dy+=',dyp,' dz+=',dzp
 write(*,*)
 
 ! minimum number of points across the interface
-npoints=3
+npoints=4
 Ch=dble(npoints-1)*dx/4.1d0
 Ch=max(Ch,dble(npoints-1)*dy/4.1d0)
 Ch=max(Ch,dble(npoints-1)*dz/4.1d0)
@@ -64,7 +64,7 @@ n_x=4.1d0*Ch_in/dx+1.0d0
 n_y=4.1d0*Ch_in/dy+1.0d0
 n_z=4.1d0*Ch_in/dz+1.0d0
 
-write(*,'(1x,a)') 'Minimum Cahn number (3 points across the interface)'
+write(*,'(1x,a)') 'Minimum Cahn number (4 points across the interface)'
 write(*,'(2x,a,f8.4)') 'Ch=',Ch
 write(*,'(1x,a,f8.5)') 'Number of points with Ch=',Ch_in
 write(*,'(2x,3(a,f5.1,7x))') 'n_x=',n_x,'n_y=',n_y,'n_z=',n_z
