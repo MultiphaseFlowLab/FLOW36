@@ -152,7 +152,7 @@ else
   endif
   if(tempflag.eq.1)then
     ! reading theta
-    namefile=trim(namedir)//'thetac_'//numfile//'.dat'
+    namefile=trim(namedir)//'Tc_'//numfile//'.dat'
     open(671,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(671) tmp
     close(671,status='keep')

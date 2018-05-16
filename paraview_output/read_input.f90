@@ -54,8 +54,8 @@ double precision :: Lx,Ly
  read(68,'(i5)') z_end
  read(68,'(i5)') dnz
  read(68,*)
- read(68,'(i5)') temp_s
- read(68,'(i5)') temp_e
+ read(68,'(i8)') temp_s
+ read(68,'(i8)') temp_e
  read(68,*)
  read(68,'(i5)') phiflag
  read(68,'(i5)') psiflag
