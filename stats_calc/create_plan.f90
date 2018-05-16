@@ -20,7 +20,7 @@ complex(c_double_complex), allocatable :: b_out(:,:,:), b_t(:,:,:)
 ! compiler option: 0 FFTW_ESTIMATE, 1 FFTW_PATIENT
 write(*,*) 'Creation of transform plans'
 write(*,*) 'This may take a while'
-#define flag_fftw 1
+#define flag_fftw 0
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! fft x
@@ -50,7 +50,7 @@ plan_x_fwd=fftw_plan_many_dft_r2c(1,dims,nz*ny,b_in,inembed,istride,idist,&
 inembed=[nx/2+1,nz,ny]
 onembed=[nx,nz,ny]
 istride=1
-ostride=1       
+ostride=1
 idist=nx/2+1
 odist=nx
 

@@ -8,9 +8,9 @@ double precision :: Lx, Ly
  open(unit=66,file='../sc_compiled/input.f90',form='formatted',status='old',action='read')
 
  read(66,*)
- read(66,*) 
- read(66,*) 
- read(66,*) 
+ read(66,*)
+ read(66,*)
+ read(66,*)
  read(66,*)
  read(66,'(i5)') nx
  read(66,'(i5)') ny
@@ -23,7 +23,7 @@ double precision :: Lx, Ly
  read(66,*)
  read(66,'(f16.8)') Lx
  read(66,'(f16.8)') Ly
- read(66,*) 
+ read(66,*)
  read(66,'(i8)') nstart
  read(66,'(i8)') nend
  read(66,'(i8)') ndump
@@ -41,9 +41,9 @@ double precision :: Lx, Ly
  open(unit=68,file='./input_paraview.f90',form='formatted',status='old',action='read')
 
  read(68,'(i5)') spectral
- read(68,*) 
- read(68,'(i5)') temp_s
- read(68,'(i5)') temp_e
+ read(68,*)
+ read(68,'(i8)') temp_s
+ read(68,'(i8)') temp_e
 
  if(temp_s.ne.-1)then
   nstart=temp_s
@@ -88,4 +88,3 @@ write(*,*)
 
 return
 end
-
