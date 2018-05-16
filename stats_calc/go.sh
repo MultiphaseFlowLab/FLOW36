@@ -3,7 +3,8 @@ rm -r *.mod
 make &> /dev/null
 
 
-rm -r output/*
+rm -r output
+mkdir output
 
 make
 
@@ -11,4 +12,3 @@ make
 NTASK="3"
 
 mpirun -n $NTASK ./stats_calc
-
