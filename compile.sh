@@ -172,9 +172,14 @@ bc_lb="0" # integer
 # phase field flag, 0: phase field deactivated, 1: phase field activated
 phi_flag="1" # integer
 
-# Correction on phi to improve mass conservation
-# 0: classic PFM, 1: profile-corrected PFM, 2: flux-corrected PFM
-phicor_flag="2" # integer
+# correction on phi to improve mass conservation
+# 0: OFF
+# 1: profile-corrected
+# 2: flux-corrected
+# 3: profile-corrected turned off at the walls
+# 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
+# 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
+phicor_flag="5" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag 1 or 2)
 # Lam=0.3/Ch

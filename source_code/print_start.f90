@@ -121,6 +121,26 @@ elseif(in_cond_phi.eq.8)then
    write(*,'(1x,a40,f8.3)') 'Flux-corrected PFM             Lambda : ',lamphi
  endif
 
+ if (phicor_flag.eq.0) then
+   write(*,'(1x,a60)')      'Classic Phase Field Model'
+ elseif (phicor_flag.eq.1) then
+   write(*,'(1x,a60)') 'Profile-corrected Phase Field Model'
+   write(*,'(1x,a40,f8.5)') 'Lambda : ',lamphi
+ elseif (phicor_flag.eq.2) then
+   write(*,'(1x,a60)') 'Flux-corrected Phase Field Model'
+   write(*,'(1x,a40,f8.5)') 'Lambda : ',lamphi
+ elseif (phicor_flag.eq.3) then
+   write(*,'(1x,a60)') 'Profile-corrected Phase Field Model, deactivated at walls'
+   write(*,'(1x,a40,f8.5)') 'Lambda : ',lamphi
+ elseif (phicor_flag.eq.4) then
+   write(*,'(1x,a60)') 'Profile-corrected Phase Field Model, kill the gradients'
+   write(*,'(1x,a40,f8.5)') 'Lambda : ',lamphi
+ elseif (phicor_flag.eq.5) then
+   write(*,'(1x,a60)') 'Flux-corrected Phase Field Model, kill the gradients'
+   write(*,'(1x,a40,f8.5)') 'Lambda : ',lamphi
+ endif
+
+
  if(psi_flag.eq.1)then
   write(*,'(1x,a)') 'Surfactant parameters'
   if(in_cond_psi.eq.0)then

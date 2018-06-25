@@ -97,13 +97,6 @@ double precision :: Lx,Ly
   stop
  endif
 
- ! elseif((match_dens.ne.1).and.(abs(rhor-1.0d0).gt.0.00000001))then
- !   if(rank.eq.0) write(*,*) 'Non-matched densities'
- ! else
- !   if(rank.eq.0) write(*,*) 'Error in input parameters: non coherent input for matchedrho and rhor'
- !   stop
- ! endif
-
 
  if((match_visc.eq.1).and.(abs(visr-1.0d0).lt.0.00000001))then
    if(rank.eq.0) write(*,*) 'Matched viscosities'
@@ -111,6 +104,13 @@ double precision :: Lx,Ly
    if(rank.eq.0) write(*,*) 'Non-matched viscosities'
  else
    if(rank.eq.0) write(*,*) 'Error in input parameters: non coherent input for matchedvis and visr'
+   stop
+ endif
+
+
+
+ if((phicor_flag.lt.0).or.(phicor_flag.gt.5)) then
+   if(rank.eq.0) write(*,*) 'Error in PFM formulation choice (non-existing option)'
    stop
  endif
 
