@@ -177,9 +177,6 @@ hpsi=hpsi+psic_fg
 
 call calculate_psi(hpsi)
 
-if (rank.eq.0) then
-  write(*,'(1x,a,es12.4)') 'Average Concentration Surfactant : ',psic_fg(1,1,1,1)/dble(2*npsix*npsiy)
-endif
 
 deallocate(hpsi)
 

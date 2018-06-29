@@ -18,12 +18,13 @@ double precision :: tau_wm1,tau_wp1,nu_wm1,nu_wp1
 
 time=re*dble(i)*dt
 
-re_bulk=2.0d0*re/dble(2*nx*ny)*((uc(1,1,1,1))**2+(vc(1,1,1,1))**2+(wc(1,1,1,1)**2))**0.5d0
+! re_bulk=2.0d0*re/dble(2*nx*ny)*((uc(1,1,1,1))**2+(vc(1,1,1,1))**2+(wc(1,1,1,1)**2))**0.5d0
+call get_rebulk(re_bulk)
 
 #if phiflag == 1
-int_phi=phic(1,1,1,1)/dble(2*nx*ny)
+call phi_check(int_phi)
 #if psiflag == 1
-int_psi=psic_fg(1,1,1,1)/dble(2*npsix*npsiy)
+call psi_check(int_psi)
 #endif
 #endif
 
@@ -73,12 +74,13 @@ double precision :: tau_wm1,tau_wp1,nu_wm1,nu_wp1
 
 time=re*0.0d0
 
-re_bulk=2.0d0*re/dble(2*nx*ny)*((uc(1,1,1,1))**2+(vc(1,1,1,1))**2+(wc(1,1,1,1)**2))**0.5d0
+! re_bulk=2.0d0*re/dble(2*nx*ny)*((uc(1,1,1,1))**2+(vc(1,1,1,1))**2+(wc(1,1,1,1)**2))**0.5d0
+call get_rebulk(re_bulk)
 
 #if phiflag == 1
-int_phi=phic(1,1,1,1)/dble(2*nx*ny)
+call phi_check(int_phi)
 #if psiflag == 1
-int_psi=psic_fg(1,1,1,1)/dble(2*npsix*npsiy)
+call psi_check(int_psi)
 #endif
 #endif
 
@@ -96,14 +98,14 @@ open(68,file=trim(folder)//'/backup/time_check_old.dat',status='new')
  write(67,'(2(2x,a16))') 't+ ','Re_bulk '
  write(67,'(2(2x,es16.5))') time, re_bulk
 #elif phiflag == 1 && tempflag == 0 && psiflag == 0
- write(66,'(4(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1'
+ write(66,'(4(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1'
  write(66,'(4(2x,es16.5))') time, re_bulk,int_phi,int_1
- write(67,'(4(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1'
+ write(67,'(4(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1'
  write(67,'(4(2x,es16.5))') time, re_bulk,int_phi,int_1
 #elif phiflag == 1 && tempflag == 0 && psiflag == 1
- write(66,'(5(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1','int psi'
+ write(66,'(5(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg'
  write(66,'(5(2x,es16.5))') time, re_bulk,int_phi,int_1,int_psi
- write(67,'(5(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1','int psi'
+ write(67,'(5(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg'
  write(67,'(5(2x,es16.5))') time, re_bulk,int_phi,int_1,int_psi
 #elif phiflag == 0 && tempflag == 1
  write(66,'(6(2x,a16))') 't+ ','Re_bulk ','tau wall at z=-1','tau wall at z=+1','Nu at z=-1','Nu at z=+1'
@@ -111,17 +113,17 @@ open(68,file=trim(folder)//'/backup/time_check_old.dat',status='new')
  write(67,'(6(2x,a16))') 't+ ','Re_bulk ','tau wall at z=-1','tau wall at z=+1','Nu at z=-1','Nu at z=+1'
  write(67,'(6(2x,es16.5))') time,re_bulk,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #elif phiflag == 1 && tempflag == 1 && psiflag == 0
- write(66,'(8(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1','tau wall at z=-1', &
+ write(66,'(8(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','tau wall at z=-1', &
  &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
  write(66,'(8(2x,es16.5))') time, re_bulk, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
- write(67,'(8(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1','tau wall at z=-1', &
+ write(67,'(8(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','tau wall at z=-1', &
  &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
  write(67,'(8(2x,es16.5))') time, re_bulk, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #elif phiflag == 1 && tempflag == 1 && psiflag == 1
-  write(66,'(9(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1','int psi','tau wall at z=-1', &
+  write(66,'(9(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg','tau wall at z=-1', &
   &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
   write(66,'(9(2x,es16.5))') time, re_bulk, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
-  write(67,'(9(2x,a16))') 't+ ','Re_bulk ','int phi','int phi=+1','int psi','tau wall at z=-1', &
+  write(67,'(9(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg','tau wall at z=-1', &
   &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
   write(67,'(9(2x,es16.5))') time, re_bulk, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #endif
@@ -212,6 +214,124 @@ call dctz_bwd(nu_c,nu_c,1,nz,1,0)
 
 nu_wm1=nu_c(1,nz,1,1)/dble(nx*ny)
 nu_wp1=nu_c(1,1,1,1)/dble(nx*ny)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine phi_check(int_phi)
+
+use commondata
+use par_size
+use phase_field
+use grid
+
+double precision :: int_phi
+double precision, dimension(nz) :: dz,phi_mm
+double precision, dimension(nz,2) :: phi_mmc
+
+integer :: k
+
+
+dz(1)=z(1)-z(2)
+dz(nz)=z(nz-1)-z(nz)
+do i=2,nz-1
+  dz(i)=(z(i-1)-z(i+1))*0.5d0
+enddo
+
+call dctz_bwd(phic(1,:,1,1),phi_mmc,1,nz,1,0)
+
+phi_mm=phi_mmc(:,1)/dble(nx*ny)
+
+int_phi=0.0d0
+do k=1,nz
+  int_phi=int_phi+phi_mm(k)*dz(k)
+enddo
+
+! average phi
+int_phi=int_phi/2.0d0
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine psi_check(int_psi)
+
+use commondata
+use par_size
+use surfactant
+use grid
+
+double precision :: int_psi
+double precision, dimension(nz) :: dz,psi_mm
+double precision, dimension(nz,2) :: psi_mmc
+
+integer :: k
+
+
+dz(1)=z(1)-z(2)
+dz(nz)=z(nz-1)-z(nz)
+do i=2,nz-1
+  dz(i)=(z(i-1)-z(i+1))*0.5d0
+enddo
+
+call dctz_bwd(psic(1,:,1,1),psi_mmc,1,nz,1,0)
+
+psi_mm=psi_mmc(:,1)/dble(nx*ny)
+
+int_psi=0.0d0
+do k=1,nz
+  int_psi=int_psi+psi_mm(k)*dz(k)
+enddo
+
+! average psi
+int_psi=int_psi/2.0d0
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine get_rebulk(re_bulk)
+
+use commondata
+use par_size
+use velocity
+use grid
+
+double precision :: re_bulk
+double precision, dimension(nz) :: dz,ubulk,vbulk,wbulk
+double precision, dimension(nz,2) :: tmp_mmc
+
+integer :: k
+
+
+dz(1)=z(1)-z(2)
+dz(nz)=z(nz-1)-z(nz)
+do i=2,nz-1
+  dz(i)=(z(i-1)-z(i+1))*0.5d0
+enddo
+
+call dctz_bwd(uc(1,:,1,1),tmp_mmc,1,nz,1,0)
+ubulk=tmp_mmc(:,1)/dble(nx*ny)
+
+call dctz_bwd(vc(1,:,1,1),tmp_mmc,1,nz,1,0)
+vbulk=tmp_mmc(:,1)/dble(nx*ny)
+
+call dctz_bwd(wc(1,:,1,1),tmp_mmc,1,nz,1,0)
+wbulk=tmp_mmc(:,1)/dble(nx*ny)
+
+
+re_bulk=0.0d0
+! sums up Re_b,x+Re_b,y+Re_b,z
+do k=1,nz
+  re_bulk=re_bulk+(ubulk(k)+vbulk(k)+wbulk(k))*dz(k)
+enddo
+
+! average velocity (module)
+re_bulk=re_bulk/2.0d0
 
 return
 end
