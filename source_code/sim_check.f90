@@ -300,6 +300,7 @@ use commondata
 use par_size
 use velocity
 use grid
+use sim_par
 
 double precision :: re_bulk
 double precision, dimension(nz) :: dz,ubulk,vbulk,wbulk
@@ -332,6 +333,9 @@ enddo
 
 ! average velocity (module)
 re_bulk=re_bulk/2.0d0
+
+! bulk Reynolds number (channel height)
+re_bulk=re_bulk*re
 
 return
 end
