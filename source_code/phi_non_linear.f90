@@ -259,9 +259,9 @@ do j=1,fpy
   do k=1,fpz
     do i=1,nx
       phif=min(1.0d0,max(-1.0d0,phi(i,k,j)))
-      a4f(i,k,j)=2.0d0*0.5d0*(visr-1.0d0)*(phif-1.0d0)*a4f(i,k,j)
-      a5f(i,k,j)=0.5d0*(visr-1.0d0)*(phif-1.0d0)*a5f(i,k,j)
-      a6f(i,k,j)=0.5d0*(visr-1.0d0)*(phif-1.0d0)*a6f(i,k,j)
+      a4f(i,k,j)=2.0d0*0.5d0*(visr-1.0d0)*(phif+1.0d0)*a4f(i,k,j)
+      a5f(i,k,j)=0.5d0*(visr-1.0d0)*(phif+1.0d0)*a5f(i,k,j)
+      a6f(i,k,j)=0.5d0*(visr-1.0d0)*(phif+1.0d0)*a6f(i,k,j)
     enddo
   enddo
 enddo
@@ -284,9 +284,9 @@ call dz(a6,a4)
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
-s1=s1+(visr-1.0d0)/(2.0d0*re*rhor)*(a4+a7)
+s1=s1+(a4+a7)/(re*rhor)
 #else
-s1=s1+(visr-1.0d0)/(2.0d0*re)*(a4+a7)
+s1=s1+(a4+a7)/re
 #endif
 
 deallocate(a4)
@@ -329,9 +329,9 @@ do j=1,fpy
   do k=1,fpz
     do i=1,nx
       phif=min(1.0d0,max(-1.0d0,phi(i,k,j)))
-      a4f(i,k,j)=0.5d0*(visr-1.0d0)*(phif-1.0d0)*a4f(i,k,j)
-      a5f(i,k,j)=2.0d0*0.5d0*(visr-1.0d0)*(phif-1.0d0)*a5f(i,k,j)
-      a6f(i,k,j)=0.5d0*(visr-1.0d0)*(phif-1.0d0)*a6f(i,k,j)
+      a4f(i,k,j)=0.5d0*(visr-1.0d0)*(phif+1.0d0)*a4f(i,k,j)
+      a5f(i,k,j)=2.0d0*0.5d0*(visr-1.0d0)*(phif+1.0d0)*a5f(i,k,j)
+      a6f(i,k,j)=0.5d0*(visr-1.0d0)*(phif+1.0d0)*a6f(i,k,j)
     enddo
   enddo
 enddo
@@ -354,9 +354,9 @@ call dz(a6,a4)
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
-s2=s2+(visr-1.0d0)/(2.0d0*re*rhor)*(a4+a7)
+s2=s2+(a4+a7)/(re*rhor)
 #else
-s2=s2+(visr-1.0d0)/(2.0d0*re)*(a4+a7)
+s2=s2+(a4+a7)/re
 #endif
 
 deallocate(a4)
@@ -399,9 +399,9 @@ do j=1,fpy
   do k=1,fpz
     do i=1,nx
       phif=min(1.0d0,max(-1.0d0,phi(i,k,j)))
-      a4f(i,k,j)=0.5d0*(visr-1.0d0)*(phif-1.0d0)*a4f(i,k,j)
-      a5f(i,k,j)=0.5d0*(visr-1.0d0)*(phif-1.0d0)*a5f(i,k,j)
-      a6f(i,k,j)=2.0d0*0.5d0*(visr-1.0d0)*(phif-1.0d0)*a6f(i,k,j)
+      a4f(i,k,j)=0.5d0*(visr-1.0d0)*(phif+1.0d0)*a4f(i,k,j)
+      a5f(i,k,j)=0.5d0*(visr-1.0d0)*(phif+1.0d0)*a5f(i,k,j)
+      a6f(i,k,j)=2.0d0*0.5d0*(visr-1.0d0)*(phif+1.0d0)*a6f(i,k,j)
     enddo
   enddo
 enddo
@@ -424,9 +424,9 @@ call dz(a6,a4)
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
-s3=s3+(visr-1.0d0)/(2.0d0*re*rhor)*(a4+a7)
+s3=s3+(a4+a7)/(re*rhor)
 #else
-s3=s3+(visr-1.0d0)/(2.0d0*re)*(a4+a7)
+s3=s3+(a4+a7)/re
 #endif
 
 deallocate(a4)
