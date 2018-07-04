@@ -27,15 +27,6 @@ integer :: i,j,k
 #define match_dens matched_density
 #define b_type buoyancytype
 
-! debug only
-! allocate(a4f(npsix,fpzpsi,fpypsi))
-! a4f=psi_fg
-! call phys_to_spectral_fg(psi_fg,psic_fg,0)
-! call fine2coarse(psic_fg,psic)
-! call coarse2fine(psic,psic_fg)
-! call spectral_to_phys_fg(psic_fg,psi_fg,0)
-! write(*,*) rank,maxval(a4f),minval(a4f),maxval(psi_fg-a4f),minval(psi_fg-a4f)
-! deallocate(a4f)
 
 ! phi on coarse grid, physical space needed after surface force calculation
 call spectral_to_phys(phic,phi,1)
