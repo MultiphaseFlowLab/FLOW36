@@ -31,7 +31,7 @@ integer :: nfy
 
 nfy=exp_y*ny
 
-varc=0.0d0
+varf=0.0d0
 
 varf(1:nx/2+1,1:nz,1:ny/2+1,1:2)=varc(1:nx/2+1,1:nz,1:ny/2+1,1:2)
 varf(1:nx/2+1,1:nz,nfy-(ny/2-1)+1:nfy,1:2)=varc(1:nx/2+1,1:nz,ny-(ny/2-1)+1:ny,1:2)

@@ -8,8 +8,6 @@ integer :: mx_fg,my_fg,mz_fg,myl_fg,myu_fg
 
 double precision, allocatable, dimension(:,:,:,:) :: tmp,tmp_fg
 double precision, allocatable :: inp(:,:,:),inpc(:,:,:,:)
-double precision :: psi_fg(exp_x*nx,exp_z*(nz-1)+1,exp_y*ny)
-double precision :: psic_fg((exp_x*nx)/2+1,exp_z*(nz-1)+1,exp_y*ny,2)
 
 character(len=40) :: namedir,namefile
 character(len=8) :: numfile
