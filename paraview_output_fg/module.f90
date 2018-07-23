@@ -1,5 +1,6 @@
 module commondata
  integer :: nx, ny, nz
+ integer :: nxf,nyf,nzf
  integer :: rank, ntask
  integer :: nstart,nend,ndump,sdump
  integer :: x_start,x_end,dnx
@@ -14,7 +15,7 @@ module commondata
  double precision :: xl,yl
  double precision, allocatable, dimension(:,:,:) :: u,v,w,phi,psi,theta
  double precision, allocatable, dimension(:,:,:,:) :: uc,vc,wc,phic,psic,thetac
- double precision, allocatable,dimension(:) :: x,y,z
+ double precision, allocatable,dimension(:) :: x,y,z, xfg,yfg,zfg
 end module commondata
 
 

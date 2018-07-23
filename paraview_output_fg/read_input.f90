@@ -65,14 +65,18 @@ double precision :: Lx,Ly
  read(68,'(i5)') exp_y
  read(68,'(i5)') exp_z
 
+nxf=exp_x*nx
+nyf=exp_y*ny
+nzf=exp_z*(nz-1)+1
+
  x_start=max(x_start,1)
- if(x_end.eq.0) x_end=nx
+ if(x_end.eq.0) x_end=nxf
 
  y_start=max(y_start,1)
- if(y_end.eq.0) y_end=ny
+ if(y_end.eq.0) y_end=nyf
 
  z_start=max(z_start,1)
- if(z_end.eq.0) z_end=nz
+ if(z_end.eq.0) z_end=nzf
 
  if(temp_s.ne.-1)then
   nstart=temp_s

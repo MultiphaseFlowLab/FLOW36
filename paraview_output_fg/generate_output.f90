@@ -57,17 +57,17 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
  buffer='X_COORDINATES '//str1//'  double'//lf ;
  write(66) trim(buffer)
  do i=x_start,x_end,dnx
-  write(66) x(i)
+  write(66) xfg(i)
  enddo
  buffer='Y_COORDINATES '//str2//'  double'//lf ;
  write(66) trim(buffer)
  do j=y_start,y_end,dny
-  write(66) y(j)
+  write(66) yfg(j)
  enddo
  buffer='Z_COORDINATES '//str3//'  double'//lf ;
  write(66) trim(buffer)
  do k=z_start,z_end,dnz
-  write(66) z(k)
+  write(66) zfg(k)
  enddo
 
  ! write content (data format)
