@@ -3,7 +3,7 @@
 #COBALT -n 2
 #COBALT -A ATPESC2018
 #COBALT -q debug-flat-quad
-
+#COBALT --jobname name
 
 module load fftw
 
