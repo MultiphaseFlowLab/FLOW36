@@ -72,8 +72,8 @@ echo "=                                  Theta                                  
 module load fftw
 cp ./Theta/makefile ./makefile
 cp ./Theta/go.sh ./go.sh
-# check save spectral
-savespectral="1"
+
+savespectral="0"
 fi
 echo "=============================================================================="
 echo ""
