@@ -1,6 +1,6 @@
 #F90	= $(FC)
 
-FC	= mpiifort
+FC	= ftn
 LD	= $(FC)
 SWP	=
 RM	= /bin/rm -f
