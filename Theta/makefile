@@ -6,7 +6,7 @@ SWP	=
 RM	= /bin/rm -f
 MP	=
 OLEVEL	= -O3
-FOPTS   = -align none -axMIC-AVX512 -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
+FOPTS   = -align none -dynamic -mcmodel=medium -shared-intel -axMIC-AVX512 -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
 FFLAGS	= $(FOPTS) $(OLEVEL)
 #LIBS	=  -I/usr/include/ -I/usr/local/include -L$FFTW_LIB -L/usr/lib -L/usr/lib64 -lfftw3 -lm -ldl
 LIBS    =  -I$(FFTW_INC) -L$(FFTW_LIB) -lfftw3 -lm -ldl
