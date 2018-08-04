@@ -3,8 +3,9 @@
 # 1 : local
 # 2 : Marconi A1
 # 3 : VSC3
-# 4 : Vesta
+# 4 : Vesta (ANL)
 # 5 : Marconi A2 KNL
+# 6 : Theta (ANL)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -64,6 +65,15 @@ cp ./Marconi_KNL/makefile ./makefile
 cp ./Marconi_KNL/go.sh ./go.sh
 
 savespectral="0"
+elif [ "$machine" == "6" ]; then
+echo "=                                  Theta                                     ="
+# load modules
+#module load gcc
+module load fftw
+cp ./Theta/makefile ./makefile
+cp ./Theta/go.sh ./go.sh
+# check save spectral
+savespectral="1"
 fi
 echo "=============================================================================="
 echo ""
