@@ -9,7 +9,7 @@ module load fftw
 
 
 export n_nodes=$COBALT_JOBSIZE
-export n_mpi_ranks_per_node=32
+export n_mpi_ranks_per_node=64
 export n_mpi_ranks=$(($n_nodes * $n_mpi_ranks_per_node))
 ##export n_openmp_threads_per_rank=4
 ##export n_hyperthreads_per_core=2
