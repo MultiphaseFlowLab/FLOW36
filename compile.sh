@@ -374,6 +374,8 @@ echo ""
 echo "=============================================================================="
 fi
 
+mkdir -p set_run
+
 rm -r ./set_run/go.sh
 rm -r ./set_run/sc_compiled
 rm -r ./set_run/paraview_output
