@@ -70,6 +70,8 @@ echo "=                                  Theta                                  
 # load modules
 #module load gcc
 module load fftw
+module load craype-hugepages16M
+
 cp ./Theta/makefile ./makefile
 cp ./Theta/go.sh ./go.sh
 
