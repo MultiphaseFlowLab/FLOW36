@@ -152,9 +152,11 @@ elseif(in_cond_phi.eq.8)then
   elseif(in_cond_psi.eq.3)then
    write(*,'(1x,a)') 'Initialize equilibrium profile + Y Gradient'
   elseif(in_cond_psi.eq.4)then
-  write(*,'(1x,a)') 'Initialize equilibrium profile + Z Gradient'
+   write(*,'(1x,a)') 'Initialize equilibrium profile + Z Gradient'
   elseif(in_cond_psi.eq.5)then
-  write(*,'(1x,a)') 'Initialize Diffusion Test'
+   write(*,'(1x,a)') 'Initialize Diffusion Test'
+  elseif(in_cond_psi.eq.6)then
+   write(*,'(1x,a)') 'Read surfactant field from input data (fine grid)'
   else
    write(*,'(1x,a)') 'Dafuq? Check in_cond_psi value'
   endif
