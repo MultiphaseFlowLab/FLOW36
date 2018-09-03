@@ -4,7 +4,7 @@
 #SBATCH --time=5:00                         # time limits: hh:mm:ss
 #SBATCH --error error.err                   # std-error file
 #SBATCH --output output.out                 # std-output file
-#SBATCH --account=IscrB_VISTRATU            # account number
+#SBATCH --account=IscrB_TURBINLA            # account number
 #SBATCH --partition=bdw_usr_dbg             # partition to be used, queue dbg: debug, prod, bprod: bigprod
 #SBATCH --job-name=name                     # job name (for squeue)
 
