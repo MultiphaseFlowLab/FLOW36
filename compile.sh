@@ -692,6 +692,7 @@ sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/solver.f9
 sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/print_start.f90
 sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/write_output.f90
 sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/courant_check.f90
+sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/module.f90
 sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/module.f90
 sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
@@ -751,6 +752,7 @@ sed -i "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/print_start.f90
 sed -i "s/machineflag/$machine/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/machineflag/$machine/g" ./set_run/sc_compiled/courant_check.f90
+sed -i "s/machineflag/$machine/g" ./set_run/sc_compiled/main.f90
 sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/module.f90
 sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/module.f90
 sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
