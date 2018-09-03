@@ -13,6 +13,7 @@ use surfactant
 use temperature
 use wavenumber
 
+#define machine machineflag
 
 integer :: i,j,k
 integer :: dims(2)
@@ -198,32 +199,40 @@ else
     call write_output(v,nstart,namevar)
     namevar='w'
     call write_output(w,nstart,namevar)
+#if machine != 2 && machine != 5
     namevar='uc'
     call write_output_spectral(uc,nstart,namevar)
     namevar='vc'
     call write_output_spectral(vc,nstart,namevar)
     namevar='wc'
     call write_output_spectral(wc,nstart,namevar)
+#endif
 #if phiflag == 1
     call spectral_to_phys(phic,phi,0)
     namevar='phi'
     call write_output(phi,nstart,namevar)
+#if machine != 2 && machine != 5
     namevar='phic'
     call write_output_spectral(phic,nstart,namevar)
+#endif
 #if psiflag == 1
     call spectral_to_phys_fg(psic_fg,psi_fg,0)
     namevar='psi'
     call write_output_fg(psi_fg,nstart,namevar)
+#if machine != 2 && machine != 5
     namevar='psic'
     call write_output_spectral_fg(psic_fg,nstart,namevar)
+#endif
 #endif
 #endif
 #if tempflag == 1
     call spectral_to_phys(thetac,theta,0)
     namevar='T'
     call write_output(theta,nstart,namevar)
+#if machine != 2 && machine != 5
     namevar='Tc'
     call write_output_spectral(thetac,nstart,namevar)
+#endif
 #endif
   endif
 
@@ -298,6 +307,7 @@ endif
 
 #define sdump spectral_dump_frequency
 #if sdump > 0
+#if machine != 2 && machine != 5
     ! save fields at end of timestep according to ndump value
     if(mod(i,sdump).eq.0.and.i.ne.nstart) then
       if(rank.eq.0) write(*,*) 'saving solution in spectral space'
@@ -320,6 +330,7 @@ endif
       call write_output_spectral(thetac,i,namevar)
 #endif
     endif
+#endif
 #endif
 
 #if phiflag == 1
