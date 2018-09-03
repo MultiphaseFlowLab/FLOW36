@@ -7,6 +7,7 @@
 #SBATCH --account=IscrB_TURBINLA            # account number
 #SBATCH --partition=knl_usr_dbg             # partition to be used, queue dbg: debug, prod, bprod: bigprod
 #SBATCH --job-name=name                     # job name (for squeue)
+#SBATCH	--mem=30000
 
 # load modules
 module purge
