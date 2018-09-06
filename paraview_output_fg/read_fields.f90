@@ -106,8 +106,8 @@ if(spectral.eq.0)then
       do j=1,nyf
         do i=1,nxf
           meanu=meanu+u(i,k,j)
-          meanu=meanv+v(i,k,j)
-          meanu=meanw+w(i,k,j)
+          meanv=meanv+v(i,k,j)
+          meanw=meanw+w(i,k,j)
         enddo
       enddo
       meanu=meanu/dble(nxf*nyf)
@@ -202,8 +202,8 @@ else
       do j=1,nyf
         do i=1,nxf
           meanu=meanu+u(i,k,j)
-          meanu=meanv+v(i,k,j)
-          meanu=meanw+w(i,k,j)
+          meanv=meanv+v(i,k,j)
+          meanw=meanw+w(i,k,j)
         enddo
       enddo
       meanu=meanu/dble(nxf*nyf)

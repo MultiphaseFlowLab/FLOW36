@@ -8,6 +8,6 @@ mkdir output
 
 make
 
-NTASK="5"
+NTASK="1"
 
 mpirun -n $NTASK ./read_paraview
