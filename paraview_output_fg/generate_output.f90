@@ -13,8 +13,8 @@ character(len=16) :: str4
 ! end of line character
 lf=achar(10)
 
-! u,v,w fields + phi (if included)
-nfields=3+phiflag+psiflag+tempflag
+! fields included
+nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+3*upflag
 
 
 numx=0
@@ -79,6 +79,7 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
  write(66) trim(buffer)
 
  ! write u field
+if(uflag.eq.1)then
  write(str4(1:16),'(i16)') numx*numy*numz
  buffer = 'U 1 '//str4//' double'//lf
  write(66) trim(buffer)
@@ -89,7 +90,9 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
    enddo
   enddo
  enddo
+endif
 
+if(vflag.eq.1)then
  ! write v field
  write(str4(1:16),'(i16)') numx*numy*numz
  buffer = 'V 1 '//str4//' double'//lf
@@ -101,7 +104,9 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
    enddo
   enddo
  enddo
+endif
 
+if(wflag.eq.1)then
  ! write w field
  write(str4(1:16),'(i16)') numx*numy*numz
  buffer = 'W 1 '//str4//' double'//lf
@@ -113,6 +118,7 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
    enddo
   enddo
  enddo
+endif
 
  ! write phi field
  if(phiflag.eq.1)then
@@ -155,6 +161,43 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
    enddo
   enddo
  endif
+
+ if(upflag.eq.1)then
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'U_p '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) up(i,k,j)
+    enddo
+   enddo
+  enddo
+
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'V_p '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) vp(i,k,j)
+    enddo
+   enddo
+  enddo
+
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'W_p '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) wp(i,k,j)
+    enddo
+   enddo
+  enddo
+
+ endif
+
 
  buffer=lf
  write(66) trim(buffer)

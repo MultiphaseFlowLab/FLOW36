@@ -15,9 +15,13 @@
 -1              ! start n step, leave -1 to use the first time step
 -1              ! end n step, leave -1 to use the last time step
 
+0               ! 0 to skip u, 1 to include it
+0               ! 0 to skip v, 1 to include it
+0               ! 0 to skip w, 1 to include it
 0               ! 0 to skip phase variable, 1 to include it
 0               ! 0 to skip surfactant, 1 to include it
 0               ! 0 to skip temperature, 1 to include it
+0               ! 0 to skip velocity fluctuations, 1 to include them
 
 2               ! expansion coefficient x
 2               ! expansion coefficient y

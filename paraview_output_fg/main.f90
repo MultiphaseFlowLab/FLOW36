@@ -38,6 +38,12 @@ if(tempflag.eq.1)then
  allocate(thetac(nxf/2+1,nzf,nyf,2))
 endif
 
+if(upflag.eq.1)then
+  allocate(up(nxf,nzf,nyf))
+  allocate(vp(nxf,nzf,nyf))
+  allocate(wp(nxf,nzf,nyf))
+endif
+
 
 
 allocate(x(nx))
@@ -109,6 +115,10 @@ if(tempflag.eq.1)then
  if(spectral.eq.1)then
   deallocate(thetac)
  endif
+endif
+
+if(upflag.eq.1)then
+  deallocate(up,vp,wp)
 endif
 
 deallocate(x)

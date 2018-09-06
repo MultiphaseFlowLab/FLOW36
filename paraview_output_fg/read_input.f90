@@ -57,9 +57,13 @@ double precision :: Lx,Ly
  read(68,'(i8)') temp_s
  read(68,'(i8)') temp_e
  read(68,*)
+ read(68,'(i5)') uflag
+ read(68,'(i5)') vflag
+ read(68,'(i5)') wflag
  read(68,'(i5)') phiflag
  read(68,'(i5)') psiflag
  read(68,'(i5)') tempflag
+ read(68,'(i5)') upflag
  read(68,*)
  read(68,'(i5)') exp_x
  read(68,'(i5)') exp_y
