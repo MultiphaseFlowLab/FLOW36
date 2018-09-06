@@ -164,7 +164,7 @@ endif
 
  if(upflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'U_p '//str4//' double'//lf
+  buffer = 'U_p 1 '//str4//' double'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
@@ -175,7 +175,7 @@ endif
   enddo
 
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'V_p '//str4//' double'//lf
+  buffer = 'V_p 1 '//str4//' double'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
@@ -186,7 +186,7 @@ endif
   enddo
 
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'W_p '//str4//' double'//lf
+  buffer = 'W_p 1 '//str4//' double'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
