@@ -399,6 +399,7 @@ endif
 #endif
   endif
 
+#if machine != 2 && machine != 5
   if(mod(nend,sdump).ne.0.or.sdump.lt.0) then
     if(rank.eq.0) write(*,*) 'Writing final fields in spectral space'
     namevar='uc'
@@ -420,6 +421,7 @@ endif
     call write_output_spectral(thetac,nend,namevar)
 #endif
   endif
+#endif
 
 
   ! output to screen total time elapsed
