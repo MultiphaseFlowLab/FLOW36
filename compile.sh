@@ -149,7 +149,7 @@ sdump="-1" # integer
 
 # frequency of solution saving in spectral space, needed to restart the simulation
 #                       from a checkpoint if it crashes (those files are not kept)
-failure_dump="2" # integer
+failure_dump="500" # integer
 
 # Run time statistics calculation parameters
 # frequency of statistics calculation (leave -1 to skip statistics calculation)
