@@ -282,5 +282,9 @@ do i=1,exp_z*(nz-1)+1
   zfg(i)=dcos(((i-1)*pi)/((exp_z*(nz-1)+1)-1))
 enddo
 
+xfg=xfg*re
+yfg=yfg*re
+zfg=(zfg+1.0d0)*re
+
 return
 end
