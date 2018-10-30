@@ -20,7 +20,7 @@ character(len=16) :: str4
 lf=achar(10)
 
 ! fields included
-nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+3*upflag
+nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+3*upflag+3*vorflag+3*strflag
 
 ! calculate velocity fluctuations
 if(upflag.eq.1)then
