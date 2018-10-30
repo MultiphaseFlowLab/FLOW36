@@ -1,8 +1,14 @@
 subroutine generate_output(nstep)
 
 use commondata
+use wavenumber
 
 integer :: nstep,nfields,numx,numy,numz
+integer :: i,k,j
+
+double precision :: meanu,meanv,meanw
+
+double precision, dimension(nxf/2+1,nzf,nyf,2) :: tmpc
 
 character(len=40) :: namefile
 character(len=80) :: buffer
@@ -16,6 +22,95 @@ lf=achar(10)
 ! fields included
 nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+3*upflag
 
+! calculate velocity fluctuations
+if(upflag.eq.1)then
+  do k=1,nzf
+    meanu=0.0d0
+    meanv=0.0d0
+    meanw=0.0d0
+    do j=1,nyf
+      do i=1,nxf
+        meanu=meanu+u(i,k,j)
+        meanv=meanv+v(i,k,j)
+        meanw=meanw+w(i,k,j)
+      enddo
+    enddo
+    meanu=meanu/dble(nxf*nyf)
+    meanv=meanv/dble(nxf*nyf)
+    meanw=meanw/dble(nxf*nyf)
+    up(:,k,:)=u(:,k,:)-meanu
+    vp(:,k,:)=v(:,k,:)-meanv
+    wp(:,k,:)=w(:,k,:)-meanw
+  enddo
+endif
+
+if(vorflag.eq.1)then
+! calculate vorticity, u,v,w already available in spectral space
+  ! om x
+  call dz(-vc,tmpc)
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=tmpc(i,:,j,1)-ky(j)*wc(i,:,j,2)
+      tmpc(i,:,j,2)=tmpc(i,:,j,2)+ky(j)*wc(i,:,j,1)
+    enddo
+  enddo
+  call spectral_to_phys_fg(tmpc,omx,0)
+
+  ! om y
+  call dz(uc,tmpc)
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=tmpc(i,:,j,1)+kx(i)*wc(i,:,j,2)
+      tmpc(i,:,j,2)=tmpc(i,:,j,2)-kx(i)*wc(i,:,j,1)
+    enddo
+  enddo
+  call spectral_to_phys_fg(tmpc,omy,0)
+
+  ! om z
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=-kx(i)*vc(i,:,j,2)+ky(j)*uc(i,:,j,2)
+      tmpc(i,:,j,2)=+kx(i)*vc(i,:,j,1)-ky(j)*uc(i,:,j,1)
+    enddo
+  enddo
+  call spectral_to_phys_fg(tmpc,omz,0)
+endif
+
+
+if(strflag.eq.1) then
+! calculate strain rate, u,v,w already available in spectral space
+  ! str x
+  call dz(vc,tmpc)
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=tmpc(i,:,j,1)-ky(j)*wc(i,:,j,2)
+      tmpc(i,:,j,2)=tmpc(i,:,j,2)+ky(j)*wc(i,:,j,1)
+    enddo
+  enddo
+  call spectral_to_phys(tmpc,strx,0)
+  strx=strx*0.5d0
+
+  ! str y
+  call dz(uc,tmpc)
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=tmpc(i,:,j,1)-kx(i)*wc(i,:,j,2)
+      tmpc(i,:,j,2)=tmpc(i,:,j,2)+kx(i)*wc(i,:,j,1)
+    enddo
+  enddo
+  call spectral_to_phys(tmpc,stry,0)
+  stry=stry*0.5d0
+
+  ! str z
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=-ky(j)*uc(i,:,j,2)-kx(i)*vc(i,:,j,2)
+      tmpc(i,:,j,2)=+ky(j)*uc(i,:,j,1)+kx(i)*vc(i,:,j,1)
+    enddo
+  enddo
+  call spectral_to_phys(tmpc,strz,0)
+  strz=strz*0.5d0
+endif
 
 numx=0
 numy=0

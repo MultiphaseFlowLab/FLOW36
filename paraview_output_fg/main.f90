@@ -2,6 +2,8 @@ program read_to_paraview
 
 use mpi
 use commondata
+use wavenumber
+
 implicit none
 
 integer :: ierr,i,nstep,dump
@@ -44,7 +46,32 @@ if(upflag.eq.1)then
   allocate(wp(nxf,nzf,nyf))
 endif
 
+if(vorflag.eq.1)then
+  allocate(omx(nxf,nzf,nyf))
+  allocate(omy(nxf,nzf,nyf))
+  allocate(omz(nxf,nzf,nyf))
+endif
 
+if(strflag.eq.1)then
+  allocate(strx(nxf,nzf,nyf))
+  allocate(stry(nxf,nzf,nyf))
+  allocate(strz(nxf,nzf,nyf))
+endif
+
+
+allocate(kx(nxf/2+1))
+allocate(ky(nyf))
+
+kx(1)=0.0d0
+do i=2,nxf/2+1
+  kx(i)=dble(i-1)*2.0d0*pi/xl
+enddo
+
+ky(1)=0.0d0
+do i=2,nyf/2+1
+  ky(nyf-i+2)=-dble(i-1)*2.0d0*pi/yl
+  ky(i)=dble(i-1)*2.0d0*pi/yl
+enddo
 
 allocate(x(nx))
 allocate(y(ny))
@@ -120,6 +147,16 @@ endif
 if(upflag.eq.1)then
   deallocate(up,vp,wp)
 endif
+
+if(vorflag.eq.1)then
+  deallocate(omx,omy,omz)
+endif
+
+if(strflag.eq.1)then
+  deallocate(strx,stry,strz)
+endif
+
+deallocate(kx,ky)
 
 deallocate(x)
 deallocate(y)

@@ -22,6 +22,8 @@
 0               ! 0 to skip surfactant, 1 to include it
 0               ! 0 to skip temperature, 1 to include it
 0               ! 0 to skip velocity fluctuations, 1 to include them
+0               ! 0 to skip vorticity, 1 to include it
+0               ! 0 to skip strain rate, 1 to include it
 
 2               ! expansion coefficient x
 2               ! expansion coefficient y

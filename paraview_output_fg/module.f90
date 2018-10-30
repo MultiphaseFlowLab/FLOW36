@@ -6,7 +6,7 @@ module commondata
  integer :: x_start,x_end,dnx
  integer :: y_start,y_end,dny
  integer :: z_start,z_end,dnz
- integer :: uflag,vflag,wflag,upflag
+ integer :: uflag,vflag,wflag,upflag,vorflag,strflag
  integer :: phiflag, psiflag,tempflag
  integer :: spectral
  integer :: exp_x,exp_y,exp_z
@@ -14,7 +14,7 @@ module commondata
  double precision, parameter :: pi=3.14159265358979
  double precision :: re,dt
  double precision :: xl,yl
- double precision, allocatable, dimension(:,:,:) :: u,v,w,phi,psi,theta,up,vp,wp
+ double precision, allocatable, dimension(:,:,:) :: u,v,w,phi,psi,theta,up,vp,wp,omx,omy,omz,strx,stry,strz
  double precision, allocatable, dimension(:,:,:,:) :: uc,vc,wc,phic,psic,thetac
  double precision, allocatable,dimension(:) :: x,y,z, xfg,yfg,zfg
 end module commondata
@@ -28,3 +28,10 @@ module fftw3
  type(c_ptr) :: plan_x_fwd_fg,plan_y_fwd_fg,plan_z_fwd_fg
  type(c_ptr) :: plan_x_bwd_fg,plan_y_bwd_fg,plan_z_bwd_fg
 end module fftw3
+
+
+
+module wavenumber
+ use commondata
+ double precision, allocatable :: kx(:),ky(:)
+end module wavenumber

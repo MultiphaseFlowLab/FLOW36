@@ -3,13 +3,11 @@ subroutine read_fields(nstep)
 use commondata
 
 integer :: nstep
-integer :: i,j,k
 integer :: mx,my,mz,myl,myu
 integer :: mx_fg,my_fg,mz_fg,myl_fg,myu_fg
 
 double precision, allocatable, dimension(:,:,:,:) :: tmp,tmp_fg
 double precision, allocatable :: inp(:,:,:),inpc(:,:,:,:)
-double precision :: meanu,meanv,meanw
 
 character(len=40) :: namedir,namefile
 character(len=8) :: numfile
@@ -97,28 +95,6 @@ if(spectral.eq.0)then
     call spectral_to_phys_fg(thetac,theta,0)
   endif
 
-  ! calculate velocity fluctuations
-  if(upflag.eq.1)then
-    do k=1,nzf
-      meanu=0.0d0
-      meanv=0.0d0
-      meanw=0.0d0
-      do j=1,nyf
-        do i=1,nxf
-          meanu=meanu+u(i,k,j)
-          meanv=meanv+v(i,k,j)
-          meanw=meanw+w(i,k,j)
-        enddo
-      enddo
-      meanu=meanu/dble(nxf*nyf)
-      meanv=meanv/dble(nxf*nyf)
-      meanw=meanw/dble(nxf*nyf)
-      up(:,k,:)=u(:,k,:)-meanu
-      vp(:,k,:)=v(:,k,:)-meanv
-      wp(:,k,:)=w(:,k,:)-meanw
-    enddo
-  endif
-
   ! generate paraview output file
   call generate_output(nstep)
  endif
@@ -191,28 +167,6 @@ else
     inpc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
     call coarse2fine(inpc,thetac)
     call spectral_to_phys_fg(thetac,theta,0)
-  endif
-
-  ! calculate velocity fluctuations
-  if(upflag.eq.1)then
-    do k=1,nzf
-      meanu=0.0d0
-      meanv=0.0d0
-      meanw=0.0d0
-      do j=1,nyf
-        do i=1,nxf
-          meanu=meanu+u(i,k,j)
-          meanv=meanv+v(i,k,j)
-          meanw=meanw+w(i,k,j)
-        enddo
-      enddo
-      meanu=meanu/dble(nxf*nyf)
-      meanv=meanv/dble(nxf*nyf)
-      meanw=meanw/dble(nxf*nyf)
-      up(:,k,:)=u(:,k,:)-meanu
-      vp(:,k,:)=v(:,k,:)-meanv
-      wp(:,k,:)=w(:,k,:)-meanw
-    enddo
   endif
 
   ! generate paraview output file

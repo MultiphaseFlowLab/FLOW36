@@ -34,7 +34,8 @@ FLWOBJS = \
 ./phys_to_spectral.f90 \
 ./dctz_fwd.f90 \
 ./fftx_fwd.f90 \
-./ffty_fwd.f90
+./ffty_fwd.f90 \
+./dz.f90
 
 #./phys_to_spectral.f90 \
 #./dctz_fwd.f90 \
