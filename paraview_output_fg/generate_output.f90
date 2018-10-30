@@ -304,6 +304,80 @@ endif
  endif
 
 
+ if(vorflag.eq.1)then
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Omx 1 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) omx(i,k,j)
+    enddo
+   enddo
+  enddo
+
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Omy 1 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) omy(i,k,j)
+    enddo
+   enddo
+  enddo
+
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Omz 1 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) omz(i,k,j)
+    enddo
+   enddo
+  enddo
+
+ endif
+
+
+ if(strflag.eq.1)then
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Strx 1 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) strx(i,k,j)
+    enddo
+   enddo
+  enddo
+
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Stry 1 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) stry(i,k,j)
+    enddo
+   enddo
+  enddo
+
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Strz 1 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) strz(i,k,j)
+    enddo
+   enddo
+  enddo
+
+ endif
+
+
  buffer=lf
  write(66) trim(buffer)
 
