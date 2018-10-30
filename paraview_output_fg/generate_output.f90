@@ -74,6 +74,11 @@ if(vorflag.eq.1)then
     enddo
   enddo
   call spectral_to_phys_fg(tmpc,omz,0)
+
+  ! renormalize to wall units
+  omx=omx/re
+  omy=omy/re
+  omz=omz/re
 endif
 
 
@@ -110,6 +115,11 @@ if(strflag.eq.1) then
   enddo
   call spectral_to_phys(tmpc,strz,0)
   strz=strz*0.5d0
+
+  ! renormalize to wall units
+  strx=strx/re
+  stry=stry/re
+  strz=strz/re
 endif
 
 numx=0
