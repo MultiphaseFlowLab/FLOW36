@@ -38,7 +38,7 @@ write(*,'(1x,a40,i0.1,a,i0.1,a,i0.1)') 'Nycpu * Nzcpu = Ntask : ',nycpu,' x ',nz
 write(*,'(1x,a40,i0.1,a,i0.1,a,i0.1)') 'Nx * Nz * Ny : ',nx,' x ',nz,' x ',ny
 write(*,'(1x,a40,f6.3,a,f6.3)') 'Lx * Ly : ',xl,' x ',yl
 write(*,*)
-write(*,'(1x,a40,i6,a,i6)') 'Timestep from : ',nstart,' to ',nend
+write(*,'(1x,a40,i8,a,i8)') 'Timestep from : ',nstart,' to ',nend
 write(*,'(1x,a40,i6)') 'Solution saving frequency (physical) : ',ndump
 write(*,'(1x,a40,i6)') 'Solution saving frequency (spectral) : ',sdump
 write(*,'(1x,a40,i6)') 'Statistics saving frequency : ',stat_dump
