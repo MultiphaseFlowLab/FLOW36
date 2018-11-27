@@ -233,9 +233,10 @@ Fr="0.1" # real (double)
 #                 otherwise number of drops will be reduced
 # 7: Drop attached to the bottom wall z_c=-1 (radius)
 # 8: 2x 2D Droplets in kissing mode. (radius, ygap , zgap)
-in_condphi="4" # integer
+# 9: Layer of phi=+1 (mean height, thickness)
+in_condphi="9" # integer
 radius="0.4" # real (double)
-height="0.0" # real (double)
+height="0.5" # real (double)
 wave_amp_x="0.0" # real (double)
 wave_freq_x="0.0" # real (double)
 wave_amp_y="0.0" # real (double)
@@ -245,7 +246,8 @@ num_x="5" # integer
 num_y="2" # integer
 num_z="3" # integer
 ygap="1.0" # real(double)
-zgap="0.25" #real (double)
+zgap="0.25" # real (double)
+thickness="0.3" # real (double)
 
 # gravity direction
 #  1: positive x direction
@@ -576,6 +578,7 @@ cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 
 
 cp -r ./paraview_output ./set_run
+cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
 #cp read_to_paraview.m ./results/
 #cp paraview.m ./results/
@@ -616,6 +619,9 @@ if [ "$phi_flag" == "1" ]; then
     echo "$radius                         ! drop radius" > ./set_run/sc_compiled/input_phase_field.f90
     echo "$ygap                           ! ygap" >> ./set_run/sc_compiled/input_phase_field.f90
     echo "$zgap                           ! ygap" >> ./set_run/sc_compiled/input_phase_field.f90
+  elif [ "$in_condphi" == "9" ]; then
+    echo "$thickness                      ! layer thickness" > ./set_run/sc_compiled/input_phase_field.f90
+    echo "$height                         ! height" >> ./set_run/sc_compiled/input_phase_field.f90
   fi
 fi
 

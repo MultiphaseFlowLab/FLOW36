@@ -90,6 +90,10 @@ elseif(in_cond_phi.eq.8)then
   if(rank.eq.0) write(*,*) 'Initializing 2D droplets closed to Kiss <3'
   call drop_kiss
   call phys_to_spectral(phi,phic,0)
+elseif(in_cond_phi.eq.9)then
+  if(rank.eq.0) write(*,*) 'Initializing Layer of phi=+1'
+  call layer
+  call phys_to_spectral(phi,phic,0)
 else
   if(rank.eq.0)write(*,*) 'Check initial condition value on phi'
   stop
@@ -427,6 +431,46 @@ integer :: j,k,kg,jg
 
 
   phi=phi-1.0d0
+
+return
+end
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+subroutine layer
+
+use commondata
+use par_size
+use phase_field
+use grid
+
+double precision :: thickness,height
+double precision :: zlow,ztop
+
+integer :: indc,k,k_g
+
+open(66,file='./sc_compiled/input_phase_field.f90',status='old',form='formatted')
+
+read(66,'(f16.8)') thickness
+read(66,'(f16.8)') height
+close(66,status='keep')
+
+zlow=height-thickness/2.0d0
+ztop=height+thickness/2.0d0
+
+indc=minloc(dabs(z-height),1)
+
+do k=1,fpz
+  k_g=fstart(2)+k
+  if(k_g.lt.indc)then
+    phi(:,k,:)=-dtanh((z(k_g)-ztop)/(ch*dsqrt(2.0d0)))
+  else
+    phi(:,k,:)=+dtanh((z(k_g)-zlow)/(ch*dsqrt(2.0d0)))
+  endif
+enddo
+
 
 return
 end

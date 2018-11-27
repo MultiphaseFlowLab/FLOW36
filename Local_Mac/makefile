@@ -6,7 +6,7 @@ SWP	=
 RM	= /bin/rm -f
 MP	=
 OLEVEL	= -O3
-FOPTS	= -mcmodel=medium -fconvert=big-endian  -ffixed-line-length-140 -fno-align-commons -fbounds-check -Wall -cpp -J ./set_run/sc_compiled #-std=f2008ts -g
+FOPTS	= -mcmodel=medium -ffixed-line-length-140 -fno-align-commons -fbounds-check -Wall -cpp -J ./set_run/sc_compiled #-std=f2008ts -g
 #FOPTS	= -align none -mcmodel medium -warn all
 FFLAGS	= $(FOPTS) $(OLEVEL)
 #LIBS	=  -I/usr/include/ -I/usr/local/include -L$FFTW_LIB -L/usr/lib -L/usr/lib64 -lfftw3 -lm -ldl
