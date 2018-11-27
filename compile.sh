@@ -191,11 +191,11 @@ phi_flag="1" # integer
 # 3: profile-corrected turned off at the walls
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
-phicor_flag="5" # integer
+phicor_flag="4" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag 1 or 2)
 # Lam=0.3/Ch
-lamcorphi="6.0" # real (double)
+lamcorphi="2.5" # real (double)
 
 # matched densities: 1 for matched densities, 0 for rhor < 1, 2 for rhor > 1
 matchedrho="1" # integer
@@ -236,7 +236,7 @@ Fr="0.1" # real (double)
 # 9: Layer of phi=+1 (mean height, thickness)
 in_condphi="9" # integer
 radius="0.4" # real (double)
-height="0.5" # real (double)
+height="0.0" # real (double)
 wave_amp_x="0.0" # real (double)
 wave_freq_x="0.0" # real (double)
 wave_amp_y="0.0" # real (double)
@@ -247,7 +247,7 @@ num_y="2" # integer
 num_z="3" # integer
 ygap="1.0" # real(double)
 zgap="0.25" # real (double)
-thickness="0.3" # real (double)
+thickness="0.1086" # real (double)
 
 # gravity direction
 #  1: positive x direction
