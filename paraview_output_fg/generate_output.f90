@@ -92,7 +92,7 @@ if(strflag.eq.1) then
       tmpc(i,:,j,2)=tmpc(i,:,j,2)+ky(j)*wc(i,:,j,1)
     enddo
   enddo
-  call spectral_to_phys(tmpc,strx,0)
+  call spectral_to_phys_fg(tmpc,strx,0)
   strx=strx*0.5d0
 
   ! str y
@@ -103,7 +103,7 @@ if(strflag.eq.1) then
       tmpc(i,:,j,2)=tmpc(i,:,j,2)+kx(i)*wc(i,:,j,1)
     enddo
   enddo
-  call spectral_to_phys(tmpc,stry,0)
+  call spectral_to_phys_fg(tmpc,stry,0)
   stry=stry*0.5d0
 
   ! str z
@@ -113,7 +113,7 @@ if(strflag.eq.1) then
       tmpc(i,:,j,2)=+ky(j)*uc(i,:,j,1)+kx(i)*vc(i,:,j,1)
     enddo
   enddo
-  call spectral_to_phys(tmpc,strz,0)
+  call spectral_to_phys_fg(tmpc,strz,0)
   strz=strz*0.5d0
 
   ! renormalize to wall units
