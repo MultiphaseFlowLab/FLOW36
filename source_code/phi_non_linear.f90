@@ -26,6 +26,7 @@ integer :: i,j,k
 #define match_visc matched_viscosity
 #define match_dens matched_density
 #define b_type buoyancytype
+#define bodyflag bodycompflag
 
 
 ! phi on coarse grid, physical space needed after surface force calculation
@@ -634,6 +635,17 @@ wcp=wc
 
 #endif
 
+
+! add body force contribution to N-S non-linear terms (kind of Boussinesq approximation)
+! body force direction array is [x,z,y] to keep the array ordering as usual in the code
+#if bodyflag == 1
+allocate(a4(spx,nz,spy,2))
+call phys_to_spectral(phi+1.0d0,a4,0)
+s1=s1+body_d(1)*body_c*0.5d0*a4
+s2=s2+body_d(3)*body_c*0.5d0*a4
+s3=s3+body_d(2)*body_c*0.5d0*a4
+deallocate(a4)
+#endif
 
 return
 end

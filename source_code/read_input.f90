@@ -8,7 +8,7 @@ use stats
 use surfactant
 use temperature
 
-integer :: grav_dir,match_dens,match_visc
+integer :: grav_dir,match_dens,match_visc,body_dir
 double precision :: Lx,Ly
 
  open(unit=66,file='./sc_compiled/input.f90',form='formatted',status='old',action='read')
@@ -56,6 +56,9 @@ double precision :: Lx,Ly
  read(66,'(i5)') in_cond_phi
  read(66,'(i5)') grav_dir
  read(66,'(i5)') b_type
+ read(66,'(i5)') body_flag
+ read(66,'(f16.6)') body_c
+ read(66,'(i5)') body_dir
  read(66,*)
  read(66,'(i8)') psi_flag
  read(66,'(f16.6)') Pe_psi
@@ -130,6 +133,20 @@ double precision :: Lx,Ly
   grav=[0.0d0,0.0d0,1.0d0]
  elseif(grav_dir.eq.-3)then
   grav=[0.0d0,0.0d0,-1.0d0]
+ endif
+
+ if(body_dir.eq.1)then
+  body_d=[1.0d0,0.0d0,0.0d0]
+ elseif(body_dir.eq.-1)then
+  body_d=[-1.0d0,0.0d0,0.0d0]
+ elseif(body_dir.eq.2)then
+  body_d=[0.0d0,1.0d0,0.0d0]
+ elseif(body_dir.eq.-2)then
+  body_d=[0.0d0,-1.0d0,0.0d0]
+ elseif(body_dir.eq.3)then
+  body_d=[0.0d0,0.0d0,1.0d0]
+ elseif(body_dir.eq.-3)then
+  body_d=[0.0d0,0.0d0,-1.0d0]
  endif
 
  if(rank.eq.0) call print_start

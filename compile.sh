@@ -89,9 +89,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="6" # integer
-iy="6" # integer
-iz="6" # integer
+ix="1" # integer
+iy="7" # integer
+iz="7" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="2" # integer, (2**ix)*exp_x
@@ -101,8 +101,8 @@ exp_z="2" # integer, (2**iz)*exp_z+1
 NX="$((2**$ix))"
 NY="$((2**$iy))"
 NZ="$(((2**$iz)+1))"
-NYCPU="2" # integer
-NZCPU="2" # integer
+NYCPU="1" # integer
+NZCPU="4" # integer
 
 NNT="$(($NYCPU*$NZCPU))"
 
@@ -132,8 +132,8 @@ gradpx="-1.0" # real (double)
 gradpy="0.0" # real (double)
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
-lx="0.5" # real (double)
-ly="0.5" # real (double)
+lx="4.0" # real (double)
+ly="2.0" # real (double)
 
 # initial time step
 nstart="0" # integer
@@ -221,6 +221,21 @@ Pe="150.0" # real (double)
 # Froud number
 Fr="0.1" # real (double)
 
+# Body force flag, 0: deactivated, 1: activated
+body_flag="1" # integer
+
+# Body force coefficient
+Bd="4.0" # real (double)
+
+# Body force direction
+#  1: positive x direction
+# -1: negative x direction
+#  2: positive z direction
+# -2: negative z direction
+#  3: positive y direction
+# -3: negative y direction
+bodydir="2" # integer
+
 # initial conditions on phi
 # 0: only phase -1
 # 1: read input from file (parallel read)
@@ -234,7 +249,7 @@ Fr="0.1" # real (double)
 # 7: Drop attached to the bottom wall z_c=-1 (radius)
 # 8: 2x 2D Droplets in kissing mode. (radius, ygap , zgap)
 # 9: Layer of phi=+1 (mean height, thickness)
-in_condphi="9" # integer
+in_condphi="3" # integer
 radius="0.4" # real (double)
 height="0.0" # real (double)
 wave_amp_x="0.0" # real (double)
@@ -266,7 +281,7 @@ buoyancy="0" # integer
 
 # Surfactant only
 # surfactant flag, 0 : surfactant deactivated, 1 : surfactant activated
-psi_flag="1" # integer
+psi_flag="0" # integer
 
 # surfactant Peclet number
 Pe_psi="100.0" # real (double)
@@ -452,6 +467,9 @@ sed -i "" "s/froudnumber/$Fr/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/phinitial_condition/$in_condphi/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/gravitydir/$gravdir/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/gravitytype/$buoyancy/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/bodyforce/$body_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/bodyfcoeff/$Bd/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/bodydirection/$bodydir/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/surfactantflag/$psi_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/surfpeclet/$Pe_psi/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/exnumber/$Ex/g" ./set_run/sc_compiled/input.f90
@@ -505,6 +523,9 @@ sed -i "s/froudnumber/$Fr/g" ./set_run/sc_compiled/input.f90
 sed -i "s/phinitial_condition/$in_condphi/g" ./set_run/sc_compiled/input.f90
 sed -i "s/gravitydir/$gravdir/g" ./set_run/sc_compiled/input.f90
 sed -i "s/gravitytype/$buoyancy/g" ./set_run/sc_compiled/input.f90
+sed -i "s/bodyforce/$body_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "s/bodyfcoeff/$Bd/g" ./set_run/sc_compiled/input.f90
+sed -i "s/bodydirection/$bodydir/g" ./set_run/sc_compiled/input.f90
 sed -i "s/surfactantflag/$psi_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "s/surfpeclet/$Pe_psi/g" ./set_run/sc_compiled/input.f90
 sed -i "s/exnumber/$Ex/g" ./set_run/sc_compiled/input.f90
@@ -676,6 +697,7 @@ sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
+sed -i "" "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
@@ -736,6 +758,7 @@ sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
+sed -i "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90

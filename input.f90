@@ -41,6 +41,9 @@ froudnumber                     ! Froud number
 phinitial_condition             ! initial conditions on phase variable
 gravitydir                      ! direction of gravity
 gravitytype                     ! type of buoyancy considered
+bodyforce                       ! 1: body force activated, 0: body force deactivated
+bodyfcoeff                  ! coefficient of body force
+bodydirection                   ! direction of body force
 ! surfactant variables
 surfactantflag                  ! 1: surfactant activated, 0 : no surfactant
 surfpeclet                      ! Peclet number for surfactant

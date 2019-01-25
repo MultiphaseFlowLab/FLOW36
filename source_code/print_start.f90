@@ -113,6 +113,10 @@ elseif(in_cond_phi.eq.8)then
  else
   write(*,'(1x,a46)') 'Buoyancy type  : dafuq?'
  endif
+ if(body_flag.eq.1)then
+  write(*,'(1x,a40,f8.3)') 'Body force coefficient : ', body_c
+  write(*,'(1x,a40,3(a,f5.1),a)') 'Body force versor [x,y,z] : ','[',body_d(1),',',body_d(3),',',body_d(2),']'
+ endif
  if (phicor_flag.eq.0) then
    write(*,'(1x,a)')      'Classic PFM'
  elseif (phicor_flag.eq.1) then
