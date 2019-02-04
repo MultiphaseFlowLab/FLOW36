@@ -8,7 +8,8 @@ integer :: i,k,j
 
 double precision :: meanu,meanv,meanw
 
-double precision, dimension(nxf/2+1,nzf,nyf,2) :: tmpc
+double precision, dimension(nxf/2+1,nzf,nyf,2) :: tmpc,tmpc2
+double precision, dimension(nxf,nzf,nyf) :: a11,a12,a13,a21,a22,a23,a31,a32,a33,def,rot
 
 character(len=40) :: namefile
 character(len=80) :: buffer
@@ -20,7 +21,7 @@ character(len=16) :: str4
 lf=achar(10)
 
 ! fields included
-nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+3*upflag+3*vorflag+3*strflag
+nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+3*upflag+3*vorflag+3*strflag+topflag
 
 ! calculate velocity fluctuations
 if(upflag.eq.1)then
@@ -121,6 +122,62 @@ if(strflag.eq.1) then
   stry=stry/re
   strz=strz/re
 endif
+
+if(topflag.eq.1)then
+! calculate flow topology parameter
+! u derivatives
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=-kx(i)*uc(i,:,j,2)
+      tmpc(i,:,j,2)=+kx(i)*uc(i,:,j,1)
+      tmpc2(i,:,j,1)=-ky(j)*uc(i,:,j,2)
+      tmpc2(i,:,j,2)=+ky(j)*uc(i,:,j,1)
+    enddo
+  enddo
+
+  call spectral_to_phys_fg(tmpc,a11,0)
+  call spectral_to_phys_fg(tmpc2,a12,0)
+  call dz(uc,tmpc)
+  call spectral_to_phys_fg(tmpc,a13,0)
+
+! v derivatives
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=-kx(i)*vc(i,:,j,2)
+      tmpc(i,:,j,2)=+kx(i)*vc(i,:,j,1)
+      tmpc2(i,:,j,1)=-ky(j)*vc(i,:,j,2)
+      tmpc2(i,:,j,2)=+ky(j)*vc(i,:,j,1)
+    enddo
+  enddo
+
+  call spectral_to_phys_fg(tmpc,a21,0)
+  call spectral_to_phys_fg(tmpc2,a22,0)
+  call dz(vc,tmpc)
+  call spectral_to_phys_fg(tmpc,a23,0)
+
+! w derivatives
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc(i,:,j,1)=-kx(i)*wc(i,:,j,2)
+      tmpc(i,:,j,2)=+kx(i)*wc(i,:,j,1)
+      tmpc2(i,:,j,1)=-ky(j)*wc(i,:,j,2)
+      tmpc2(i,:,j,2)=+ky(j)*wc(i,:,j,1)
+    enddo
+  enddo
+
+  call spectral_to_phys_fg(tmpc,a31,0)
+  call spectral_to_phys_fg(tmpc2,a32,0)
+  call dz(wc,tmpc)
+  call spectral_to_phys_fg(tmpc,a33,0)
+
+  def=(a11)**2+(a12)**2+(a13)**2+(a21)**2+(a22)**2+(a23)**2+(a31)**2+(a32)**2+(a33)**2
+  rot=(a32-a23)**2+(a13-a31)**2+(a21-a12)**2
+
+  Qtop=(def-rot)/(def+rot)
+
+endif
+
+
 
 numx=0
 numy=0
@@ -375,6 +432,21 @@ endif
    enddo
   enddo
 
+ endif
+
+
+ ! write flow topology parameter field
+ if(topflag.eq.1)then
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Q 1 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) Qtop(i,k,j)
+    enddo
+   enddo
+  enddo
  endif
 
 

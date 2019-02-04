@@ -58,6 +58,10 @@ if(strflag.eq.1)then
   allocate(strz(nxf,nzf,nyf))
 endif
 
+if(topflag.eq.1)then
+  allocate(Qtop(nxf,nzf,nyf))
+endif
+
 
 allocate(kx(nxf/2+1))
 allocate(ky(nyf))
@@ -154,6 +158,10 @@ endif
 
 if(strflag.eq.1)then
   deallocate(strx,stry,strz)
+endif
+
+if(topflag.eq.1)then
+  dellocate(Qtop)
 endif
 
 deallocate(kx,ky)
