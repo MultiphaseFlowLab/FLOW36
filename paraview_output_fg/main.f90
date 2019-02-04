@@ -161,7 +161,7 @@ if(strflag.eq.1)then
 endif
 
 if(topflag.eq.1)then
-  dellocate(Qtop)
+  deallocate(Qtop)
 endif
 
 deallocate(kx,ky)
