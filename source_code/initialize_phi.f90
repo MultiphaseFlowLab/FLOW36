@@ -270,8 +270,8 @@ integer :: i,j,k, id,jd,kd, jg,kg
  close(66,status='keep')
 
 ! minimum distance between drop centers
-! tanh(5*sqrt(2)*Ch)~1
-dist=2.0d0*(radius+5.0d0*2.0d0**0.5*Ch)
+! tanh(3)=0.9951~1
+dist=2.0d0*(radius+3.0d0*2.0d0**0.5*Ch)
 
 
 do while(xl.le.dble(num_x)*dist)
