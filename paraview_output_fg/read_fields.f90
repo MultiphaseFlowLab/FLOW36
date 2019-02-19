@@ -44,30 +44,36 @@ if(spectral.eq.0)then
  inquire(file=trim(namefile),exist=check)
 
  if(check.eqv..true.)then
-  ! reading u
-  write(*,*) 'Reading step ',nstep,' out of ',nend
-  open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(666) inp
-  close(666,status='keep')
-  call phys_to_spectral(inp,inpc,0)
-  call coarse2fine(inpc,uc)
-  call spectral_to_phys_fg(uc,u,0)
-  ! reading v
-  namefile=trim(namedir)//'v_'//numfile//'.dat'
-  open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(667) inp
-  close(667,status='keep')
-  call phys_to_spectral(inp,inpc,0)
-  call coarse2fine(inpc,vc)
-  call spectral_to_phys_fg(vc,v,0)
-  ! reading w
-  namefile=trim(namedir)//'w_'//numfile//'.dat'
-  open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(668) inp
-  close(668,status='keep')
-  call phys_to_spectral(inp,inpc,0)
-  call coarse2fine(inpc,wc)
-  call spectral_to_phys_fg(wc,w,0)
+  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+    ! reading u
+    write(*,*) 'Reading step ',nstep,' out of ',nend
+    open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(666) inp
+    close(666,status='keep')
+    call phys_to_spectral(inp,inpc,0)
+    call coarse2fine(inpc,uc)
+    call spectral_to_phys_fg(uc,u,0)
+  endif
+  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+    ! reading v
+    namefile=trim(namedir)//'v_'//numfile//'.dat'
+    open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(667) inp
+    close(667,status='keep')
+    call phys_to_spectral(inp,inpc,0)
+    call coarse2fine(inpc,vc)
+    call spectral_to_phys_fg(vc,v,0)
+  endif
+  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+    ! reading w
+    namefile=trim(namedir)//'w_'//numfile//'.dat'
+    open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(668) inp
+    close(668,status='keep')
+    call phys_to_spectral(inp,inpc,0)
+    call coarse2fine(inpc,wc)
+    call spectral_to_phys_fg(wc,w,0)
+  endif
   if(phiflag.eq.1)then
     ! reading phi
     namefile=trim(namedir)//'phi_'//numfile//'.dat'

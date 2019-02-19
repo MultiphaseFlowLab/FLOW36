@@ -21,7 +21,7 @@ character(len=16) :: str4
 lf=achar(10)
 
 ! fields included
-nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+3*upflag+3*vorflag+3*strflag+topflag
+nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+upflag+vorflag+strflag+topflag
 
 ! calculate velocity fluctuations
 if(upflag.eq.1)then
@@ -326,112 +326,43 @@ endif
 
  if(upflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'U_p 1 '//str4//' double'//lf
+  buffer = 'U_p 3 '//str4//' double'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) up(i,k,j)
+     write(66) up(i,k,j),vp(i,k,j),wp(i,k,j)
     enddo
    enddo
   enddo
-
-  write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'V_p 1 '//str4//' double'//lf
-  write(66) trim(buffer)
-  do k=z_start,z_end,dnz
-   do j=y_start,y_end,dny
-    do i=x_start,x_end,dnx
-     write(66) vp(i,k,j)
-    enddo
-   enddo
-  enddo
-
-  write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'W_p 1 '//str4//' double'//lf
-  write(66) trim(buffer)
-  do k=z_start,z_end,dnz
-   do j=y_start,y_end,dny
-    do i=x_start,x_end,dnx
-     write(66) wp(i,k,j)
-    enddo
-   enddo
-  enddo
-
  endif
 
 
  if(vorflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Omx 1 '//str4//' double'//lf
+  buffer = 'Om 3 '//str4//' double'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) omx(i,k,j)
+     write(66) omx(i,k,j),omy(i,k,j),omz(i,k,j)
     enddo
    enddo
   enddo
-
-  write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Omy 1 '//str4//' double'//lf
-  write(66) trim(buffer)
-  do k=z_start,z_end,dnz
-   do j=y_start,y_end,dny
-    do i=x_start,x_end,dnx
-     write(66) omy(i,k,j)
-    enddo
-   enddo
-  enddo
-
-  write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Omz 1 '//str4//' double'//lf
-  write(66) trim(buffer)
-  do k=z_start,z_end,dnz
-   do j=y_start,y_end,dny
-    do i=x_start,x_end,dnx
-     write(66) omz(i,k,j)
-    enddo
-   enddo
-  enddo
-
  endif
 
 
  if(strflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Strx 1 '//str4//' double'//lf
+  buffer = 'Str 3 '//str4//' double'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) strx(i,k,j)
+     write(66) strx(i,k,j),stry(i,k,j),strz(i,k,j)
     enddo
    enddo
   enddo
-
-  write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Stry 1 '//str4//' double'//lf
-  write(66) trim(buffer)
-  do k=z_start,z_end,dnz
-   do j=y_start,y_end,dny
-    do i=x_start,x_end,dnx
-     write(66) stry(i,k,j)
-    enddo
-   enddo
-  enddo
-
-  write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Strz 1 '//str4//' double'//lf
-  write(66) trim(buffer)
-  do k=z_start,z_end,dnz
-   do j=y_start,y_end,dny
-    do i=x_start,x_end,dnx
-     write(66) strz(i,k,j)
-    enddo
-   enddo
-  enddo
-
  endif
 
 

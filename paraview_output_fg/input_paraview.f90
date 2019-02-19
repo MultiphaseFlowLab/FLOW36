@@ -24,8 +24,8 @@
 0               ! 0 to skip velocity fluctuations, 1 to include them
 0               ! 0 to skip vorticity, 1 to include it
 0               ! 0 to skip strain rate, 1 to include it
-1               ! 0 to skip flow topology parameter, 1 to include it
+0               ! 0 to skip flow topology parameter, 1 to include it
 
-2               ! expansion coefficient x
-2               ! expansion coefficient y
-2               ! expansion coefficient z
+1               ! expansion coefficient x
+1               ! expansion coefficient y
+1               ! expansion coefficient z
