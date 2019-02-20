@@ -62,6 +62,11 @@ if(topflag.eq.1)then
   allocate(Qtop(nxf,nzf,nyf))
 endif
 
+if(marflag.eq.1)then
+  allocate(marx(nxf,nzf,nyf))
+  allocate(mary(nxf,nzf,nyf))
+  allocate(marz(nxf,nzf,nyf))
+endif
 
 allocate(kx(nxf/2+1))
 allocate(ky(nyf))
@@ -163,6 +168,10 @@ endif
 if(topflag.eq.1)then
   deallocate(Qtop)
 endif
+
+if(marflag.eq.1)then
+  deallocate(marx,mary,marz)
+enddo
 
 deallocate(kx,ky)
 

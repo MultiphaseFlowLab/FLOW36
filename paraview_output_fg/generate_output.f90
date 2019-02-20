@@ -6,9 +6,9 @@ use wavenumber
 integer :: nstep,nfields,numx,numy,numz
 integer :: i,k,j
 
-double precision :: meanu,meanv,meanw
+double precision :: meanu,meanv,meanw,coeff
 
-double precision, dimension(nxf/2+1,nzf,nyf,2) :: tmpc,tmpc2
+double precision, dimension(nxf/2+1,nzf,nyf,2) :: tmpc,tmpc1,tmpc2,tmpc3
 double precision, dimension(nxf,nzf,nyf) :: a11,a12,a13,a21,a22,a23,a31,a32,a33,def,rot
 
 character(len=40) :: namefile
@@ -21,7 +21,7 @@ character(len=16) :: str4
 lf=achar(10)
 
 ! fields included
-nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+upflag+vorflag+strflag+topflag
+nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+upflag+vorflag+strflag+topflag+marflag
 
 ! calculate velocity fluctuations
 if(upflag.eq.1)then
@@ -174,6 +174,66 @@ if(topflag.eq.1)then
   rot=(a32-a23)**2+(a13-a31)**2+(a21-a12)**2
 
   Qtop=(def-rot)/(def+rot)
+
+endif
+
+
+if(marflag.eq.1)then
+  ! surface tension
+  a33=1.0d0+betas*log(1.0d0-psi)
+  a33=max(a33,0.5d0)
+  call phys_to_spectral_fg(a33,tmpc,0)
+  ! surface tension gradients
+  tmpc1=0.0d0
+  tmpc2=0.0d0
+  tmpc3=0.0d0
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc1(i,:,j,1)=-kx(i)*tmpc(i,:,j,2)
+      tmpc1(i,:,j,2)=+kx(i)*tmpc(i,:,j,1)
+      tmpc2(i,:,j,1)=-ky(j)*tmpc(i,:,j,2)
+      tmpc2(i,:,j,2)=+ky(j)*tmpc(i,:,j,1)
+    enddo
+  enddo
+  call dz(tmpc,tmpc3)
+  ! surface tension gradients in physical space
+  call spectral_to_phys_fg(tmpc1,a11,0)
+  call spectral_to_phys_fg(tmpc2,a12,0)
+  call spectral_to_phys_fg(tmpc3,a13,0)
+  ! phase field gradients
+  do j=1,nyf
+    do i=1,nxf/2+1
+      tmpc1(i,:,j,1)=-kx(i)*phic(i,:,j,2)
+      tmpc1(i,:,j,2)=+kx(i)*phic(i,:,j,1)
+      tmpc2(i,:,j,1)=-ky(j)*phic(i,:,j,2)
+      tmpc2(i,:,j,2)=+ky(j)*phic(i,:,j,1)
+    enddo
+  enddo
+  call dz(phi,tmpc3)
+  ! phase field gradients in physical space
+  call spectral_to_phys_fg(tmpc1,a21,0)
+  call spectral_to_phys_fg(tmpc2,a22,0)
+  call spectral_to_phys_fg(tmpc3,a23,0)
+  ! assemble Marangoni term
+  do j=1,nyf
+    do k=1,nzf
+      do i=1,nxf
+        marx(i,k,j)=+(a22(i,k,j)**2+a23(i,k,j)**2)*a11(i,k,j) &
+ &                  -a21(i,k,j)*a22(i,k,j)*a12(i,k,j) &
+ &                  -a21(i,k,j)*a23(i,k,j)*a13(i,k,j)
+        mary(i,k,j)=-a21(i,k,j)*a22(i,k,j)*a11(i,k,j) &
+ &                  +(a21(i,k,j)**2+a23(i,k,j)**2)*a12(i,k,j) &
+ &                  -a22(i,k,j)*a23(i,k,j)*a13(i,k,j)
+        marz(i,k,j)=-a21(i,k,j)*a23(i,k,j)*a11(i,k,j) &
+ &                  -a22(i,k,j)*a23(i,k,j)*a12(i,k,j) &
+ &                  +(a21(i,k,j)**2+a22(i,k,j)**2)*a13(i,k,j)
+      enddo
+    enddo
+  enddo
+  coeff=3d0*Ch/(We*sqrt(8d0))
+  marx=coeff*marx
+  mary=coeff*mary
+  marz=coeff*marz
 
 endif
 
@@ -375,6 +435,21 @@ endif
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
      write(66) Qtop(i,k,j)
+    enddo
+   enddo
+  enddo
+ endif
+
+
+ ! write Marangoni stresses
+ if(marflag.eq.1)then
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Mar 3 '//str4//' double'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) marx(i,k,j),mary(i,k,j),marz(i,k,j)
     enddo
    enddo
   enddo
