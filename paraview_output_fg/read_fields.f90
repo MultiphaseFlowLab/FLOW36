@@ -74,7 +74,7 @@ if(spectral.eq.0)then
     call coarse2fine(inpc,wc)
     call spectral_to_phys_fg(wc,w,0)
   endif
-  if(phiflag.eq.1)then
+  if(phiflag.eq.1 .or. marflag.eq.1)then
     ! reading phi
     namefile=trim(namedir)//'phi_'//numfile//'.dat'
     open(669,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -84,7 +84,7 @@ if(spectral.eq.0)then
     call coarse2fine(inpc,phic)
     call spectral_to_phys_fg(phic,phi,0)
   endif
-  if(psiflag.eq.1)then
+  if(psiflag.eq.1 .or. marflag.eq.1)then
     namefile=trim(namedir)//'psi_fg_'//numfile//'.dat'
     open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(670) psi

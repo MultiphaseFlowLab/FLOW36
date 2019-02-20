@@ -209,7 +209,7 @@ if(marflag.eq.1)then
       tmpc2(i,:,j,2)=+ky(j)*phic(i,:,j,1)
     enddo
   enddo
-  call dz(phi,tmpc3)
+  call dz(phic,tmpc3)
   ! phase field gradients in physical space
   call spectral_to_phys_fg(tmpc1,a21,0)
   call spectral_to_phys_fg(tmpc2,a22,0)

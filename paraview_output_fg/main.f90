@@ -171,7 +171,7 @@ endif
 
 if(marflag.eq.1)then
   deallocate(marx,mary,marz)
-enddo
+endif
 
 deallocate(kx,ky)
 
