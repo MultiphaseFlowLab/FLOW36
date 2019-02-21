@@ -9,6 +9,7 @@ use dual_grid
 integer :: i,j
 
 #define match_dens matched_density
+#define match_visc matched_viscosity
 
 kx(1)=0.0d0
 do i=2,nx/2+1
@@ -53,6 +54,10 @@ enddo
 gamma=dt/(2.0d0*re*rhor)
 #else
 gamma=dt/(2.0d0*re)
+#endif
+
+#if match_visc == 2
+gamma=gamma*visr
 #endif
 
 return

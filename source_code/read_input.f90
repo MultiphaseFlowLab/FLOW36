@@ -103,8 +103,10 @@ double precision :: Lx,Ly
 
  if((match_visc.eq.1).and.(abs(visr-1.0d0).lt.0.00000001))then
    if(rank.eq.0) write(*,*) 'Matched viscosities'
- elseif((match_visc.ne.1).and.(abs(visr-1.0d0).gt.0.00000001))then
-   if(rank.eq.0) write(*,*) 'Non-matched viscosities'
+ elseif((match_visc.eq.0).and.(visr.lt.1.0d0).and.(abs(visr-1.0d0).gt.0.00000001))then
+   if(rank.eq.0) write(*,*) 'Non-matched viscosities, visr < 1'
+ elseif((match_visc.eq.2).and.(visr.gt.1.0d0).and.(abs(visr-1.0d0).gt.0.00000001))then
+   if(rank.eq.0) write(*,*) 'Non-matched viscosities, visr > 1'
  else
    if(rank.eq.0) write(*,*) 'Error in input parameters: non coherent input for matchedvis and visr'
    stop

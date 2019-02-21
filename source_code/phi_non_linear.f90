@@ -218,8 +218,9 @@ deallocate(gradphiz)
 
 
 ! only for non-matched viscosities
-#if match_visc == 0
 ! calculate non-linear part of viscous term (only for non-matched viscosities)
+#if match_visc == 0
+! if visr < 1
 
 ! first row
 allocate(a4(spx,nz,spy,2))
@@ -430,6 +431,217 @@ deallocate(a4f)
 deallocate(a5f)
 deallocate(a6f)
 
+#elif match_visc == 2
+! if visr > 1
+
+! first row
+allocate(a4(spx,nz,spy,2))
+allocate(a5(spx,nz,spy,2))
+allocate(a6(spx,nz,spy,2))
+
+call dz(uc,a6)
+
+do j=1,spy
+  do i=1,spx
+    a4(i,:,j,1)=-kx(i+cstart(1))*uc(i,:,j,2)
+    a4(i,:,j,2)=+kx(i+cstart(1))*uc(i,:,j,1)
+    a5(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
+    a5(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
+    a6(i,:,j,1)=a6(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
+    a6(i,:,j,2)=a6(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
+  enddo
+enddo
+
+allocate(a4f(nx,fpz,fpy))
+allocate(a5f(nx,fpz,fpy))
+allocate(a6f(nx,fpz,fpy))
+
+call spectral_to_phys(a4,a4f,0)
+call spectral_to_phys(a5,a5f,0)
+call spectral_to_phys(a6,a6f,0)
+
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      phif=min(1.0d0,max(-1.0d0,phi(i,k,j)))
+      a4f(i,k,j)=2.0d0*0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a4f(i,k,j)
+      a5f(i,k,j)=0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a5f(i,k,j)
+      a6f(i,k,j)=0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a6f(i,k,j)
+    enddo
+  enddo
+enddo
+
+call phys_to_spectral(a4f,a4,0)
+call phys_to_spectral(a5f,a5,0)
+call phys_to_spectral(a6f,a6,0)
+
+allocate(a7(spx,nz,spy,2))
+
+do j=1,spy
+  do i=1,spx
+    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
+    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  enddo
+enddo
+
+call dz(a6,a4)
+
+! add to S term a4+a7
+#if match_dens == 2
+! rescale NS if rhor > 1 for improved stability
+s1=s1+(a4+a7)/(re*rhor)
+#else
+s1=s1+(a4+a7)/re
+#endif
+
+deallocate(a4)
+deallocate(a5)
+deallocate(a6)
+deallocate(a7)
+
+deallocate(a4f)
+deallocate(a5f)
+deallocate(a6f)
+
+
+! second row
+allocate(a4(spx,nz,spy,2))
+allocate(a5(spx,nz,spy,2))
+allocate(a6(spx,nz,spy,2))
+
+call dz(vc,a6)
+
+do j=1,spy
+  do i=1,spx
+    a4(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
+    a4(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
+    a5(i,:,j,1)=-ky(j+cstart(3))*vc(i,:,j,2)
+    a5(i,:,j,2)=+ky(j+cstart(3))*vc(i,:,j,1)
+    a6(i,:,j,1)=a6(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
+    a6(i,:,j,2)=a6(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
+  enddo
+enddo
+
+allocate(a4f(nx,fpz,fpy))
+allocate(a5f(nx,fpz,fpy))
+allocate(a6f(nx,fpz,fpy))
+
+call spectral_to_phys(a4,a4f,0)
+call spectral_to_phys(a5,a5f,0)
+call spectral_to_phys(a6,a6f,0)
+
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      phif=min(1.0d0,max(-1.0d0,phi(i,k,j)))
+      a4f(i,k,j)=0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a4f(i,k,j)
+      a5f(i,k,j)=2.0d0*0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a5f(i,k,j)
+      a6f(i,k,j)=0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a6f(i,k,j)
+    enddo
+  enddo
+enddo
+
+call phys_to_spectral(a4f,a4,0)
+call phys_to_spectral(a5f,a5,0)
+call phys_to_spectral(a6f,a6,0)
+
+allocate(a7(spx,nz,spy,2))
+
+do j=1,spy
+  do i=1,spx
+    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
+    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  enddo
+enddo
+
+call dz(a6,a4)
+
+! add to S term a4+a7
+#if match_dens == 2
+! rescale NS if rhor > 1 for improved stability
+s2=s2+(a4+a7)/(re*rhor)
+#else
+s2=s2+(a4+a7)/re
+#endif
+
+deallocate(a4)
+deallocate(a5)
+deallocate(a6)
+deallocate(a7)
+
+deallocate(a4f)
+deallocate(a5f)
+deallocate(a6f)
+
+
+! third row
+allocate(a4(spx,nz,spy,2))
+allocate(a5(spx,nz,spy,2))
+allocate(a6(spx,nz,spy,2))
+
+call dz(uc,a4)
+call dz(vc,a5)
+call dz(wc,a6)
+
+do j=1,spy
+  do i=1,spx
+    a4(i,:,j,1)=a4(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
+    a4(i,:,j,2)=a4(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
+    a5(i,:,j,1)=a5(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
+    a5(i,:,j,2)=a5(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
+  enddo
+enddo
+
+allocate(a4f(nx,fpz,fpy))
+allocate(a5f(nx,fpz,fpy))
+allocate(a6f(nx,fpz,fpy))
+
+call spectral_to_phys(a4,a4f,0)
+call spectral_to_phys(a5,a5f,0)
+call spectral_to_phys(a6,a6f,0)
+
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      phif=min(1.0d0,max(-1.0d0,phi(i,k,j)))
+      a4f(i,k,j)=0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a4f(i,k,j)
+      a5f(i,k,j)=0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a5f(i,k,j)
+      a6f(i,k,j)=2.0d0*0.5d0*(1.0d0-1.0d0/visr)*(phif-1.0d0)*a6f(i,k,j)
+    enddo
+  enddo
+enddo
+
+call phys_to_spectral(a4f,a4,0)
+call phys_to_spectral(a5f,a5,0)
+call phys_to_spectral(a6f,a6,0)
+
+allocate(a7(spx,nz,spy,2))
+
+do j=1,spy
+  do i=1,spx
+    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
+    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  enddo
+enddo
+
+call dz(a6,a4)
+
+! add to S term a4+a7
+#if match_dens == 2
+! rescale NS if rhor > 1 for improved stability
+s3=s3+(a4+a7)/(re*rhor)
+#else
+s3=s3+(a4+a7)/re
+#endif
+
+deallocate(a4)
+deallocate(a5)
+deallocate(a6)
+deallocate(a7)
+
+deallocate(a4f)
+deallocate(a5f)
+deallocate(a6f)
 
 #endif
 

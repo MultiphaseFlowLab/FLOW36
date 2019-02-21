@@ -203,7 +203,7 @@ matchedrho="1" # integer
 # density ratio, phase +1 over phase -1
 rhor="1.0" # real (double)
 
-#matched dynamic viscosities: 1 for matched viscosities, 0 otherwise
+#matched dynamic viscosities: 1 for matched viscosities, 0 for visr < 1, 2 for visr > 1
 matchedvis="1" # integer
 
 # dynamic viscosity ratio, phase +1 over phase -1
@@ -706,6 +706,7 @@ sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "" "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/wave_numbers.f90
 sed -i "" "s/buoyancytype/$buoyancy/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/initialize_phi.f90
 sed -i "" "s/meanflag/$mean_flag/g" ./set_run/sc_compiled/statistics.f90
@@ -767,6 +768,7 @@ sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/wave_numbers.f90
 sed -i "s/buoyancytype/$buoyancy/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/initialize_phi.f90
 sed -i "s/meanflag/$mean_flag/g" ./set_run/sc_compiled/statistics.f90
