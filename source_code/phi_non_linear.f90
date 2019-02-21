@@ -489,9 +489,9 @@ call dz(a6,a4)
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
-s1=s1+(a4+a7)/(re*rhor)
+s1=s1+(a4+a7)/(re*rhor)*visr
 #else
-s1=s1+(a4+a7)/re
+s1=s1+(a4+a7)/re*visr
 #endif
 
 deallocate(a4)
@@ -559,9 +559,9 @@ call dz(a6,a4)
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
-s2=s2+(a4+a7)/(re*rhor)
+s2=s2+(a4+a7)/(re*rhor)*visr
 #else
-s2=s2+(a4+a7)/re
+s2=s2+(a4+a7)/re*visr
 #endif
 
 deallocate(a4)
@@ -629,9 +629,9 @@ call dz(a6,a4)
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
-s3=s3+(a4+a7)/(re*rhor)
+s3=s3+(a4+a7)/(re*rhor)*visr
 #else
-s3=s3+(a4+a7)/re
+s3=s3+(a4+a7)/re*visr
 #endif
 
 deallocate(a4)

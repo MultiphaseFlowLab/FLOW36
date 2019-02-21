@@ -44,9 +44,9 @@ if(spectral.eq.0)then
  inquire(file=trim(namefile),exist=check)
 
  if(check.eqv..true.)then
+  write(*,*) 'Reading step ',nstep,' out of ',nend
   if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
     ! reading u
-    write(*,*) 'Reading step ',nstep,' out of ',nend
     open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(666) inp
     close(666,status='keep')
@@ -112,34 +112,40 @@ else
  if(check.eqv..true.)then
   ! reading u
   write(*,*) 'Reading step ',nstep,' out of ',nend
-  open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(666) tmp
-  close(666,status='keep')
-  inpc=0.0d0
-  inpc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
-  inpc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
-  call coarse2fine(inpc,uc)
-  call spectral_to_phys_fg(uc,u,0)
+  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+    open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(666) tmp
+    close(666,status='keep')
+    inpc=0.0d0
+    inpc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+    inpc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
+    call coarse2fine(inpc,uc)
+    call spectral_to_phys_fg(uc,u,0)
+  endif
   ! reading v
-  namefile=trim(namedir)//'vc_'//numfile//'.dat'
-  open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(667) tmp
-  close(667,status='keep')
-  inpc=0.0d0
-  inpc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
-  inpc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
-  call coarse2fine(inpc,vc)
-  call spectral_to_phys_fg(vc,v,0)
+  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+    namefile=trim(namedir)//'vc_'//numfile//'.dat'
+    open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(667) tmp
+    close(667,status='keep')
+    inpc=0.0d0
+    inpc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+    inpc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
+    call coarse2fine(inpc,vc)
+    call spectral_to_phys_fg(vc,v,0)
+  endif
   ! reading w
-  namefile=trim(namedir)//'wc_'//numfile//'.dat'
-  open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(668) tmp
-  close(668,status='keep')
-  inpc=0.0d0
-  inpc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
-  inpc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
-  call coarse2fine(inpc,wc)
-  call spectral_to_phys_fg(wc,w,0)
+  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+    namefile=trim(namedir)//'wc_'//numfile//'.dat'
+    open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(668) tmp
+    close(668,status='keep')
+    inpc=0.0d0
+    inpc(1:mx,1:mz,1:myl,:)=tmp(:,:,1:myl,:)
+    inpc(1:mx,1:mz,myu:ny,:)=tmp(:,:,myl+1:my,:)
+    call coarse2fine(inpc,wc)
+    call spectral_to_phys_fg(wc,w,0)
+  endif
   if(phiflag.eq.1)then
     ! reading phi
     namefile=trim(namedir)//'phic_'//numfile//'.dat'
