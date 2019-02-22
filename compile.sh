@@ -222,7 +222,7 @@ Pe="150.0" # real (double)
 Fr="0.1" # real (double)
 
 # Body force flag, 0: deactivated, 1: activated
-body_flag="1" # integer
+body_flag="0" # integer
 
 # Body force coefficient
 Bd="4.0" # real (double)
@@ -397,7 +397,7 @@ mkdir -p set_run
 
 rm -r ./set_run/go.sh
 rm -r ./set_run/sc_compiled
-rm -r ./set_run/paraview_output
+rm -r ./set_run/paraview_output_fg
 rm -r ./set_run/stats_calc
 rm -r ./set_run/nohup.out
 if [ "$restart" == "0" ]; then
@@ -598,13 +598,8 @@ cp ./source_code/swap_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 
 
-cp -r ./paraview_output ./set_run
 cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
-#cp read_to_paraview.m ./results/
-#cp paraview.m ./results/
-cp ../read_grid.m ./set_run/results/
-cp ../read_omega.m ./set_run/results/
 
 #echo "nycpu=$NYCPU;" > ./results/input_param.m
 #echo "nzcpu=$NZCPU;" >> ./results/input_param.m
@@ -802,20 +797,6 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-#sed -i "s/nxnum/$NX/g" ./sc_compiled/param.h
-#sed -i "s/nynum/$NY/g" ./sc_compiled/param.h
-#sed -i "s/nznum/$NZ/g" ./sc_compiled/param.h
-#sed -i "s/nxcpu/$NXCPU/g" ./sc_compiled/param.h
-#sed -i "s/nzcpu/$NZCPU/g" ./sc_compiled/param.h
-#sed -i "s/ncpu/$NNT/g" ./sc_compiled/param.h
-#sed -i "s/NXft5aa/$NX/g" ./getParaview/input.inp
-#sed -i "s/NYft5aa/$NY/g" ./getParaview/input.inp
-#sed -i "s/NXft5aa/$NX/g" ./getParaview/param.h
-#sed -i "s/NYft5aa/$NY/g" ./getParaview/param.h
-#sed -i "s/NZft5aa/$NZ/g" ./getParaview/param.h
-#sed -i "s/Ncpucccc/$NNT/g" ./getParaview/param.h
-#sed -i "s/nxcpu/$NXCPU/g" ./getParaview/param.h
-#sed -i "s/nzcpu/$NZCPU/g" ./getParaview/param.h
 
 # only for intel compiler (needed for USE MPI_F08
 #source /opt/intel/compilers_and_libraries_2017/linux/bin/compilervars.sh intel64
