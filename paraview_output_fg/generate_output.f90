@@ -125,6 +125,7 @@ endif
 
 if(topflag.eq.1)then
 ! calculate flow topology parameter
+! Q=-1 purely rotational flow, Q=0 pure shear flow, Q=+1 purely elongational flow
 ! u derivatives
   do j=1,nyf
     do i=1,nxf/2+1
