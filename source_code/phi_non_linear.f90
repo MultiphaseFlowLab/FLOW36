@@ -237,34 +237,47 @@ do j=1,spy
 enddo
 call dz(phic,gradphiz)
 
-call spectral_to_phys(gradphix,fgradphix)
-call spectral_to_phys(gradphiy,fgradphiy)
-call spectral_to_phys(gradphiz,fgradphiz)
-
-deallocate(gradphix,gradphiy,gradphiz)
+call spectral_to_phys(gradphix,fgradphix,0)
+call spectral_to_phys(gradphiy,fgradphiy,0)
+call spectral_to_phys(gradphiz,fgradphiz,0)
 
 threshold=0.75d0
 coeff=1.0d0
+allocate(a4f(nx,fpz,fpy))
+allocate(a5f(nx,fpz,fpy))
+allocate(a6f(nx,fpz,fpy))
+a4f=0.0d0
+a5f=0.0d0
+a6f=0.0d0
 
 do j=1,fpy
  do k=1,fpz
   do i=1,nx
    x0=sqrt(2.0d0)*ch*datanh(-phi(i,k,j))
-   nphi0=-(sech(x0/(dsqrt(2.0d0)*ch))**2)/(dsqrt(2.0d0)*ch)
+   nphi0=-(dcosh(x0/(dsqrt(2.0d0)*ch))**(-2))/(dsqrt(2.0d0)*ch)
    ! check for NaN, if so put equal to max derivative
    if(isnan(nphi0).eqv..true.) nphi0=1.0d0/(dsqrt(2.0d0)*ch)
    ! check if coalescence/breakage occurring (formation of bridge)
    mod=dabs(sqrt((fgradphix(i,k,j))**2+(fgradphiy(i,k,j))**2+(fgradphiz(i,k,j))**2))
    ! add repelling force
    if(dabs(mod/nphi0).lt.threshold)then
-    s1=s1+fgradphix(i,k,j)/mod*coeff*(1.0d0-phi(i,k,j)**2)
-    s2=s2+fgradphiy(i,k,j)/mod*coeff*(1.0d0-phi(i,k,j)**2)
-    s3=s3+fgradphiz(i,k,j)/mod*coeff*(1.0d0-phi(i,k,j)**2)
+    a4f(i,k,j)=fgradphix(i,k,j)/mod*coeff*(1.0d0-phi(i,k,j)**2)
+    a5f(i,k,j)=fgradphiy(i,k,j)/mod*coeff*(1.0d0-phi(i,k,j)**2)
+    a6f(i,k,j)=fgradphiz(i,k,j)/mod*coeff*(1.0d0-phi(i,k,j)**2)
    endif
   enddo
  enddo
 enddo
 
+call phys_to_spectral(a4f,gradphix,0)
+call phys_to_spectral(a5f,gradphiy,0)
+call phys_to_spectral(a6f,gradphiz,0)
+s1=s1+gradphix
+s2=s2+gradphiy
+s3=s3+gradphiz
+
+deallocate(a4f,a5f,a6f)
+deallocate(gradphix,gradphiy,gradphiz)
 deallocate(fgradphix,fgradphiy,fgradphiz)
 ! end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
