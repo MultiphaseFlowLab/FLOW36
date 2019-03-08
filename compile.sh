@@ -307,7 +307,7 @@ El="0.5" # real (double)
 # 2: initialize equilibrium profile (psi_bulk)
 # 3: equilibrium profile multiplied with Y gradient
 # 4: equilibrium profile multiplied with Z gradient
-# 5: Diffusione Test, angular distribuction
+# 5: Diffusion Test, angular distribuction
 # 6: read input from file (parallel read, fine grid)
 in_condpsi="2" # integer
 psi_mean="0.01" # real (double)
@@ -417,13 +417,6 @@ fi
 
 cp ./restart_copy.sh ./set_run/results/backup/
 mkdir ./set_run/sc_compiled
-
-
-
-#rm -r ./sc_compiled/*
-#rm -r ./results/*
-#make clean  &> /dev/null
-#rm -r ./*.mod
 
 
 # copy executable and edit it
@@ -611,12 +604,7 @@ cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
 
-#echo "nycpu=$NYCPU;" > ./results/input_param.m
-#echo "nzcpu=$NZCPU;" >> ./results/input_param.m
-#echo "ntask=$NNT;" >> ./results/input_param.m
-#echo "nx=$NX;" >> ./results/input_param.m
-#echo "ny=$NY;" >> ./results/input_param.m
-#echo "nz=$NZ;" >> ./results/input_param.m
+
 
 if [ "$phi_flag" == "1" ]; then
   if [ "$in_condphi" == "3" ]; then
@@ -644,7 +632,7 @@ if [ "$phi_flag" == "1" ]; then
   elif [ "$in_condphi" == "8" ]; then
     echo "$radius                         ! drop radius" > ./set_run/sc_compiled/input_phase_field.f90
     echo "$ygap                           ! ygap" >> ./set_run/sc_compiled/input_phase_field.f90
-    echo "$zgap                           ! ygap" >> ./set_run/sc_compiled/input_phase_field.f90
+    echo "$zgap                           ! zgap" >> ./set_run/sc_compiled/input_phase_field.f90
   elif [ "$in_condphi" == "9" ]; then
     echo "$thickness                      ! layer thickness" > ./set_run/sc_compiled/input_phase_field.f90
     echo "$height                         ! height" >> ./set_run/sc_compiled/input_phase_field.f90
@@ -820,7 +808,7 @@ echo "=                      BEGINNING OF COMPILATION                           
 echo "=============================================================================="
 echo ""
 
-# double make needed because first one return errors for missing modules, but then create them,
+# double make needed because first one return errors for missing modules, but then creates them,
 # second make makes the code executable with the proper module
 # modules must be removed to update data inside them when changing simulation parameters like
 # nx, ny, nz, nycpu, nzcpu
@@ -849,4 +837,3 @@ cd ./set_run
 ./go.sh
 cd ..
 fi
-#od --endian=big --width=32 results/name.dat
