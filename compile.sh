@@ -237,7 +237,7 @@ Bd="4.0" # real (double)
 bodydir="2" # integer
 
 # repulsive force flag, 0: deactivated, 1: activated
-rep_flag="1" # integer
+rep_flag="0" # integer
 
 # repulsive force coefficient
 rep_c="1.0" # real (double)
