@@ -236,6 +236,12 @@ Bd="4.0" # real (double)
 # -3: negative y direction
 bodydir="2" # integer
 
+# repulsive force flag, 0: deactivated, 1: activated
+rep_flag="1" # integer
+
+# repulsive force coefficient
+rep_c="1.0" # real (double)
+
 # initial conditions on phi
 # 0: only phase -1
 # 1: read input from file (parallel read)
@@ -470,6 +476,8 @@ sed -i "" "s/gravitytype/$buoyancy/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/bodyforce/$body_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/bodyfcoeff/$Bd/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/bodydirection/$bodydir/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/repforce/$rep_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/repfcoeff/$rep_c/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/surfactantflag/$psi_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/surfpeclet/$Pe_psi/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/exnumber/$Ex/g" ./set_run/sc_compiled/input.f90
@@ -526,6 +534,8 @@ sed -i "s/gravitytype/$buoyancy/g" ./set_run/sc_compiled/input.f90
 sed -i "s/bodyforce/$body_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "s/bodyfcoeff/$Bd/g" ./set_run/sc_compiled/input.f90
 sed -i "s/bodydirection/$bodydir/g" ./set_run/sc_compiled/input.f90
+sed -i "s/repforce/$rep_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "s/repfcoeff/$rep_c/g" ./set_run/sc_compiled/input.f90
 sed -i "s/surfactantflag/$psi_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "s/surfpeclet/$Pe_psi/g" ./set_run/sc_compiled/input.f90
 sed -i "s/exnumber/$Ex/g" ./set_run/sc_compiled/input.f90
@@ -726,6 +736,7 @@ sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
 sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/repcompflag/$rep_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -788,6 +799,7 @@ sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
 sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/repcompflag/$rep_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 fi
 
 if [ "$machine" == "4" ]; then

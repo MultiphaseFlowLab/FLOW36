@@ -59,6 +59,8 @@ double precision :: Lx,Ly
  read(66,'(i5)') body_flag
  read(66,'(f16.6)') body_c
  read(66,'(i5)') body_dir
+ read(66,'(i5)') rep_flag
+ read(66,'(f16.6)') rep_c
  read(66,*)
  read(66,'(i8)') psi_flag
  read(66,'(f16.6)') Pe_psi
