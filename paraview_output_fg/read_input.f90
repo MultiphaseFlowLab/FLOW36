@@ -50,6 +50,8 @@ double precision :: Lx,Ly
  read(66,*) !body_flag
  read(66,*) !body_c
  read(66,*) !body_dir
+ read(66,*) !rep_flag
+ read(66,*) !rep_c
  read(66,*)
  read(66,*) !psi_flag
  read(66,*) !Pe_psi
