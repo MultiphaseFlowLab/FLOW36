@@ -44,8 +44,8 @@ gravitytype                     ! type of buoyancy considered
 bodyforce                       ! 1: body force activated, 0: body force deactivated
 bodyfcoeff                      ! coefficient of body force
 bodydirection                   ! direction of body force
-repforce                        ! 1: repulsive force activated, 0: repulsive force deactivated
-repfcoeff                       ! coefficient of repulsive force
+eleforce                        ! 1: electric force activated, 0: electric force deactivated
+elefcoeff                       ! Stuart number
 ! surfactant variables
 surfactantflag                  ! 1: surfactant activated, 0 : no surfactant
 surfpeclet                      ! Peclet number for surfactant

@@ -19,8 +19,6 @@ double precision, allocatable, dimension(:,:,:) :: a4f,a5f,a6f
 double precision, allocatable, dimension(:,:,:)   :: sigma
 double precision :: phif
 
-double precision :: x0,nphi0,mod,threshold
-
 integer :: i,j,k
 
 #define psiflag psicompflag
@@ -28,7 +26,7 @@ integer :: i,j,k
 #define match_dens matched_density
 #define b_type buoyancytype
 #define bodyflag bodycompflag
-#define repflag repcompflag
+#define eleflag elecompflag
 
 
 ! phi on coarse grid, physical space needed after surface force calculation
@@ -220,8 +218,16 @@ deallocate(gradphiz)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! repulsive force calculation
-#if repflag == 1
+! electric force calculation
+#if eleflag == 1
+
+allocate(a4f(nx,fpz,fpy))
+allocate(a4(spx,nz,spy,2))
+! charge density distribution, in [0,1]
+a4f=max(min(phi+1.0d0,1.0d0),0.0d0)
+
+call phys_to_spectral(a4f,a4,0)
+
 allocate(gradphix(spx,nz,spy,2))
 allocate(gradphiy(spx,nz,spy,2))
 allocate(gradphiz(spx,nz,spy,2))
@@ -230,59 +236,45 @@ allocate(fgradphiy(nx,fpz,fpy))
 allocate(fgradphiz(nx,fpz,fpy))
 
 do i=1,spx
-  gradphix(i,:,:,1)=-kx(i+cstart(1))*phic(i,:,:,2)
-  gradphix(i,:,:,2)=+kx(i+cstart(1))*phic(i,:,:,1)
+  gradphix(i,:,:,1)=-kx(i+cstart(1))*a4(i,:,:,2)
+  gradphix(i,:,:,2)=+kx(i+cstart(1))*a4(i,:,:,1)
 enddo
 do j=1,spy
-  gradphiy(:,:,j,1)=-ky(j+cstart(3))*phic(:,:,j,2)
-  gradphiy(:,:,j,2)=+ky(j+cstart(3))*phic(:,:,j,1)
+  gradphiy(:,:,j,1)=-ky(j+cstart(3))*a4(:,:,j,2)
+  gradphiy(:,:,j,2)=+ky(j+cstart(3))*a4(:,:,j,1)
 enddo
-call dz(phic,gradphiz)
+call dz(a4,gradphiz)
 
 call spectral_to_phys(gradphix,fgradphix,0)
 call spectral_to_phys(gradphiy,fgradphiy,0)
 call spectral_to_phys(gradphiz,fgradphiz,0)
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
-a4f=0.0d0
-a5f=0.0d0
-a6f=0.0d0
+fgradphix=a4f*fgradphix
+fgradphiy=a4f*fgradphiy
+fgradphiz=a4f*fgradphiz
 
-threshold=0.75d0
-do j=1,fpy
- do k=1,fpz
-  do i=1,nx
-   x0=sqrt(2.0d0)*ch*datanh(-phi(i,k,j))
-   nphi0=-(dcosh(x0/(dsqrt(2.0d0)*ch)))**(-2)/(dsqrt(2.0d0)*ch)
-   ! check for NaN, if so put equal to max derivative
-   if(isnan(nphi0).eqv..true.) nphi0=1.0d0/(dsqrt(2.0d0)*ch)*0.25d0
-   ! check if coalescence/breakage occurring (formation of bridge)
-   mod=dabs(sqrt((fgradphix(i,k,j))**2+(fgradphiy(i,k,j))**2+(fgradphiz(i,k,j))**2))
-   ! add repelling force
-   if(dabs(mod/nphi0).lt.threshold)then
-    phif=min(phi(i,k,j)**2,1.0d0)
-    a4f(i,k,j)=fgradphix(i,k,j)/mod*rep_c*(1.0d0-phif)
-    a5f(i,k,j)=fgradphiy(i,k,j)/mod*rep_c*(1.0d0-phif)
-    a6f(i,k,j)=fgradphiz(i,k,j)/mod*rep_c*(1.0d0-phif)
-   endif
-  enddo
- enddo
-enddo
+call phys_to_spectral(fgradphix,gradphix,0)
+call phys_to_spectral(fgradphiy,gradphiy,0)
+call phys_to_spectral(fgradphiz,gradphiz,0)
 
-call phys_to_spectral(a4f,gradphix,0)
-call phys_to_spectral(a5f,gradphiy,0)
-call phys_to_spectral(a6f,gradphiz,0)
-s1=s1+gradphix
-s2=s2+gradphiy
-s3=s3+gradphiz
-
-deallocate(a4f,a5f,a6f)
-deallocate(gradphix,gradphiy,gradphiz)
 deallocate(fgradphix,fgradphiy,fgradphiz)
+deallocate(a4,a4f)
+
+#if match_dens == 2
+! rescale NS equation if rhor > 1 for improved stability
+s1=s1+stuart/rhor*gradphix
+s2=s2+stuart/rhor*gradphiy
+s3=s3+stuart/rhor*gradphiz
+#else
+s1=s1+stuart*gradphix
+s2=s2+stuart*gradphiy
+s3=s3+stuart*gradphiz
 #endif
-! end of repulsive force calculation
+
+deallocate(gradphix,gradphiy,gradphiz)
+
+#endif
+! end of electric force calculation
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
