@@ -117,8 +117,8 @@ elseif(in_cond_phi.eq.8)then
   write(*,'(1x,a40,f8.3)') 'Body force coefficient : ', body_c
   write(*,'(1x,a40,3(a,f5.1),a)') 'Body force versor [x,y,z] : ','[',body_d(1),',',body_d(3),',',body_d(2),']'
  endif
- if(rep_flag.eq.1)then
-  write(*,'(1x,a40,f8.3)') 'Repulsive force coefficient : ',rep_c
+ if(ele_flag.eq.1)then
+  write(*,'(1x,a40,f8.3)') 'Electric force coefficient : ',stuart
  endif
  if (phicor_flag.eq.0) then
    write(*,'(1x,a)')      'Classic PFM'
