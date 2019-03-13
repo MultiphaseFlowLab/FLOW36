@@ -19,6 +19,8 @@ double precision, allocatable, dimension(:,:,:) :: a4f,a5f,a6f
 double precision, allocatable, dimension(:,:,:)   :: sigma
 double precision :: phif
 
+double precision :: modg,threshold,gthreshold
+
 integer :: i,j,k
 
 #define psiflag psicompflag
@@ -221,13 +223,6 @@ deallocate(gradphiz)
 ! electric force calculation
 #if eleflag == 1
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a4(spx,nz,spy,2))
-! charge density distribution, in [0,1]
-a4f=max(min(phi+1.0d0,1.0d0),0.0d0)
-
-call phys_to_spectral(a4f,a4,0)
-
 allocate(gradphix(spx,nz,spy,2))
 allocate(gradphiy(spx,nz,spy,2))
 allocate(gradphiz(spx,nz,spy,2))
@@ -236,29 +231,43 @@ allocate(fgradphiy(nx,fpz,fpy))
 allocate(fgradphiz(nx,fpz,fpy))
 
 do i=1,spx
-  gradphix(i,:,:,1)=-kx(i+cstart(1))*a4(i,:,:,2)
-  gradphix(i,:,:,2)=+kx(i+cstart(1))*a4(i,:,:,1)
+  gradphix(i,:,:,1)=-kx(i+cstart(1))*phic(i,:,:,2)
+  gradphix(i,:,:,2)=+kx(i+cstart(1))*phic(i,:,:,1)
 enddo
 do j=1,spy
-  gradphiy(:,:,j,1)=-ky(j+cstart(3))*a4(:,:,j,2)
-  gradphiy(:,:,j,2)=+ky(j+cstart(3))*a4(:,:,j,1)
+  gradphiy(:,:,j,1)=-ky(j+cstart(3))*phic(:,:,j,2)
+  gradphiy(:,:,j,2)=+ky(j+cstart(3))*phic(:,:,j,1)
 enddo
-call dz(a4,gradphiz)
+call dz(phic,gradphiz)
 
 call spectral_to_phys(gradphix,fgradphix,0)
 call spectral_to_phys(gradphiy,fgradphiy,0)
 call spectral_to_phys(gradphiz,fgradphiz,0)
 
-fgradphix=a4f*fgradphix
-fgradphiy=a4f*fgradphiy
-fgradphiz=a4f*fgradphiz
+threshold=0.9d0
+gthreshold=0.5d0*(1.0d0-threshold**2)/(dsqrt(2.0d0)*ch)
+do j=1,fpy
+ do k=1,fpz
+  do i=1,nx
+   modg=dabs(dsqrt((fgradphix(i,k,j))**2+(fgradphiy(i,k,j))**2+(fgradphiz(i,k,j))**2))
+   if((phi(i,k,j).lt.threshold).and.(modg.lt.gthreshold))then
+    fgradphix(i,k,j)=fgradphix(i,k,j)/modg
+    fgradphiy(i,k,j)=fgradphiy(i,k,j)/modg
+    fgradphiz(i,k,j)=fgradphiz(i,k,j)/modg
+   else
+    fgradphix(i,k,j)=0.0d0
+    fgradphiy(i,k,j)=0.0d0
+    fgradphiz(i,k,j)=0.0d0
+   endif
+  enddo
+ enddo
+enddo
 
 call phys_to_spectral(fgradphix,gradphix,0)
 call phys_to_spectral(fgradphiy,gradphiy,0)
 call phys_to_spectral(fgradphiz,gradphiz,0)
 
 deallocate(fgradphix,fgradphiy,fgradphiz)
-deallocate(a4,a4f)
 
 #if match_dens == 2
 ! rescale NS equation if rhor > 1 for improved stability
@@ -272,6 +281,60 @@ s3=s3+stuart*gradphiz
 #endif
 
 deallocate(gradphix,gradphiy,gradphiz)
+
+
+
+! allocate(a4f(nx,fpz,fpy))
+! allocate(a4(spx,nz,spy,2))
+! ! charge density distribution, in [0,1]
+! a4f=max(min(phi+1.0d0,1.0d0),0.0d0)
+!
+! call phys_to_spectral(a4f,a4,0)
+!
+! allocate(gradphix(spx,nz,spy,2))
+! allocate(gradphiy(spx,nz,spy,2))
+! allocate(gradphiz(spx,nz,spy,2))
+! allocate(fgradphix(nx,fpz,fpy))
+! allocate(fgradphiy(nx,fpz,fpy))
+! allocate(fgradphiz(nx,fpz,fpy))
+!
+! do i=1,spx
+!   gradphix(i,:,:,1)=-kx(i+cstart(1))*a4(i,:,:,2)
+!   gradphix(i,:,:,2)=+kx(i+cstart(1))*a4(i,:,:,1)
+! enddo
+! do j=1,spy
+!   gradphiy(:,:,j,1)=-ky(j+cstart(3))*a4(:,:,j,2)
+!   gradphiy(:,:,j,2)=+ky(j+cstart(3))*a4(:,:,j,1)
+! enddo
+! call dz(a4,gradphiz)
+!
+! call spectral_to_phys(gradphix,fgradphix,0)
+! call spectral_to_phys(gradphiy,fgradphiy,0)
+! call spectral_to_phys(gradphiz,fgradphiz,0)
+!
+! fgradphix=a4f*fgradphix
+! fgradphiy=a4f*fgradphiy
+! fgradphiz=a4f*fgradphiz
+!
+! call phys_to_spectral(fgradphix,gradphix,0)
+! call phys_to_spectral(fgradphiy,gradphiy,0)
+! call phys_to_spectral(fgradphiz,gradphiz,0)
+!
+! deallocate(fgradphix,fgradphiy,fgradphiz)
+! deallocate(a4,a4f)
+!
+! #if match_dens == 2
+! ! rescale NS equation if rhor > 1 for improved stability
+! s1=s1+stuart/rhor*gradphix
+! s2=s2+stuart/rhor*gradphiy
+! s3=s3+stuart/rhor*gradphiz
+! #else
+! s1=s1+stuart*gradphix
+! s2=s2+stuart*gradphiy
+! s3=s3+stuart*gradphiz
+! #endif
+!
+! deallocate(gradphix,gradphiy,gradphiz)
 
 #endif
 ! end of electric force calculation
