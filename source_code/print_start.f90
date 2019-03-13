@@ -120,13 +120,6 @@ elseif(in_cond_phi.eq.8)then
  if(ele_flag.eq.1)then
   write(*,'(1x,a40,f8.3)') 'Electric force coefficient : ',stuart
  endif
- if (phicor_flag.eq.0) then
-   write(*,'(1x,a)')      'Classic PFM'
- elseif (phicor_flag.eq.1) then
-   write(*,'(1x,a40,f8.3)') 'Profile-corrected PFM          Lambda : ',lamphi
- elseif (phicor_flag.eq.2) then
-   write(*,'(1x,a40,f8.3)') 'Flux-corrected PFM             Lambda : ',lamphi
- endif
 
  if (phicor_flag.eq.0) then
    write(*,'(1x,a60)')      'Classic Phase Field Model'
