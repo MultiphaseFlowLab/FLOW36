@@ -250,7 +250,7 @@ do j=1,fpy
  do k=1,fpz
   do i=1,nx
    modg=dabs(dsqrt((fgradphix(i,k,j))**2+(fgradphiy(i,k,j))**2+(fgradphiz(i,k,j))**2))
-   if((phi(i,k,j).lt.threshold).and.(modg.lt.gthreshold))then
+   if((dabs(phi(i,k,j)).lt.threshold).and.(modg.lt.gthreshold))then
     fgradphix(i,k,j)=fgradphix(i,k,j)/modg
     fgradphiy(i,k,j)=fgradphiy(i,k,j)/modg
     fgradphiz(i,k,j)=fgradphiz(i,k,j)/modg
