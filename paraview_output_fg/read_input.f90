@@ -28,6 +28,9 @@ double precision :: Lx,Ly
  read(66,'(i8)') nend
  read(66,'(i8)') ndump
  read(66,'(i8)') sdump
+ read(66,*) !dump_failure
+ read(66,*) !stat_dump
+ read(66,*) !stat_start
  read(66,'(es16.5)') dt
  read(66,*)
  read(66,*) !bc_up
