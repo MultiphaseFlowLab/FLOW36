@@ -245,11 +245,12 @@ call spectral_to_phys(gradphiy,fgradphiy,0)
 call spectral_to_phys(gradphiz,fgradphiz,0)
 
 threshold=0.9d0
-gthreshold=0.5d0*(1.0d0-threshold**2)/(dsqrt(2.0d0)*ch)
+! gthreshold=0.5d0*(1.0d0-threshold**2)/(dsqrt(2.0d0)*ch)
 do j=1,fpy
  do k=1,fpz
   do i=1,nx
    modg=dabs(dsqrt((fgradphix(i,k,j))**2+(fgradphiy(i,k,j))**2+(fgradphiz(i,k,j))**2))
+   gthreshold=0.75d0*(1.0d0-(phi(i,k,j))**2)/(dsqrt(2.0d0)*ch)
    if((dabs(phi(i,k,j)).lt.threshold).and.(modg.lt.gthreshold))then
     fgradphix(i,k,j)=fgradphix(i,k,j)/modg
     fgradphiy(i,k,j)=fgradphiy(i,k,j)/modg
