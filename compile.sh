@@ -203,11 +203,20 @@ matchedrho="1" # integer
 # density ratio, phase +1 over phase -1
 rhor="1.0" # real (double)
 
-#matched dynamic viscosities: 1 for matched viscosities, 0 for visr < 1, 2 for visr > 1
+#matched dynamic viscosities: 1 for matched viscosities, 0 for visr < 1 (or non-newtonian), 2 for visr > 1
 matchedvis="1" # integer
 
 # dynamic viscosity ratio, phase +1 over phase -1
 visr="1.0" # real (double)
+
+#non-newtonian phase, 0 deactivaed, 1 phase=+1 is non-newtonian (Carreau model)
+non_newtonian="0" # integer
+
+#Ratio between the viscosity at zero and infinity shear rate (Non-newtonian-Carreau model)
+muinfmuzero="0.1"
+
+#Exponent for the non-newtonian fluid (phi=+1)-n<1 pseudoplastic
+exp_non_new="0.9"
 
 # Weber number
 We="1.0" # real (double)
@@ -459,6 +468,9 @@ sed -i "" "s/matcheddens/$matchedrho/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/densratio/$rhor/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/matchedvisc/$matchedvis/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/viscratio/$visr/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/nonnewtonian/$non_newtonian/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/muinfmuzero/$muinfmuzero/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/expnonnew/$exp_non_new/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/webernumber/$We/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/cahnnumber/$Ch/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/pecletnumber/$Pe/g" ./set_run/sc_compiled/input.f90
@@ -517,6 +529,9 @@ sed -i "s/matcheddens/$matchedrho/g" ./set_run/sc_compiled/input.f90
 sed -i "s/densratio/$rhor/g" ./set_run/sc_compiled/input.f90
 sed -i "s/matchedvisc/$matchedvis/g" ./set_run/sc_compiled/input.f90
 sed -i "s/viscratio/$visr/g" ./set_run/sc_compiled/input.f90
+sed -i "s/nonnewtonian/$non_newtonian/g" ./set_run/sc_compiled/input.f90
+sed -i "s/muinfmuzero/$muinfmuzero/g" ./set_run/sc_compiled/input.f90
+sed -i "s/expnonnew/$exp_non_new/g" ./set_run/sc_compiled/input.f90
 sed -i "s/webernumber/$We/g" ./set_run/sc_compiled/input.f90
 sed -i "s/cahnnumber/$Ch/g" ./set_run/sc_compiled/input.f90
 sed -i "s/pecletnumber/$Pe/g" ./set_run/sc_compiled/input.f90
@@ -691,6 +706,7 @@ sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "" "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "" "s/nonnewcompflag/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
@@ -754,6 +770,7 @@ sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "s/nonnewcompflag/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90

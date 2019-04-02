@@ -34,6 +34,9 @@ matcheddens                     ! 1: matched densities, 0: otherwise
 densratio                       ! density ratio phase +1 over phase -1
 matchedvisc                     ! 1: matched viscosities, 0: otherwise
 viscratio                       ! dynamic viscosity ratio phase +1 over phase -1
+nonnewtonian                   ! non-newtonian fluid phi=+1
+muinfmuzero                     ! ratio between the viscosity at inf and 0 shear rate (Non-newtonian)
+expnonnew                     ! exponent for the non-newtonian phase (phi=+1)
 webernumber                     ! Weber number
 cahnnumber                      ! Cahn number
 pecletnumber                    ! Peclet number
