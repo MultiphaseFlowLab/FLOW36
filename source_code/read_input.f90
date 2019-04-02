@@ -49,6 +49,9 @@ double precision :: Lx,Ly
  read(66,'(f16.6)') rhor
  read(66,'(i5)') match_visc
  read(66,'(f16.6)') visr
+ read(66,'(i5)') non_newtonian
+ read(66,'(f16.6)') muinfmuzero
+ read(66,'(f16.6)') exp_non_new
  read(66,'(f16.6)') we
  read(66,'(f16.6)') ch
  read(66,'(f16.6)') pe

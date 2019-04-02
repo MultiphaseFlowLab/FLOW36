@@ -66,8 +66,9 @@ end module sim_par
 
 
 module phase_field
- integer :: phi_flag,phicor_flag,in_cond_phi,b_type,phiflux_flag,body_flag,ele_flag
+ integer :: phi_flag,phicor_flag,in_cond_phi,b_type,phiflux_flag,body_flag,ele_flag, non_newtonian
  double precision :: rhor,visr,We,Ch,Pe,Fr,grav(3),s_coeff,lamphi,body_c,body_d(3),stuart
+ double precision :: muinfmuzero, exp_non_new
  double precision, allocatable :: phi(:,:,:), phic(:,:,:,:)
  double precision, allocatable :: phi_fg(:,:,:), phic_fg(:,:,:,:)
 end module phase_field
