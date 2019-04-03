@@ -13,11 +13,11 @@ use dual_grid
 
 double precision, dimension(spx,nz,spy,2) :: s1,s2,s3
 double precision, allocatable, dimension(:,:,:,:) :: gradphix,gradphiy,gradphiz
-double precision, allocatable, dimension(:,:,:,:) :: a4,a5,a6,a7
+double precision, allocatable, dimension(:,:,:,:) :: a4,a5,a6,a7,a8,a9
 double precision, allocatable, dimension(:,:,:) :: fgradphix,fgradphiy,fgradphiz
-double precision, allocatable, dimension(:,:,:) :: a4f,a5f,a6f
-double precision, allocatable, dimension(:,:,:)   :: sigma
-double precision :: phif
+double precision, allocatable, dimension(:,:,:) :: a4f,a5f,a6f,a7f,a8f,a9f,a10f,a11f,a12f,viscnon
+double precision, allocatable, dimension(:,:,:) :: sigma
+double precision :: phif,gammadot
 
 double precision :: modg,threshold,gthreshold
 
@@ -547,22 +547,206 @@ s3=s3+(a4+a7)/(re*rhor)
 s3=s3+(a4+a7)/re
 #endif
 
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
-deallocate(a7)
+deallocate(a4,a5,a6,a7)
+deallocate(a4f,a5f,a6f)
 
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
-
+!End Block Visc-Contarst Newtonian
 #endif
 
 
 #if non_new_flag == 1
 if (rank.eq.0) print*,'Unmatched viscosities - N/NN'
 
+! first row
+allocate(a4(spx,nz,spy,2))
+allocate(a5(spx,nz,spy,2))
+allocate(a6(spx,nz,spy,2))
+allocate(a7(spx,nz,spy,2))
+allocate(a8(spx,nz,spy,2))
+allocate(a9(spx,nz,spy,2))
+
+call dz(uc,a7)
+call dz(vc,a8)
+call dz(wc,a9)
+
+
+do j=1,spy
+  do i=1,spx
+    a4(i,:,j,1)=-kx(i+cstart(1))*2d0*uc(i,:,j,2)
+    a4(i,:,j,2)=+kx(i+cstart(1))*2d0*uc(i,:,j,1)
+    a5(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
+    a5(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
+    a6(i,:,j,1)=-ky(j+cstart(3))*2d0*vc(i,:,j,2)
+    a6(i,:,j,2)=+ky(j+cstart(3))*2d0*vc(i,:,j,1)
+    a7(i,:,j,1)=a7(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
+    a7(i,:,j,2)=a7(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
+    a8(i,:,j,1)=a8(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
+    a8(i,:,j,2)=a8(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
+    a9(i,:,j,1)=2d0*a9(i,:,j,1)
+    a9(i,:,j,2)=2d0*a9(i,:,j,2)
+  enddo
+enddo
+
+
+allocate(a4f(nx,fpz,fpy))
+allocate(a5f(nx,fpz,fpy))
+allocate(a6f(nx,fpz,fpy))
+allocate(a7f(nx,fpz,fpy))
+allocate(a8f(nx,fpz,fpy))
+allocate(a9f(nx,fpz,fpy))
+
+call spectral_to_phys(a4,a4f,0)
+call spectral_to_phys(a5,a5f,0)
+call spectral_to_phys(a6,a6f,0)
+call spectral_to_phys(a7,a7f,0)
+call spectral_to_phys(a8,a8f,0)
+call spectral_to_phys(a9,a9f,0)
+
+deallocate(a4,a5,a6,a7,a8,a9)
+allocate(viscnon(nx,fpz,fpy))
+
+!computing the viscosity map
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      phif=min(1d0,max(-1d0,phi(i,k,j)))
+      gammadot=a4f(i,k,j)**2d0+a6f(i,k,j)**2d0+a9f(i,k,j)**2d0+&
+      &          2d0*a5f(i,k,j)**2d0+2d0*a7f(i,k,j)**2d0+2d0*a8f(i,k,j)**2d0
+      ! computing the equivalent shear rate...
+      gammadot=dsqrt(0.5d0*gammadot)
+      ! computing the dimensionelles viscosity
+      viscnon(i,k,j)=muinfmuzero+(1d0-muinfmuzero)*((1d0+gammadot**2d0)**(0.5d0*(exp_non_new-1d0)))
+    enddo
+  enddo
+enddo
+
+! computing the first row...
+allocate(a10f(nx,fpz,fpy))
+allocate(a11f(nx,fpz,fpy))
+allocate(a12f(nx,fpz,fpy))
+
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      phif=min(1d0,max(-1d0,phi(i,k,j)))
+      a10f(i,k,j)=0.5d0*(1d0+phif)*(viscnon(i,k,j)-1d0)*a4f(i,k,j)
+      a11f(i,k,j)=0.5d0*(1d0+phif)*(viscnon(i,k,j)-1d0)*a5f(i,k,j)
+      a12f(i,k,j)=0.5d0*(1d0+phif)*(viscnon(i,k,j)-1d0)*a7f(i,k,j)
+    enddo
+  enddo
+enddo
+
+deallocate(a4f)
+
+allocate(a4(spx,nz,spy,2))
+allocate(a5(spx,nz,spy,2))
+allocate(a6(spx,nz,spy,2))
+allocate(a7(spx,nz,spy,2))
+
+call phys_to_spectral(a10f,a4,0)
+call phys_to_spectral(a11f,a5,0)
+call phys_to_spectral(a12f,a6,0)
+
+do j=1,spy
+  do i=1,spx
+    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
+    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  enddo
+enddo
+
+call dz(a6,a4)
+
+! add to S term a4+a7
+! rescale NS if rhor > 1 for improved stability
+#if match_dens == 2
+s1=s1+1.0d0/(re*rhor)*(a4+a7)
+#else
+s1=s1+1.0d0/(re)*(a4+a7)
 #endif
+
+
+! second row
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      phif=min(1d0,max(-1d0,phi(i,k,j)))
+      a10f(i,k,j)=0.5d0*(1.0d0+phif)*(viscnon(i,k,j)-1d0)*a5f(i,k,j)
+      a11f(i,k,j)=0.5d0*(1.0d0+phif)*(viscnon(i,k,j)-1d0)*a6f(i,k,j)
+      a12f(i,k,j)=0.5d0*(1.0d0+phif)*(viscnon(i,k,j)-1d0)*a8f(i,k,j)
+    enddo
+  enddo
+enddo
+
+deallocate(a5f,a6f)
+
+call phys_to_spectral(a10f,a4,0)
+call phys_to_spectral(a11f,a5,0)
+call phys_to_spectral(a12f,a6,0)
+
+do j=1,spy
+  do i=1,spx
+    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
+    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  enddo
+enddo
+
+call dz(a6,a4)
+
+! add to S term a4+a7
+! rescale NS if rhor > 1 for improved stability
+#if match_dens == 2
+s2=s2+1d0/(re*rhor)*(a4+a7)
+#else
+s2=s2+1d0/(re)*(a4+a7)
+#endif
+
+! third row
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      phif=min(1d0,max(-1d0,phi(i,k,j)))
+      a10f(i,k,j)=0.5d0*(1d0+phif)*(viscnon(i,k,j)-1d0)*a7f(i,k,j)
+      a11f(i,k,j)=0.5d0*(1d0+phif)*(viscnon(i,k,j)-1d0)*a8f(i,k,j)
+      a12f(i,k,j)=0.5d0*(1d0+phif)*(viscnon(i,k,j)-1d0)*a9f(i,k,j)
+    enddo
+  enddo
+enddo
+
+deallocate(viscnon,a7f,a8f,a9f)
+
+call phys_to_spectral(a10f,a4,0)
+call phys_to_spectral(a11f,a5,0)
+call phys_to_spectral(a12f,a6,0)
+
+deallocate(a10f,a11f,a12f)
+
+do j=1,spy
+  do i=1,spx
+    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
+    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  enddo
+enddo
+
+call dz(a6,a4)
+
+! add to S term a4+a7
+! rescale NS if rhor > 1 for improved stability
+#if match_dens == 2
+s3=s3+1d0/(re*rhor)*(a4+a7)
+#else
+s3=s3+1d0/(re)*(a4+a7)
+#endif
+
+
+deallocate(a4,a5,a6,a7)
+!Closing block non-newtonian
+#endif
+
+
+
+
+
+
 
 #elif match_visc == 2
 ! if visr > 1
