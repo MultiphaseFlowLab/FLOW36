@@ -29,6 +29,7 @@ integer :: i,j,k
 #define b_type buoyancytype
 #define bodyflag bodycompflag
 #define eleflag elecompflag
+#define non_new_flag non_newtonian
 
 
 ! phi on coarse grid, physical space needed after surface force calculation
@@ -345,8 +346,9 @@ deallocate(gradphix,gradphiy,gradphiz)
 ! only for non-matched viscosities
 ! calculate non-linear part of viscous term (only for non-matched viscosities)
 #if match_visc == 0
+#if non_new_flag == 0
 ! if visr < 1
-
+if (rank.eq.0) print*,'Unmatched viscosities - N/N'
 ! first row
 allocate(a4(spx,nz,spy,2))
 allocate(a5(spx,nz,spy,2))
@@ -471,7 +473,6 @@ call dz(a6,a4)
 
 ! add to S term a4+a7
 #if match_dens == 2
-! rescale NS if rhor > 1 for improved stability
 s2=s2+(a4+a7)/(re*rhor)
 #else
 s2=s2+(a4+a7)/re
@@ -541,7 +542,6 @@ call dz(a6,a4)
 
 ! add to S term a4+a7
 #if match_dens == 2
-! rescale NS if rhor > 1 for improved stability
 s3=s3+(a4+a7)/(re*rhor)
 #else
 s3=s3+(a4+a7)/re
@@ -555,6 +555,14 @@ deallocate(a7)
 deallocate(a4f)
 deallocate(a5f)
 deallocate(a6f)
+
+#endif
+
+
+#if non_new_flag == 1
+if (rank.eq.0) print*,'Unmatched viscosities - N/NN'
+
+#endif
 
 #elif match_visc == 2
 ! if visr > 1

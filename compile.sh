@@ -90,13 +90,13 @@ fftw_flag="0"
 
 # number of grid points (edit only exponent)
 ix="1" # integer
-iy="7" # integer
-iz="7" # integer
+iy="9" # integer
+iz="9" # integer
 
 # dual grid for surfactant, expansion factors:
-exp_x="2" # integer, (2**ix)*exp_x
-exp_y="2" # integer, (2**iy)*exp_y
-exp_z="2" # integer, (2**iz)*exp_z+1
+exp_x="1" # integer, (2**ix)*exp_x
+exp_y="1" # integer, (2**iy)*exp_y
+exp_z="1" # integer, (2**iz)*exp_z+1
 
 NX="$((2**$ix))"
 NY="$((2**$iy))"
@@ -119,27 +119,27 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="5" # integer
 
 # Reynolds number
-Re="10.0" # real (double)
+Re="0.1" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
 
 # mean pressure gradient (x and y), defined ad (p_out-p_in)/L
-gradpx="-1.0" # real (double)
+gradpx="0.0" # real (double)
 gradpy="0.0" # real (double)
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
-lx="4.0" # real (double)
+lx="0.001" # real (double)
 ly="2.0" # real (double)
 
 # initial time step
 nstart="0" # integer
 
 # final time step
-nend="10" #integer (up to 8 digits)
+nend="100" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space (save only last time step if value lower than 1)
 dump="500" # integer
@@ -168,17 +168,17 @@ budget_flag="1" # 0 to skip budget calculation, 1 to do it
 spectra_flag="1" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
-dt="1.0e-3" # real (exponential)
+dt="1.e-4" # real (exponential)
 
 # 0: no-slip
 # 1: free-slip
 # 2: y shear flow (+1 at z=1, -1 at z=-1)
 # 3: x shear flow (+1 at z=1, -1 at z=-1)
 # boundary condition, z=1
-bc_upb="0" # integer
+bc_upb="2" # integer
 
 # boundary condition, z=-1
-bc_lb="0" # integer
+bc_lb="2" # integer
 
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
@@ -191,11 +191,11 @@ phi_flag="1" # integer
 # 3: profile-corrected turned off at the walls
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
-phicor_flag="4" # integer
+phicor_flag="0" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag 1 or 2)
 # Lam=0.3/Ch
-lamcorphi="2.5" # real (double)
+lamcorphi="0." # real (double)
 
 # matched densities: 1 for matched densities, 0 for rhor < 1, 2 for rhor > 1
 matchedrho="1" # integer
@@ -204,10 +204,10 @@ matchedrho="1" # integer
 rhor="1.0" # real (double)
 
 #matched dynamic viscosities: 1 for matched viscosities, 0 for visr < 1 (or non-newtonian), 2 for visr > 1
-matchedvis="1" # integer
+matchedvis="0" # integer
 
-# dynamic viscosity ratio, phase +1 over phase -1
-visr="1.0" # real (double)
+# dynamic viscosity ratio, phase +1 over phase -1 (not considered when non-newtonian is enabled)
+visr="0.1" # real (double)
 
 #non-newtonian phase, 0 deactivaed, 1 phase=+1 is non-newtonian (Carreau model)
 non_newtonian="0" # integer
@@ -219,13 +219,13 @@ muinfmuzero="0.1"
 exp_non_new="0.9"
 
 # Weber number
-We="1.0" # real (double)
+We="0.0155" # real (double)
 
 # Cahn number
-Ch="0.05" # real (double)
+Ch="0.01" # real (double)
 
 # Peclet number
-Pe="150.0" # real (double)
+Pe="100.0" # real (double)
 
 # Froud number
 Fr="0.1" # real (double)
@@ -351,7 +351,7 @@ temp_mean="0.0" # real (double)
 
 # 1 activate buoyancy term in N-S, 0 deactivate it (Boussinnesq approximation)
 # uses same gravity array as defined in the phase field part
-boussinnesq="1" # integer
+boussinnesq="0" # integer
 
 # end of parameters declaration
 echo ""
@@ -706,7 +706,7 @@ sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "" "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/nonnewcompflag/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "" "s/non_newtonian/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
