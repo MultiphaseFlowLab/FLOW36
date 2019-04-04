@@ -770,7 +770,7 @@ sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
 sed -i "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
 sed -i "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "s/nonnewcompflag/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "s/non_newtonian/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
