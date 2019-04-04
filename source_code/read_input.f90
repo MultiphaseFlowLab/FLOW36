@@ -108,9 +108,9 @@ double precision :: Lx,Ly
 
  if((match_visc.eq.1).and.(abs(visr-1.0d0).lt.0.00000001))then
    if(rank.eq.0) write(*,*) 'Matched viscosities'
- elseif((match_visc.eq.0).and.(visr.lt.1.0d0).and.(abs(visr-1.0d0).gt.0.00000001))then
+ elseif((match_visc.eq.0).and.(visr.lt.1.0d0).and.(abs(visr-1.0d0).gt.0.00000001).and.(non_newtonian.eq.0))then
    if(rank.eq.0) write(*,*) 'Non-matched viscosities, visr < 1'
- elseif((match_visc.eq.2).and.(visr.gt.1.0d0).and.(abs(visr-1.0d0).gt.0.00000001))then
+ elseif((match_visc.eq.2).and.(visr.gt.1.0d0).and.(abs(visr-1.0d0).gt.0.00000001).and.(non_newtonian.eq.0))then
    if(rank.eq.0) write(*,*) 'Non-matched viscosities, visr > 1'
  elseif((match_visc.eq.0).and.(non_newtonian.eq.1))then
    if(rank.eq.0) write(*,*) 'Non-newtonian dispersed phase'

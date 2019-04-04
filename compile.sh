@@ -210,7 +210,7 @@ matchedvis="0" # integer
 visr="0.1" # real (double)
 
 #non-newtonian phase, 0 deactivaed, 1 phase=+1 is non-newtonian (Carreau model)
-non_newtonian="0" # integer
+non_newtonian="1" # integer
 
 #Ratio between the viscosity at zero and infinity shear rate (Non-newtonian-Carreau model)
 muinfmuzero="0.1"
