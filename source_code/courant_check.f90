@@ -30,11 +30,7 @@ do j=1,fpy
     do i=1,nx
       lcomax=max(lcomax,dt*(dabs(u(i,k,j)/dx)+ &
                             dabs(v(i,k,j)/dy)+ &
-                            dabs(w(i,k,j)/dz(fstart(2)+k)))
-
-! dt*(dabs(u(i-1,k,j)/(x(i)-x(i-1)))+ &
-!          &         dabs(v(i,k,j-1)/(y(fstart(3)+j)-y(fstart(3)+j-1)))+ &
-!          &         dabs(w(i,k-1,j)/(z(fstart(2)+k)-z(fstart(2)+k-1)))))
+                            dabs(w(i,k,j)/dz(fstart(2)+k))))
     enddo
   enddo
 enddo
