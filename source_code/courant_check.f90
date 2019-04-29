@@ -9,7 +9,7 @@ use phase_field
 use surfactant
 
 double precision, dimension(nx,fpz,fpy) :: u,v,w
-double precision :: lcomax,gcomax
+double precision :: lcomax,gcomax,dx,dy,dz(nz)
 
 integer :: i,j,k
 
@@ -17,13 +17,24 @@ integer :: i,j,k
 #define psi_flag psicompflag
 #define machine machineflag
 
+dx=xl/real(nx-1)
+dy=yl/real(ny-1)
+dz(1)=z(1)-z(2)
+dz(nz)=z(nz-1)-z(nz)
+do k=2,nz-1
+  dz(k)=(z(k-1)-z(k+1))/2.0d0
+enddo
 lcomax=0.0d0
-do j=2,fpy
-  do k=2,fpz
-    do i=2,nx
-      lcomax=max(lcomax,dt*(dabs(u(i-1,k,j)/(x(i)-x(i-1)))+ &
-         &         dabs(v(i,k,j-1)/(y(fstart(3)+j)-y(fstart(3)+j-1)))+ &
-         &         dabs(w(i,k-1,j)/(z(fstart(2)+k)-z(fstart(2)+k-1)))))
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      lcomax=max(lcomax,dt*(dabs(u(i,k,j)/dx)+ &
+                            dabs(v(i,k,j)/dy)+ &
+                            dabs(w(i,k,j)/dz(fstart(2)+k)))
+
+! dt*(dabs(u(i-1,k,j)/(x(i)-x(i-1)))+ &
+!          &         dabs(v(i,k,j-1)/(y(fstart(3)+j)-y(fstart(3)+j-1)))+ &
+!          &         dabs(w(i,k-1,j)/(z(fstart(2)+k)-z(fstart(2)+k-1)))))
     enddo
   enddo
 enddo
