@@ -133,8 +133,8 @@ else
 
   !define grid
   if(nx.gt.1.and.ny.gt.1)then
-    dx=xl/real(nx-1)
-    dy=yl/real(ny-1)
+    dx=xl/dble(nx-1)
+    dy=yl/dble(ny-1)
   else
     write(*,*) 'error, not enough points'
     stop

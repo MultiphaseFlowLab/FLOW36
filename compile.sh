@@ -95,8 +95,8 @@ iz="9" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
-exp_y="1" # integer, (2**iy)*exp_y
-exp_z="1" # integer, (2**iz)*exp_z+1
+exp_y="2" # integer, (2**iy)*exp_y
+exp_z="2" # integer, (2**iz)*exp_z+1
 
 NX="$((2**$ix))"
 NY="$((2**$iy))"
@@ -119,7 +119,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="5" # integer
+incond="0" # integer
 
 # Reynolds number
 Re="0.1" # real (double)
@@ -133,13 +133,13 @@ gradpy="0.0" # real (double)
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
 lx="0.001" # real (double)
-ly="2.0" # real (double)
+ly="0.6" # real (double)
 
 # initial time step
 nstart="0" # integer
 
 # final time step
-nend="100" #integer (up to 8 digits)
+nend="5" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space (save only last time step if value lower than 1)
 dump="500" # integer
@@ -175,10 +175,10 @@ dt="1.e-4" # real (exponential)
 # 2: y shear flow (+1 at z=1, -1 at z=-1)
 # 3: x shear flow (+1 at z=1, -1 at z=-1)
 # boundary condition, z=1
-bc_upb="2" # integer
+bc_upb="0" # integer
 
 # boundary condition, z=-1
-bc_lb="2" # integer
+bc_lb="0" # integer
 
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
@@ -191,11 +191,11 @@ phi_flag="1" # integer
 # 3: profile-corrected turned off at the walls
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
-phicor_flag="0" # integer
+phicor_flag="4" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag 1 or 2)
 # Lam=0.3/Ch
-lamcorphi="0." # real (double)
+lamcorphi="2.5" # real (double)
 
 # matched densities: 1 for matched densities, 0 for rhor < 1, 2 for rhor > 1
 matchedrho="1" # integer
@@ -204,10 +204,10 @@ matchedrho="1" # integer
 rhor="1.0" # real (double)
 
 #matched dynamic viscosities: 1 for matched viscosities, 0 for visr < 1 (or non-newtonian), 2 for visr > 1
-matchedvis="0" # integer
+matchedvis="1" # integer
 
 # dynamic viscosity ratio, phase +1 over phase -1 (not considered when non-newtonian is enabled)
-visr="0.1" # real (double)
+visr="1.0" # real (double)
 
 #non-newtonian phase, 0 deactivaed, 1 phase=+1 is non-newtonian (Carreau model)
 non_newtonian="0" # integer
@@ -219,10 +219,10 @@ muinfmuzero="0.1"
 exp_non_new="0.9"
 
 # Weber number
-We="0.0155" # real (double)
+We="1.0" # real (double)
 
 # Cahn number
-Ch="0.01" # real (double)
+Ch="0.02" # real (double)
 
 # Peclet number
 Pe="100.0" # real (double)
@@ -265,7 +265,7 @@ stuart="1.0" # real (double)
 # 8: 2x 2D Droplets in kissing mode. (radius, ygap , zgap)
 # 9: Layer of phi=+1 (mean height, thickness)
 in_condphi="3" # integer
-radius="0.4" # real (double)
+radius="0.5" # real (double)
 height="0.0" # real (double)
 wave_amp_x="0.0" # real (double)
 wave_freq_x="0.0" # real (double)
@@ -296,13 +296,12 @@ buoyancy="0" # integer
 
 # Surfactant only
 # surfactant flag, 0 : surfactant deactivated, 1 : surfactant activated
-psi_flag="0" # integer
+psi_flag="1" # integer
 
 # surfactant Peclet number
 Pe_psi="100.0" # real (double)
 
 # Ex number
-Ex="0.1" # real (double)
 
 # Pi number
 PI="1.689" # real (double)
@@ -318,9 +317,7 @@ El="0.5" # real (double)
 # 4: equilibrium profile multiplied with Z gradient
 # 5: Diffusion Test, angular distribuction
 # 6: read input from file (parallel read, fine grid)
-in_condpsi="2" # integer
 psi_mean="0.01" # real (double)
-psi_bulk="0.01" # real (double)
 
 # Temperature only
 # temperature flag, 0 : temperature deactivated, 1 : temperature activated
