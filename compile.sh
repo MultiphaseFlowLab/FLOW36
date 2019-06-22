@@ -302,9 +302,10 @@ psi_flag="1" # integer
 Pe_psi="100.0" # real (double)
 
 # Ex number
+Ex="0.117" # real (double)
 
 # Pi number
-PI="1.689" # real (double)
+PI="1.35" # real (double)
 
 # Elasticity number
 El="0.5" # real (double)
