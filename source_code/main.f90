@@ -14,7 +14,7 @@ use temperature
 use wavenumber
 
 #define machine machineflag
-#define particles particlescompflag
+#define particles particlecompflag
 
 integer :: i,j,k
 integer :: dims(2)
