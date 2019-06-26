@@ -3,7 +3,7 @@ module commondata
  integer, parameter :: nx=nnx, ny=nny, nz=nnz
  integer, parameter :: nycpu=nnycpu, nzcpu=nnzcpu
  integer :: rank,ntask,ntask_gl,ntask_sh
- integer :: nodes,leader
+ integer :: nodes,leader,flow_comm_lim
 ! optional parameter for MPI subroutine with USE MPI_F08, included so that the code is retrocompatible with USE MPI
  integer :: ierr
 ! for use mpi_f08

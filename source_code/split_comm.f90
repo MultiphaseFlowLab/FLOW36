@@ -107,6 +107,13 @@ call mpi_comm_rank(mpi_comm_world,rank,ierr)
   ntask=ntask_gl
 #endif
 
+! rank<flow_comm_lim belongs to flow_comm
+if(nodes.gt.1)then
+  flow_comm_lim=leader
+elseif(nodes.eq.0)then
+  flow_comm_lim=ntask_sh
+endif
+
 
 return
 end subroutine
