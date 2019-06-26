@@ -11,6 +11,7 @@ use phase_field
 use stats
 use surfactant
 use temperature
+use particle
 use wavenumber
 
 #define machine machineflag
@@ -162,6 +163,8 @@ else
   call wave_numbers
 
 
+! executed only by flow_comm
+if(rank.lt.flow_comm_lim)then
   ! initialize flow field according to initial condition provided
   ! allocate velocity matrices in physical and modal space
   call initialize
@@ -184,7 +187,6 @@ else
 #if stat_dump > 0
     call initialize_stats
 #endif
-
 
 
   ! save initial fields
@@ -241,6 +243,14 @@ else
 
 if(restart.eq.0)then
   if(rank.eq.0) call initialize_check(int_1)
+endif
+
+endif
+
+if(rank.ge.leader.and.part_flag.eq.1)then
+! executed only by part_comm
+  call initialize_particle
+
 endif
 
   gstime=mpi_wtime()
@@ -475,6 +485,14 @@ endif
 #if particles == 1
   call mpi_comm_free(part_comm,ierr)
   call mpi_comm_free(comm_comm,ierr)
+  ! call free(xp)
+  ! call free(up)
+  ! call free(uf)
+  ! call free(vf)
+  ! call free(wf)
+  ! call free(fb_x)
+  ! call free(fb_y)
+  ! call free(fb_z)
 #endif
 
 endif

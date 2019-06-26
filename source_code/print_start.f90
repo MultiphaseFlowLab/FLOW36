@@ -6,6 +6,7 @@ use phase_field
 use stats
 use surfactant
 use temperature
+use particle
 
 write(*,*)
 write(*,*) '-----------------------------------------------------------------------'
@@ -190,6 +191,12 @@ if(theta_flag.eq.1)then
 #endif
  write(*,'(1x,a40,es8.1)') 'Ra : ',Ra
  write(*,'(1x,a40,f8.3)') 'Pr : ',Pr
+endif
+
+if(part_flag.eq.1)then
+ write(*,'(1x,a)') 'Particle parameters'
+ write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
+ write(*,'(1x,a40,f12.4)') 'St : ',stokes
 endif
 
 write(*,*) '-----------------------------------------------------------------------'

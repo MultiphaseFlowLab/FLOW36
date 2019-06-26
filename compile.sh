@@ -352,6 +352,8 @@ boussinnesq="0" # integer
 
 # Lagrangian Particle Tracking only
 part_flag="1" # integer
+part_number="1000" # integer
+stokes="1.0" # real (double)
 
 # end of parameters declaration
 echo ""
@@ -499,6 +501,9 @@ sed -i "" "s/Dboundary/$D/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/Eboundary/$E/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
 else
 sed -i "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
@@ -560,6 +565,9 @@ sed -i "s/Dboundary/$D/g" ./set_run/sc_compiled/input.f90
 sed -i "s/Eboundary/$E/g" ./set_run/sc_compiled/input.f90
 sed -i "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
 sed -i "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
+sed -i "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
+sed -i "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
 fi
 # end of input file editing
 
@@ -615,6 +623,7 @@ cp ./source_code/define_dual_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/swap_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 cp ./source_code/split_comm.f90 ./set_run/sc_compiled/
+cp ./source_code/initialize_particle.f90 ./set_run/sc_compiled/
 
 
 cp -r ./paraview_output_fg ./set_run

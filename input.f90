@@ -66,4 +66,8 @@ Cboundary                       ! boundary condition at z=-1
 Dboundary                       ! boundary condition at z=+1
 Eboundary                       ! boundary condition at z=+1
 Fboundary                       ! boundary condition at z=+1
-tempinitial_condition            ! initial condition on temperature
+tempinitial_condition           ! initial condition on temperature
+! Lagrangian particle tracking variables
+particleflag                    ! 1: particles activated, 0: no particles
+particlenumber                  ! total number of particles
+partstokes                      ! Stokes number of the particle

@@ -95,6 +95,15 @@ end module temperature
 
 
 
+module particle
+ integer :: part_flag,part_number
+ double precision :: stokes
+ double precision, pointer, dimension(:,:) :: xp,up
+ double precision, pointer, dimension(:,:,:) :: uf,vf,wf,fb_x,fb_y,fb_z
+end module particle
+
+
+
 module velocity_old
  ! store velocities at t=n-1, needed for non-linear part of time derivatives for non-matched densities case
  double precision, allocatable :: ucp(:,:,:,:), vcp(:,:,:,:), wcp(:,:,:,:)
