@@ -2,7 +2,8 @@ module commondata
  implicit none
  integer, parameter :: nx=nnx, ny=nny, nz=nnz
  integer, parameter :: nycpu=nnycpu, nzcpu=nnzcpu
- integer :: rank, ntask
+ integer :: rank,ntask,ntask_gl,ntask_sh
+ integer :: nodes,leader
 ! optional parameter for MPI subroutine with USE MPI_F08, included so that the code is retrocompatible with USE MPI
  integer :: ierr
 ! for use mpi_f08
