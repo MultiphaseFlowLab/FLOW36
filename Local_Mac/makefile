@@ -67,7 +67,8 @@ FLWOBJS = \
 ./set_run/sc_compiled/define_address.f90 \
 ./set_run/sc_compiled/define_dual_grid.f90 \
 ./set_run/sc_compiled/swap_grid.f90 \
-./set_run/sc_compiled/shrink.f90
+./set_run/sc_compiled/shrink.f90 \
+./set_run/sc_compiled/split_comm.f90
 
 
 

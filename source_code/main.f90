@@ -14,6 +14,7 @@ use temperature
 use wavenumber
 
 #define machine machineflag
+#define particles particlescompflag
 
 integer :: i,j,k
 integer :: dims(2)
@@ -37,14 +38,7 @@ logical :: periodic(2), reorder
 call mpi_init(ierr)
 
 
-
-
-! duplicate communicator, only temporary until particle part done
-call mpi_comm_dup(mpi_comm_world,flow_comm,ierr)
-
-! query number of MPI processes, assign rank number
-call mpi_comm_size(mpi_comm_world,ntask,ierr)
-call mpi_comm_rank(mpi_comm_world,rank,ierr)
+call split_comm
 
 
 ! check min(nx,ny,nz)>=max(nycpu,nzcpu)
@@ -465,14 +459,23 @@ endif
 
   if(sp_save_comm.ne.MPI_comm_null) then
     call mpi_type_free(stype,ierr)
+    call mpi_comm_free(sp_save_comm,ierr)
   endif
 
   if(sp_save_comm_fg.ne.MPI_comm_null) then
     call mpi_type_free(stype_fg,ierr)
+    call mpi_comm_free(sp_save_comm_fg,ierr)
   endif
 
   ! destroy cartesian communicator
   call mpi_comm_free(cart_comm,ierr)
+
+  ! free all group communicators
+  call mpi_comm_free(flow_comm,ierr)
+#if particles == 1
+  call mpi_comm_free(part_comm,ierr)
+  call mpi_comm_free(comm_comm,ierr)
+#endif
 
 endif
 

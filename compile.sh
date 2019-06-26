@@ -350,6 +350,9 @@ temp_mean="0.0" # real (double)
 # uses same gravity array as defined in the phase field part
 boussinnesq="0" # integer
 
+# Lagrangian Particle Tracking only
+part_flag="1" # integer
+
 # end of parameters declaration
 echo ""
 echo "       FFFFFFF  L        OOO   W           W           333      666"
@@ -611,6 +614,7 @@ cp ./source_code/define_address.f90 ./set_run/sc_compiled/
 cp ./source_code/define_dual_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/swap_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/shrink.f90 ./set_run/sc_compiled/
+cp ./source_code/split_comm.f90 ./set_run/sc_compiled/
 
 
 cp -r ./paraview_output_fg ./set_run
@@ -738,6 +742,8 @@ sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -802,6 +808,8 @@ sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
 fi
 
 if [ "$machine" == "4" ]; then
