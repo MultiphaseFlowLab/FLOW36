@@ -90,8 +90,8 @@ fftw_flag="0"
 
 # number of grid points (edit only exponent)
 ix="1" # integer
-iy="9" # integer
-iz="9" # integer
+iy="7" # integer
+iz="7" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -182,7 +182,7 @@ bc_lb="0" # integer
 
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="1" # integer
+phi_flag="0" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF

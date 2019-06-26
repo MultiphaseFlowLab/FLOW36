@@ -37,6 +37,11 @@ logical :: periodic(2), reorder
 call mpi_init(ierr)
 
 
+
+
+! duplicate communicator, only temporary until particle part done
+call mpi_comm_dup(mpi_comm_world,flow_comm,ierr)
+
 ! query number of MPI processes, assign rank number
 call mpi_comm_size(mpi_comm_world,ntask,ierr)
 call mpi_comm_rank(mpi_comm_world,rank,ierr)
@@ -69,7 +74,7 @@ else
   periodic(2)=.true.
   reorder=.false.
 
-  call mpi_cart_create(mpi_comm_world,2,dims,periodic,reorder,cart_comm,ierr)
+  call mpi_cart_create(flow_comm,2,dims,periodic,reorder,cart_comm,ierr)
 
 
   ! create derived datatype used in MPI I/O and commit it

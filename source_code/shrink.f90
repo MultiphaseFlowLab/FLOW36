@@ -203,7 +203,7 @@ if((sx1.ne.-1).and.(sy1.ne.-1)) then
   color=1
 endif
 
-call mpi_comm_split(mpi_comm_world,color,0,sp_save_comm,ierr)
+call mpi_comm_split(flow_comm,color,0,sp_save_comm,ierr)
 
 
 ! old method, saves variable with aliased modes, now fiel size reduced to 30%
@@ -306,7 +306,7 @@ if((sx1_fg.ne.-1).and.(sy1_fg.ne.-1)) then
   color=1
 endif
 
-call mpi_comm_split(mpi_comm_world,color,0,sp_save_comm_fg,ierr)
+call mpi_comm_split(flow_comm,color,0,sp_save_comm_fg,ierr)
 
 
 return
