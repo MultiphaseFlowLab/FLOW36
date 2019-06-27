@@ -58,7 +58,7 @@ else
   ! define array sizes
   call define_sizes
 
-
+if(rank.lt.flow_comm_lim)then
   ! create cartesian communicator
   dims(1)=nzcpu
   dims(2)=nycpu
@@ -114,7 +114,7 @@ else
 
 ! define dual grid communication pattern
   call define_address
-
+endif
 
   ! create fftw plans
   if(rank.eq.0) then

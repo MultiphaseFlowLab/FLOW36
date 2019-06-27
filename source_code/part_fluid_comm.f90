@@ -2,28 +2,92 @@ subroutine get_velocity
 
 use mpi
 use commondata
+use velocity
 use particle
+use comm_pattern
 
+integer :: i,number
+double precision, allocatable :: bufs(:,:,:),bufr(:,:,:,:)
+
+
+if(rank.eq.leader) allocate(bufr(chunk_size(1),chunk_size(2),chunk_size(3),chunk_size(4)))
+
+number=chunk_size(1)*chunk_size(2)*chunk_size(3)
 
 ! get velocity, only ranks in comm_comm are involved
-if(leader.eq.0)then
- ! everyone execute: comm_comm=mpi_comm_world
-
-
-else
- ! only ranks in comm_comm execute
- if(rank.le.leader)then
-
+! send u
+if(rank.le.flow_comm_lim)then
+ allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3)))
+ bufs=0.0d0
+ if(rank.lt.flow_comm_lim)then
+  bufs(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))=u
  endif
+ call mpi_gather(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
+ deallocate(bufs)
 endif
-
 
 ! synchronization barrier
 if(rank.ge.leader)then
+ if(rank.eq.leader)then
+  ! write data
+  do i=1,flow_comm_lim
+   uf(:,address_start(i,2)+1:address_start(i,2)+saved_size(i,2),address_start(i,3)+1:address_start(i,3)+saved_size(i,3))= &
+ &       bufr(:,1:saved_size(i,2),1:saved_size(i,3),i)
+  enddo
+ endif
  call mpi_win_fence(0,window_u,ierr)
+endif
+
+
+! send v
+if(rank.le.flow_comm_lim)then
+ allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3)))
+ bufs=0.0d0
+ if(rank.lt.flow_comm_lim)then
+  bufs(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))=v
+ endif
+ call mpi_gather(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
+ deallocate(bufs)
+endif
+
+! synchronization barrier
+if(rank.ge.leader)then
+ if(rank.eq.leader)then
+  ! write data
+  do i=1,flow_comm_lim
+   vf(:,address_start(i,2)+1:address_start(i,2)+saved_size(i,2),address_start(i,3)+1:address_start(i,3)+saved_size(i,3))= &
+ &       bufr(:,1:saved_size(i,2),1:saved_size(i,3),i)
+  enddo
+ endif
  call mpi_win_fence(0,window_v,ierr)
+endif
+
+
+! send w
+if(rank.le.flow_comm_lim)then
+ allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3)))
+ bufs=0.0d0
+ if(rank.lt.flow_comm_lim)then
+  bufs(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))=w
+ endif
+ call mpi_gather(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
+ deallocate(bufs)
+endif
+
+! synchronization barrier
+if(rank.ge.leader)then
+ if(rank.eq.leader)then
+  ! write data
+  do i=1,flow_comm_lim
+   wf(:,address_start(i,2)+1:address_start(i,2)+saved_size(i,2),address_start(i,3)+1:address_start(i,3)+saved_size(i,3))= &
+ &       bufr(:,1:saved_size(i,2),1:saved_size(i,3),i)
+  enddo
+  deallocate(bufr)
+ endif
  call mpi_win_fence(0,window_w,ierr)
 endif
+
+! if(rank.eq.leader+1) write(*,*) maxval(uf),minval(uf),shape(uf)
 
 return
 end subroutine
@@ -32,6 +96,11 @@ end subroutine
 
 subroutine get_2WCforces
 
+use mpi
+use commondata
+! use velocity
+use particle
+use comm_pattern
 
 
 
@@ -42,6 +111,7 @@ end
 
 subroutine create_communication_pattern
 
+use mpi
 use commondata
 use particle
 use comm_pattern
