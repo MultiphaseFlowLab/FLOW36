@@ -637,6 +637,7 @@ cp ./source_code/swap_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 cp ./source_code/split_comm.f90 ./set_run/sc_compiled/
 cp ./source_code/initialize_particle.f90 ./set_run/sc_compiled/
+cp ./source_code/part_fluid_comm.f90 ./set_run/sc_compiled/
 
 
 cp -r ./paraview_output_fg ./set_run
@@ -680,7 +681,7 @@ fi
 if [ "$psi_flag" == "1" ]; then
   if [ "$in_condpsi" == "0" ]; then
     echo "$psi_mean                         ! mean surfactant" > ./set_run/sc_compiled/input_surfactant.f90
-  elif [ "$in_condpsi" -ge "2" ] && [ "$in_condpsi" -le "5" ]; then
+  elif [[ "$in_condpsi" -ge "2"  &&  "$in_condpsi" -le "5" ]]; then
     echo "$psi_bulk                         ! bulk surfactant" > ./set_run/sc_compiled/input_surfactant.f90
   fi
 fi

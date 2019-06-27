@@ -152,13 +152,22 @@ subroutine initialize_particle
 
 use mpi
 use commondata
+use sim_par
 use particle
 
 
 ! initialize particle position
 if(in_cond_part_pos.eq.0)then
   if(rank.eq.0) write(*,*) 'Initialize random particle position'
-
+  if(rank.eq.leader)then
+   call random_number(xp)
+   ! position in plus units, x,y,z
+   xp(:,1)=xp(:,1)*xl*re
+   xp(:,2)=xp(:,2)*yl*re
+   xp(:,3)=(2.0d0*xp(:,3)-1.0d0)*re
+  endif
+  ! synchronize shared memory window
+  if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
 else
   if(rank.eq.0) write(*,*) 'Dafuq? Check in_cond input value'
   stop
@@ -167,15 +176,30 @@ endif
 ! initialize particle velocity
 if(in_cond_part_vel.eq.0)then
   if(rank.eq.0) write(*,*) 'Initialize zero particle velocity'
-
+  if(rank.ge.leader)then
+    up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=7.0d0
+    call mpi_win_fence(0,window_up,ierr)
+  endif
 elseif(in_cond_part_vel.eq.1)then
   if(rank.eq.0) write(*,*) 'Initialize fluid velocity at particle position'
+  ! get fluid velocity
+  call get_velocity
 
 else
   if(rank.eq.0) write(*,*) 'Dafuq? Check in_cond input value'
   stop
 endif
 
+
+
+! ! debug only
+! if(rank_loc.eq.2)then
+!  open(456,file='./results/part.dat',status='new',form='formatted')
+!  do i=1,part_number
+!   write(456,'(3(2x,f12.4),4x,3(2x,f12.4))') xp(i,:),up(i,:)
+!  enddo
+!  close(456,status='keep')
+! endif
 
 return
 end
