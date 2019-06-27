@@ -155,10 +155,12 @@ use commondata
 use sim_par
 use particle
 
+! get fluid velocity for initial tracking
+call get_velocity
 
 ! initialize particle position
 if(in_cond_part_pos.eq.0)then
-  if(rank.eq.0) write(*,*) 'Initialize random particle position'
+  if(rank.eq.0) write(*,*) 'Initializing random particle position'
   if(rank.eq.leader)then
    call random_number(xp)
    ! position in plus units, x,y,z
@@ -175,15 +177,14 @@ endif
 
 ! initialize particle velocity
 if(in_cond_part_vel.eq.0)then
-  if(rank.eq.0) write(*,*) 'Initialize zero particle velocity'
+  if(rank.eq.0) write(*,*) 'Initializing zero particle velocity'
   if(rank.ge.leader)then
-    up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=7.0d0
+    up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=0.0d0
     call mpi_win_fence(0,window_up,ierr)
   endif
 elseif(in_cond_part_vel.eq.1)then
-  if(rank.eq.0) write(*,*) 'Initialize fluid velocity at particle position'
-  ! get fluid velocity
-  call get_velocity
+  if(rank.eq.0) write(*,*) 'Initializing fluid velocity at particle position'
+
 
 else
   if(rank.eq.0) write(*,*) 'Dafuq? Check in_cond input value'

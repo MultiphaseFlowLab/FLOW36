@@ -89,9 +89,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="1" # integer
-iy="7" # integer
-iz="7" # integer
+ix="5" # integer
+iy="5" # integer
+iz="5" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -101,8 +101,8 @@ exp_z="2" # integer, (2**iz)*exp_z+1
 NX="$((2**$ix))"
 NY="$((2**$iy))"
 NZ="$(((2**$iz)+1))"
-NYCPU="1" # integer
-NZCPU="4" # integer
+NYCPU="3" # integer
+NZCPU="2" # integer
 
 NNT="$(($NYCPU*$NZCPU))"
 
@@ -362,7 +362,7 @@ in_cond_part_pos="0" # integer
 # initial conditions for the particle velocity
 # 0 : zero velocity
 # 1 : fluid velocity at particle position
-in_cond_part_vel="0" # integer
+in_cond_part_vel="1" # integer
 
 # end of parameters declaration
 echo ""

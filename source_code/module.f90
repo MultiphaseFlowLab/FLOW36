@@ -162,3 +162,10 @@ module shrink_grid
  integer, dimension(3) :: dimc,dimc_fg
  integer :: up,up_fg
 end module shrink_grid
+
+
+
+module comm_pattern
+ integer, dimension(4) :: chunk_size
+ integer, allocatable, dimension(:,:) ::saved_size,address_start
+end module comm_pattern

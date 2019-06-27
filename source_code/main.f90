@@ -13,6 +13,7 @@ use surfactant
 use temperature
 use particle
 use wavenumber
+use comm_pattern
 
 #define machine machineflag
 #define particles particlecompflag
@@ -250,7 +251,7 @@ endif
 if(part_flag.eq.1)then
   ! executed only by part_comm, allocates variables
   if(rank.ge.leader) call allocate_particle
-  ! get velocity for initial tracking
+  call create_communication_pattern
   call initialize_particle
 endif
 
@@ -500,6 +501,7 @@ endif
    call mpi_win_free(window_fy,ierr)
    call mpi_win_free(window_fz,ierr)
    deallocate(part_index)
+   deallocate(saved_size,address_start)
   endif
   ! call free(xp)
   ! call free(up)
