@@ -102,6 +102,72 @@ use commondata
 use particle
 use comm_pattern
 
+integer :: i,number
+double precision, allocatable :: bufs(:,:,:,:),bufr(:,:,:)
+
+
+number=chunk_size(1)*chunk_size(2)*chunk_size(3)
+
+! fill in Fb_x
+if(rank.eq.leader)then
+ allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3),chunk_size(4)))
+ bufs=0.0d0
+ do i=1,flow_comm_lim
+  bufs(:,1:saved_size(i,2),1:saved_size(i,3),i)= &
+ & fb_x(:,address_start(i,2)+1:address_start(i,2)+saved_size(i,2),address_start(i,3)+1:address_start(i,3)+saved_size(i,3))
+ enddo
+endif
+
+if(rank.le.flow_comm_lim)then
+ allocate(bufr(chunk_size(1),chunk_size(2),chunk_size(3)))
+ bufr=0.0d0
+ call mpi_scatter(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
+ ! write bufr to force matrix
+ !var(...)=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ deallocate(bufr)
+endif
+
+! fill in Fb_y
+if(rank.eq.leader)then
+ allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3),chunk_size(4)))
+ bufs=0.0d0
+ do i=1,flow_comm_lim
+  bufs(:,1:saved_size(i,2),1:saved_size(i,3),i)= &
+ & fb_y(:,address_start(i,2)+1:address_start(i,2)+saved_size(i,2),address_start(i,3)+1:address_start(i,3)+saved_size(i,3))
+ enddo
+endif
+
+if(rank.le.flow_comm_lim)then
+ allocate(bufr(chunk_size(1),chunk_size(2),chunk_size(3)))
+ bufr=0.0d0
+ call mpi_scatter(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
+ ! write bufr to force matrix
+ !var(...)=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ deallocate(bufr)
+endif
+
+! fill in Fb_z
+if(rank.eq.leader)then
+ allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3),chunk_size(4)))
+ bufs=0.0d0
+ do i=1,flow_comm_lim
+  bufs(:,1:saved_size(i,2),1:saved_size(i,3),i)= &
+ & fb_z(:,address_start(i,2)+1:address_start(i,2)+saved_size(i,2),address_start(i,3)+1:address_start(i,3)+saved_size(i,3))
+ enddo
+endif
+
+if(rank.le.flow_comm_lim)then
+ allocate(bufr(chunk_size(1),chunk_size(2),chunk_size(3)))
+ bufr=0.0d0
+ call mpi_scatter(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
+ ! write bufr to force matrix
+ !var(...)=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ deallocate(bufr)
+endif
+
+
+
+if(rank.eq.leader) deallocate(bufs)
 
 
 return
