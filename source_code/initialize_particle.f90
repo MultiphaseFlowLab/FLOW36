@@ -111,9 +111,7 @@ allocate(part_index(ntask_sh,2))
 ! part index: from start_index+1 to start_index+delta
 ! -first column: start_index
 ! -second column: range of particles for each core (delta)
-
-
-
+! each rank works on part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
 
 delta=mod(part_number,ntask_sh)
 range=int((part_number-delta)/ntask_sh)
@@ -125,6 +123,12 @@ enddo
 do i=2,ntask_sh
   part_index(i,1)=part_index(i-1,1)+part_index(i-1,2)
 enddo
+
+
+
+
+
+
 
 
 ! is it ok to use multiple shared windows? could it happen that they overwrite each other?
