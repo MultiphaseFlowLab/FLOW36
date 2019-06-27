@@ -197,6 +197,18 @@ if(part_flag.eq.1)then
  write(*,'(1x,a)') 'Particle parameters'
  write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
  write(*,'(1x,a40,f12.4)') 'St : ',stokes
+ if(in_cond_part_pos.eq.0)then
+  write(*,'(1x,a)') 'Initialize random particle position'
+ else
+  write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
+ endif
+ if(in_cond_part_vel.eq.0)then
+  write(*,'(1x,a)') 'Initialize zero particle velocity'
+ elseif(in_cond_part_vel.eq.1)then
+  write(*,'(1x,a)') 'Initialize fluid velocity at particle position'
+ else
+  write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
+ endif
 endif
 
 write(*,*) '-----------------------------------------------------------------------'

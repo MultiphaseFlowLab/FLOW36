@@ -87,6 +87,8 @@ double precision :: Lx,Ly
  read(66,'(i8)') part_flag
  read(66,'(i12)') part_number
  read(66,'(f16.6)') stokes
+ read(66,'(i8)') in_cond_part_pos
+ read(66,'(i8)') in_cond_part_vel
 
  r_theta=r_theta*dble(nx*ny)
 
@@ -97,6 +99,9 @@ double precision :: Lx,Ly
   in_cond_phi=1
   in_cond_psi=6
   in_cond_theta=1
+  ! to be modified, put read input files condition
+  in_cond_part_pos=10
+  in_cond_part_vel=10
  endif
 
  if((match_dens.eq.1).and.(abs(rhor-1.0d0).lt.0.00000001))then

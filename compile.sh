@@ -355,6 +355,15 @@ part_flag="1" # integer
 part_number="1000" # integer
 stokes="1.0" # real (double)
 
+# initial conditions for the particle position
+# 0 : initialize random position
+in_cond_part_pos="0" # integer
+
+# initial conditions for the particle velocity
+# 0 : zero velocity
+# 1 : fluid velocity at particle position
+in_cond_part_vel="0" # integer
+
 # end of parameters declaration
 echo ""
 echo "       FFFFFFF  L        OOO   W           W           333      666"
@@ -504,6 +513,8 @@ sed -i "" "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.
 sed -i "" "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 else
 sed -i "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
@@ -568,6 +579,8 @@ sed -i "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
 sed -i "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
+sed -i "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
+sed -i "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 fi
 # end of input file editing
 

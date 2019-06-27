@@ -54,6 +54,7 @@ call mpi_comm_rank(mpi_comm_world,rank,ierr)
   if(rank.ge.leader)then
     call mpi_comm_split_type(part_comm,mpi_comm_type_shared,rank,mpi_info_null,shmem_comm,ierr)
     call mpi_comm_size(shmem_comm,check_task,ierr)
+    call mpi_comm_rank(part_comm,rank_loc,ierr)
     if(check_task.ne.ntask_sh)then
       write(*,*) 'Particle communicator is not a shared memory communicator, stopping'
       call exit(0)

@@ -247,10 +247,11 @@ endif
 
 endif
 
-if(rank.ge.leader.and.part_flag.eq.1)then
-! executed only by part_comm
+if(part_flag.eq.1)then
+  ! executed only by part_comm, allocates variables
+  if(rank.ge.leader) call allocate_particle
+  ! get velocity for initial tracking
   call initialize_particle
-
 endif
 
   gstime=mpi_wtime()
@@ -485,6 +486,21 @@ endif
 #if particles == 1
   call mpi_comm_free(part_comm,ierr)
   call mpi_comm_free(comm_comm,ierr)
+  if(rank.ge.leader)then
+   call mpi_win_fence(0,window_u,ierr)
+   call mpi_win_fence(0,window_v,ierr)
+   call mpi_win_fence(0,window_w,ierr)
+   call mpi_win_fence(0,window_fx,ierr)
+   call mpi_win_fence(0,window_fy,ierr)
+   call mpi_win_fence(0,window_fz,ierr)
+   call mpi_win_free(window_u,ierr)
+   call mpi_win_free(window_v,ierr)
+   call mpi_win_free(window_w,ierr)
+   call mpi_win_free(window_fx,ierr)
+   call mpi_win_free(window_fy,ierr)
+   call mpi_win_free(window_fz,ierr)
+   deallocate(part_index)
+  endif
   ! call free(xp)
   ! call free(up)
   ! call free(uf)

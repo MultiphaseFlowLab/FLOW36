@@ -71,3 +71,5 @@ tempinitial_condition           ! initial condition on temperature
 particleflag                    ! 1: particles activated, 0: no particles
 particlenumber                  ! total number of particles
 partstokes                      ! Stokes number of the particle
+incondpartpos                   ! particle initial condition position
+incondpartvel                   ! particle initial condition velocity

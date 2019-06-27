@@ -2,7 +2,7 @@ module commondata
  implicit none
  integer, parameter :: nx=nnx, ny=nny, nz=nnz
  integer, parameter :: nycpu=nnycpu, nzcpu=nnzcpu
- integer :: rank,ntask,ntask_gl,ntask_sh
+ integer :: rank,ntask,ntask_gl,ntask_sh,rank_loc
  integer :: nodes,leader,flow_comm_lim
 ! optional parameter for MPI subroutine with USE MPI_F08, included so that the code is retrocompatible with USE MPI
  integer :: ierr
@@ -96,10 +96,13 @@ end module temperature
 
 
 module particle
- integer :: part_flag,part_number
+ integer :: part_flag,part_number,in_cond_part_pos,in_cond_part_vel
+ integer, allocatable, dimension(:,:) :: part_index
  double precision :: stokes
  double precision, pointer, dimension(:,:) :: xp,up
  double precision, pointer, dimension(:,:,:) :: uf,vf,wf,fb_x,fb_y,fb_z
+ ! mpi shared memory synchronization windows
+ integer :: window_u,window_v,window_w,window_fx,window_fy,window_fz,window_xp,window_up
 end module particle
 
 
