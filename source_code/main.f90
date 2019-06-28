@@ -484,9 +484,9 @@ endif
   ! free all group communicators
   if(rank.lt.flow_comm_lim) call mpi_comm_free(flow_comm,ierr)
 #if particles == 1
-  if(rank.ge.leader) call mpi_comm_free(part_comm,ierr)
   if(rank.le.flow_comm_lim) call mpi_comm_free(comm_comm,ierr)
   if(rank.ge.leader)then
+   call mpi_comm_free(part_comm,ierr)
    call mpi_win_fence(0,window_u,ierr)
    call mpi_win_fence(0,window_v,ierr)
    call mpi_win_fence(0,window_w,ierr)
