@@ -94,7 +94,7 @@ call mpi_comm_rank(mpi_comm_world,rank,ierr)
     do i=2,leader+1
       list_rank(i)=list_rank(i-1)+1
     enddo
-    call mpi_group_incl(group_w,flow_comm_lim+1,list_rank,group_l,ierr)
+    call mpi_group_incl(group_w,leader+1,list_rank,group_l,ierr)
     deallocate(list_rank)
     call mpi_comm_create(mpi_comm_world,group_l,comm_comm,ierr)
     call mpi_group_free(group_l,ierr)
