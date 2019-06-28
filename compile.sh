@@ -98,10 +98,6 @@ exp_x="1" # integer, (2**ix)*exp_x
 exp_y="2" # integer, (2**iy)*exp_y
 exp_z="2" # integer, (2**iz)*exp_z+1
 
-NX="$((2**$ix))"
-NY="$((2**$iy))"
-NZ="$(((2**$iz)+1))"
-
 # parallelization strategy
 NYCPU="3" # integer
 NZCPU="2" # integer
@@ -442,6 +438,10 @@ fi
 cp ./restart_copy.sh ./set_run/results/backup/
 mkdir ./set_run/sc_compiled
 
+# grid size
+NX="$((2**$ix))"
+NY="$((2**$iy))"
+NZ="$(((2**$iz)+1))"
 
 # set total number of MPI processes requested
 if [[ "$multinode" == "1" && "$part_flag" == 1 ]]; then
