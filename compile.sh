@@ -106,7 +106,7 @@ NZ="$(((2**$iz)+1))"
 NYCPU="3" # integer
 NZCPU="2" # integer
 # running on single shared memory environment (0) or on many (1)
-multinode="1" # integer
+multinode="0" # integer
 # number of MPI processes per node
 nodesize="68" # integer
 
