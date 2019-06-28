@@ -98,7 +98,7 @@ subroutine get_2WCforces
 
 use mpi
 use commondata
-! use velocity
+use velocity
 use particle
 use comm_pattern
 
@@ -123,7 +123,9 @@ if(rank.le.flow_comm_lim)then
  bufr=0.0d0
  call mpi_scatter(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
  ! write bufr to force matrix
- !var(...)=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ if(rank.lt.flow_comm_lim)then
+  forx=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ endif
  deallocate(bufr)
 endif
 
@@ -142,7 +144,9 @@ if(rank.le.flow_comm_lim)then
  bufr=0.0d0
  call mpi_scatter(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
  ! write bufr to force matrix
- !var(...)=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ if(rank.lt.flow_comm_lim)then
+  fory=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ endif
  deallocate(bufr)
 endif
 
@@ -161,10 +165,11 @@ if(rank.le.flow_comm_lim)then
  bufr=0.0d0
  call mpi_scatter(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
  ! write bufr to force matrix
- !var(...)=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ if(rank.lt.flow_comm_lim)then
+  forz=bufr(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))
+ endif
  deallocate(bufr)
 endif
-
 
 
 if(rank.eq.leader) deallocate(bufs)

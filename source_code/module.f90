@@ -41,6 +41,7 @@ module velocity
  double precision, allocatable, dimension(:,:,:,:) :: uc_fg, vc_fg, wc_fg
  double precision, allocatable :: wa2(:,:,:), wa3(:,:,:)
  double precision, allocatable, dimension(:,:,:,:) :: sgradpx,sgradpy
+ double precision, allocatable, dimension(:,:,:) :: forx,fory,forz
 end module velocity
 
 
