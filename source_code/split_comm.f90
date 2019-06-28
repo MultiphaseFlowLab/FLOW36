@@ -103,7 +103,7 @@ call mpi_comm_rank(mpi_comm_world,rank,ierr)
     call mpi_comm_dup(part_comm,comm_comm,ierr)
   endif
 #else
-  ! if no particles are used, duplicate mpi_comm_world
+  ! if no particles are used, duplicate mpi_comm_world and do not create particle communicators
   call mpi_comm_dup(mpi_comm_world,flow_comm,ierr)
   ntask=ntask_gl
 #endif
