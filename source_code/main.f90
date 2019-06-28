@@ -344,11 +344,11 @@ endif
      endif
 #endif
 #endif
-    endif
 
 #if phiflag == 1
-    call integral_phi(int_1)
+     call integral_phi(int_1)
 #endif
+    endif
 
     if(rank.eq.0) call sim_check(i,int_1)
 
