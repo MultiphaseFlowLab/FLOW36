@@ -101,10 +101,14 @@ exp_z="2" # integer, (2**iz)*exp_z+1
 NX="$((2**$ix))"
 NY="$((2**$iy))"
 NZ="$(((2**$iz)+1))"
+
+# parallelization strategy
 NYCPU="3" # integer
 NZCPU="2" # integer
-
-NNT="$(($NYCPU*$NZCPU))"
+# running on single shared memory environment (0) or on many (1)
+multinode="1" # integer
+# number of MPI processes per node
+nodesize="68" # integer
 
 # restart flag: 1 restart, 0 new simulation
 restart="0" # integer
@@ -438,6 +442,15 @@ fi
 cp ./restart_copy.sh ./set_run/results/backup/
 mkdir ./set_run/sc_compiled
 
+
+# set total number of MPI processes requested
+if [[ "$multinode" == "1" && "$part_flag" == 1 ]]; then
+ NNT="$(($NYCPU*$NZCPU+$nodesize))"
+elif [[ "$multinode" == "0"  && "$part_flag" == 1 ]]; then
+ NNT="$(($NYCPU*$NZCPU))"
+elif [ "$part_flag" == 1 ]; then
+ NNT="$(($NYCPU*$NZCPU))"
+fi
 
 # copy executable and edit it
 cp ./go.sh ./set_run
