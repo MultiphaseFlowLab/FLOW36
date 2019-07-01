@@ -795,6 +795,7 @@ sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
 sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -864,6 +865,7 @@ sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
 sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 fi
 
 if [ "$machine" == "4" ]; then

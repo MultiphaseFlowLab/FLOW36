@@ -172,7 +172,7 @@ if(in_cond_part_vel.eq.0)then
 elseif(in_cond_part_vel.eq.1)then
   if(rank.eq.0) write(*,*) 'Initializing fluid velocity at particle position'
   if(rank.ge.leader)then
-   do i=part_index(rank_loc+1,1),part_index(rank_loc+1,2)
+   do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,2)
     call lagran4(xp(i,:),up(i,:))
    enddo
    call mpi_win_fence(0,window_up,ierr)
