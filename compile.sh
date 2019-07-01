@@ -794,6 +794,7 @@ sed -i "" "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
 sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
@@ -870,6 +871,7 @@ sed -i "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
 sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
