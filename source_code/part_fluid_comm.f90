@@ -131,7 +131,6 @@ endif
 
 ! fill in Fb_y
 if(rank.eq.leader)then
- allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3),chunk_size(4)))
  bufs=0.0d0
  do i=1,flow_comm_lim
   bufs(:,1:saved_size(i,2),1:saved_size(i,3),i)= &
@@ -152,7 +151,6 @@ endif
 
 ! fill in Fb_z
 if(rank.eq.leader)then
- allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3),chunk_size(4)))
  bufs=0.0d0
  do i=1,flow_comm_lim
   bufs(:,1:saved_size(i,2),1:saved_size(i,3),i)= &

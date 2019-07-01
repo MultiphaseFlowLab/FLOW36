@@ -155,6 +155,8 @@ use commondata
 use sim_par
 use particle
 
+integer :: i
+
 ! get fluid velocity for initial tracking
 call get_velocity
 
@@ -166,7 +168,8 @@ if(in_cond_part_pos.eq.0)then
    ! position in plus units, x,y,z
    xp(:,1)=xp(:,1)*xl*re
    xp(:,2)=xp(:,2)*yl*re
-   xp(:,3)=(2.0d0*xp(:,3)-1.0d0)*re
+   xp(:,3)=(2.0d0*xp(:,3))*re   ! particles in [0,2*Re]
+   ! xp(:,3)=(2.0d0*xp(:,3)-1.0d0)*re    ! particles in [-Re,+Re]
   endif
   ! synchronize shared memory window
   if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
@@ -184,13 +187,22 @@ if(in_cond_part_vel.eq.0)then
   endif
 elseif(in_cond_part_vel.eq.1)then
   if(rank.eq.0) write(*,*) 'Initializing fluid velocity at particle position'
-
-
+  if(rank.ge.leader)then
+   do i=part_index(rank_loc+1,1),part_index(rank_loc+1,2)
+    call lagran4(xp(i,:),up(i,:))
+   enddo
+   call mpi_win_fence(0,window_up,ierr)
+  endif
 else
   if(rank.eq.0) write(*,*) 'Dafuq? Check in_cond input value'
   stop
 endif
 
+
+
+!!!!!! ONLY IFF 2 WAY COUPLING, INSERT FLAG
+! compute forces on fluid at particle position
+call get_2WCforces
 
 
 ! ! debug only

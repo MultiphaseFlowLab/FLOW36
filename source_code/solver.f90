@@ -213,6 +213,14 @@ endif
 ! particle part
 if(rank.ge.leader)then
 
+
+
+
+
+call get_velocity
+! protect with flag that checks for 2-WC
+call get_2WCforces
+
 endif
 
 

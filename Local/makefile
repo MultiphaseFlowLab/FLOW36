@@ -70,7 +70,8 @@ FLWOBJS = \
 ./set_run/sc_compiled/shrink.f90 \
 ./set_run/sc_compiled/split_comm.f90 \
 ./set_run/sc_compiled/initialize_particle.f90 \
-./set_run/sc_compiled/part_fluid_comm.f90
+./set_run/sc_compiled/part_fluid_comm.f90 \
+./set_run/sc_compiled/velocity_interpolator.f90
 
 
 MOD	=

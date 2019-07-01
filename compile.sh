@@ -651,6 +651,7 @@ cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 cp ./source_code/split_comm.f90 ./set_run/sc_compiled/
 cp ./source_code/initialize_particle.f90 ./set_run/sc_compiled/
 cp ./source_code/part_fluid_comm.f90 ./set_run/sc_compiled/
+cp ./source_code/velocity_interpolator.f90 ./set_run/sc_compiled/
 
 
 cp -r ./paraview_output_fg ./set_run
