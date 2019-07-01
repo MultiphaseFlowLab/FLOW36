@@ -60,7 +60,7 @@ call phys_to_spectral(fgradpy,sgradpy,0)
 ! declarations of differents initial conditions for velocity
 if(in_cond.eq.0)then
   if(rank.eq.0) write(*,*) 'Initializing zero flow field'
-  u=0.07d0
+  u=0.0d0
   v=0.0d0
   w=0.0d0
   ! transform physical variable to spectral space

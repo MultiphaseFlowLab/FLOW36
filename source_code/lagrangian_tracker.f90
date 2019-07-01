@@ -58,7 +58,6 @@ do i=0,ntask_sh-1
    ! fb_x=fb_x+something(j)
    ! fb_y=fb_y+something(j)
    ! fb_z=fb_z+something(j)
-   fb_x=7.0d0
   enddo
  endif
  ! synchronize windows
