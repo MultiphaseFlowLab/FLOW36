@@ -119,6 +119,7 @@ module mpiIO
  integer :: ftype,stype
  integer :: ftype_fg,stype_fg
  integer :: sp_save_comm,sp_save_comm_fg
+ integer :: part_save
 end module mpiIo
 
 

@@ -205,6 +205,44 @@ end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+subroutine write_output_part(var,nt,namevar)
+
+use mpi
+use mpiIO
+use commondata
+use particle
+
+integer :: nt
+integer :: f_handle ! file handle
+integer(mpi_offset_kind) :: offset
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+double precision :: var(part_number,3),varloc(part_index(rank_loc+1,2),3)
+
+write(time,'(I8.8)') nt
+
+fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
+
+offset=0
+varloc=var(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)
+
+call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+call mpi_file_close(f_handle,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 subroutine write_failure(nt)
 
 use commondata
@@ -213,6 +251,7 @@ use phase_field
 use sim_par
 use surfactant
 use temperature
+use particle
 
 use, intrinsic :: ISO_C_BINDING
 

@@ -16,7 +16,14 @@ use wavenumber
 use comm_pattern
 
 #define machine machineflag
+#define phiflag phicompflag
+#define psiflag psicompflag
+#define tempflag tempcompflag
+#define stat_dump stats_dump_frequency
 #define particles particlecompflag
+#define fdump physical_dump_frequency
+#define sdump spectral_dump_frequency
+
 
 integer :: i,j,k
 integer :: dims(2)
@@ -170,8 +177,6 @@ if(rank.lt.flow_comm_lim)then
   ! allocate velocity matrices in physical and modal space
   call initialize
 
-#define phiflag phicompflag
-#define psiflag psicompflag
 #if phiflag == 1
   call initialize_phi
 #if psiflag == 1
@@ -179,73 +184,27 @@ if(rank.lt.flow_comm_lim)then
 #endif
 #endif
 
-#define tempflag tempcompflag
 #if tempflag == 1
   call initialize_temp
 #endif
 
-#define stat_dump stats_dump_frequency
 #if stat_dump > 0
     call initialize_stats
 #endif
 
-
   ! save initial fields
   if(restart.eq.0)then
-    call spectral_to_phys(uc,u,0)
-    call spectral_to_phys(vc,v,0)
-    call spectral_to_phys(wc,w,0)
-    namevar='u'
-    call write_output(u,nstart,namevar)
-    namevar='v'
-    call write_output(v,nstart,namevar)
-    namevar='w'
-    call write_output(w,nstart,namevar)
-#if machine != 2 && machine != 5
-    namevar='uc'
-    call write_output_spectral(uc,nstart,namevar)
-    namevar='vc'
-    call write_output_spectral(vc,nstart,namevar)
-    namevar='wc'
-    call write_output_spectral(wc,nstart,namevar)
-#endif
-#if phiflag == 1
-    call spectral_to_phys(phic,phi,0)
-    namevar='phi'
-    call write_output(phi,nstart,namevar)
-#if machine != 2 && machine != 5
-    namevar='phic'
-    call write_output_spectral(phic,nstart,namevar)
-#endif
-#if psiflag == 1
-    call spectral_to_phys_fg(psic_fg,psi_fg,0)
-    namevar='psi'
-    call write_output_fg(psi_fg,nstart,namevar)
-#if machine != 2 && machine != 5
-    namevar='psic'
-    call write_output_spectral_fg(psic_fg,nstart,namevar)
-#endif
-#endif
-#endif
-#if tempflag == 1
-    call spectral_to_phys(thetac,theta,0)
-    namevar='T'
-    call write_output(theta,nstart,namevar)
-#if machine != 2 && machine != 5
-    namevar='Tc'
-    call write_output_spectral(thetac,nstart,namevar)
-#endif
-#endif
+   call save_flow_comm(nstart)
   endif
 
 #if phiflag == 1
   call integral_phi(int_1)
 #endif
 
-if(restart.eq.0)then
+ if(restart.eq.0)then
   if(rank.eq.0) call initialize_check(int_1)
-endif
-
+ endif
+! end of flow_comm only
 endif
 
 if(part_flag.eq.1)then
@@ -253,6 +212,13 @@ if(part_flag.eq.1)then
   if(rank.ge.leader) call allocate_particle
   call create_communication_pattern
   call initialize_particle
+  ! save particle data (part_comm)
+  if(rank.ge.leader)then
+   namevar='pos'
+   call write_output_part(xp,nstart,namevar)
+   namevar='vel'
+   call write_output_part(up,nstart,namevar)
+  endif
 endif
 
   gstime=mpi_wtime()
@@ -266,7 +232,6 @@ endif
 
     time=time+dt
 
-
     ! write to screen simulation status
     if(rank.eq.0)then
       write(*,*) '-----------------------------------------------------------------------'
@@ -276,79 +241,32 @@ endif
 
     call solver(i)
 
-
-   if(rank.lt.flow_comm_lim)then
+    ! save variables and stats (flow_comm)
+    if(rank.lt.flow_comm_lim)then
 #if stat_dump > 0
-    if(mod(i,stat_dump).eq.0.and.i.ge.stat_start.and.i.ne.nstart) then
+     if(mod(i,stat_dump).eq.0.and.i.ge.stat_start.and.i.ne.nstart) then
       if(rank.eq.0) write(*,*) 'writing statistics to file'
       call statistics
+     endif
+#endif
+     call save_flow_comm(i)
+    endif
+
+#if particles == 1
+    ! save particle data (part_comm)
+    if((rank.ge.leader).and. &
+ &     ((mod(i,ndump).eq.0.and.ndump.gt.0).or. &
+ &      (mod(i,sdump).eq.0.and.sdump.gt.0)).and.(i.ne.nstart))then
+     namevar='pos'
+     call write_output_part(xp,i,namevar)
+     namevar='vel'
+     call write_output_part(up,i,namevar)
     endif
 #endif
 
-#define fdump physical_dump_frequency
-#if fdump > 0
-     ! save fields at end of timestep according to ndump value
-     if(mod(i,ndump).eq.0.and.i.ne.nstart) then
-       if(rank.eq.0) write(*,*) 'saving solution in physical space'
-       call spectral_to_phys(uc,u,0)
-       namevar='u'
-       call write_output(u,i,namevar)
-       call spectral_to_phys(vc,v,0)
-       namevar='v'
-       call write_output(v,i,namevar)
-       call spectral_to_phys(wc,w,0)
-       namevar='w'
-       call write_output(w,i,namevar)
 #if phiflag == 1
-       call spectral_to_phys(phic,phi,0)
-       namevar='phi'
-       call write_output(phi,i,namevar)
-#if psiflag == 1
-       call spectral_to_phys_fg(psic_fg,psi_fg,0)
-       namevar='psi'
-       call write_output_fg(psi_fg,i,namevar)
+    if(rank.lt.flow_comm_lim) call integral_phi(int_1)
 #endif
-#endif
-#if tempflag == 1
-       call spectral_to_phys(thetac,theta,0)
-       namevar='T'
-       call write_output(theta,i,namevar)
-#endif
-     endif
-#endif
-
-#define sdump spectral_dump_frequency
-#if sdump > 0
-#if machine != 2 && machine != 5
-     ! save fields at end of timestep according to ndump value
-     if(mod(i,sdump).eq.0.and.i.ne.nstart) then
-       if(rank.eq.0) write(*,*) 'saving solution in spectral space'
-       namevar='uc'
-       call write_output_spectral(uc,i,namevar)
-       namevar='vc'
-       call write_output_spectral(vc,i,namevar)
-       namevar='wc'
-       call write_output_spectral(wc,i,namevar)
-#if phiflag == 1
-       namevar='phic'
-       call write_output_spectral(phic,i,namevar)
-#if psiflag == 1
-       namevar='psic'
-       call write_output_spectral_fg(psic_fg,i,namevar)
-#endif
-#endif
-#if tempflag == 1
-       namevar='Tc'
-       call write_output_spectral(thetac,i,namevar)
-#endif
-     endif
-#endif
-#endif
-
-#if phiflag == 1
-     call integral_phi(int_1)
-#endif
-    endif
 
     if(rank.eq.0) call sim_check(i,int_1)
 
@@ -369,7 +287,6 @@ endif
       call write_failure(i)
     endif
 
-
   enddo
 
   if(rank.eq.0)then
@@ -377,6 +294,7 @@ endif
     write(*,*) 'End of simulation'
   endif
 
+  ! write final fields if not already written
   if(rank.lt.flow_comm_lim)then
 #if stat_dump > 0
    if(mod(nend,stat_dump).ne.0) then
@@ -384,59 +302,18 @@ endif
    endif
    call del_old_stats
 #endif
-
-   if(mod(nend,ndump).ne.0.or.ndump.lt.0) then
-     if(rank.eq.0) write(*,*) 'Writing final fields in physical space'
-     call spectral_to_phys(uc,u,0)
-     namevar='u'
-     call write_output(u,nend,namevar)
-     call spectral_to_phys(vc,v,0)
-     namevar='v'
-     call write_output(v,nend,namevar)
-     call spectral_to_phys(wc,w,0)
-     namevar='w'
-     call write_output(w,nend,namevar)
-#if phiflag == 1
-     call spectral_to_phys(phic,phi,0)
-     namevar='phi'
-     call write_output(phi,nend,namevar)
-#if psiflag == 1
-     call spectral_to_phys_fg(psic_fg,psi_fg,0)
-     namevar='psi'
-     call write_output_fg(psi_fg,nend,namevar)
-#endif
-#endif
-#if tempflag == 1
-     call spectral_to_phys(thetac,theta,0)
-     namevar='T'
-     call write_output(theta,nend,namevar)
-#endif
-   endif
-
-#if machine != 2 && machine != 5
-   if(mod(nend,sdump).ne.0.or.sdump.lt.0) then
-     if(rank.eq.0) write(*,*) 'Writing final fields in spectral space'
-     namevar='uc'
-     call write_output_spectral(uc,nend,namevar)
-     namevar='vc'
-     call write_output_spectral(vc,nend,namevar)
-     namevar='wc'
-     call write_output_spectral(wc,nend,namevar)
-#if phiflag == 1
-     namevar='phic'
-     call write_output_spectral(phic,nend,namevar)
-#if psiflag == 1
-     namevar='psic'
-     call write_output_spectral_fg(psic_fg,nend,namevar)
-#endif
-#endif
-#if tempflag == 1
-     namevar='Tc'
-     call write_output_spectral(thetac,nend,namevar)
-#endif
-   endif
-#endif
+   call save_flow_comm_final(nend)
   endif
+
+  ! save final particle data if not already written
+  if((rank.ge.leader).and. &
+ &     ((mod(nend,ndump).ne.0.and.ndump.gt.0).or. &
+ &      (mod(nend,sdump).ne.0.and.sdump.gt.0)))then
+     namevar='pos'
+     call write_output_part(xp,nend,namevar)
+     namevar='vel'
+     call write_output_part(up,nend,namevar)
+    endif
 
   ! output to screen total time elapsed
   getime=mpi_wtime()
@@ -474,10 +351,10 @@ endif
    ! destroy cartesian communicator
    call mpi_comm_free(cart_comm,ierr)
   endif
+
   deallocate(kxpsi)
   deallocate(kypsi)
   deallocate(k2psi)
-
   ! destroy fftw plans
   call destroy_plan
 
@@ -499,6 +376,7 @@ endif
    call mpi_win_free(window_fx,ierr)
    call mpi_win_free(window_fy,ierr)
    call mpi_win_free(window_fz,ierr)
+   call mpi_type_free(part_save,ierr)
    deallocate(part_index)
    deallocate(saved_size,address_start)
   endif

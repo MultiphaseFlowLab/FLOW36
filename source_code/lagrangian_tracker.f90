@@ -11,7 +11,7 @@ integer :: i,j
 
 
 ! loop over particles
-do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,2)
+do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
   call lagran4(xp(i,:),up(i,:))
   ! tracers only
   xp(i,1)=xp(i,1)+dt*re*up(i,1)
@@ -53,7 +53,7 @@ fb_y=0.0d0
 fb_z=0.0d0
 do i=0,ntask_sh-1
  if(rank_loc.eq.i)then
-  do j=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,2)
+  do j=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
    ! add force contribution, to be filled in
    ! fb_x=fb_x+something(j)
    ! fb_y=fb_y+something(j)

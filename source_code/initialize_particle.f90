@@ -2,6 +2,7 @@ subroutine allocate_particle
 
 use, intrinsic :: iso_c_binding
 use mpi
+use mpiIO
 use commondata
 use particle
 
@@ -123,6 +124,12 @@ enddo
 do i=2,ntask_sh
   part_index(i,1)=part_index(i-1,1)+part_index(i-1,2)
 enddo
+
+! create MPI datatype to save particles data (position and velocity)
+call mpi_type_create_subarray(2,[part_number,3],[part_index(rank_loc+1,2),3], &
+ & [part_index(rank_loc+1,1),0],mpi_order_fortran,mpi_double_precision,part_save,ierr)
+
+call mpi_type_commit(part_save,ierr)
 
 
 return

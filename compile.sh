@@ -664,6 +664,7 @@ cp ./source_code/initialize_particle.f90 ./set_run/sc_compiled/
 cp ./source_code/part_fluid_comm.f90 ./set_run/sc_compiled/
 cp ./source_code/velocity_interpolator.f90 ./set_run/sc_compiled/
 cp ./source_code/lagrangian_tracker.f90 ./set_run/sc_compiled/
+cp ./source_code/save_flow_comm.f90 ./set_run/sc_compiled/
 
 cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
@@ -796,6 +797,12 @@ sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -866,6 +873,12 @@ sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 fi
 
 if [ "$machine" == "4" ]; then
