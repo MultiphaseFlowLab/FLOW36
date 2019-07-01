@@ -20,6 +20,8 @@ integer :: ntime
 #define phiflag phicompflag
 #define psiflag psicompflag
 #define tempflag tempcompflag
+#define partflag particlecompflag
+#define twowayc twowaycflag
 #define boussinnesq boussinnesqcompflag
 #define match_dens matched_density
 #define expx expansionx
@@ -211,17 +213,18 @@ endif
 
 
 ! particle part
+#if partflag == 1
 if(rank.ge.leader)then
-
-
-
-
+ call lagrangian_tracker
+endif
 
 call get_velocity
-! protect with flag that checks for 2-WC
-call get_2WCforces
 
-endif
+#if twowayc == 1
+call get_2WCforces
+#endif
+#endif
+
 
 
 

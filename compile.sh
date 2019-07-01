@@ -80,6 +80,7 @@ fi
 echo "=============================================================================="
 echo ""
 
+################################################################################
 # define simulation parameters
 
 # fftw plan craation flag
@@ -106,6 +107,7 @@ multinode="0" # integer
 # number of MPI processes per node
 nodesize="68" # integer
 
+################################################################################
 # restart flag: 1 restart, 0 new simulation
 restart="0" # integer
 nt_restart="0" # integer
@@ -180,6 +182,7 @@ bc_upb="0" # integer
 # boundary condition, z=-1
 bc_lb="0" # integer
 
+################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
 phi_flag="0" # integer
@@ -294,6 +297,7 @@ gravdir="-2" # integer
 # 2: only buoyancy (Delta rho*g)
 buoyancy="0" # integer
 
+################################################################################
 # Surfactant only
 # surfactant flag, 0 : surfactant deactivated, 1 : surfactant activated
 psi_flag="1" # integer
@@ -319,6 +323,7 @@ El="0.5" # real (double)
 # 6: read input from file (parallel read, fine grid)
 psi_mean="0.01" # real (double)
 
+################################################################################
 # Temperature only
 # temperature flag, 0 : temperature deactivated, 1 : temperature activated
 temp_flag="0" # integer
@@ -350,10 +355,14 @@ temp_mean="0.0" # real (double)
 # uses same gravity array as defined in the phase field part
 boussinnesq="0" # integer
 
+################################################################################
 # Lagrangian Particle Tracking only
 part_flag="1" # integer
 part_number="1000" # integer
 stokes="1.0" # real (double)
+
+# 1 activate two-way coupling, 0 deactivate it
+twoway="1" # integer
 
 # initial conditions for the particle position
 # 0 : initialize random position
@@ -365,6 +374,8 @@ in_cond_part_pos="0" # integer
 in_cond_part_vel="1" # integer
 
 # end of parameters declaration
+################################################################################
+
 echo ""
 echo "       FFFFFFF  L        OOO   W           W           333      666"
 echo "       F        L       O   O  W     W     W          3   3    6   6"
@@ -652,7 +663,7 @@ cp ./source_code/split_comm.f90 ./set_run/sc_compiled/
 cp ./source_code/initialize_particle.f90 ./set_run/sc_compiled/
 cp ./source_code/part_fluid_comm.f90 ./set_run/sc_compiled/
 cp ./source_code/velocity_interpolator.f90 ./set_run/sc_compiled/
-
+cp ./source_code/lagrangian_tracker.f90 ./set_run/sc_compiled/
 
 cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
@@ -781,6 +792,9 @@ sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -847,6 +861,9 @@ sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
 sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 fi
 
 if [ "$machine" == "4" ]; then

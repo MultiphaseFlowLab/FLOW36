@@ -125,24 +125,6 @@ do i=2,ntask_sh
 enddo
 
 
-
-
-
-
-
-
-! is it ok to use multiple shared windows? could it happen that they overwrite each other?
-! can they correspond to the same physical address?
-! if(rank.eq.leader) uf=-4.0d0
-! if(rank.eq.leader+1) vf=-3.0d0
-!
-! ! synchronization
-! call mpi_win_fence(0,window_u,ierr)
-! call mpi_win_fence(0,window_v,ierr)
-!
-! if(rank.eq.leader) write(*,*) maxval(uf),minval(uf),maxval(vf),minval(vf)
-
-
 return
 end
 
@@ -156,6 +138,8 @@ use sim_par
 use particle
 
 integer :: i
+
+#define twowayc twowaycflag
 
 ! get fluid velocity for initial tracking
 call get_velocity
@@ -199,11 +183,9 @@ else
 endif
 
 
-
-!!!!!! ONLY IFF 2 WAY COUPLING, INSERT FLAG
-! compute forces on fluid at particle position
+#if twowayc == 1
 call get_2WCforces
-
+#endif
 
 ! ! debug only
 ! if(rank_loc.eq.2)then
