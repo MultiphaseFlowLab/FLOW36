@@ -12,8 +12,11 @@ use temperature
 use particle
 use dual_grid
 
-double precision, allocatable, dimension(:,:,:,:) :: s1, s2, s3, sphi,hphi,spsi,hpsi,stheta,htheta
-double precision, dimension(spx,nz,spy,2) :: h1, h2, h3, h, omega
+double precision, allocatable, dimension(:,:,:,:) :: s1,s2,s3,sphi,hphi,spsi,hpsi,stheta,htheta
+double precision, dimension(spx,nz,spy,2) :: h1,h2,h3,h,omega
+
+! testing only
+double precision, allocatable, dimension(:,:,:) :: velff,velfp
 
 integer :: ntime
 
@@ -218,6 +221,18 @@ if(rank.ge.leader)then
  call lagrangian_tracker
 endif
 
+! debug only
+if(rank.eq.leader)then
+open(666,file='./results/upar_00000000.dat',form='unformatted',access='stream',status='new',convert='little_endian')
+write(666) uf
+close(666,status='keep')
+open(666,file='./results/forxpar_00000000.dat',form='unformatted',access='stream',status='new',convert='little_endian')
+write(666) fb_x
+close(666,status='keep')
+endif
+
+
+
 call get_velocity
 
 #if twowayc == 1
@@ -226,7 +241,33 @@ call get_2WCforces
 #endif
 
 
+! debug only
+if(rank.lt.flow_comm_lim) call write_output(forx,0,'forx ')
+if(rank.eq.0)then
+allocate(velff(nx,nz,ny))
+allocate(velfp(nx,nz,ny))
+open(666,file='./results/u_00000000.dat',form='unformatted',access='stream',status='old',convert='little_endian')
+read(666) velff
+close(666,status='keep')
 
+open(666,file='./results/upar_00000000.dat',form='unformatted',access='stream',status='old',convert='little_endian')
+read(666) velfp
+close(666,status='keep')
+
+write(*,*) 'velocity difference',maxval(abs(velff-velfp)),maxval(velfp)
+
+open(666,file='./results/forx_00000000.dat',form='unformatted',access='stream',status='old',convert='little_endian')
+read(666) velff
+close(666,status='keep')
+
+open(666,file='./results/forxpar_00000000.dat',form='unformatted',access='stream',status='old',convert='little_endian')
+read(666) velfp
+close(666,status='keep')
+
+write(*,*) 'force difference',maxval(abs(velff-velfp)),maxval(velff)
+
+deallocate(velff,velfp)
+endif
 
 return
 end
