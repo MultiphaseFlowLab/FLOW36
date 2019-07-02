@@ -48,6 +48,8 @@ if [ "$old" == "0" ]; then
   cp "./phi"$sp".dat" "../phi"$sp"_"$it".dat"
   cp "./psi"$sp"_fg.dat" "../psi"$sp"_fg_"$it".dat"
   cp "./T"$sp".dat" "../T"$sp"_"$it".dat"
+  cp "./pos"$sp".dat" "../pos"$sp"_"$it".dat"
+  cp "./vel"$sp".dat" "../vel"$sp"_"$it".dat"
 elif [ "$old" == "1" ]; then
   cp "./u"$sp"_old.dat" "../u"$sp"_"$it".dat"
   cp "./v"$sp"_old.dat" "../v"$sp"_"$it".dat"
@@ -55,4 +57,6 @@ elif [ "$old" == "1" ]; then
   cp "./phi"$sp"_old.dat" "../phi"$sp"_"$it".dat"
   cp "./psi"$sp"_fg_old.dat" "../psi"$sp"_fg_"$it".dat"
   cp "./T"$sp"_old.dat" "../T"$sp"_"$it".dat"
+  cp "./pos"$sp"_old.dat" "../pos"$sp"_"$it".dat"
+  cp "./vel"$sp"_old.dat" "../vel"$sp"_"$it".dat"
 fi
