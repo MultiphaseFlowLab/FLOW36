@@ -366,11 +366,15 @@ twoway="1" # integer
 
 # initial conditions for the particle position
 # 0 : initialize random position
-in_cond_part_pos="0" # integer
+# 1 : read from input file (parallel read, binary file)
+# 2 : initialize random position on a x-y plane at height par_plane (part_height)
+in_cond_part_pos="2" # integer
+part_height="0.0" # real (double) between -1 and +1
 
 # initial conditions for the particle velocity
 # 0 : zero velocity
 # 1 : fluid velocity at particle position
+# 2 : read from input file (parallel read, binary file)
 in_cond_part_vel="1" # integer
 
 # end of parameters declaration
@@ -715,6 +719,12 @@ fi
 if [ "$temp_flag" == "1" ]; then
   if [ "$in_cond_temp" == "0" ]; then
     echo "$temp_mean                         ! mean temperature" > ./set_run/sc_compiled/input_temperature.f90
+  fi
+fi
+
+if [ "$part_flag" == "1" ]; then
+  if [ "$in_cond_part_pos" == "2" ]; then
+    echo "$part_height                         ! z height of x-y particle layer" > ./set_run/sc_compiled/input_particle.f90
   fi
 fi
 

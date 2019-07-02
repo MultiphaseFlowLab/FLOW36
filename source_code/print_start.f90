@@ -199,6 +199,10 @@ if(part_flag.eq.1)then
  write(*,'(1x,a40,f12.4)') 'St : ',stokes
  if(in_cond_part_pos.eq.0)then
   write(*,'(1x,a)') 'Initialize random particle position'
+ elseif(in_cond_part_pos.eq.1)then
+  write(*,'(1x,a)') 'Read particle position from data file'
+ elseif(in_cond_part_pos.eq.2)then
+  write(*,'(1x,a)') 'Initialize random particle position on a x-y plane'
  else
   write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
  endif
@@ -206,6 +210,8 @@ if(part_flag.eq.1)then
   write(*,'(1x,a)') 'Initialize zero particle velocity'
  elseif(in_cond_part_vel.eq.1)then
   write(*,'(1x,a)') 'Initialize fluid velocity at particle position'
+ elseif(in_cond_part_vel.eq.2)then
+  write(*,'(1x,a)') 'Read particle velocity from data file'
  else
   write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
  endif

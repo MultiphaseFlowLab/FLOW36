@@ -99,9 +99,8 @@ double precision :: Lx,Ly
   in_cond_phi=1
   in_cond_psi=6
   in_cond_theta=1
-  ! to be modified, put read input files condition
-  in_cond_part_pos=10
-  in_cond_part_vel=10
+  in_cond_part_pos=1
+  in_cond_part_vel=2
  endif
 
  if((match_dens.eq.1).and.(abs(rhor-1.0d0).lt.0.00000001))then

@@ -145,6 +145,7 @@ use sim_par
 use particle
 
 integer :: i
+double precision :: part_height
 
 #define twowayc twowaycflag
 
@@ -161,6 +162,23 @@ if(in_cond_part_pos.eq.0)then
    xp(:,2)=xp(:,2)*yl*re
    xp(:,3)=(2.0d0*xp(:,3))*re   ! particles in [0,2*Re]
    ! xp(:,3)=(2.0d0*xp(:,3)-1.0d0)*re    ! particles in [-Re,+Re]
+  endif
+  ! synchronize shared memory window
+  if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
+elseif(in_cond_part_pos.eq.1)then
+  if(rank.eq.0) write(*,*) 'Initializing particle position from data file'
+  if(rank.ge.leader) call read_part_pos(nt_restart,restart)
+elseif(in_cond_part_pos.eq.2)then
+  if(rank.eq.0) write(*,*) 'Initializing random particle position on a x-y plane'
+  if(rank.eq.leader)then
+   open(456,file='./sc_compiled/input_particle.f90',form='formatted',status='old')
+   read(456,'(f12.6)') part_height
+   close(456,status='keep')
+   call random_number(xp)
+   ! position in plus units, x,y,z
+   xp(:,1)=xp(:,1)*xl*re
+   xp(:,2)=xp(:,2)*yl*re
+   xp(:,3)=(part_height+1.0d0)*re   ! particles in [0,2*Re]
   endif
   ! synchronize shared memory window
   if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
@@ -184,6 +202,9 @@ elseif(in_cond_part_vel.eq.1)then
    enddo
    call mpi_win_fence(0,window_up,ierr)
   endif
+elseif(in_cond_part_vel.eq.2)then
+  if(rank.eq.0) write(*,*) 'Initializing particle velocity from data file'
+  if(rank.ge.leader) call read_part_vel(nt_restart,restart)
 else
   if(rank.eq.0) write(*,*) 'Dafuq? Check in_cond input value'
   stop

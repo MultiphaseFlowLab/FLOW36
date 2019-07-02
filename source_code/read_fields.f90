@@ -211,3 +211,93 @@ u(1:nx,1:fpz,1:fpy)=temp_u(1:nx,fstart(2)+1:fstart(2)+fpz,fstart(3)+1:fstart(3)+
 
 return
 end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine read_part_pos(nt,restart)
+
+use commondata
+use mpi
+use mpiIO
+use particle
+
+double precision :: varloc(part_index(rank_loc+1,2),3)
+
+integer :: nt,restart
+integer :: f_handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=8) :: time
+character(len=40) :: fname
+
+if(restart.eq.0)then
+ fname='./initial_fields/pos.dat'
+else
+ write(time,'(I8.8)') nt
+ fname=trim(folder)//'/pos_'//time//'.dat'
+endif
+
+offset=0
+
+call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+
+call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+call mpi_file_close(f_handle,ierr)
+
+xp(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=varloc
+
+call mpi_win_fence(0,window_xp,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine read_part_vel(nt,restart)
+
+use commondata
+use mpi
+use mpiIO
+use particle
+
+double precision :: varloc(part_index(rank_loc+1,2),3)
+
+integer :: nt,restart
+integer :: f_handle
+
+integer(mpi_offset_kind) :: offset
+
+character(len=8) :: time
+character(len=40) :: fname
+
+if(restart.eq.0)then
+ fname='./initial_fields/vel.dat'
+else
+ write(time,'(I8.8)') nt
+ fname=trim(folder)//'/vel_'//time//'.dat'
+endif
+
+offset=0
+
+call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+
+call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+call mpi_file_close(f_handle,ierr)
+
+up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=varloc
+
+call mpi_win_fence(0,window_up,ierr)
+
+return
+end
