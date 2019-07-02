@@ -8,6 +8,8 @@ use surfactant
 use temperature
 use particle
 
+#define tracer tracerflag
+
 write(*,*)
 write(*,*) '-----------------------------------------------------------------------'
 write(*,'(1x,a)') 'Starting simulation with following parameters:'
@@ -195,6 +197,11 @@ endif
 
 if(part_flag.eq.1)then
  write(*,'(1x,a)') 'Particle parameters'
+#if tracer == 1
+ write(*,'(1x,a)') 'Tracer particles'
+#elif tracer == 0
+ write(*,'(1x,a)') 'Inertial particles'
+#endif
  write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
  write(*,'(1x,a40,f12.4)') 'St : ',stokes
  if(in_cond_part_pos.eq.0)then

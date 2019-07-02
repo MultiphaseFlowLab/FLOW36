@@ -817,6 +817,7 @@ sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -895,6 +896,7 @@ sed -i "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
 fi
 
 if [ "$machine" == "4" ]; then
