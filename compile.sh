@@ -143,10 +143,10 @@ nstart="0" # integer
 # final time step
 nend="5" #integer (up to 8 digits)
 
-# frequency of solution saving in physical space (save only last time step if value lower than 1)
+# frequency of solution saving in physical space
 dump="500" # integer
 
-# frequency of solution saving in spectral space (save only last time step if value lower than 1)
+# frequency of solution saving in spectral space
 sdump="-1" # integer
 
 # frequency of solution saving in spectral space, needed to restart the simulation
