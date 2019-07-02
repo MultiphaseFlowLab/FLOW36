@@ -6,6 +6,7 @@ use particle
 use sim_par
 
 #define twowayc twowaycflag
+#define tracer tracerflag
 
 integer :: i,j
 
@@ -13,12 +14,19 @@ integer :: i,j
 ! loop over particles
 do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
   call lagran4(xp(i,:),up(i,:))
+#if tracer == 1
   ! tracers only
   xp(i,1)=xp(i,1)+dt*re*up(i,1)
   xp(i,2)=xp(i,2)+dt*re*up(i,2)
   xp(i,3)=xp(i,3)+dt*re*up(i,3)
   ! tracer velocity is fluid velocity at particle position
   call lagran4(xp(i,:),up(i,:))
+#elif tracer == 0
+  ! intertial particles
+
+! to be done
+
+#endif
 
   ! check periodicity
   if(xp(i,1).lt.0.0d0) then
@@ -46,7 +54,7 @@ call mpi_win_fence(0,window_xp,ierr)
 call mpi_win_fence(0,window_up,ierr)
 
 
-#if twowayc == 1
+#if twowayc == 1 && tracer == 0
 ! calculate feedback forces on fluid (two-way coupling only)
 fb_x=0.0d0
 fb_y=0.0d0

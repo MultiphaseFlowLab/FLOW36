@@ -359,6 +359,8 @@ boussinnesq="0" # integer
 # Lagrangian Particle Tracking only
 part_flag="1" # integer
 part_number="1000" # integer
+# 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
+tracer="1" # integer
 stokes="1.0" # real (double)
 
 # 1 activate two-way coupling, 0 deactivate it
@@ -814,6 +816,7 @@ sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -891,6 +894,7 @@ sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 fi
 
 if [ "$machine" == "4" ]; then
