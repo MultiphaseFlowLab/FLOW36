@@ -85,7 +85,7 @@ iarr=[i0,i1,i2,i3,i4]
 jarr=[j0,j1,j2,j3,j4]
 karr=[k0,k1,k2,k3,k4]
 
-! points for 4th order Lagrangian interpolation
+! points for 4th order Lagrangian interpolation (wall units)
 x0=[x(i0),y(j0),(z(k0)+1.0d0)]*re
 x1=[x(i1),y(j1),(z(k1)+1.0d0)]*re
 x2=[x(i2),y(j2),(z(k2)+1.0d0)]*re
