@@ -167,12 +167,13 @@ endif
 
 
 
-  ! calculate wavenumbers
-  call wave_numbers
+
 
 
 ! executed only by flow_comm
 if(rank.lt.flow_comm_lim)then
+  ! calculate wavenumbers
+  call wave_numbers
   ! initialize flow field according to initial condition provided
   ! allocate velocity matrices in physical and modal space
   call initialize
@@ -207,7 +208,7 @@ if(rank.lt.flow_comm_lim)then
 ! end of flow_comm only
 endif
 
-if(part_flag.eq.1)then
+#if particles == 1
   ! executed only by part_comm, allocates variables
   if(rank.ge.leader) call allocate_particle
   call create_communication_pattern
@@ -219,7 +220,7 @@ if(part_flag.eq.1)then
    namevar='vel'
    call write_output_part(up,nstart,namevar)
   endif
-endif
+#endif
 
   gstime=mpi_wtime()
 
@@ -306,6 +307,7 @@ endif
   endif
 
   ! save final particle data if not already written
+#if particles == 1
   if((rank.ge.leader).and. &
  &     ((mod(nend,ndump).ne.0.and.ndump.gt.0).or. &
  &      (mod(nend,sdump).ne.0.and.sdump.gt.0)))then
@@ -314,6 +316,7 @@ endif
      namevar='vel'
      call write_output_part(up,nend,namevar)
     endif
+#endif
 
   ! output to screen total time elapsed
   getime=mpi_wtime()
@@ -350,11 +353,12 @@ endif
    endif
    ! destroy cartesian communicator
    call mpi_comm_free(cart_comm,ierr)
+   deallocate(kxpsi)
+   deallocate(kypsi)
+   deallocate(k2psi)
   endif
 
-  deallocate(kxpsi)
-  deallocate(kypsi)
-  deallocate(k2psi)
+
   ! destroy fftw plans
   call destroy_plan
 
