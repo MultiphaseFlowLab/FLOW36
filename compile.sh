@@ -361,6 +361,7 @@ part_flag="1" # integer
 part_number="1000" # integer
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
 tracer="1" # integer
+# stokes number (in wall units)
 stokes="1.0" # real (double)
 
 # 1 activate two-way coupling, 0 deactivate it
@@ -465,7 +466,7 @@ if [[ "$multinode" == "1" && "$part_flag" == 1 ]]; then
  NNT="$(($NYCPU*$NZCPU+$nodesize))"
 elif [[ "$multinode" == "0"  && "$part_flag" == 1 ]]; then
  NNT="$(($NYCPU*$NZCPU))"
-elif [ "$part_flag" == 1 ]; then
+elif [ "$part_flag" == 0 ]; then
  NNT="$(($NYCPU*$NZCPU))"
 fi
 
