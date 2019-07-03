@@ -201,13 +201,6 @@ elseif(in_cond_part_vel.eq.1)then
     call lagran4(xp(i,:),up(i,:))
    enddo
    call mpi_win_fence(0,window_up,ierr)
-
-   if(rank.eq.leader+1)then
-    do i=1,part_number
-     write(*,*) i,xp(i,:),up(i,:)
-    enddo
-   endif
-
   endif
 elseif(in_cond_part_vel.eq.2)then
   if(rank.eq.0) write(*,*) 'Initializing particle velocity from data file'
