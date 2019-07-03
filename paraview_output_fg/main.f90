@@ -68,6 +68,13 @@ if(marflag.eq.1)then
   allocate(marz(nxf,nzf,nyf))
 endif
 
+if(partposflag.eq.1)then
+ allocate(xpar(part_number,3))
+ if(partvelflag.eq.1)then
+  allocate(upar(part_number,3))
+ endif
+endif
+
 allocate(kx(nxf/2+1))
 allocate(ky(nyf))
 
@@ -171,6 +178,11 @@ endif
 
 if(marflag.eq.1)then
   deallocate(marx,mary,marz)
+endif
+
+if(partposflag.eq.1)then
+ deallocate(xpar)
+ if(partvelflag.eq.1) deallocate(upar)
 endif
 
 deallocate(kx,ky)

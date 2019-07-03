@@ -37,6 +37,21 @@ allocate(tmp_fg(mx_fg,mz_fg,my_fg,2))
 allocate(inp(nx,nz,ny))
 allocate(inpc(nx/2+1,nz,ny,2))
 
+if(partposflag.eq.1)then
+  ! reading particle position
+  namefile=trim(namedir)//'pos_'//numfile//'.dat'
+  open(678,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+  read(678) xpar
+  close(678,status='keep')
+  if(partvelflag.eq.1)then
+    ! reading particle position
+    namefile=trim(namedir)//'vel_'//numfile//'.dat'
+    open(679,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(679) upar
+    close(679,status='keep')
+  endif
+  call generate_output_part(nstep)
+endif
 
 if(spectral.eq.0)then
  namefile=trim(namedir)//'u_'//numfile//'.dat'

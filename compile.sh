@@ -121,10 +121,10 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="5" # integer
 
 # Reynolds number
-Re="0.1" # real (double)
+Re="1.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -370,7 +370,7 @@ twoway="1" # integer
 # 0 : initialize random position
 # 1 : read from input file (parallel read, binary file)
 # 2 : initialize random position on a x-y plane at height par_plane (part_height)
-in_cond_part_pos="2" # integer
+in_cond_part_pos="0" # integer
 part_height="0.0" # real (double) between -1 and +1
 
 # initial conditions for the particle velocity

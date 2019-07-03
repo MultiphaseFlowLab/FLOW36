@@ -26,6 +26,8 @@
 0               ! 0 to skip strain rate, 1 to include it
 0               ! 0 to skip flow topology parameter, 1 to include it
 0               ! 0 to skip Marangoni stresses, 1 to include them
+1               ! 0 to skip particle position, 1 to include it
+1               ! 0 to skip particle velocity, 1 to include it
 
 1               ! expansion coefficient x
 1               ! expansion coefficient y

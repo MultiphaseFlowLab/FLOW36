@@ -43,6 +43,9 @@ double precision :: Lx,Ly
  read(66,*) !rhor
  read(66,*) !match_visc
  read(66,*) !visr
+ read(66,*) !non_newtonian
+ read(66,*) !muinfmuzero
+ read(66,*) !exp_non_new
  read(66,'(f16.6)') we
  read(66,'(f16.6)') ch
  read(66,*) !pe
@@ -73,10 +76,16 @@ double precision :: Lx,Ly
  read(66,*) !q_theta(2)
  read(66,*) !r_theta(2)
  read(66,*) !in_cond_theta
+ read(66,*)
+ read(66,*) !part_flag
+ read(66,'(i12)') part_number
+ read(66,*) !stokes
+ read(66,*) !in_cond_part_pos
+ read(66,*) !in_cond_part_vel
 
  xl=Lx*pi
  yl=Ly*pi
-
+write(*,*) 'pnumb',part_number
  close(66)
 
 
@@ -111,6 +120,8 @@ double precision :: Lx,Ly
  read(68,'(i5)') strflag
  read(68,'(i5)') topflag
  read(68,'(i5)') marflag
+ read(68,'(i5)') partposflag
+ read(68,'(i5)') partvelflag
  read(68,*)
  read(68,'(i5)') exp_x
  read(68,'(i5)') exp_y
