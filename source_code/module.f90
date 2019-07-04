@@ -99,7 +99,7 @@ end module temperature
 module particle
  integer :: part_flag,part_number,in_cond_part_pos,in_cond_part_vel
  integer, allocatable, dimension(:,:) :: part_index
- double precision :: stokes
+ double precision :: stokes,dens_part,d_par
  double precision, pointer, dimension(:,:) :: xp,up
  double precision, pointer, dimension(:,:,:) :: uf,vf,wf,fb_x,fb_y,fb_z
  ! mpi shared memory synchronization windows

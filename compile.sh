@@ -90,9 +90,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="5" # integer
-iy="5" # integer
-iz="5" # integer
+ix="1" # integer
+iy="6" # integer
+iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -100,8 +100,8 @@ exp_y="2" # integer, (2**iy)*exp_y
 exp_z="2" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
-NYCPU="3" # integer
-NZCPU="2" # integer
+NYCPU="1" # integer
+NZCPU="4" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
@@ -144,7 +144,7 @@ nstart="0" # integer
 nend="5" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="500" # integer
+dump="200" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -170,7 +170,7 @@ budget_flag="1" # 0 to skip budget calculation, 1 to do it
 spectra_flag="1" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
-dt="1.e-4" # real (exponential)
+dt="1.e-5" # real (exponential)
 
 # 0: no-slip
 # 1: free-slip
@@ -358,11 +358,17 @@ boussinnesq="0" # integer
 ################################################################################
 # Lagrangian Particle Tracking only
 part_flag="1" # integer
-part_number="1000" # integer
+part_number="10" # integer
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
-tracer="1" # integer
+tracer="0" # integer
 # stokes number (in wall units)
 stokes="1.0" # real (double)
+# drag type, 1 Stokes drag, 0 Schiller-Naumann drag
+stokes_drag="1" # integer
+# density ratio particle/fluid
+dens_part="1.0" # real (double)
+# 1 to activate gravity and buoyancy force on particle tracking
+part_gravity="1" # integer
 
 # 1 activate two-way coupling, 0 deactivate it
 twoway="1" # integer
@@ -378,7 +384,7 @@ part_height="0.0" # real (double) between -1 and +1
 # 0 : zero velocity
 # 1 : fluid velocity at particle position
 # 2 : read from input file (parallel read, binary file)
-in_cond_part_vel="1" # integer
+in_cond_part_vel="0" # integer
 
 # end of parameters declaration
 ################################################################################
@@ -544,6 +550,7 @@ sed -i "" "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.
 sed -i "" "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 else
@@ -610,6 +617,7 @@ sed -i "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
 sed -i "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
+sed -i "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 fi
@@ -819,6 +827,10 @@ sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_co
 sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
+sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
+sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/velocity_interpolator.f90
+sed -i "" "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -898,6 +910,10 @@ sed -i "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.
 sed -i "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
+sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
+sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/velocity_interpolator.f90
+sed -i "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 fi
 
 if [ "$machine" == "4" ]; then

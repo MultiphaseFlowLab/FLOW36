@@ -9,6 +9,7 @@ use temperature
 use particle
 
 #define tracer tracerflag
+#define stokes_drag stokesflag
 
 write(*,*)
 write(*,*) '-----------------------------------------------------------------------'
@@ -201,9 +202,15 @@ if(part_flag.eq.1)then
  write(*,'(1x,a)') 'Tracer particles'
 #elif tracer == 0
  write(*,'(1x,a)') 'Inertial particles'
+#if stokes_drag == 1
+ write(*,'(1x,a)') 'Stokes drag'
+#elif stokes_drag == 0
+ write(*,'(1x,a)') 'Schiller-Naumann drag'
+#endif
 #endif
  write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
- write(*,'(1x,a40,f12.4)') 'St : ',stokes
+ write(*,'(1x,a40,f12.4)') 'Stokes : ',stokes
+ write(*,'(1x,a40,f12.5)') 'Density ratio particle/fluid : ',dens_part
  if(in_cond_part_pos.eq.0)then
   write(*,'(1x,a)') 'Initialize random particle position'
  elseif(in_cond_part_pos.eq.1)then

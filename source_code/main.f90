@@ -161,13 +161,8 @@ endif
     z(k)=dcos(((k-1)*pi)/(nz-1))
   enddo
 
-
   ! save grid arrays
   if(rank.eq.0) call dump_grid
-
-
-
-
 
 
 ! executed only by flow_comm

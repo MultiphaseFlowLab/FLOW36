@@ -8,14 +8,14 @@ use sim_par
 #define twowayc twowaycflag
 #define tracer tracerflag
 
+double precision, dimension(3) :: for
 integer :: i,j
-
 
 ! loop over particles
 do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
-  call lagran4(xp(i,:),up(i,:))
 #if tracer == 1
   ! tracers only
+  call lagran4(xp(i,:),up(i,:))
   xp(i,1)=xp(i,1)+dt*re*up(i,1)
   xp(i,2)=xp(i,2)+dt*re*up(i,2)
   xp(i,3)=xp(i,3)+dt*re*up(i,3)
@@ -23,8 +23,15 @@ do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2
   call lagran4(xp(i,:),up(i,:))
 #elif tracer == 0
   ! intertial particles
+  call calculate_forces(xp(i,:),up(i,:),for)
 
-! to be done
+! write(*,*) i,xp(i,:),up(i,:),for
+
+  ! time integration
+  xp(i,:)=xp(i,:)+dt*re*up(i,:)
+  up(i,:)=up(i,:)+dt*re*for
+
+
 
 #endif
 
@@ -78,3 +85,47 @@ enddo
 
 return
 end subroutine
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine calculate_forces(pos,vel,for)
+
+use particle
+use sim_par
+use phase_field
+
+double precision, dimension(3) :: pos,vel
+double precision, dimension(3) :: velf,for
+double precision :: re_p
+
+#define stokes_drag stokesflag
+#define part_grav activategravity
+
+! get fluid velocity at particle position
+call lagran4(pos,velf)
+
+! particle Reynolds number
+re_p=abs(dsqrt((velf(1)-vel(1))**2+(velf(2)-vel(2))**2+(velf(3)-vel(3))**2))*d_par
+
+! forces calculation
+for=0.0d0
+
+#if stokes_drag == 1
+! drag force (Stokes drag)
+for=(velf-vel)/stokes
+#elif stokes_drag == 0
+! drag force (with Schiller-Naumann correction)
+for=(velf-vel)/stokes*(1.0d0+0.15d0*re_p**0.687)
+#endif
+
+#if part_grav == 1
+! buoyancy and gravity, in grav ordering is x,z,y
+for(1)=for(1)+1.0d0/(re*Fr**2)*(dens_part-1.0d0)/dens_part*grav(1)
+for(2)=for(2)+1.0d0/(re*Fr**2)*(dens_part-1.0d0)/dens_part*grav(3)
+for(3)=for(3)+1.0d0/(re*Fr**2)*(dens_part-1.0d0)/dens_part*grav(2)
+#endif
+
+
+
+return
+end

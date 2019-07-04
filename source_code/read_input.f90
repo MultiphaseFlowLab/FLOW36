@@ -87,10 +87,14 @@ double precision :: Lx,Ly
  read(66,'(i8)') part_flag
  read(66,'(i12)') part_number
  read(66,'(f16.6)') stokes
+ read(66,'(f16.6)') dens_part
  read(66,'(i8)') in_cond_part_pos
  read(66,'(i8)') in_cond_part_vel
 
  r_theta=r_theta*dble(nx*ny)
+
+ ! particle diameter (wall units)
+ d_par=dsqrt(18.0d0*Stokes/dens_part)
 
 ! if it is a simulation restart, use old flow field data and start from nt_restart
  if(restart.eq.1)then
