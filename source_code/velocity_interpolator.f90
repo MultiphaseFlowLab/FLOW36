@@ -14,6 +14,7 @@ double precision, dimension(3) :: ppos,pvel
 double precision, dimension(3) :: x0,x1,x2,x3,x4
 double precision, dimension(5,3) :: pol
 
+#define NX nnx
 
 ! particles in + units, flow in - units
 ! particles: z in [0,2*Re], flow in [-1,+1]
@@ -161,6 +162,7 @@ pol(5,3)=(ppos(3)-x0(3))/(x4(3)-x0(3))* &
 
 pvel=0.0d0
 
+#if NX > 2
 do j=1,5
  do k=1,5
   do i=1,5
@@ -170,10 +172,16 @@ do j=1,5
   enddo
  enddo
 enddo
-
-! pvel(1)=uf(i2,k2,j2)
-! pvel(2)=vf(i2,k2,j2)
-! pvel(3)=wf(i2,k2,j2)
+#else
+! for 2D simulation no interpolation along x
+do j=1,5
+ do k=1,5
+  pvel(1)=pvel(1)+uf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
+  pvel(2)=pvel(2)+vf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
+  pvel(3)=pvel(3)+wf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
+ enddo
+enddo
+#endif
 
 return
 end subroutine
