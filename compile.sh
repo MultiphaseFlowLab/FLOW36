@@ -91,13 +91,13 @@ fftw_flag="0"
 
 # number of grid points (edit only exponent)
 ix="1" # integer
-iy="6" # integer
-iz="6" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
-exp_y="2" # integer, (2**iy)*exp_y
-exp_z="2" # integer, (2**iz)*exp_z+1
+exp_y="1" # integer, (2**iy)*exp_y
+exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
@@ -170,7 +170,7 @@ budget_flag="1" # 0 to skip budget calculation, 1 to do it
 spectra_flag="1" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
-dt="1.e-3" # real (exponential)
+dt="1.e-4" # real (exponential)
 
 # 0: no-slip
 # 1: free-slip
@@ -185,7 +185,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="0" # integer
+phi_flag="1" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -322,9 +322,9 @@ El="0.5" # real (double)
 # 4: equilibrium profile multiplied with Z gradient
 # 5: Diffusion Test, angular distribuction
 # 6: read input from file (parallel read, fine grid)
-in_condpsi="0"
+in_condpsi="2"
 psi_mean="0.01" # real (double)
-
+psi_bulk="0.01" # real (double)
 ################################################################################
 # Temperature only
 # temperature flag, 0 : temperature deactivated, 1 : temperature activated
@@ -359,7 +359,7 @@ boussinnesq="0" # integer
 
 ################################################################################
 # Lagrangian Particle Tracking only
-part_flag="1" # integer
+part_flag="0" # integer
 part_number="1000" # integer
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
 tracer="0" # integer
