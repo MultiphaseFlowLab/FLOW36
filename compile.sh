@@ -321,6 +321,7 @@ El="0.5" # real (double)
 # 4: equilibrium profile multiplied with Z gradient
 # 5: Diffusion Test, angular distribuction
 # 6: read input from file (parallel read, fine grid)
+in_condpsi="0"
 psi_mean="0.01" # real (double)
 
 ################################################################################
