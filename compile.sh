@@ -121,7 +121,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="5" # integer
+incond="0" # integer
 
 # Reynolds number
 Re="1.0" # real (double)
@@ -135,7 +135,7 @@ gradpy="0.0" # real (double)
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
 lx="0.001" # real (double)
-ly="0.6" # real (double)
+ly="2.0" # real (double)
 
 # initial time step
 nstart="0" # integer
@@ -144,7 +144,7 @@ nstart="0" # integer
 nend="5" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="200" # integer
+dump="2000" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -170,7 +170,7 @@ budget_flag="1" # 0 to skip budget calculation, 1 to do it
 spectra_flag="1" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
-dt="1.e-5" # real (exponential)
+dt="1.e-3" # real (exponential)
 
 # 0: no-slip
 # 1: free-slip
@@ -358,7 +358,7 @@ boussinnesq="0" # integer
 ################################################################################
 # Lagrangian Particle Tracking only
 part_flag="1" # integer
-part_number="10" # integer
+part_number="1000" # integer
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
 tracer="0" # integer
 # stokes number (in wall units)

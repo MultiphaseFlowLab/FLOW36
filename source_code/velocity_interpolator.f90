@@ -162,7 +162,8 @@ pol(5,3)=(ppos(3)-x0(3))/(x4(3)-x0(3))* &
 
 pvel=0.0d0
 
-#if NX > 2
+#if NX > 4
+! if there are enough points in x for a 4th order Lagrangian interpolation
 do j=1,5
  do k=1,5
   do i=1,5
@@ -173,12 +174,12 @@ do j=1,5
  enddo
 enddo
 #else
-! for 2D simulation no interpolation along x
+! for 2D and quasi-2D simulations no interpolation along x (Lagrangian polynomials undefined due to periodic domain)
 do j=1,5
  do k=1,5
-  pvel(1)=pvel(1)+uf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
-  pvel(2)=pvel(2)+vf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
-  pvel(3)=pvel(3)+wf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
+   pvel(1)=pvel(1)+uf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
+   pvel(2)=pvel(2)+vf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
+   pvel(3)=pvel(3)+wf(i2,karr(k),jarr(j))*pol(j,2)*pol(k,3)
  enddo
 enddo
 #endif
