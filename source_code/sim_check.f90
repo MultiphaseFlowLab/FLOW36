@@ -167,7 +167,7 @@ sum_xy=sum(sum(top,3),1)
 sglob=0.0d0
 sglob(fstart(2)+1:fstart(2)+fpz)=sum_xy
 
-call mpi_reduce(sglob,column,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(sglob,column,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 
 int_1=0.0d0
 ! integrate column and save in int_1

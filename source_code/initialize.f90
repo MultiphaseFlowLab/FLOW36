@@ -8,6 +8,7 @@ use velocity
 use sterms
 use wavenumber
 use dual_grid
+use particle
 
 double precision, dimension(nx,fpz,fpy) :: fgradpx,fgradpy
 double precision :: beta2(spx,spy),k2l(spx,spy)
@@ -38,6 +39,12 @@ allocate(wc_fg(spxpsi,npsiz,spypsi,2))
 allocate(s1_o(spx,nz,spy,2))
 allocate(s2_o(spx,nz,spy,2))
 allocate(s3_o(spx,nz,spy,2))
+
+if(part_flag.eq.0)then
+ allocate(forx(nx,fpz,fpy))
+ allocate(fory(nx,fpz,fpy))
+ allocate(forz(nx,fpz,fpy))
+endif
 
 ! transform mean presure gradient in spectral space
 allocate(sgradpx(spx,nz,spy,2))
@@ -307,6 +314,7 @@ end
 subroutine destroy
 
 use velocity
+use particle
 use sterms
 
 deallocate(u)
@@ -334,6 +342,10 @@ deallocate(sgradpy)
 
 deallocate(wa2)
 deallocate(wa3)
+
+if(part_flag.eq.0)then
+ deallocate(forx,fory,forz)
+endif
 
 return
 end

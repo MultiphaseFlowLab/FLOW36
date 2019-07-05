@@ -80,6 +80,7 @@ fi
 echo "=============================================================================="
 echo ""
 
+################################################################################
 # define simulation parameters
 
 # fftw plan craation flag
@@ -90,22 +91,23 @@ fftw_flag="0"
 
 # number of grid points (edit only exponent)
 ix="1" # integer
-iy="9" # integer
-iz="9" # integer
+iy="6" # integer
+iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
 exp_y="2" # integer, (2**iy)*exp_y
 exp_z="2" # integer, (2**iz)*exp_z+1
 
-NX="$((2**$ix))"
-NY="$((2**$iy))"
-NZ="$(((2**$iz)+1))"
+# parallelization strategy
 NYCPU="1" # integer
 NZCPU="4" # integer
+# running on single shared memory environment (0) or on many (1)
+multinode="0" # integer
+# number of MPI processes per node
+nodesize="68" # integer
 
-NNT="$(($NYCPU*$NZCPU))"
-
+################################################################################
 # restart flag: 1 restart, 0 new simulation
 restart="0" # integer
 nt_restart="0" # integer
@@ -122,7 +124,7 @@ nt_restart="0" # integer
 incond="0" # integer
 
 # Reynolds number
-Re="0.1" # real (double)
+Re="1.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -133,7 +135,7 @@ gradpy="0.0" # real (double)
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
 lx="0.001" # real (double)
-ly="0.6" # real (double)
+ly="2.0" # real (double)
 
 # initial time step
 nstart="0" # integer
@@ -141,10 +143,10 @@ nstart="0" # integer
 # final time step
 nend="5" #integer (up to 8 digits)
 
-# frequency of solution saving in physical space (save only last time step if value lower than 1)
-dump="500" # integer
+# frequency of solution saving in physical space
+dump="2000" # integer
 
-# frequency of solution saving in spectral space (save only last time step if value lower than 1)
+# frequency of solution saving in spectral space
 sdump="-1" # integer
 
 # frequency of solution saving in spectral space, needed to restart the simulation
@@ -168,7 +170,7 @@ budget_flag="1" # 0 to skip budget calculation, 1 to do it
 spectra_flag="1" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
-dt="1.e-4" # real (exponential)
+dt="1.e-3" # real (exponential)
 
 # 0: no-slip
 # 1: free-slip
@@ -180,9 +182,10 @@ bc_upb="0" # integer
 # boundary condition, z=-1
 bc_lb="0" # integer
 
+################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="1" # integer
+phi_flag="0" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -294,6 +297,7 @@ gravdir="-2" # integer
 # 2: only buoyancy (Delta rho*g)
 buoyancy="0" # integer
 
+################################################################################
 # Surfactant only
 # surfactant flag, 0 : surfactant deactivated, 1 : surfactant activated
 psi_flag="1" # integer
@@ -318,8 +322,10 @@ El="0.5" # real (double)
 # 4: equilibrium profile multiplied with Z gradient
 # 5: Diffusion Test, angular distribuction
 # 6: read input from file (parallel read, fine grid)
+in_condpsi="0"
 psi_mean="0.01" # real (double)
 
+################################################################################
 # Temperature only
 # temperature flag, 0 : temperature deactivated, 1 : temperature activated
 temp_flag="0" # integer
@@ -351,7 +357,40 @@ temp_mean="0.0" # real (double)
 # uses same gravity array as defined in the phase field part
 boussinnesq="0" # integer
 
+################################################################################
+# Lagrangian Particle Tracking only
+part_flag="1" # integer
+part_number="1000" # integer
+# 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
+tracer="0" # integer
+# stokes number (in wall units)
+stokes="1.0" # real (double)
+# drag type, 1 Stokes drag, 0 Schiller-Naumann drag
+stokes_drag="1" # integer
+# density ratio particle/fluid
+dens_part="1.0" # real (double)
+# 1 to activate gravity and buoyancy force on particle tracking
+part_gravity="1" # integer
+
+# 1 activate two-way coupling, 0 deactivate it
+twoway="1" # integer
+
+# initial conditions for the particle position
+# 0 : initialize random position
+# 1 : read from input file (parallel read, binary file)
+# 2 : initialize random position on a x-y plane at height par_plane (part_height)
+in_cond_part_pos="0" # integer
+part_height="0.0" # real (double) between -1 and +1
+
+# initial conditions for the particle velocity
+# 0 : zero velocity
+# 1 : fluid velocity at particle position
+# 2 : read from input file (parallel read, binary file)
+in_cond_part_vel="0" # integer
+
 # end of parameters declaration
+################################################################################
+
 echo ""
 echo "       FFFFFFF  L        OOO   W           W           333      666"
 echo "       F        L       O   O  W     W     W          3   3    6   6"
@@ -425,6 +464,19 @@ fi
 cp ./restart_copy.sh ./set_run/results/backup/
 mkdir ./set_run/sc_compiled
 
+# grid size
+NX="$((2**$ix))"
+NY="$((2**$iy))"
+NZ="$(((2**$iz)+1))"
+
+# set total number of MPI processes requested
+if [[ "$multinode" == "1" && "$part_flag" == 1 ]]; then
+ NNT="$(($NYCPU*$NZCPU+$nodesize))"
+elif [[ "$multinode" == "0"  && "$part_flag" == 1 ]]; then
+ NNT="$(($NYCPU*$NZCPU))"
+elif [ "$part_flag" == 0 ]; then
+ NNT="$(($NYCPU*$NZCPU))"
+fi
 
 # copy executable and edit it
 cp ./go.sh ./set_run
@@ -497,6 +549,12 @@ sed -i "" "s/Dboundary/$D/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/Eboundary/$E/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 else
 sed -i "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
@@ -558,6 +616,12 @@ sed -i "s/Dboundary/$D/g" ./set_run/sc_compiled/input.f90
 sed -i "s/Eboundary/$E/g" ./set_run/sc_compiled/input.f90
 sed -i "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
 sed -i "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
+sed -i "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
+sed -i "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
+sed -i "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
+sed -i "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
+sed -i "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
+sed -i "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 fi
 # end of input file editing
 
@@ -612,7 +676,12 @@ cp ./source_code/define_address.f90 ./set_run/sc_compiled/
 cp ./source_code/define_dual_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/swap_grid.f90 ./set_run/sc_compiled/
 cp ./source_code/shrink.f90 ./set_run/sc_compiled/
-
+cp ./source_code/split_comm.f90 ./set_run/sc_compiled/
+cp ./source_code/initialize_particle.f90 ./set_run/sc_compiled/
+cp ./source_code/part_fluid_comm.f90 ./set_run/sc_compiled/
+cp ./source_code/velocity_interpolator.f90 ./set_run/sc_compiled/
+cp ./source_code/lagrangian_tracker.f90 ./set_run/sc_compiled/
+cp ./source_code/save_flow_comm.f90 ./set_run/sc_compiled/
 
 cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
@@ -655,7 +724,7 @@ fi
 if [ "$psi_flag" == "1" ]; then
   if [ "$in_condpsi" == "0" ]; then
     echo "$psi_mean                         ! mean surfactant" > ./set_run/sc_compiled/input_surfactant.f90
-  elif [ "$in_condpsi" -ge "2" ] && [ "$in_condpsi" -le "5" ]; then
+  elif [[ "$in_condpsi" -ge "2"  &&  "$in_condpsi" -le "5" ]]; then
     echo "$psi_bulk                         ! bulk surfactant" > ./set_run/sc_compiled/input_surfactant.f90
   fi
 fi
@@ -663,6 +732,12 @@ fi
 if [ "$temp_flag" == "1" ]; then
   if [ "$in_cond_temp" == "0" ]; then
     echo "$temp_mean                         ! mean temperature" > ./set_run/sc_compiled/input_temperature.f90
+  fi
+fi
+
+if [ "$part_flag" == "1" ]; then
+  if [ "$in_cond_part_pos" == "2" ]; then
+    echo "$part_height                         ! z height of x-y particle layer" > ./set_run/sc_compiled/input_particle.f90
   fi
 fi
 
@@ -739,6 +814,25 @@ sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
+sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
+sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/velocity_interpolator.f90
+sed -i "" "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -803,6 +897,25 @@ sed -i "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
+sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
+sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/velocity_interpolator.f90
+sed -i "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 fi
 
 if [ "$machine" == "4" ]; then

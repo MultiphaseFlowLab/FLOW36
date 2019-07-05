@@ -2,12 +2,13 @@ module commondata
  implicit none
  integer, parameter :: nx=nnx, ny=nny, nz=nnz
  integer, parameter :: nycpu=nnycpu, nzcpu=nnzcpu
- integer :: rank, ntask
+ integer :: rank,ntask,ntask_gl,ntask_sh,rank_loc
+ integer :: nodes,leader,flow_comm_lim
 ! optional parameter for MPI subroutine with USE MPI_F08, included so that the code is retrocompatible with USE MPI
  integer :: ierr
 ! for use mpi_f08
 !type(mpi_comm) :: cart_comm
- integer :: cart_comm
+ integer :: cart_comm,flow_comm,part_comm,comm_comm
  double precision :: xl,yl
  character(len=50) :: folder='./results'
 end module commondata
@@ -40,6 +41,7 @@ module velocity
  double precision, allocatable, dimension(:,:,:,:) :: uc_fg, vc_fg, wc_fg
  double precision, allocatable :: wa2(:,:,:), wa3(:,:,:)
  double precision, allocatable, dimension(:,:,:,:) :: sgradpx,sgradpy
+ double precision, allocatable, dimension(:,:,:) :: forx,fory,forz
 end module velocity
 
 
@@ -94,6 +96,18 @@ end module temperature
 
 
 
+module particle
+ integer :: part_flag,part_number,in_cond_part_pos,in_cond_part_vel
+ integer, allocatable, dimension(:,:) :: part_index
+ double precision :: stokes,dens_part,d_par
+ double precision, pointer, dimension(:,:) :: xp,up
+ double precision, pointer, dimension(:,:,:) :: uf,vf,wf,fb_x,fb_y,fb_z
+ ! mpi shared memory synchronization windows
+ integer :: window_u,window_v,window_w,window_fx,window_fy,window_fz,window_xp,window_up
+end module particle
+
+
+
 module velocity_old
  ! store velocities at t=n-1, needed for non-linear part of time derivatives for non-matched densities case
  double precision, allocatable :: ucp(:,:,:,:), vcp(:,:,:,:), wcp(:,:,:,:)
@@ -105,6 +119,7 @@ module mpiIO
  integer :: ftype,stype
  integer :: ftype_fg,stype_fg
  integer :: sp_save_comm,sp_save_comm_fg
+ integer :: part_save
 end module mpiIo
 
 
@@ -149,3 +164,10 @@ module shrink_grid
  integer, dimension(3) :: dimc,dimc_fg
  integer :: up,up_fg
 end module shrink_grid
+
+
+
+module comm_pattern
+ integer, dimension(4) :: chunk_size
+ integer, allocatable, dimension(:,:) ::saved_size,address_start
+end module comm_pattern

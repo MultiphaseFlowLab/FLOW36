@@ -22,7 +22,7 @@ fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
 !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
@@ -67,7 +67,7 @@ fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
 
 offset=0
 
-! call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+! call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 call mpi_file_open(sp_save_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
@@ -111,7 +111,7 @@ fname=trim(folder)//'/'//trim(namevar)//'_fg_'//time//'.dat'
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
 !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
@@ -157,7 +157,7 @@ fname=trim(folder)//'/'//trim(namevar)//'_fg_'//time//'.dat'
 
 offset=0
 
-! call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+! call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 call mpi_file_open(sp_save_comm_fg,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
@@ -205,6 +205,44 @@ end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+subroutine write_output_part(var,nt,namevar)
+
+use mpi
+use mpiIO
+use commondata
+use particle
+
+integer :: nt
+integer :: f_handle ! file handle
+integer(mpi_offset_kind) :: offset
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+double precision :: var(part_number,3),varloc(part_index(rank_loc+1,2),3)
+
+write(time,'(I8.8)') nt
+
+fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
+
+offset=0
+varloc=var(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)
+
+call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+call mpi_file_close(f_handle,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 subroutine write_failure(nt)
 
 use commondata
@@ -213,6 +251,7 @@ use phase_field
 use sim_par
 use surfactant
 use temperature
+use particle
 
 use, intrinsic :: ISO_C_BINDING
 
@@ -223,6 +262,12 @@ integer :: nt,ren
 logical :: check
 
 #define machine machineflag
+#define phiflag phicompflag
+#define psiflag psicompflag
+#define tempflag tempcompflag
+#define particles particlecompflag
+#define stat_dump stats_dump_frequency
+#define spectral_flag savespectralflag
 
 #if machine == 4
 interface
@@ -235,12 +280,6 @@ interface
 end interface
 #endif
 
-#define phiflag phicompflag
-#define psiflag psicompflag
-#define tempflag tempcompflag
-#define stat_dump stats_dump_frequency
-
-#define spectral_flag savespectralflag
 
 if(rank.eq.0)then
   inquire(file=trim(folder)//'/backup/time_check.dat',exist=check)
@@ -277,6 +316,10 @@ if(rank.eq.0)then
     ren=rename(trim(folder)//'/backup/T.dat'//C_NULL_CHAR,trim(folder)//'/backup/T_old.dat'//C_NULL_CHAR)
 #endif
 #endif
+#if particles == 1
+    ren=rename(trim(folder)//'/backup/pos.dat'//C_NULL_CHAR,trim(folder)//'/backup/pos_old.dat'//C_NULL_CHAR)
+    ren=rename(trim(folder)//'/backup/vel.dat'//C_NULL_CHAR,trim(folder)//'/backup/vel_old.dat'//C_NULL_CHAR)
+#endif
   endif
   in=trim(folder)//'/time_check.dat'
   out=trim(folder)//'/backup/time_check.dat'
@@ -299,6 +342,7 @@ if(rank.eq.0)then
   out=trim(folder)//'/backup/power_yspectra.dat'
   call copy(in,out)
 #endif
+! if machine != 4
 #else
   if(check.eqv..true.)then
     call rename(trim(folder)//'/backup/time_check.dat',trim(folder)//'/backup/time_check_old.dat')
@@ -330,6 +374,10 @@ if(rank.eq.0)then
     call rename(trim(folder)//'/backup/T.dat',trim(folder)//'/backup/T_old.dat')
 #endif
 #endif
+#if particles == 1
+    call rename(trim(folder)//'/backup/pos.dat',trim(folder)//'/backup/pos_old.dat')
+    call rename(trim(folder)//'/backup/vel.dat',trim(folder)//'/backup/vel_old.dat')
+#endif
   endif
   call system('cp '//trim(folder)//'/time_check.dat '//trim(folder)//'/backup/time_check.dat')
 #if stat_dump > 0
@@ -349,41 +397,48 @@ if(rank.eq.0)then
 endif
 
 
+if(rank.lt.flow_comm_lim)then
 #if spectral_flag == 1
-call write_output_recovery_s(uc,'uc   ')
-call write_output_recovery_s(vc,'vc   ')
-call write_output_recovery_s(wc,'wc   ')
+  call write_output_recovery_s(uc,'uc   ')
+  call write_output_recovery_s(vc,'vc   ')
+  call write_output_recovery_s(wc,'wc   ')
 #if phiflag == 1
-call write_output_recovery_s(phic,'phic ')
+  call write_output_recovery_s(phic,'phic ')
 #if psiflag == 1
-call fine2coarse(psic_fg,psic)
-call write_output_recovery_s_fg(psic_fg,'psic ')
+  call fine2coarse(psic_fg,psic)
+  call write_output_recovery_s_fg(psic_fg,'psic ')
 #endif
 #endif
 #if tempflag == 1
-call write_output_recovery_s(thetac,'Tc   ')
+  call write_output_recovery_s(thetac,'Tc   ')
 #endif
 #elif spectral_flag == 0
-call spectral_to_phys(uc,u,0)
-call spectral_to_phys(vc,v,0)
-call spectral_to_phys(wc,w,0)
-call write_output_recovery(u,'u    ')
-call write_output_recovery(v,'v    ')
-call write_output_recovery(w,'w    ')
+  call spectral_to_phys(uc,u,0)
+  call spectral_to_phys(vc,v,0)
+  call spectral_to_phys(wc,w,0)
+  call write_output_recovery(u,'u    ')
+  call write_output_recovery(v,'v    ')
+  call write_output_recovery(w,'w    ')
 #if phiflag == 1
-call spectral_to_phys(phic,phi,0)
-call write_output_recovery(phi,'phi  ')
+  call spectral_to_phys(phic,phi,0)
+  call write_output_recovery(phi,'phi  ')
 #if psiflag == 1
-call fine2coarse(psic_fg,psic)
-call spectral_to_phys(psic,psi,0)
-call write_output_recovery_fg(psi_fg,'psi  ')
+  call fine2coarse(psic_fg,psic)
+  call spectral_to_phys(psic,psi,0)
+  call write_output_recovery_fg(psi_fg,'psi  ')
 #endif
 #endif
 #if tempflag == 1
-call spectral_to_phys(thetac,theta,0)
-call write_output_recovery(theta,'T    ')
+  call spectral_to_phys(thetac,theta,0)
+  call write_output_recovery(theta,'T    ')
 #endif
 #endif
+endif
+
+if(rank.ge.leader)then
+  call write_output_part_recovery(xp,'pos  ')
+  call write_output_part_recovery(up,'vel  ')
+endif
 
 if(rank.eq.0) write(*,*) 'Checkpoint written'
 
@@ -413,7 +468,7 @@ fname=trim(folder)//'/backup/'//trim(namevar)//'.dat'
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'internal',mpi_info_null,ierr)
 
@@ -452,7 +507,7 @@ fname=trim(folder)//'/backup/'//trim(namevar)//'.dat'
 
 offset=0
 
-! call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+! call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 call mpi_file_open(sp_save_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
@@ -494,7 +549,7 @@ fname=trim(folder)//'/backup/'//trim(namevar)//'_fg.dat'
 
 offset=0
 
-call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'internal',mpi_info_null,ierr)
 
@@ -534,7 +589,7 @@ fname=trim(folder)//'/backup/'//trim(namevar)//'_fg.dat'
 
 offset=0
 
-! call mpi_file_open(mpi_comm_world,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+! call mpi_file_open(flow_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 call mpi_file_open(sp_save_comm_fg,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
 
@@ -548,6 +603,41 @@ call mpi_file_write_all(f_handle,ucd,dimc_fg(1)*dimc_fg(2)*dimc_fg(3)*2,mpi_doub
 
 call mpi_file_close(f_handle,ierr)
 
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine write_output_part_recovery(var,namevar)
+
+use mpi
+use mpiIO
+use commondata
+use particle
+
+integer :: f_handle ! file handle
+integer(mpi_offset_kind) :: offset
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+double precision :: var(part_number,3),varloc(part_index(rank_loc+1,2),3)
+
+fname=trim(folder)//'/backup/'//trim(namevar)//'.dat'
+
+offset=0
+varloc=var(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)
+
+call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+call mpi_file_close(f_handle,ierr)
 
 return
 end

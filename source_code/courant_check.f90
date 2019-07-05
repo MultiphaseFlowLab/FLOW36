@@ -51,7 +51,7 @@ if(isnan(psic_fg(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #endif
 #endif
 
-call mpi_allreduce(lcomax,gcomax,1,mpi_double,mpi_max,mpi_comm_world,ierr)
+call mpi_allreduce(lcomax,gcomax,1,mpi_double,mpi_max,flow_comm,ierr)
 
 if(rank.eq.0) write(*,'(1x,a,es8.2)') 'check on Courant number : ',gcomax
 

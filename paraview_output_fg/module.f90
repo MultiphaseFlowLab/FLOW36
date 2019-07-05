@@ -7,7 +7,8 @@ module commondata
  integer :: y_start,y_end,dny
  integer :: z_start,z_end,dnz
  integer :: uflag,vflag,wflag,upflag,vorflag,strflag,topflag,marflag
- integer :: phiflag, psiflag,tempflag
+ integer :: phiflag,psiflag,tempflag,partposflag,partvelflag
+ integer :: part_number
  integer :: spectral
  integer :: exp_x,exp_y,exp_z
 
@@ -16,7 +17,8 @@ module commondata
  double precision :: xl,yl
  double precision, allocatable, dimension(:,:,:) :: u,v,w,phi,psi,theta,up,vp,wp,omx,omy,omz,strx,stry,strz,Qtop,marx,mary,marz
  double precision, allocatable, dimension(:,:,:,:) :: uc,vc,wc,phic,psic,thetac
- double precision, allocatable,dimension(:) :: x,y,z, xfg,yfg,zfg
+ double precision, allocatable, dimension(:) :: x,y,z, xfg,yfg,zfg
+ double precision, allocatable, dimension(:,:) :: xpar,upar
 end module commondata
 
 

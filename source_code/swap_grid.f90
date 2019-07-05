@@ -73,10 +73,10 @@ varf=0.0d0
         tag=13
         if(rank.eq.c2fadd(i,1)) then
           ! send
-          call mpi_ssend(bufs,numel,MPI_double_precision,c2fadd(i,2),tag,MPI_comm_world,ierr)
+          call mpi_ssend(bufs,numel,MPI_double_precision,c2fadd(i,2),tag,flow_comm,ierr)
         elseif(rank.eq.c2fadd(i,2)) then
           ! receive, sender=receiver already accounted for in internal copy
-          call mpi_recv(bufr,numel,MPI_double_precision,c2fadd(i,1),tag,MPI_comm_world,mpi_status_ignore,ierr)
+          call mpi_recv(bufr,numel,MPI_double_precision,c2fadd(i,1),tag,flow_comm,mpi_status_ignore,ierr)
           ! update fine grid variable
           ii=mod(c2fadd(i,1),nycpu)+1
           jj=int((c2fadd(i,1)-(ii-1))/nycpu)+1
@@ -188,10 +188,10 @@ varc=0.0d0
         tag=15
         if(rank.eq.f2cadd(i,1)) then
           ! send
-          call mpi_ssend(bufs,numel,MPI_double_precision,f2cadd(i,2),tag,MPI_comm_world,ierr)
+          call mpi_ssend(bufs,numel,MPI_double_precision,f2cadd(i,2),tag,flow_comm,ierr)
         elseif(rank.eq.f2cadd(i,2)) then
           ! receive, sender=receiver already accounted for in internal copy
-          call mpi_recv(bufr,numel,MPI_double_precision,f2cadd(i,1),tag,MPI_comm_world,mpi_status_ignore,ierr)
+          call mpi_recv(bufr,numel,MPI_double_precision,f2cadd(i,1),tag,flow_comm,mpi_status_ignore,ierr)
           ! update fine grid variable
           ii=mod(f2cadd(i,1),nycpu)+1
           jj=int((f2cadd(i,1)-(ii-1))/nycpu)+1

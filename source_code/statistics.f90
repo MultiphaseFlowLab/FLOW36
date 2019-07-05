@@ -471,7 +471,7 @@ do k=1,fpz
   enddo
 enddo
 
-call mpi_reduce(pm,ptm,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(pm,ptm,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 
 if(rank.eq.0)then
   ptm=ptm/dble(nx*ny)
@@ -490,7 +490,7 @@ do j=1,fpy
   enddo
 enddo
 
-call mpi_allreduce(pm,ptm,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
+call mpi_allreduce(pm,ptm,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
 
 pm=ptm/dble(nx*ny)
 
@@ -504,7 +504,7 @@ do k=1,fpz
   enddo
 enddo
 
-call mpi_reduce(ptrms,prms,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(ptrms,prms,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 
 prms=prms/dble(nx*ny)
 
@@ -542,10 +542,10 @@ vtm=vtm/dble(nx*ny)
 wtm=wtm/dble(nx*ny)
 ptrms=ptrms/dble(nx*ny)
 
-call mpi_allreduce(utm,um,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
-call mpi_allreduce(vtm,vm,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
-call mpi_allreduce(wtm,wm,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
-call mpi_allreduce(ptrms,ptm,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
+call mpi_allreduce(utm,um,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
+call mpi_allreduce(vtm,vm,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
+call mpi_allreduce(wtm,wm,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
+call mpi_allreduce(ptrms,ptm,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
 
 tmp1=0.0d0
 do j=1,fpy
@@ -556,7 +556,7 @@ do j=1,fpy
   enddo
 enddo
 
-call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 tmp2=tmp2/dble(nx*ny)
 
 budget_data(1:nz,1)=tmp2
@@ -586,7 +586,7 @@ do j=1,fpy
   enddo
 enddo
 
-call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 tmp2=tmp2/dble(nx*ny)
 
 budget_data(1:nz,2)=tmp2
@@ -613,7 +613,7 @@ do j=1,fpy
   enddo
 enddo
 
-call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 tmp2=tmp2/dble(nx*ny)
 
 budget_data(1:nz,3)=tmp2
@@ -642,7 +642,7 @@ do j=1,fpy
   enddo
 enddo
 
-call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 tmp2=tmp2/dble(nx*ny)
 
 budget_data(1:nz,4)=tmp2
@@ -842,7 +842,7 @@ do j=1,fpy
 enddo
 
 ! gather terms
-call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,mpi_comm_world,ierr)
+call mpi_reduce(tmp1,tmp2,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 tmp2=-tmp2/(re*dble(nx*ny))
 
 budget_data(1:nz,5)=tmp2
@@ -1074,9 +1074,9 @@ do j=1,fpy
   enddo
 enddo
 
-call mpi_allreduce(utm,um,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
-call mpi_allreduce(vtm,vm,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
-call mpi_allreduce(wtm,wm,nz,mpi_double_precision,mpi_sum,mpi_comm_world,ierr)
+call mpi_allreduce(utm,um,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
+call mpi_allreduce(vtm,vm,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
+call mpi_allreduce(wtm,wm,nz,mpi_double_precision,mpi_sum,flow_comm,ierr)
 
 um=um/dble(nx*ny)
 vm=vm/dble(nx*ny)
@@ -1096,7 +1096,7 @@ else
 endif
 
 ! create subcommunicator among ranks that contains z^+
-call mpi_comm_split(mpi_comm_world,flag,0,pl_comm,ierr)
+call mpi_comm_split(flow_comm,flag,0,pl_comm,ierr)
 
 utp=0.0d0
 vtp=0.0d0
@@ -1129,7 +1129,7 @@ call mpi_comm_free(pl_comm,ierr)
 
 ! if rank 0 is not in the new communicator it must be included
 if(rank.eq.0) flag=1
-call mpi_comm_split(mpi_comm_world,flag,0,red_comm,ierr)
+call mpi_comm_split(flow_comm,flag,0,red_comm,ierr)
 
 ! reduce velocity fluctuations to rank 0
 if(flag.eq.1)then
@@ -1192,7 +1192,7 @@ else
 endif
 
 ! create subcommunicator among ranks that contains z^+
-call mpi_comm_split(mpi_comm_world,flag,0,pl_comm,ierr)
+call mpi_comm_split(flow_comm,flag,0,pl_comm,ierr)
 
 utp=0.0d0
 vtp=0.0d0
@@ -1225,7 +1225,7 @@ call mpi_comm_free(pl_comm,ierr)
 
 ! if rank 0 is not in the new communicator it must be included
 if(rank.eq.0) flag=1
-call mpi_comm_split(mpi_comm_world,flag,0,red_comm,ierr)
+call mpi_comm_split(flow_comm,flag,0,red_comm,ierr)
 
 ! reduce velocity fluctuations to rank 0
 if(flag.eq.1)then
@@ -1285,7 +1285,7 @@ else
 endif
 
 ! create subcommunicator among ranks that contains z^+
-call mpi_comm_split(mpi_comm_world,flag,0,pl_comm,ierr)
+call mpi_comm_split(flow_comm,flag,0,pl_comm,ierr)
 
 utp=0.0d0
 vtp=0.0d0
@@ -1319,7 +1319,7 @@ call mpi_comm_free(pl_comm,ierr)
 
 ! if rank 0 is not in the new communicator it must be included
 if(rank.eq.0) flag=1
-call mpi_comm_split(mpi_comm_world,flag,0,red_comm,ierr)
+call mpi_comm_split(flow_comm,flag,0,red_comm,ierr)
 
 ! reduce velocity fluctuations to rank 0
 if(flag.eq.1)then

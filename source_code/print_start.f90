@@ -6,6 +6,10 @@ use phase_field
 use stats
 use surfactant
 use temperature
+use particle
+
+#define tracer tracerflag
+#define stokes_drag stokesflag
 
 write(*,*)
 write(*,*) '-----------------------------------------------------------------------'
@@ -190,6 +194,41 @@ if(theta_flag.eq.1)then
 #endif
  write(*,'(1x,a40,es8.1)') 'Ra : ',Ra
  write(*,'(1x,a40,f8.3)') 'Pr : ',Pr
+endif
+
+if(part_flag.eq.1)then
+ write(*,'(1x,a)') 'Particle parameters'
+#if tracer == 1
+ write(*,'(1x,a)') 'Tracer particles'
+#elif tracer == 0
+ write(*,'(1x,a)') 'Inertial particles'
+#if stokes_drag == 1
+ write(*,'(1x,a)') 'Stokes drag'
+#elif stokes_drag == 0
+ write(*,'(1x,a)') 'Schiller-Naumann drag'
+#endif
+#endif
+ write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
+ write(*,'(1x,a40,f12.4)') 'Stokes : ',stokes
+ write(*,'(1x,a40,f12.5)') 'Density ratio particle/fluid : ',dens_part
+ if(in_cond_part_pos.eq.0)then
+  write(*,'(1x,a)') 'Initialize random particle position'
+ elseif(in_cond_part_pos.eq.1)then
+  write(*,'(1x,a)') 'Read particle position from data file'
+ elseif(in_cond_part_pos.eq.2)then
+  write(*,'(1x,a)') 'Initialize random particle position on a x-y plane'
+ else
+  write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
+ endif
+ if(in_cond_part_vel.eq.0)then
+  write(*,'(1x,a)') 'Initialize zero particle velocity'
+ elseif(in_cond_part_vel.eq.1)then
+  write(*,'(1x,a)') 'Initialize fluid velocity at particle position'
+ elseif(in_cond_part_vel.eq.2)then
+  write(*,'(1x,a)') 'Read particle velocity from data file'
+ else
+  write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
+ endif
 endif
 
 write(*,*) '-----------------------------------------------------------------------'
