@@ -6,7 +6,8 @@
 # 4 : Vesta (ANL)
 # 5 : Marconi A2 KNL
 # 6 : Theta (ANL)
-machine="0"
+# 7 : Bridges (PSC)
+machine="7"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -74,6 +75,19 @@ module load craype-hugepages16M
 
 cp ./Theta/makefile ./makefile
 cp ./Theta/go.sh ./go.sh
+
+savespectral="0"
+elif [ "$machine" == "7" ]; then
+echo "=                                  Bridges                                   ="
+module purge
+# load modules
+#module load pgi/19.4
+#module load mpi/pgi_openmpi/19.4
+module load intel
+mpdule load mpi/intel_mpi 
+module load fftw3/3.3.4
+cp ./Bridges/makefile ./makefile
+cp ./Bridges/go.sh ./go.sh
 
 savespectral="0"
 fi
