@@ -27,6 +27,7 @@ integer :: ntime
 #define expx expansionx
 #define expy expansiony
 #define expz expansionz
+#define cpiflag cpicompflag
 
 
 ! flow part
@@ -43,14 +44,21 @@ if(rank.lt.flow_comm_lim)then
  call convective_ns(s1,s2,s3)
 
 ! add mean pressure gradient to S term
-#if match_dens == 2
+#if cpiflag == 0
+  #if match_dens == 2
  ! rescale NS equation if rhor > 1 for improved stability
- s1=s1-sgradpx/rhor
- s2=s2-sgradpy/rhor
-#else
- s1=s1-sgradpx
- s2=s2-sgradpy
+  s1=s1-sgradpx/rhor
+  s2=s2-sgradpy/rhor
+  #else
+  s1=s1-sgradpx
+  s2=s2-sgradpy
+  #endif
+#elif cpiflag == 1
+  print*,'grapdx rank',rank,'gradpx',gradpx
+  s1=s1-sgradpx*dabs(gradpx)
+  s2=s2-sgradpy*dabs(gradpy)
 #endif
+
 
 ! add non-linear part of phase field to N-S non-linear terms
 #if phiflag == 1

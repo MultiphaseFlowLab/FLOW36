@@ -56,7 +56,7 @@ end module wavenumber
 
 module sim_par
  double precision, parameter :: pi=3.14159265358979
- double precision :: Re, dt, gradpx, gradpy, Co
+ double precision :: Re, dt, gradpx, gradpy, Co, repow
  double precision :: gamma
 ! b.c. on w and omega for Helmholtz problem
  double precision, dimension(2) :: p_u,q_u,r_u,p_v,q_v,r_v,p_w,q_w,r_w,p_o,q_o,r_o,zp

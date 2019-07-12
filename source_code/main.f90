@@ -246,7 +246,7 @@ endif
      endif
 #endif
      call save_flow_comm(i)
-    endif
+     endif
 
 #if particles == 1
     ! save particle data (part_comm)
@@ -265,7 +265,7 @@ endif
 #endif
 
     if(rank.eq.0) call sim_check(i,int_1)
-
+    call mpi_bcast(gradpx,1,mpi_double_precision,0,flow_comm,ierr)
     ! the MPI all reduce is too costly, so it has been replaced by mean time rank 0
     ! write to screen time elapsed at each time step
     etime=mpi_wtime()

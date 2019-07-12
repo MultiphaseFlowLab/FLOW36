@@ -7,7 +7,7 @@
 # 5 : Marconi A2 KNL
 # 6 : Theta (ANL)
 # 7 : Bridges (PSC)
-machine="7"
+machine="0"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -104,9 +104,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="1" # integer
-iy="8" # integer
-iz="8" # integer
+ix="6" # integer
+iy="6" # integer
+iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -119,7 +119,7 @@ NZCPU="4" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
-nodesize="68" # integer
+nodesize="4" # integer
 
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
@@ -135,30 +135,34 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="3" # integer
 
 # Reynolds number
-Re="1.0" # real (double)
+Re="150.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
 
 # mean pressure gradient (x and y), defined ad (p_out-p_in)/L
-gradpx="0.0" # real (double)
-gradpy="0.0" # real (double)
+gradpx="-1.0" # real (double)
+gradpy=" 0.0" # real (double)
+
+# Constant power input apporach (adaptive gradpx)
+cpi_flag="0"
+repow="30.600" #real (double) Flow-rate @ gradpx =1
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
-lx="0.001" # real (double)
+lx="4.0" # real (double)
 ly="2.0" # real (double)
 
 # initial time step
 nstart="0" # integer
 
 # final time step
-nend="5" #integer (up to 8 digits)
+nend="100" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="2000" # integer
+dump="20" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -199,7 +203,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="1" # integer
+phi_flag="0" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -314,7 +318,7 @@ buoyancy="0" # integer
 ################################################################################
 # Surfactant only
 # surfactant flag, 0 : surfactant deactivated, 1 : surfactant activated
-psi_flag="1" # integer
+psi_flag="0" # integer
 
 # surfactant Peclet number
 Pe_psi="100.0" # real (double)
@@ -513,6 +517,7 @@ sed -i "" "s/Renum/$Re/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/courantnum/$Co/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/gradpx/$gradpx/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/gradpy/$gradpy/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/repower/$repow/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/len_x/$lx/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/len_y/$ly/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/nstart/$nstart/g" ./set_run/sc_compiled/input.f90
@@ -580,6 +585,7 @@ sed -i "s/Renum/$Re/g" ./set_run/sc_compiled/input.f90
 sed -i "s/courantnum/$Co/g" ./set_run/sc_compiled/input.f90
 sed -i "s/gradpx/$gradpx/g" ./set_run/sc_compiled/input.f90
 sed -i "s/gradpy/$gradpy/g" ./set_run/sc_compiled/input.f90
+sed -i "s/repower/$repow/g" ./set_run/sc_compiled/input.f90
 sed -i "s/len_x/$lx/g" ./set_run/sc_compiled/input.f90
 sed -i "s/len_y/$ly/g" ./set_run/sc_compiled/input.f90
 sed -i "s/nstart/$nstart/g" ./set_run/sc_compiled/input.f90
@@ -785,6 +791,8 @@ sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output.f90
+sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
+sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
@@ -869,6 +877,8 @@ sed -i "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/main.f90
 sed -i "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/marconi_flag/$marconi_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
+sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
