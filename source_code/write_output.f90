@@ -435,10 +435,12 @@ if(rank.lt.flow_comm_lim)then
 #endif
 endif
 
+#if particles == 1
 if(rank.ge.leader)then
   call write_output_part_recovery(xp,'pos  ')
   call write_output_part_recovery(up,'vel  ')
 endif
+#endif
 
 if(rank.eq.0) write(*,*) 'Checkpoint written'
 
