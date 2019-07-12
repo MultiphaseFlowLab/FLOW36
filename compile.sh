@@ -941,10 +941,10 @@ fi
 
 if [ "$machine" == "7" ]; then
 # OpenMPI requires iadd to be integer(KIND=MPI_ADDRESS_KIND)
-sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/xy2xz.f90
-sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/xz2xy.f90
-sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/xz2yz.f90
-sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/yz2xz.f90
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/xz2yz.f90
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
 
