@@ -3,7 +3,8 @@ subroutine xy2xz(wa,uc,dims,ngxx,nsxx,ngyy,npyy,ngzz,npzz)
 use mpi
 use commondata
 
-integer :: req,iadd
+integer :: req
+integer :: iadd
 
 integer :: dims(2)
 integer :: source,dest,disp,direction,numel,indz,indy,rz,ry
@@ -95,7 +96,8 @@ use mpi
 use commondata
 use dual_grid
 
-integer :: req,iadd
+integer :: req
+integer :: iadd
 
 integer :: dims(2)
 integer :: source,dest,disp,direction,numel,indz,indy,rz,ry

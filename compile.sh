@@ -81,10 +81,10 @@ elif [ "$machine" == "7" ]; then
 echo "=                                  Bridges                                   ="
 module purge
 # load modules
-#module load pgi/19.4
-#module load mpi/pgi_openmpi/19.4
-module load intel
-mpdule load mpi/intel_mpi 
+module load pgi/19.4
+module load mpi/pgi_openmpi/19.4
+#module load intel
+#module load mpi/intel_mpi
 module load fftw3/3.3.4
 cp ./Bridges/makefile ./makefile
 cp ./Bridges/go.sh ./go.sh
@@ -937,6 +937,14 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/xz2xy.f90
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/xz2yz.f90
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
+fi
+
+if [ "$machine" == "7" ]; then
+# OpenMPI requires iadd to be integer(KIND=MPI_ADDRESS_KIND)
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/xy2xz.f90
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/xz2xy.f90
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/xz2yz.f90
+sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND)/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
 

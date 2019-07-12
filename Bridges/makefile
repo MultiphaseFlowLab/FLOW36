@@ -1,14 +1,14 @@
 #F90	= $(FC)
 
-#FC	= mpif90
-FC      = mpiifort
+FC	= mpifort
+#FC      = mpiifort
 LD	= $(FC)
 SWP	=
 RM	= /bin/rm -f
 MP	=
 OLEVEL	= -O3
-#FOPTS	= -mcmodel=medium -cpp -module ./set_run/sc_compiled/ -Rset_run/sc_compiled/
-FOPTS   = -align none -mcmodel medium -axMIC-AVX512 -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
+FOPTS	= -mcmodel=medium -cpp -module ./set_run/sc_compiled/ -Rset_run/sc_compiled/
+#FOPTS   = -align none -mcmodel medium -axMIC-AVX512 -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
 FFLAGS	= $(FOPTS) $(OLEVEL)
 LIBS    =  -lfftw3 -lm -ldl
 

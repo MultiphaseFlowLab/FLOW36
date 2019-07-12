@@ -5,7 +5,8 @@ use commondata
 
 ! for use mpi_f08
 !type(mpi_request) :: req,reqs(2)
-integer :: req,iadd
+integer :: req
+integer :: iadd
 
 integer :: dims(2)
 integer :: source,dest,disp,direction,numel,indx,indy,rx,ry
@@ -100,7 +101,8 @@ use dual_grid
 
 ! for use mpi_f08
 !type(mpi_request) :: req,reqs(2)
-integer :: req,iadd
+integer :: req
+integer :: iadd
 
 integer :: dims(2)
 integer :: source,dest,disp,direction,numel,indx,indy,rx,ry
