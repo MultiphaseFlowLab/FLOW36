@@ -947,7 +947,7 @@ sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc
 sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/yz2xz.f90
 sed -i "s/integer :: number/integer(KIND=MPI_ADDRESS_KIND) :: number/g" ./set_run/sc_compiled/initialize_particle.f90
 # PGI compiler does not have isnan
-sed -i "s//use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
+sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
 fi
 
 

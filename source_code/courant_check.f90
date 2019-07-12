@@ -7,6 +7,7 @@ use par_size
 use grid
 use phase_field
 use surfactant
+!only for PGI compiler
 
 double precision, dimension(nx,fpz,fpy) :: u,v,w
 double precision :: lcomax,gcomax,dx,dy,dz(nz)
