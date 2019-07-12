@@ -354,7 +354,7 @@ re_bulk=re_bulk*re
 
 #if cpiflag == 1
   gradpx=Repow*re/(2*re_bulk)
-  print*,'New gradpx',gradpx
+!  print*,'New gradpx',gradpx
 #endif
 
 

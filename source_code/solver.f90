@@ -54,7 +54,7 @@ if(rank.lt.flow_comm_lim)then
   s2=s2-sgradpy
   #endif
 #elif cpiflag == 1
-  print*,'grapdx rank',rank,'gradpx',gradpx
+!  print*,'grapdx rank',rank,'gradpx',gradpx
   s1=s1-sgradpx*dabs(gradpx)
   s2=s2-sgradpy*dabs(gradpy)
 #endif
