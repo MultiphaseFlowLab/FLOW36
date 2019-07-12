@@ -5,17 +5,17 @@
 #SBATCH --error error.err                   # std-error file
 #SBATCH --output output.out                 # std-output file
 #SBATCH --account=ac560tp                   # account number
-#SBATCH --reservation=openacc2
+#SBATCH --reservation=challenge
 #SBATCH --job-name=name                     # job name (for squeue)
 
 # load modules
 module purge
-#module load pgi/19.4
-#module load mpi/pgi_openmpi/19.4
-#module load fftw3/3.3.4
-module load intel
-mpdule load mpi/intel_mpi
+module load pgi/19.4
+module load mpi/pgi_openmpi/19.4
 module load fftw3/3.3.4
+#module load intel
+#module load mpi/intel_mpi
+#module load fftw3/3.3.4
 
 
 mpirun -n NUMTASKS ./sc_compiled/flow36
