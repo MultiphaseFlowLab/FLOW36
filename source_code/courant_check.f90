@@ -38,6 +38,8 @@ enddo
 #if phi_flag == 1
 #if machine == 4
 if(isnan(phic(1,1,1,1)).eq.1) lcomax=7.0d0
+#elif machine == 7
+if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #else
 if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #endif
@@ -45,8 +47,10 @@ if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #if psi_flag == 1
 #if machine == 4
 if(isnan(psic_fg(1,1,1,1)).eq.1) lcomax=7.0d0
+#elif machine == 7
+if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #else
-if(isnan(psic_fg(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #endif
 #endif
 #endif
@@ -57,6 +61,11 @@ if(rank.eq.0) write(*,'(1x,a,es8.2)') 'check on Courant number : ',gcomax
 
 #if machine == 4
 if((gcomax.gt.co).or.(isnan(gcomax).eq.1))then
+  if(rank.eq.0) write(*,'(1x,a,es8.2,a,f8.3)') 'Courant number exceeds maximum value : ',gcomax,'>',co
+  call exit(0)
+endif
+#elif machine == 7
+if((gcomax.gt.co).or.(ieee_is_nan(gcomax).eq.1))then
   if(rank.eq.0) write(*,'(1x,a,es8.2,a,f8.3)') 'Courant number exceeds maximum value : ',gcomax,'>',co
   call exit(0)
 endif

@@ -940,11 +940,14 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 fi
 
 if [ "$machine" == "7" ]; then
-# OpenMPI requires iadd to be integer(KIND=MPI_ADDRESS_KIND)
+# OpenMPI requires iadd and number to be integer(KIND=MPI_ADDRESS_KIND)
 sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
 sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/xz2yz.f90
 sed -i "s/integer :: iadd/integer(KIND=MPI_ADDRESS_KIND) :: iadd/g" ./set_run/sc_compiled/yz2xz.f90
+sed -i "s/integer :: number/integer(KIND=MPI_ADDRESS_KIND) :: number/g" ./set_run/sc_compiled/initialize_particle.f90
+# PGI compiler does not have isnan
+sed -i "s//use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
 fi
 
 

@@ -8,8 +8,8 @@ use particle
 
 type(c_ptr) :: baseptr
 integer(kind=mpi_address_kind) :: varsize,lb
-integer :: dispunit
-integer :: number,delta,range
+integer :: number
+integer :: dispunit,delta,range
 integer :: shape3(3),shape2(2)
 integer :: i
 
