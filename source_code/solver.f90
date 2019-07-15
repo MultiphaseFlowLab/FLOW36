@@ -45,18 +45,23 @@ if(rank.lt.flow_comm_lim)then
 
 ! add mean pressure gradient to S term
 #if cpiflag == 0
-  #if match_dens == 2
+#if match_dens == 2
  ! rescale NS equation if rhor > 1 for improved stability
   s1=s1-sgradpx/rhor
   s2=s2-sgradpy/rhor
-  #else
+#else
   s1=s1-sgradpx
   s2=s2-sgradpy
-  #endif
+#endif
 #elif cpiflag == 1
-!  print*,'grapdx rank',rank,'gradpx',gradpx
+#if match_dens == 2
+ ! rescale NS equation if rhor > 1 for improved stability
+  s1=s1-sgradpx*dabs(gradpx)/rhor
+  s2=s2-sgradpy*dabs(gradpy)/rhor
+#else
   s1=s1-sgradpx*dabs(gradpx)
   s2=s2-sgradpy*dabs(gradpy)
+#endif
 #endif
 
 

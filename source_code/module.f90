@@ -61,6 +61,7 @@ module sim_par
 ! b.c. on w and omega for Helmholtz problem
  double precision, dimension(2) :: p_u,q_u,r_u,p_v,q_v,r_v,p_w,q_w,r_w,p_o,q_o,r_o,zp
  integer :: bc_up, bc_low
+ integer :: cpi_flag
  integer :: restart, nt_restart, in_cond, dump_failure
  integer :: nstart, nend, ndump,sdump
 end module sim_par

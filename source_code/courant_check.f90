@@ -36,6 +36,14 @@ do j=1,fpy
   enddo
 enddo
 
+#if machine == 4
+if(isnan(gradpx).eq.1) lcomax=7.0d0
+#elif machine == 7
+if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
+#else
+if(isnan(gradpx).eqv..true.) lcomax=7.0d0
+#endif
+
 #if phi_flag == 1
 #if machine == 4
 if(isnan(phic(1,1,1,1)).eq.1) lcomax=7.0d0

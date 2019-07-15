@@ -49,9 +49,12 @@ write(*,'(1x,a40,i6)') 'Statistics saving frequency : ',stat_dump
 write(*,'(1x,a40,i6)') 'Statistics calculation first timestep : ',stat_start
 write(*,'(1x,a40,es8.2)') 'dt : ',dt
 write(*,*)
-write(*,'(1x,a40,f8.1)') 'Re : ',Re
+write(*,'(1x,a40,f8.1)') 'shear Re : ',Re
 write(*,'(1x,a40,f8.3)') 'Co : ',Co
 write(*,'(1x,a40,3(a,f5.1),a)') 'Mean pressure gradient [x,y,z] : ','[',gradpx,',',gradpy,',',0.0d0,']'
+if(cpi_flag.eq.1)then
+ write(*,'(1x,a40,f8.1)') 'power Re : ',repow
+endif
 if(bc_up.eq.0)then
  write(*,'(1x,a57)') '@ z=1  : no-slip condition'
 elseif(bc_up.eq.1)then

@@ -104,9 +104,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="6" # integer
-iy="6" # integer
-iz="6" # integer
+ix="5" # integer
+iy="5" # integer
+iz="5" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -119,7 +119,7 @@ NZCPU="4" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
-nodesize="4" # integer
+nodesize="68" # integer
 
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
@@ -135,7 +135,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="3" # integer
+incond="0" # integer
 
 # Reynolds number
 Re="150.0" # real (double)
@@ -147,9 +147,9 @@ Co="0.2" # real (double)
 gradpx="-1.0" # real (double)
 gradpy=" 0.0" # real (double)
 
-# Constant power input apporach (adaptive gradpx)
+# Constant power input approach (adaptive gradpx)
 cpi_flag="0"
-repow="30.600" #real (double) Flow-rate @ gradpx =1
+repow="30.6" #real (double) Flow-rate @ gradpx =1
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
 lx="4.0" # real (double)
@@ -159,10 +159,10 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="100" #integer (up to 8 digits)
+nend="5" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="20" # integer
+dump="2000" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -517,6 +517,7 @@ sed -i "" "s/Renum/$Re/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/courantnum/$Co/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/gradpx/$gradpx/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/gradpy/$gradpy/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/cpiflag/$cpi_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/repower/$repow/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/len_x/$lx/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/len_y/$ly/g" ./set_run/sc_compiled/input.f90
@@ -585,6 +586,7 @@ sed -i "s/Renum/$Re/g" ./set_run/sc_compiled/input.f90
 sed -i "s/courantnum/$Co/g" ./set_run/sc_compiled/input.f90
 sed -i "s/gradpx/$gradpx/g" ./set_run/sc_compiled/input.f90
 sed -i "s/gradpy/$gradpy/g" ./set_run/sc_compiled/input.f90
+sed -i "s/cpiflag/$cpi_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "s/repower/$repow/g" ./set_run/sc_compiled/input.f90
 sed -i "s/len_x/$lx/g" ./set_run/sc_compiled/input.f90
 sed -i "s/len_y/$ly/g" ./set_run/sc_compiled/input.f90
@@ -791,6 +793,7 @@ sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output.f90
+sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
@@ -877,6 +880,7 @@ sed -i "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/main.f90
 sed -i "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/marconi_flag/$marconi_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90

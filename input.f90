@@ -11,6 +11,7 @@ Renum                           ! Reynolds number
 courantnum                      ! Courant number
 gradpx                          ! mean pressure gradient x direction: Delta p/ Lx = (p_out-p_in)/Lx
 gradpy                          ! mean pressure gradient y direction: Delta p/ Ly
+cpiflag                         ! 1: CPI activated, 0: CPI deactivated
 repower                         ! Power reynolds number
 ! domain size
 len_x                           ! Lx

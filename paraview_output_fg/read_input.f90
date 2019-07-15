@@ -17,9 +17,11 @@ double precision :: Lx,Ly
  read(66,'(i5)') nz
  read(66,*)
  read(66,'(f16.6)') Re
- read(66,*)
- read(66,*)
- read(66,*)
+ read(66,*) ! Co
+ read(66,*) ! gradpx
+ read(66,*) ! gradpy
+ read(66,*) ! CPI flag
+ read(66,*) ! repow
  read(66,*)
  read(66,'(f16.8)') Lx
  read(66,'(f16.8)') Ly

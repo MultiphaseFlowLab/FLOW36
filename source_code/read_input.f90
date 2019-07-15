@@ -27,6 +27,7 @@ double precision :: Lx,Ly
  read(66,'(f16.6)') Co
  read(66,'(f16.6)') gradpx
  read(66,'(f16.6)') gradpy
+ read(66,'(i8)') cpi_flag
  read(66,'(f16.6)') repow
  read(66,*)
  read(66,'(f16.6)') Lx

@@ -15,7 +15,6 @@ double precision :: tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #define phiflag phicompflag
 #define psiflag psicompflag
 #define tempflag tempcompflag
-#define cpiflag cpicompflag
 
 time=re*dble(i)*dt
 
@@ -35,22 +34,18 @@ call theta_check(tau_wm1,tau_wp1,nu_wm1,nu_wp1)
 
 open(66,file=trim(folder)//'/time_check.dat',status='old',position='append')
 
-#if phiflag == 0 && tempflag == 0 && cpiflag == 0
- write(66,'(2(2x,es16.5))') time, re_bulk
-#elif phiflag == 0 && tempflag == 0 && cpiflag == 1
+#if phiflag == 0 && tempflag == 0
  write(66,'(3(2x,es16.5))') time, re_bulk, gradpx
-#elif phiflag == 1 && tempflag == 0 && psiflag == 0 && cpiflag == 0
- write(66,'(4(2x,es16.5))') time, re_bulk, int_phi, int_1
-#elif phiflag == 1 && tempflag == 0 && psiflag == 0 && cpiflag == 1
+#elif phiflag == 1 && tempflag == 0 && psiflag == 0
  write(66,'(5(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1
 #elif phiflag == 1 && tempflag == 0 && psiflag == 1
-  write(66,'(5(2x,es16.5))') time, re_bulk, int_phi, int_1, int_psi
+  write(66,'(6(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1, int_psi
 #elif phiflag == 0 && tempflag == 1
- write(66,'(6(2x,es16.5))') time,re_bulk,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+ write(66,'(7(2x,es16.5))') time,re_bulk, gradpx,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #elif phiflag == 1 && tempflag == 1 && psiflag == 0
- write(66,'(8(2x,es16.5))') time, re_bulk, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+ write(66,'(9(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #elif phiflag == 1 && tempflag == 1 && psiflag == 1
- write(66,'(9(2x,es16.5))') time, re_bulk, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+ write(66,'(10(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #endif
 
 close(66,status='keep')
@@ -97,50 +92,40 @@ open(66,file=trim(folder)//'/time_check.dat',status='new')
 open(67,file=trim(folder)//'/backup/time_check.dat',status='new')
 open(68,file=trim(folder)//'/backup/time_check_old.dat',status='new')
 
-#if phiflag == 0 && tempflag == 0 && cpiflag == 0
- write(66,'(2(2x,a16))') 't+ ','Re_bulk '
- write(66,'(2(2x,es16.5))') time, re_bulk
- write(67,'(2(2x,a16))') 't+ ','Re_bulk '
- write(67,'(2(2x,es16.5))') time, re_bulk
-#elif phiflag == 0 && tempflag == 0 && cpiflag == 1
+#if phiflag == 0 && tempflag == 0
  write(66,'(3(2x,a16))') 't+ ','Re_bulk ','Gradpx'
  write(66,'(3(2x,es16.5))') time, re_bulk, gradpx
  write(67,'(3(2x,a16))') 't+ ','Re_bulk ','Gradpx'
  write(67,'(3(2x,es16.5))') time, re_bulk, gradpx
-#elif phiflag == 1 && tempflag == 0 && psiflag == 0 && cpiflag == 0
- write(66,'(4(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1'
- write(66,'(4(2x,es16.5))') time, re_bulk,int_phi,int_1
- write(67,'(4(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1'
- write(67,'(4(2x,es16.5))') time, re_bulk,int_phi,int_1
-#elif phiflag == 1 && tempflag == 0 && psiflag == 0 && cpiflag == 1
+#elif phiflag == 1 && tempflag == 0 && psiflag == 0
  write(66,'(5(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1'
- write(66,'(5(2x,es16.5))') time, re_bulk, gradpx, int_phi,int_1
+ write(66,'(5(2x,es16.5))') time, re_bulk, gradpx,int_phi,int_1
  write(67,'(5(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1'
- write(67,'(5(2x,es16.5))') time, re_bulk, gradpx, int_phi,int_1
+ write(67,'(5(2x,es16.5))') time, re_bulk, gradpx,int_phi,int_1
 #elif phiflag == 1 && tempflag == 0 && psiflag == 1
- write(66,'(5(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg'
- write(66,'(5(2x,es16.5))') time, re_bulk,int_phi,int_1,int_psi
- write(67,'(5(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg'
- write(67,'(5(2x,es16.5))') time, re_bulk,int_phi,int_1,int_psi
+ write(66,'(6(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1','psi avg'
+ write(66,'(6(2x,es16.5))') time, re_bulk, gradpx,int_phi,int_1,int_psi
+ write(67,'(6(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1','psi avg'
+ write(67,'(6(2x,es16.5))') time, re_bulk, gradpx,int_phi,int_1,int_psi
 #elif phiflag == 0 && tempflag == 1
- write(66,'(6(2x,a16))') 't+ ','Re_bulk ','tau wall at z=-1','tau wall at z=+1','Nu at z=-1','Nu at z=+1'
- write(66,'(6(2x,es16.5))') time,re_bulk,tau_wm1,tau_wp1,nu_wm1,nu_wp1
- write(67,'(6(2x,a16))') 't+ ','Re_bulk ','tau wall at z=-1','tau wall at z=+1','Nu at z=-1','Nu at z=+1'
- write(67,'(6(2x,es16.5))') time,re_bulk,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+ write(66,'(7(2x,a16))') 't+ ','Re_bulk ','Gradpx','tau wall at z=-1','tau wall at z=+1','Nu at z=-1','Nu at z=+1'
+ write(66,'(7(2x,es16.5))') time,re_bulk, gradpx,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+ write(67,'(7(2x,a16))') 't+ ','Re_bulk ','Gradpx','tau wall at z=-1','tau wall at z=+1','Nu at z=-1','Nu at z=+1'
+ write(67,'(7(2x,es16.5))') time,re_bulk, gradpx,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #elif phiflag == 1 && tempflag == 1 && psiflag == 0
- write(66,'(8(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','tau wall at z=-1', &
+ write(66,'(9(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1','tau wall at z=-1', &
  &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
- write(66,'(8(2x,es16.5))') time, re_bulk, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
- write(67,'(8(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','tau wall at z=-1', &
+ write(66,'(9(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+ write(67,'(9(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1','tau wall at z=-1', &
  &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
- write(67,'(8(2x,es16.5))') time, re_bulk, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+ write(67,'(9(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #elif phiflag == 1 && tempflag == 1 && psiflag == 1
-  write(66,'(9(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg','tau wall at z=-1', &
+  write(66,'(10(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1','psi avg','tau wall at z=-1', &
   &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
-  write(66,'(9(2x,es16.5))') time, re_bulk, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
-  write(67,'(9(2x,a16))') 't+ ','Re_bulk ','phi avg','int phi=+1','psi avg','tau wall at z=-1', &
+  write(66,'(10(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+  write(67,'(10(2x,a16))') 't+ ','Re_bulk ','Gradpx','phi avg','int phi=+1','psi avg','tau wall at z=-1', &
   &                           'tau wall at z=+1','Nu at z=-1','Nu at z=+1'
-  write(67,'(9(2x,es16.5))') time, re_bulk, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
+  write(67,'(10(2x,es16.5))') time, re_bulk, gradpx, int_phi, int_1,int_psi,tau_wm1,tau_wp1,nu_wm1,nu_wp1
 #endif
 
 close(66,status='keep')
@@ -323,6 +308,7 @@ double precision, dimension(nz,2) :: tmp_mmc
 
 integer :: k
 
+#define cpiflag cpicompflag
 
 dz(1)=z(1)-z(2)
 dz(nz)=z(nz-1)-z(nz)
@@ -354,7 +340,6 @@ re_bulk=re_bulk*re
 
 #if cpiflag == 1
   gradpx=Repow*re/(2*re_bulk)
-!  print*,'New gradpx',gradpx
 #endif
 
 

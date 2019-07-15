@@ -23,6 +23,7 @@ use comm_pattern
 #define particles particlecompflag
 #define fdump physical_dump_frequency
 #define sdump spectral_dump_frequency
+#define cpiflag cpicompflag
 
 
 integer :: i,j,k
@@ -246,7 +247,7 @@ endif
      endif
 #endif
      call save_flow_comm(i)
-     endif
+    endif
 
 #if particles == 1
     ! save particle data (part_comm)
@@ -265,7 +266,13 @@ endif
 #endif
 
     if(rank.eq.0) call sim_check(i,int_1)
-    call mpi_bcast(gradpx,1,mpi_double_precision,0,flow_comm,ierr)
+
+! only for CPI
+#if cpiflag == 1
+    if(rank.lt.flow_comm_lim) call mpi_bcast(gradpx,1,mpi_double_precision,0,flow_comm,ierr)
+#endif
+
+
     ! the MPI all reduce is too costly, so it has been replaced by mean time rank 0
     ! write to screen time elapsed at each time step
     etime=mpi_wtime()
