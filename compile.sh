@@ -203,7 +203,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="0" # integer
+phi_flag="1" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF

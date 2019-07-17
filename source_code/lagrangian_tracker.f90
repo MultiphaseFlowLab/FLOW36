@@ -46,12 +46,12 @@ do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2
   elseif(xp(i,2).gt.yl*re)then
    xp(i,2)=xp(i,2)-yl*re
   endif
-  ! check rebound (elastic)
-  if(xp(i,3).lt.0)then
-   xp(i,3)=-xp(i,3)
+  ! check rebound (elastic), rebound at particle surface
+  if(xp(i,3).lt.d_par/2.0d0)then
+   xp(i,3)=d_par-xp(i,3)
    up(i,3)=-up(i,3)
-  elseif(xp(i,3).gt.2.0d0*re)then
-   xp(i,3)=4.0d0*Re-xp(i,3)
+  elseif(xp(i,3).gt.2.0d0*re-d_par/2.0d0)then
+   xp(i,3)=4.0d0*Re-d_par-xp(i,3)
    up(i,3)=-up(i,3)
   endif
 
