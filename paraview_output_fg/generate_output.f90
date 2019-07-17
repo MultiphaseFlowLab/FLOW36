@@ -277,20 +277,20 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
  write(str3(1:8),'(i8)') numz
  buffer='DIMENSIONS '//str1//str2//str3//lf
  write(66) trim(buffer)
- buffer='X_COORDINATES '//str1//'  double'//lf ;
+ buffer='X_COORDINATES '//str1//'  float'//lf ;
  write(66) trim(buffer)
  do i=x_start,x_end,dnx
-  write(66) xfg(i)
+  write(66) real(xfg(i))
  enddo
- buffer='Y_COORDINATES '//str2//'  double'//lf ;
+ buffer='Y_COORDINATES '//str2//'  float'//lf ;
  write(66) trim(buffer)
  do j=y_start,y_end,dny
-  write(66) yfg(j)
+  write(66) real(yfg(j))
  enddo
- buffer='Z_COORDINATES '//str3//'  double'//lf ;
+ buffer='Z_COORDINATES '//str3//'  float'//lf ;
  write(66) trim(buffer)
  do k=z_start,z_end,dnz
-  write(66) zfg(k)
+  write(66) real(zfg(k))
  enddo
 
  ! write content (data format)
@@ -304,12 +304,12 @@ write(namefile,'(a,i8.8,a)') './output/OUTPAR_',nstep,'.vtk'
  ! write u field
 if(uflag.eq.1)then
  write(str4(1:16),'(i16)') numx*numy*numz
- buffer = 'U 1 '//str4//' double'//lf
+ buffer = 'U 1 '//str4//' float'//lf
  write(66) trim(buffer)
  do k=z_start,z_end,dnz
   do j=y_start,y_end,dny
    do i=x_start,x_end,dnx
-    write(66) u(i,k,j)
+    write(66) real(u(i,k,j))
    enddo
   enddo
  enddo
@@ -318,12 +318,12 @@ endif
 if(vflag.eq.1)then
  ! write v field
  write(str4(1:16),'(i16)') numx*numy*numz
- buffer = 'V 1 '//str4//' double'//lf
+ buffer = 'V 1 '//str4//' float'//lf
  write(66) trim(buffer)
  do k=z_start,z_end,dnz
   do j=y_start,y_end,dny
    do i=x_start,x_end,dnx
-    write(66) v(i,k,j)
+    write(66) real(v(i,k,j))
    enddo
   enddo
  enddo
@@ -332,12 +332,12 @@ endif
 if(wflag.eq.1)then
  ! write w field
  write(str4(1:16),'(i16)') numx*numy*numz
- buffer = 'W 1 '//str4//' double'//lf
+ buffer = 'W 1 '//str4//' float'//lf
  write(66) trim(buffer)
  do k=z_start,z_end,dnz
   do j=y_start,y_end,dny
    do i=x_start,x_end,dnx
-    write(66) w(i,k,j)
+    write(66) real(w(i,k,j))
    enddo
   enddo
  enddo
@@ -346,12 +346,12 @@ endif
  ! write phi field
  if(phiflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'PHI 1 '//str4//' double'//lf
+  buffer = 'PHI 1 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) phi(i,k,j)
+     write(66) real(phi(i,k,j))
     enddo
    enddo
   enddo
@@ -360,12 +360,12 @@ endif
  ! write psi field
  if(psiflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'PSI 1 '//str4//' double'//lf
+  buffer = 'PSI 1 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) psi(i,k,j)
+     write(66) real(psi(i,k,j))
     enddo
    enddo
   enddo
@@ -374,12 +374,12 @@ endif
  ! write theta field
  if(tempflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'T 1 '//str4//' double'//lf
+  buffer = 'T 1 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) theta(i,k,j)
+     write(66) real(theta(i,k,j))
     enddo
    enddo
   enddo
@@ -387,12 +387,12 @@ endif
 
  if(upflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'U_p 3 '//str4//' double'//lf
+  buffer = 'U_p 3 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) up(i,k,j),vp(i,k,j),wp(i,k,j)
+     write(66) real(up(i,k,j)),real(vp(i,k,j)),real(wp(i,k,j))
     enddo
    enddo
   enddo
@@ -401,12 +401,12 @@ endif
 
  if(vorflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Om 3 '//str4//' double'//lf
+  buffer = 'Om 3 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) omx(i,k,j),omy(i,k,j),omz(i,k,j)
+     write(66) real(omx(i,k,j)),real(omy(i,k,j)),real(omz(i,k,j))
     enddo
    enddo
   enddo
@@ -415,12 +415,12 @@ endif
 
  if(strflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Str 3 '//str4//' double'//lf
+  buffer = 'Str 3 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) strx(i,k,j),stry(i,k,j),strz(i,k,j)
+     write(66) real(strx(i,k,j)),real(stry(i,k,j)),real(strz(i,k,j))
     enddo
    enddo
   enddo
@@ -430,12 +430,12 @@ endif
  ! write flow topology parameter field
  if(topflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Q 1 '//str4//' double'//lf
+  buffer = 'Q 1 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) Qtop(i,k,j)
+     write(66) real(Qtop(i,k,j))
     enddo
    enddo
   enddo
@@ -445,12 +445,12 @@ endif
  ! write Marangoni stresses
  if(marflag.eq.1)then
   write(str4(1:16),'(i16)') numx*numy*numz
-  buffer = 'Mar 3 '//str4//' double'//lf
+  buffer = 'Mar 3 '//str4//' float'//lf
   write(66) trim(buffer)
   do k=z_start,z_end,dnz
    do j=y_start,y_end,dny
     do i=x_start,x_end,dnx
-     write(66) marx(i,k,j),mary(i,k,j),marz(i,k,j)
+     write(66) real(marx(i,k,j)),real(mary(i,k,j)),real(marz(i,k,j))
     enddo
    enddo
   enddo
@@ -501,10 +501,10 @@ buffer='BINARY'//lf
 write(66) trim(buffer)
 buffer='DATASET UNSTRUCTURED_GRID'//lf
 write(66) trim(buffer)
-buffer='POINTS '//str4//' double'//lf
+buffer='POINTS '//str4//' float'//lf
 write(66) trim(buffer)
 do i=1,part_number
- write(66) xpar(i,1),xpar(i,2),xpar(i,3)
+ write(66) real(xpar(i,1)),real(xpar(i,2)),real(xpar(i,3))
 enddo
 
 buffer='CELL_TYPES'//str4//lf
@@ -524,11 +524,10 @@ do i=1,part_number
 enddo
 
 if(partvelflag.eq.1)then
- buffer='VECTORS velocity double'//lf
+ buffer='VECTORS velocity float'//lf
  write(66) trim(buffer)
  do i=1,part_number
-  write(66) upar(i,1),upar(i,2),upar(i,3)
-  ! write(*,*) xpar(i,1),xpar(i,2),xpar(i,3),upar(i,1),upar(i,2),upar(i,3)
+  write(66) real(upar(i,1)),real(upar(i,2)),real(upar(i,3))
  enddo
 endif
 
