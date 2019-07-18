@@ -44,7 +44,7 @@ if(partposflag.eq.1)then
   read(678) xpar
   close(678,status='keep')
   if(partvelflag.eq.1)then
-    ! reading particle position
+    ! reading particle velocity
     namefile=trim(namedir)//'vel_'//numfile//'.dat'
     open(679,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(679) upar
