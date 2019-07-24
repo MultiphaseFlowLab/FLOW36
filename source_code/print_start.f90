@@ -220,6 +220,8 @@ if(part_flag.eq.1)then
   write(*,'(1x,a)') 'Read particle position from data file'
  elseif(in_cond_part_pos.eq.2)then
   write(*,'(1x,a)') 'Initialize random particle position on a x-y plane'
+ elseif(in_cond_part_pos.eq.3)then
+  write(*,'(1x,a)') 'Initialize random particle position on x-y planes (cubic distribution)'
  else
   write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
  endif

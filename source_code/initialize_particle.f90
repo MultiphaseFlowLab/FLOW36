@@ -145,7 +145,8 @@ use sim_par
 use particle
 
 integer :: i
-double precision :: part_height
+integer :: n_planes
+double precision :: part_height,level
 
 #define twowayc twowaycflag
 
@@ -182,6 +183,16 @@ elseif(in_cond_part_pos.eq.2)then
   endif
   ! synchronize shared memory window
   if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
+elseif(in_cond_part_pos.eq.3)then
+  if(rank.eq.0) write(*,*) 'Initializing random particle position on x-y planes (cubic distribution)'
+   open(456,file='./sc_compiled/input_particle.f90',form='formatted',status='old')
+   read(456,'(i8)') n_planes
+   read(456,'(f12.6)') level
+   close(456,status='keep')
+   if(rank.ge.leader)then
+    call initialize_Nplanes(n_planes,level)
+    call mpi_win_fence(0,window_xp,ierr)
+   endif
 else
   if(rank.eq.0) write(*,*) 'Dafuq? Check in_cond input value'
   stop
@@ -223,6 +234,61 @@ call get_2WCforces
 !  enddo
 !  close(456,status='keep')
 ! endif
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine initialize_Nplanes(n_planes,level)
+
+use commondata
+use sim_par
+use particle
+use mpi
+
+double precision :: level,delta
+double precision, allocatable :: zlev(:)
+
+integer :: n_planes,i,exceeding
+integer, allocatable :: part_plane(:)
+
+if(rank.eq.leader)then
+  delta=2.0d0*level**(1.0d0/2.0d0)/dble(n_planes-1)
+
+  allocate(zlev(n_planes))
+  allocate(part_plane(n_planes))
+
+  zlev(1)=-(level)**(1.0d0/2.0d0)
+  do i=2,n_planes
+    zlev(i)=zlev(i-1)+delta
+  enddo
+  do i=1,n_planes
+    zlev(i)=zlev(i)*dabs(zlev(i))
+  enddo
+
+  call random_number(xp)
+
+  ! number of particles per plane
+  part_plane=floor(dble(part_number)/dble(n_planes))
+  exceeding=mod(part_number,n_planes)
+  do i=1,exceeding
+   part_plane(i)=part_plane(i)+1
+  enddo
+
+  exceeding=0
+  do i=1,n_planes
+    xp(exceeding+1:exceeding+part_plane(i),3)=zlev(i)
+    exceeding=exceeding+part_plane(i)
+  enddo
+
+  ! rescale to outer units
+  xp(:,1)=xp(:,1)*xl*re
+  xp(:,2)=xp(:,2)*yl*re
+  xp(:,3)=(xp(:,3)+1.0d0)*re
+
+  deallocate(zlev,part_plane)
+endif
 
 return
 end

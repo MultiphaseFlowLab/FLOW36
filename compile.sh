@@ -203,7 +203,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="1" # integer
+phi_flag="0" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -377,7 +377,7 @@ boussinnesq="0" # integer
 
 ################################################################################
 # Lagrangian Particle Tracking only
-part_flag="0" # integer
+part_flag="1" # integer
 part_number="1000" # integer
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
 tracer="0" # integer
@@ -397,8 +397,11 @@ twoway="1" # integer
 # 0 : initialize random position
 # 1 : read from input file (parallel read, binary file)
 # 2 : initialize random position on a x-y plane at height par_plane (part_height)
-in_cond_part_pos="0" # integer
+# 3 : initialize random position on N x-y planes, cubic distribution betweeen +-level (n_planes,level)
+in_cond_part_pos="3" # integer
 part_height="0.0" # real (double) between -1 and +1
+n_planes="11" # integer (even number to have a plane at the channel centre)
+level="0.95" # real (double) between 0 and +1
 
 # initial conditions for the particle velocity
 # 0 : zero velocity
@@ -760,6 +763,9 @@ fi
 if [ "$part_flag" == "1" ]; then
   if [ "$in_cond_part_pos" == "2" ]; then
     echo "$part_height                         ! z height of x-y particle layer" > ./set_run/sc_compiled/input_particle.f90
+  elif [ "$in_cond_part_pos" == "3" ]; then
+    echo "$n_planes                         ! number of planes" > ./set_run/sc_compiled/input_particle.f90
+    echo "$level                            ! z max of planes" >> ./set_run/sc_compiled/input_particle.f90
   fi
 fi
 
