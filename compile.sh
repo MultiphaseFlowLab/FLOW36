@@ -393,6 +393,9 @@ part_gravity="1" # integer
 # 1 activate two-way coupling, 0 deactivate it
 twoway="1" # integer
 
+# frequency of saving particle data
+part_dump="1000" # integer
+
 # initial conditions for the particle position
 # 0 : initialize random position
 # 1 : read from input file (parallel read, binary file)
@@ -578,6 +581,7 @@ sed -i "" "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
 else
 sed -i "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
@@ -647,6 +651,7 @@ sed -i "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
 sed -i "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
+sed -i "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
 fi
 # end of input file editing
 

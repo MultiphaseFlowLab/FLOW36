@@ -76,3 +76,4 @@ partstokes                      ! Stokes number of the particle
 densityparticle                 ! density ratio particle/fluid
 incondpartpos                   ! particle initial condition position
 incondpartvel                   ! particle initial condition velocity
+particledump                    ! particle saving frequency

@@ -214,6 +214,7 @@ if(part_flag.eq.1)then
  write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
  write(*,'(1x,a40,f12.4)') 'Stokes : ',stokes
  write(*,'(1x,a40,f12.5)') 'Density ratio particle/fluid : ',dens_part
+ write(*,'(1x,a40,i10)') 'Solution saving frequency (particle) : ',part_dump
  if(in_cond_part_pos.eq.0)then
   write(*,'(1x,a)') 'Initialize random particle position'
  elseif(in_cond_part_pos.eq.1)then
@@ -221,7 +222,7 @@ if(part_flag.eq.1)then
  elseif(in_cond_part_pos.eq.2)then
   write(*,'(1x,a)') 'Initialize random particle position on a x-y plane'
  elseif(in_cond_part_pos.eq.3)then
-  write(*,'(1x,a)') 'Initialize random particle position on x-y planes (cubic distribution)'
+  write(*,'(1x,a)') 'Initialize random particle position on x-y planes (quadratic distribution)'
  else
   write(*,'(1x,a)') 'Dafuq? Check in_cond_temp value'
  endif

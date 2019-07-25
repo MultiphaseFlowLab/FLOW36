@@ -109,6 +109,7 @@ else
  dump=ndump
 endif
 
+! read fluid data
 do i=nstart,nend,ntask*dump
  nstep=i+rank*dump
 ! write(*,*) rank,i,nstep
@@ -127,6 +128,26 @@ if(rank.eq.0)then
  endif
 endif
 
+!read particle data
+if(partposflag.eq.1)then
+  do i=nstart,nend,ntask*part_dump
+   nstep=i+rank*part_dump
+  ! write(*,*) rank,i,nstep
+   call read_part(nstep)
+  enddo
+
+  ! barrier to be sure that there isn't another rank handling that file but
+  ! it still hasn't finished yet
+  call mpi_barrier(mpi_comm_world,ierr)
+  ! open file nend
+  if(rank.eq.0)then
+   write(namefile,'(a,i8.8,a)') './output/PART_',nend,'.vtk'
+   inquire(file=trim(namefile),exist=check)
+   if(check.eqv..false.)then
+    call read_part(nend)
+   endif
+  endif
+endif
 
 
 deallocate(u)

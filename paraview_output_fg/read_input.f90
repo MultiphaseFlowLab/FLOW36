@@ -82,15 +82,16 @@ double precision :: Lx,Ly
  read(66,*) !part_flag
  read(66,'(i12)') part_number
  read(66,*) !stokes
+ read(66,*) !part_density
  read(66,*) !in_cond_part_pos
  read(66,*) !in_cond_part_vel
+ read(66,'(i8)') part_dump
 
  xl=Lx*pi
  yl=Ly*pi
-write(*,*) 'pnumb',part_number
  close(66)
 
-
+write(*,*) part_dump
 
  open(unit=68,file='./input_paraview.f90',form='formatted',status='old',action='read')
 

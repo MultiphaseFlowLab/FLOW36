@@ -92,6 +92,7 @@ double precision :: Lx,Ly
  read(66,'(f16.6)') dens_part
  read(66,'(i8)') in_cond_part_pos
  read(66,'(i8)') in_cond_part_vel
+ read(66,'(i8)') part_dump
 
  r_theta=r_theta*dble(nx*ny)
 

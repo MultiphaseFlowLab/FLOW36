@@ -253,7 +253,9 @@ endif
     ! save particle data (part_comm)
     if((rank.ge.leader).and. &
  &     ((mod(i,ndump).eq.0.and.ndump.gt.0).or. &
- &      (mod(i,sdump).eq.0.and.sdump.gt.0)).and.(i.ne.nstart))then
+ &      (mod(i,sdump).eq.0.and.sdump.gt.0).or. &
+ &      (mod(i,part_dump).eq.0)).and.(i.ne.nstart))then
+     if(rank.eq.leader) write(*,*) 'saving particle solution'
      namevar='pos'
      call write_output_part(xp,i,namevar)
      namevar='vel'
@@ -312,7 +314,8 @@ endif
 #if particles == 1
   if((rank.ge.leader).and. &
  &     ((mod(nend,ndump).ne.0.and.ndump.gt.0).or. &
- &      (mod(nend,sdump).ne.0.and.sdump.gt.0)))then
+ &      (mod(nend,sdump).ne.0.and.sdump.gt.0).or. &
+ &      (mod(nend,part_dump).ne.0)))then
      namevar='pos'
      call write_output_part(xp,nend,namevar)
      namevar='vel'

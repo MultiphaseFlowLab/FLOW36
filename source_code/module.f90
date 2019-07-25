@@ -98,7 +98,7 @@ end module temperature
 
 
 module particle
- integer :: part_flag,part_number,in_cond_part_pos,in_cond_part_vel
+ integer :: part_flag,part_number,in_cond_part_pos,in_cond_part_vel,part_dump
  integer, allocatable, dimension(:,:) :: part_index
  double precision :: stokes,dens_part,d_par
  double precision, pointer, dimension(:,:) :: xp,up

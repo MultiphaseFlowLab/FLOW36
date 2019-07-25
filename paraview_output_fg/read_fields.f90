@@ -40,17 +40,20 @@ allocate(inpc(nx/2+1,nz,ny,2))
 if(partposflag.eq.1)then
   ! reading particle position
   namefile=trim(namedir)//'pos_'//numfile//'.dat'
-  open(678,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-  read(678) xpar
-  close(678,status='keep')
-  if(partvelflag.eq.1)then
-    ! reading particle velocity
-    namefile=trim(namedir)//'vel_'//numfile//'.dat'
-    open(679,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-    read(679) upar
-    close(679,status='keep')
+  inquire(file=trim(namefile),exist=check)
+  if(check.eqv..true.)then
+    open(678,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(678) xpar
+    close(678,status='keep')
+    if(partvelflag.eq.1)then
+      ! reading particle velocity
+      namefile=trim(namedir)//'vel_'//numfile//'.dat'
+      open(679,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+      read(679) upar
+      close(679,status='keep')
+    endif
+    call generate_output_part(nstep)
   endif
-  call generate_output_part(nstep)
 endif
 
 if(spectral.eq.0)then
@@ -59,7 +62,7 @@ if(spectral.eq.0)then
  inquire(file=trim(namefile),exist=check)
 
  if(check.eqv..true.)then
-  write(*,*) 'Reading step ',nstep,' out of ',nend
+  write(*,*) 'Reading step ',nstep,' out of ',nend,' , flow and particles'
   if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
     ! reading u
     open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -209,8 +212,48 @@ deallocate(inpc)
 return
 end
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+subroutine read_part(nstep)
 
+use commondata
+
+integer :: nstep
+character(len=40) :: namedir,namefile
+character(len=8) :: numfile
+logical :: check
+
+namedir='../results/'
+write(numfile,'(i8.8)') nstep
+
+write(namefile,'(a,i8.8,a)') './output/PART_',nstep,'.vtk'
+
+inquire(file=trim(namefile),exist=check)
+
+if(check.eqv..false.)then
+  ! reading particle position
+  namefile=trim(namedir)//'pos_'//numfile//'.dat'
+  inquire(file=trim(namefile),exist=check)
+  if(check.eqv..true.)then
+    write(*,*) 'Reading step ',nstep,' out of ',nend,' , particles'
+    open(678,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+    read(678) xpar
+    close(678,status='keep')
+    if(partvelflag.eq.1)then
+      ! reading particle velocity
+      namefile=trim(namedir)//'vel_'//numfile//'.dat'
+      open(679,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
+      read(679) upar
+      close(679,status='keep')
+    endif
+    call generate_output_part(nstep)
+  endif
+endif
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 subroutine read_grid
 
