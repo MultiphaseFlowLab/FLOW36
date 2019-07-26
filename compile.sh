@@ -7,6 +7,7 @@
 # 5 : Marconi A2 KNL
 # 6 : Theta (ANL)
 # 7 : Bridges (PSC)
+# 8 : Adelaide
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -90,6 +91,28 @@ cp ./Bridges/makefile ./makefile
 cp ./Bridges/go.sh ./go.sh
 
 savespectral="0"
+elif [ "$machine" == "8" ]; then
+echo "=                                 Adelaide                                   ="
+module purge
+# load modules
+
+# IMPORTANT: if OpenMPI line 946 must be replaced with: if [[ "$machine" == "7" || "$machine" == "8"]]; then
+
+# Intel version
+module load intel
+module load mpich
+
+# GCC version
+#module load gcc
+#module load #some version of MPI/OpenMPI for gcc
+
+module load FFTW
+
+# change to makefile_intel/makefile_gnu according to needs
+cp ./Adelaide/makefile_intel ./makefile
+cp ./Adelaide/go.sh ./go.sh
+
+savespectral="0"
 fi
 echo "=============================================================================="
 echo ""
@@ -135,10 +158,10 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="5" # integer
 
 # Reynolds number
-Re="150.0" # real (double)
+Re="1.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -346,7 +369,7 @@ psi_bulk="0.01" # real (double)
 ################################################################################
 # Temperature only
 # temperature flag, 0 : temperature deactivated, 1 : temperature activated
-temp_flag="0" # integer
+temp_flag="1" # integer
 
 # Rayleigh number
 # for Rayleigh-Benard choose Re=sqrt(Ra/Pr)/4
@@ -368,7 +391,7 @@ F="-1.0" # real (double)
 # initial conditons for the temperature
 # 0 : initialize constant temperature (mean_t)
 # 1 : read from data file (parallel read)
-in_cond_temp="1" # integer
+in_cond_temp="0" # integer
 temp_mean="0.0" # real (double)
 
 # 1 activate buoyancy term in N-S, 0 deactivate it (Boussinnesq approximation)
@@ -378,20 +401,29 @@ boussinnesq="0" # integer
 ################################################################################
 # Lagrangian Particle Tracking only
 part_flag="1" # integer
-part_number="1000" # integer
+
+part_number="10" # integer
+
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
 tracer="0" # integer
-# stokes number (in wall units)
-stokes="1.0" # real (double)
+
+# number of sets of particles run at the same time (one-way coupling only)
+# for each set specify Stokes and density ratio (array). Each case corresponds to
+# index of array: case 0: stokes(0),dens_part(0), case 1: stokes(1),dens_part(1), ...
+nset="2" # integer
+
+# stokes number (in wall units), array declared as stokes=(1.0 10.0 25.0)
+stokes=(0.0 1.0) # real (double, array)
 # drag type, 1 Stokes drag, 0 Schiller-Naumann drag
 stokes_drag="1" # integer
-# density ratio particle/fluid
-dens_part="1.0" # real (double)
+
+# density ratio particle/fluid, array declared as dens_part=(1.0 10.0 25.0)
+dens_part=(1.0 1000.0) # real (double, array)
 # 1 to activate gravity and buoyancy force on particle tracking
 part_gravity="1" # integer
 
 # 1 activate two-way coupling, 0 deactivate it
-twoway="1" # integer
+twoway="0" # integer
 
 # frequency of saving particle data
 part_dump="1000" # integer
@@ -510,6 +542,11 @@ else
 sed -i "s/NUMTASKS/$NNT/g" ./set_run/go.sh
 fi
 
+# if tracer force to 0ne-way coupled
+if [ "$tracer" == "1" ]; then
+ twoway="0"
+fi
+
 # copy input file and edit it
 cp ./input.f90 ./set_run/sc_compiled
 if [ "$machine" == "0" ]; then
@@ -577,8 +614,7 @@ sed -i "" "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/npartset/$nset/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
@@ -647,8 +683,7 @@ sed -i "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
 sed -i "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
-sed -i "s/partstokes/$stokes/g" ./set_run/sc_compiled/input.f90
-sed -i "s/densityparticle/$dens_part/g" ./set_run/sc_compiled/input.f90
+sed -i "s/npartset/$nset/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
@@ -709,7 +744,7 @@ cp ./source_code/shrink.f90 ./set_run/sc_compiled/
 cp ./source_code/split_comm.f90 ./set_run/sc_compiled/
 cp ./source_code/initialize_particle.f90 ./set_run/sc_compiled/
 cp ./source_code/part_fluid_comm.f90 ./set_run/sc_compiled/
-cp ./source_code/velocity_interpolator.f90 ./set_run/sc_compiled/
+cp ./source_code/lagrangian_interpolator.f90 ./set_run/sc_compiled/
 cp ./source_code/lagrangian_tracker.f90 ./set_run/sc_compiled/
 cp ./source_code/save_flow_comm.f90 ./set_run/sc_compiled/
 
@@ -772,6 +807,17 @@ if [ "$part_flag" == "1" ]; then
     echo "$n_planes                         ! number of planes" > ./set_run/sc_compiled/input_particle.f90
     echo "$level                            ! z max of planes" >> ./set_run/sc_compiled/input_particle.f90
   fi
+
+  i=0
+  # write input file for particle Stokes and density ratio (many sets)
+  touch ./set_run/sc_compiled/part_param.f90
+  while [ $i -le "$(($nset-1))" ]
+  do
+    echo "${stokes[$i]}" >> ./set_run/sc_compiled/part_param.f90
+    echo "${dens_part[$i]}" >> ./set_run/sc_compiled/part_param.f90
+    i=`expr $i + 1`
+  done
+
 fi
 
 endianness=$(echo -n I | od -to2 | head -n1 | cut -f2 -d" " | cut -c6)
@@ -857,6 +903,8 @@ sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/read_input.f90
+sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/print_start.f90
 sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
@@ -867,7 +915,7 @@ sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
 sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/velocity_interpolator.f90
+sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
 sed -i "" "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
@@ -943,6 +991,8 @@ sed -i "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
 sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/read_input.f90
+sed -i "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/print_start.f90
 sed -i "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
@@ -953,7 +1003,7 @@ sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
 sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
-sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/velocity_interpolator.f90
+sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
 sed -i "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 fi
 
