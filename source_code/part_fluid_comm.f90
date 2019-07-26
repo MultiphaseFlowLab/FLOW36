@@ -94,6 +94,46 @@ end subroutine
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+subroutine get_temperature
+
+use mpi
+use commondata
+use temperature
+use particle
+use comm_pattern
+
+integer :: i,number
+double precision, allocatable :: bufs(:,:,:),bufr(:,:,:,:)
+
+! send T
+if(rank.le.flow_comm_lim)then
+ allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3)))
+ bufs=0.0d0
+ if(rank.lt.flow_comm_lim)then
+  bufs(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))=T
+ endif
+ call mpi_gather(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
+ deallocate(bufs)
+endif
+
+! synchronization barrier
+if(rank.ge.leader)then
+ if(rank.eq.leader)then
+  ! write data
+  do i=1,flow_comm_lim
+   Tf(:,address_start(i,2)+1:address_start(i,2)+saved_size(i,2),address_start(i,3)+1:address_start(i,3)+saved_size(i,3))= &
+ &       bufr(:,1:saved_size(i,2),1:saved_size(i,3),i)
+  enddo
+  deallocate(bufr)
+ endif
+ call mpi_win_fence(0,window_T,ierr)
+endif
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 subroutine get_2WCforces
 
 use mpi

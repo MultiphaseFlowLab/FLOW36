@@ -215,6 +215,7 @@ endif
    call write_output_part(xp,nstart,namevar)
    namevar='vel'
    call write_output_part(up,nstart,namevar)
+   call write_output_partf(nstart)
   endif
 #endif
 
@@ -260,6 +261,12 @@ endif
      call write_output_part(xp,i,namevar)
      namevar='vel'
      call write_output_part(up,i,namevar)
+     ! write fluid velocity at particle position
+     call write_output_partf(i)
+     ! write fluid temperature at particle position
+#if tempflag == 1
+! save temperature at particle position
+#endif
     endif
 #endif
 
@@ -320,6 +327,7 @@ endif
      call write_output_part(xp,nend,namevar)
      namevar='vel'
      call write_output_part(up,nend,namevar)
+     call write_output_partf(nend)
     endif
 #endif
 

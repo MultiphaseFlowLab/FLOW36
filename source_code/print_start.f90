@@ -214,6 +214,7 @@ if(part_flag.eq.1)then
  write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
  write(*,'(1x,a40,f12.4)') 'Stokes : ',stokes
  write(*,'(1x,a40,f12.5)') 'Density ratio particle/fluid : ',dens_part
+ write(*,'(1x,a40,f12.5)') 'Particle diameter (w.u.) : ',d_par
  write(*,'(1x,a40,i10)') 'Solution saving frequency (particle) : ',part_dump
  if(in_cond_part_pos.eq.0)then
   write(*,'(1x,a)') 'Initialize random particle position'

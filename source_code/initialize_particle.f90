@@ -56,6 +56,15 @@ endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,wf,shape3)
 
+! allocate Tf
+call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_T,ierr)
+! get location of memory segment
+if(rank.gt.leader)then
+  call mpi_win_shared_query(window_T,0,number*varsize,dispunit,baseptr,ierr)
+endif
+! associate C pointer to Fortran pointer
+call c_f_pointer(baseptr,Tf,shape3)
+
 ! allocate F_x
 number=nx*ny*nz
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_fx,ierr)
@@ -184,7 +193,7 @@ elseif(in_cond_part_pos.eq.2)then
   ! synchronize shared memory window
   if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
 elseif(in_cond_part_pos.eq.3)then
-  if(rank.eq.0) write(*,*) 'Initializing random particle position on x-y planes (cubic distribution)'
+  if(rank.eq.0) write(*,*) 'Initializing random particle position on x-y planes (quadratic distribution)'
    open(456,file='./sc_compiled/input_particle.f90',form='formatted',status='old')
    read(456,'(i8)') n_planes
    read(456,'(f12.6)') level

@@ -102,9 +102,9 @@ module particle
  integer, allocatable, dimension(:,:) :: part_index
  double precision :: stokes,dens_part,d_par
  double precision, pointer, dimension(:,:) :: xp,up
- double precision, pointer, dimension(:,:,:) :: uf,vf,wf,fb_x,fb_y,fb_z
+ double precision, pointer, dimension(:,:,:) :: uf,vf,wf,Tf,fb_x,fb_y,fb_z
  ! mpi shared memory synchronization windows
- integer :: window_u,window_v,window_w,window_fx,window_fy,window_fz,window_xp,window_up
+ integer :: window_u,window_v,window_w,window_T,window_fx,window_fy,window_fz,window_xp,window_up
 end module particle
 
 
