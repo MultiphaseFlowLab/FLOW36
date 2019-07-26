@@ -217,6 +217,11 @@ endif
    call write_output_part(up,nstart,namevar)
    call write_output_partf(nstart)
   endif
+#if tempflag == 1
+    ! get temperature at particle position (done here, after defining all auxiliary arrays)
+    call get_temperature
+    if(rank.ge.leader) call write_output_partT(nstart)
+#endif
 #endif
 
   gstime=mpi_wtime()
@@ -251,22 +256,28 @@ endif
     endif
 
 #if particles == 1
-    ! save particle data (part_comm)
-    if((rank.ge.leader).and. &
- &     ((mod(i,ndump).eq.0.and.ndump.gt.0).or. &
- &      (mod(i,sdump).eq.0.and.sdump.gt.0).or. &
- &      (mod(i,part_dump).eq.0)).and.(i.ne.nstart))then
-     if(rank.eq.leader) write(*,*) 'saving particle solution'
-     namevar='pos'
-     call write_output_part(xp,i,namevar)
-     namevar='vel'
-     call write_output_part(up,i,namevar)
-     ! write fluid velocity at particle position
-     call write_output_partf(i)
-     ! write fluid temperature at particle position
+    if(((mod(i,ndump).eq.0.and.ndump.gt.0).or. &
+     &      (mod(i,sdump).eq.0.and.sdump.gt.0).or. &
+     &      (mod(i,part_dump).eq.0)).and.(i.ne.nstart))then
 #if tempflag == 1
-! save temperature at particle position
+     ! get temperature at particle position
+     ! done here if particle are temperature tracers (do not fetch temperature at each time step)
+     call get_temperature
 #endif
+     ! save particle data (part_comm)
+     if(rank.ge.leader)then
+      if(rank.eq.leader) write(*,*) 'saving particle solution'
+      namevar='pos'
+      call write_output_part(xp,i,namevar)
+      namevar='vel'
+      call write_output_part(up,i,namevar)
+      ! write fluid velocity at particle position
+      call write_output_partf(i)
+      ! write fluid temperature at particle position
+#if tempflag == 1
+      call write_output_partT(i)
+#endif
+     endif
     endif
 #endif
 
@@ -319,6 +330,10 @@ endif
 
   ! save final particle data if not already written
 #if particles == 1
+#if tempflag == 1
+    ! get temperature at particle position
+    call get_temperature
+#endif
   if((rank.ge.leader).and. &
  &     ((mod(nend,ndump).ne.0.and.ndump.gt.0).or. &
  &      (mod(nend,sdump).ne.0.and.sdump.gt.0).or. &
@@ -328,6 +343,9 @@ endif
      namevar='vel'
      call write_output_part(up,nend,namevar)
      call write_output_partf(nend)
+#if tempflag == 1
+     call write_output_partT(nend)
+#endif
     endif
 #endif
 
@@ -394,6 +412,7 @@ endif
    call mpi_win_free(window_fy,ierr)
    call mpi_win_free(window_fz,ierr)
    call mpi_type_free(part_save,ierr)
+   call mpi_type_free(part_save_scalar,ierr)
    deallocate(part_index)
    deallocate(saved_size,address_start)
   endif

@@ -284,6 +284,47 @@ end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+subroutine write_output_partT(nt)
+
+use mpi
+use mpiIO
+use commondata
+use particle
+
+integer :: nt,i
+integer :: f_handle ! file handle
+integer(mpi_offset_kind) :: offset
+character(len=8) :: time
+character(len=40) :: fname
+character(len=5) :: namevar
+
+double precision :: var(part_index(rank_loc+1,2))
+
+write(time,'(I8.8)') nt
+namevar='Tp_f'
+fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
+
+do i=1,part_index(rank_loc+1,2)
+  call lagran4_T(xp(part_index(rank_loc+1,1)+i,:),var(i))
+enddo
+
+offset=0
+
+call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'external32',mpi_info_null,ierr)
+call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'internal',mpi_info_null,ierr)
+!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'native',mpi_info_null,ierr)
+
+call mpi_file_write_all(f_handle,var,part_index(rank_loc+1,2),mpi_double_precision,mpi_status_ignore,ierr)
+
+call mpi_file_close(f_handle,ierr)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 subroutine write_failure(nt)
 
 use commondata

@@ -140,6 +140,11 @@ call mpi_type_create_subarray(2,[part_number,3],[part_index(rank_loc+1,2),3], &
 
 call mpi_type_commit(part_save,ierr)
 
+! create MPI datatype to save particles data (position and velocity)
+call mpi_type_create_subarray(1,[part_number],[part_index(rank_loc+1,2)], &
+ & [part_index(rank_loc+1,1)],mpi_order_fortran,mpi_double_precision,part_save_scalar,ierr)
+
+call mpi_type_commit(part_save_scalar,ierr)
 
 return
 end

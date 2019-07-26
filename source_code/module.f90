@@ -120,7 +120,7 @@ module mpiIO
  integer :: ftype,stype
  integer :: ftype_fg,stype_fg
  integer :: sp_save_comm,sp_save_comm_fg
- integer :: part_save
+ integer :: part_save,part_save_scalar
 end module mpiIo
 
 

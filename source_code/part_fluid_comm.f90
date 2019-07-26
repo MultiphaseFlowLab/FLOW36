@@ -105,12 +105,16 @@ use comm_pattern
 integer :: i,number
 double precision, allocatable :: bufs(:,:,:),bufr(:,:,:,:)
 
+number=chunk_size(1)*chunk_size(2)*chunk_size(3)
+
+if(rank.eq.leader) allocate(bufr(chunk_size(1),chunk_size(2),chunk_size(3),chunk_size(4)))
+
 ! send T
 if(rank.le.flow_comm_lim)then
  allocate(bufs(chunk_size(1),chunk_size(2),chunk_size(3)))
  bufs=0.0d0
  if(rank.lt.flow_comm_lim)then
-  bufs(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))=T
+  bufs(:,1:saved_size(rank+1,2),1:saved_size(rank+1,3))=theta
  endif
  call mpi_gather(bufs,number,mpi_double_precision,bufr,number,mpi_double_precision,leader,comm_comm,ierr)
  deallocate(bufs)
