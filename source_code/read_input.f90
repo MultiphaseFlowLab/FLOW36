@@ -10,6 +10,7 @@ use temperature
 use particle
 
 #define twowayc twowaycflag
+#define tracers tracerflag
 
 integer :: grav_dir,match_dens,match_visc,body_dir,i
 double precision :: Lx,Ly
@@ -98,7 +99,10 @@ double precision :: Lx,Ly
  r_theta=r_theta*dble(nx*ny)
 
  ! read particle parameters
-#if twowayc
+#if tracers == 1
+ nset=1
+#endif
+#if twowayc == 1
  nset=1
 #endif
  allocate(stokes(nset))
@@ -110,6 +114,9 @@ double precision :: Lx,Ly
   read(456,'(f12.5)') dens_part(i)
  enddo
  close(456,status='keep')
+#if tracers == 1
+ stokes=0.0d0
+#endif
  ! particle diameter (wall units)
  do i=1,nset
    d_par(i)=dsqrt(18.0d0*Stokes(i)/dens_part(i))

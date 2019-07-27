@@ -405,7 +405,7 @@ part_flag="1" # integer
 part_number="4" # integer
 
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
-tracer="0" # integer
+tracer="1" # integer
 
 # number of sets of particles run at the same time (one-way coupling only)
 # for each set specify Stokes and density ratio (array). Each case corresponds to
@@ -913,6 +913,7 @@ sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_co
 sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
+sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/read_input.f90
 sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
 sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
@@ -1002,6 +1003,7 @@ sed -i "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.
 sed -i "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
 sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
+sed -i "s/tracerflag/$tracer/g" ./set_run/sc_compiled/read_input.f90
 sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
 sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
