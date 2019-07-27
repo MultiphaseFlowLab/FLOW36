@@ -236,19 +236,22 @@ else
   stop
 endif
 
+! check that particle is inside domain (z direction, check with d_par)
+do j=1,nset
+ do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
+    if(xp(i,3,j).lt.d_par(j)/2.0d0)then
+     xp(i,3,j)=d_par(j)-xp(i,3,j)
+    elseif(xp(i,3,j).gt.2.0d0*re-d_par(j)/2.0d0)then
+     xp(i,3,j)=4.0d0*Re-d_par(j)-xp(i,3,j)
+    endif
+ enddo
+enddo
+call mpi_win_fence(0,window_xp,ierr)
+
 
 #if twowayc == 1
 call get_2WCforces
 #endif
-
-! ! debug only
-! if(rank_loc.eq.2)then
-!  open(456,file='./results/part.dat',status='new',form='formatted')
-!  do i=1,part_number
-!   write(456,'(3(2x,f12.4),4x,3(2x,f12.4))') xp(i,:),up(i,:)
-!  enddo
-!  close(456,status='keep')
-! endif
 
 return
 end

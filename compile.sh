@@ -426,7 +426,7 @@ part_gravity="1" # integer
 twoway="0" # integer
 
 # frequency of saving particle data
-part_dump="20" # integer
+part_dump="1000" # integer
 
 # initial conditions for the particle position
 # 0 : initialize random position
