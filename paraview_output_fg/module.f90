@@ -2,7 +2,7 @@ module commondata
  integer :: nx, ny, nz
  integer :: nxf,nyf,nzf
  integer :: rank, ntask
- integer :: nstart,nend,ndump,sdump,part_dump
+ integer :: nstart,nend,ndump,sdump,part_dump,nset
  integer :: x_start,x_end,dnx
  integer :: y_start,y_end,dny
  integer :: z_start,z_end,dnz

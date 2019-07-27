@@ -467,26 +467,27 @@ end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-subroutine generate_output_part(nstep)
+subroutine generate_output_part(nstep,numset)
 
 use commondata
 
-integer :: nstep
+integer :: nstep,numset
 integer :: i
 
 character(len=10) :: lf
 character(len=40) :: namefile
 character(len=80) :: buffer
 character(len=16) :: str4
-
+character(len=3) :: setnum
 
 ! end of line character
 lf=achar(10)
 
 
 write(str4(1:16),'(i16)') part_number
+write(setnum,'(i3.3)') numset
 
-write(namefile,'(a,i8.8,a)') './output/PART_',nstep,'.vtk'
+write(namefile,'(a,a,a,i8.8,a)') './output/PART_',setnum,'_',nstep,'.vtk'
 
 open(66,file=trim(namefile),status='new',form='unformatted',access='stream',convert='big_endian')
 

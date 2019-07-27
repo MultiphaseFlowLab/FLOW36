@@ -2,7 +2,7 @@ subroutine read_fields(nstep)
 
 use commondata
 
-integer :: nstep
+integer :: nstep,j
 integer :: mx,my,mz,myl,myu
 integer :: mx_fg,my_fg,mz_fg,myl_fg,myu_fg
 
@@ -11,6 +11,7 @@ double precision, allocatable :: inp(:,:,:),inpc(:,:,:,:)
 
 character(len=40) :: namedir,namefile
 character(len=8) :: numfile
+character(len=3) :: setnum
 
 logical :: check
 
@@ -38,8 +39,10 @@ allocate(inp(nx,nz,ny))
 allocate(inpc(nx/2+1,nz,ny,2))
 
 if(partposflag.eq.1)then
+ do j=1,nset
+  write(setnum,'(i3.3)') j
   ! reading particle position
-  namefile=trim(namedir)//'pos_'//numfile//'.dat'
+  namefile=trim(namedir)//'pos_'//setnum//'_'//numfile//'.dat'
   inquire(file=trim(namefile),exist=check)
   if(check.eqv..true.)then
     open(678,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -47,13 +50,14 @@ if(partposflag.eq.1)then
     close(678,status='keep')
     if(partvelflag.eq.1)then
       ! reading particle velocity
-      namefile=trim(namedir)//'vel_'//numfile//'.dat'
+      namefile=trim(namedir)//'vel_'//setnum//'_'//numfile//'.dat'
       open(679,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
       read(679) upar
       close(679,status='keep')
     endif
-    call generate_output_part(nstep)
+    call generate_output_part(nstep,j)
   endif
+ enddo
 endif
 
 if(spectral.eq.0)then
@@ -218,21 +222,24 @@ subroutine read_part(nstep)
 
 use commondata
 
-integer :: nstep
+integer :: nstep,j
 character(len=40) :: namedir,namefile
 character(len=8) :: numfile
+character(len=3) :: setnum
 logical :: check
 
 namedir='../results/'
 write(numfile,'(i8.8)') nstep
 
-write(namefile,'(a,i8.8,a)') './output/PART_',nstep,'.vtk'
 
-inquire(file=trim(namefile),exist=check)
 
-if(check.eqv..false.)then
+do j=1,nset
+ write(setnum,'(i3.3)') j
+ write(namefile,'(a,a,a,i8.8,a)') './output/PART_',setnum,'_',nstep,'.vtk'
+ inquire(file=trim(namefile),exist=check)
+ if(check.eqv..false.)then
   ! reading particle position
-  namefile=trim(namedir)//'pos_'//numfile//'.dat'
+  namefile=trim(namedir)//'pos_'//setnum//'_'//numfile//'.dat'
   inquire(file=trim(namefile),exist=check)
   if(check.eqv..true.)then
     write(*,*) 'Reading step ',nstep,' out of ',nend,' , particles'
@@ -241,14 +248,15 @@ if(check.eqv..false.)then
     close(678,status='keep')
     if(partvelflag.eq.1)then
       ! reading particle velocity
-      namefile=trim(namedir)//'vel_'//numfile//'.dat'
+      namefile=trim(namedir)//'vel_'//setnum//'_'//numfile//'.dat'
       open(679,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
       read(679) upar
       close(679,status='keep')
     endif
-    call generate_output_part(nstep)
+    call generate_output_part(nstep,j)
   endif
-endif
+ endif
+enddo
 
 return
 end

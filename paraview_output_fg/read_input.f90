@@ -81,8 +81,7 @@ double precision :: Lx,Ly
  read(66,*)
  read(66,*) !part_flag
  read(66,'(i12)') part_number
- read(66,*) !stokes
- read(66,*) !part_density
+ read(66,'(i5)') nset
  read(66,*) !in_cond_part_pos
  read(66,*) !in_cond_part_vel
  read(66,'(i8)') part_dump
