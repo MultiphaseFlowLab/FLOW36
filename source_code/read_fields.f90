@@ -223,34 +223,39 @@ use particle
 
 double precision :: varloc(part_index(rank_loc+1,2),3)
 
-integer :: nt,restart
+integer :: nt,restart,j
 integer :: f_handle
 
 integer(mpi_offset_kind) :: offset
 
 character(len=8) :: time
 character(len=40) :: fname
+character(len=3) :: setnum
 
-if(restart.eq.0)then
- fname='./initial_fields/pos.dat'
-else
- write(time,'(I8.8)') nt
- fname=trim(folder)//'/pos_'//time//'.dat'
-endif
+do j=1,nset
+  write(setnum,'(i3.3)') j
 
-offset=0
+  if(restart.eq.0)then
+   fname='./initial_fields/pos_'//setnum//'.dat'
+  else
+   write(time,'(I8.8)') nt
+   fname=trim(folder)//'/pos_'//setnum//'_'//time//'.dat'
+  endif
 
-call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+  offset=0
 
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+  call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
-call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+  call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
 
-call mpi_file_close(f_handle,ierr)
+  call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
 
-xp(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=varloc
+  call mpi_file_close(f_handle,ierr)
+
+  xp(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
+enddo
 
 call mpi_win_fence(0,window_xp,ierr)
 
@@ -268,34 +273,40 @@ use particle
 
 double precision :: varloc(part_index(rank_loc+1,2),3)
 
-integer :: nt,restart
+integer :: nt,restart,j
 integer :: f_handle
 
 integer(mpi_offset_kind) :: offset
 
 character(len=8) :: time
 character(len=40) :: fname
+character(len=3) :: setnum
 
-if(restart.eq.0)then
- fname='./initial_fields/vel.dat'
-else
- write(time,'(I8.8)') nt
- fname=trim(folder)//'/vel_'//time//'.dat'
-endif
 
-offset=0
+do j=1,nset
+  write(setnum,'(i3.3)') j
 
-call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+  if(restart.eq.0)then
+   fname='./initial_fields/vel_'//setnum//'.dat'
+  else
+   write(time,'(I8.8)') nt
+   fname=trim(folder)//'/vel_'//setnum//'_'//time//'.dat'
+  endif
 
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+  offset=0
 
-call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+  call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
-call mpi_file_close(f_handle,ierr)
+  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+  call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
 
-up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=varloc
+  call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+  call mpi_file_close(f_handle,ierr)
+
+  up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
+enddo
 
 call mpi_win_fence(0,window_up,ierr)
 

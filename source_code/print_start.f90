@@ -10,6 +10,9 @@ use particle
 
 #define tracer tracerflag
 #define stokes_drag stokesflag
+#define twowayc twowaycflag
+
+character(len=1000) :: fmtstr
 
 write(*,*)
 write(*,*) '-----------------------------------------------------------------------'
@@ -204,17 +207,22 @@ if(part_flag.eq.1)then
 #if tracer == 1
  write(*,'(1x,a)') 'Tracer particles'
 #elif tracer == 0
- write(*,'(1x,a)') 'Inertial particles'
+#if twowayc == 0
+ write(*,'(1x,a)') 'Inertial particles (one-way coupling)'
+#elif twowayc == 1
+ write(*,'(1x,a)') 'Inertial particles (two-way coupling)'
+#endif
 #if stokes_drag == 1
  write(*,'(1x,a)') 'Stokes drag'
 #elif stokes_drag == 0
  write(*,'(1x,a)') 'Schiller-Naumann drag'
 #endif
 #endif
+ write(fmtstr, '(a,i8,a)' )  '(1x,a40,',nset,'(f12.5))'
  write(*,'(1x,a40,i12)') 'Number of particles : ',part_number
- write(*,'(1x,a40,f12.4)') 'Stokes : ',stokes
- write(*,'(1x,a40,f12.5)') 'Density ratio particle/fluid : ',dens_part
- write(*,'(1x,a40,f12.5)') 'Particle diameter (w.u.) : ',d_par
+ write(*,trim(fmtstr)) 'Stokes : ',(stokes(i), i=1,nset)
+ write(*,trim(fmtstr)) 'Density ratio particle/fluid : ',(dens_part(i), i=1,nset)
+ write(*,trim(fmtstr)) 'Particle diameter (w.u.) : ',(d_par(i), i=1,nset)
  write(*,'(1x,a40,i10)') 'Solution saving frequency (particle) : ',part_dump
  if(in_cond_part_pos.eq.0)then
   write(*,'(1x,a)') 'Initialize random particle position'

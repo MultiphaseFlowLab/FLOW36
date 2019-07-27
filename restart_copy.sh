@@ -4,6 +4,8 @@ spectral="1"
 # 0 to recover from iteration, 1 from iteration_old
 old="0"
 
+# number of particle sets
+npartsets
 
 if [ "$old" == "0" ]; then
   iteration="`cat iteration.dat`"
@@ -48,8 +50,13 @@ if [ "$old" == "0" ]; then
   cp "./phi"$sp".dat" "../phi"$sp"_"$it".dat"
   cp "./psi"$sp"_fg.dat" "../psi"$sp"_fg_"$it".dat"
   cp "./T"$sp".dat" "../T"$sp"_"$it".dat"
-  cp "./pos"$sp".dat" "../pos"$sp"_"$it".dat"
-  cp "./vel"$sp".dat" "../vel"$sp"_"$it".dat"
+for i in $(eval echo "{1..$nset}")
+do
+  read setnum <<<${i//[^0-9]/ }
+  printf -v setnum "%03d" $setnum
+  cp "./pos_"$setnum".dat" "../pos_"$setnum"_"$it".dat"
+  cp "./vel_"$setnum".dat" "../vel_"$setnum"_"$it".dat"
+done
 elif [ "$old" == "1" ]; then
   cp "./u"$sp"_old.dat" "../u"$sp"_"$it".dat"
   cp "./v"$sp"_old.dat" "../v"$sp"_"$it".dat"
@@ -57,6 +64,11 @@ elif [ "$old" == "1" ]; then
   cp "./phi"$sp"_old.dat" "../phi"$sp"_"$it".dat"
   cp "./psi"$sp"_fg_old.dat" "../psi"$sp"_fg_"$it".dat"
   cp "./T"$sp"_old.dat" "../T"$sp"_"$it".dat"
-  cp "./pos"$sp"_old.dat" "../pos"$sp"_"$it".dat"
-  cp "./vel"$sp"_old.dat" "../vel"$sp"_"$it".dat"
+for i in $(eval echo "{1..$nset}")
+do
+  read setnum <<<${i//[^0-9]/ }
+  printf -v setnum "%03d" $setnum
+  cp "./pos_"$setnum"_old.dat" "../pos_"$setnum"_"$it".dat"
+  cp "./vel_"$setnum"_old.dat" "../vel_"$setnum"_"$it".dat"
+done
 fi

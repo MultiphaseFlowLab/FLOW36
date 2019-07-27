@@ -10,7 +10,7 @@ type(c_ptr) :: baseptr
 integer(kind=mpi_address_kind) :: varsize,lb
 integer :: number
 integer :: dispunit,delta,range
-integer :: shape3(3),shape2(2)
+integer :: shape3(3),shape2(3)
 integer :: i
 
 
@@ -24,7 +24,7 @@ elseif(rank.gt.leader)then
 endif
 
 ! open share memory region for fluid flow, force feedback and particle data
-shape2=[part_number,3]
+shape2=[part_number,3,nset]
 shape3=[nx,nz,ny]
 
 ! allocate uf
@@ -95,7 +95,7 @@ call c_f_pointer(baseptr,fb_z,shape3)
 
 
 ! allocate particle data
-number=part_number*3
+number=part_number*3*nset
 ! allocate xp
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_xp,ierr)
 ! get location of memory segment
@@ -158,7 +158,7 @@ use commondata
 use sim_par
 use particle
 
-integer :: i
+integer :: i,j
 integer :: n_planes
 double precision :: part_height,level
 
@@ -173,10 +173,9 @@ if(in_cond_part_pos.eq.0)then
   if(rank.eq.leader)then
    call random_number(xp)
    ! position in plus units, x,y,z
-   xp(:,1)=xp(:,1)*xl*re
-   xp(:,2)=xp(:,2)*yl*re
-   xp(:,3)=(2.0d0*xp(:,3))*re   ! particles in [0,2*Re]
-   ! xp(:,3)=(2.0d0*xp(:,3)-1.0d0)*re    ! particles in [-Re,+Re]
+   xp(:,1,:)=xp(:,1,:)*xl*re
+   xp(:,2,:)=xp(:,2,:)*yl*re
+   xp(:,3,:)=(2.0d0*xp(:,3,:))*re   ! particles in [0,2*Re]
   endif
   ! synchronize shared memory window
   if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
@@ -191,9 +190,9 @@ elseif(in_cond_part_pos.eq.2)then
    close(456,status='keep')
    call random_number(xp)
    ! position in plus units, x,y,z
-   xp(:,1)=xp(:,1)*xl*re
-   xp(:,2)=xp(:,2)*yl*re
-   xp(:,3)=(part_height+1.0d0)*re   ! particles in [0,2*Re]
+   xp(:,1,:)=xp(:,1,:)*xl*re
+   xp(:,2,:)=xp(:,2,:)*yl*re
+   xp(:,3,:)=(part_height+1.0d0)*re   ! particles in [0,2*Re]
   endif
   ! synchronize shared memory window
   if(rank.ge.leader) call mpi_win_fence(0,window_xp,ierr)
@@ -216,14 +215,16 @@ endif
 if(in_cond_part_vel.eq.0)then
   if(rank.eq.0) write(*,*) 'Initializing zero particle velocity'
   if(rank.ge.leader)then
-    up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)=0.0d0
+    up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,:)=0.0d0
     call mpi_win_fence(0,window_up,ierr)
   endif
 elseif(in_cond_part_vel.eq.1)then
   if(rank.eq.0) write(*,*) 'Initializing fluid velocity at particle position'
   if(rank.ge.leader)then
    do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
-    call lagran4(xp(i,:),up(i,:))
+    do j=1,nset
+     call lagran4(xp(i,:,j),up(i,:,j))
+    enddo
    enddo
    call mpi_win_fence(0,window_up,ierr)
   endif
@@ -292,14 +293,14 @@ if(rank.eq.leader)then
 
   exceeding=0
   do i=1,n_planes
-    xp(exceeding+1:exceeding+part_plane(i),3)=zlev(i)
+    xp(exceeding+1:exceeding+part_plane(i),3,:)=zlev(i)
     exceeding=exceeding+part_plane(i)
   enddo
 
   ! rescale to outer units
-  xp(:,1)=xp(:,1)*xl*re
-  xp(:,2)=xp(:,2)*yl*re
-  xp(:,3)=(xp(:,3)+1.0d0)*re
+  xp(:,1,:)=xp(:,1,:)*xl*re
+  xp(:,2,:)=xp(:,2,:)*yl*re
+  xp(:,3,:)=(xp(:,3,:)+1.0d0)*re
 
   deallocate(zlev,part_plane)
 endif

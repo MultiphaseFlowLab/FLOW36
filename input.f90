@@ -72,8 +72,7 @@ tempinitial_condition           ! initial condition on temperature
 ! Lagrangian particle tracking variables
 particleflag                    ! 1: particles activated, 0: no particles
 particlenumber                  ! total number of particles
-partstokes                      ! Stokes number of the particle
-densityparticle                 ! density ratio particle/fluid
+npartset                        ! number of sets of particles
 incondpartpos                   ! particle initial condition position
 incondpartvel                   ! particle initial condition velocity
 particledump                    ! particle saving frequency

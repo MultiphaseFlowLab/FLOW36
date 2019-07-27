@@ -212,31 +212,35 @@ use mpiIO
 use commondata
 use particle
 
-integer :: nt
+integer :: nt,i
 integer :: f_handle ! file handle
 integer(mpi_offset_kind) :: offset
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+character(len=3) :: setnum
 
-double precision :: var(part_number,3),varloc(part_index(rank_loc+1,2),3)
+double precision :: var(part_number,3,nset),varloc(part_index(rank_loc+1,2),3)
 
 write(time,'(I8.8)') nt
 
-fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
+do i=1,nset
+ write(setnum,'(i3.3)') i
+ fname=trim(folder)//'/'//trim(namevar)//'_'//trim(setnum)//'_'//time//'.dat'
 
-offset=0
-varloc=var(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)
+ offset=0
+ varloc=var(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,i)
 
-call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+ call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
 
-call mpi_file_write_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+ call mpi_file_write_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
 
-call mpi_file_close(f_handle,ierr)
+ call mpi_file_close(f_handle,ierr)
+enddo
 
 return
 end
@@ -250,34 +254,39 @@ use mpiIO
 use commondata
 use particle
 
-integer :: nt,i
+integer :: nt,i,j
 integer :: f_handle ! file handle
 integer(mpi_offset_kind) :: offset
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+character(len=3) :: setnum
 
 double precision :: var(part_index(rank_loc+1,2),3)
 
 write(time,'(I8.8)') nt
 namevar='vel_f'
-fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
 
-do i=1,part_index(rank_loc+1,2)
-  call lagran4(xp(part_index(rank_loc+1,1)+i,:),var(i,:))
+do j=1,nset
+ write(setnum,'(i3.3)') j
+ fname=trim(folder)//'/'//trim(namevar)//'_'//trim(setnum)//'_'//time//'.dat'
+
+ do i=1,part_index(rank_loc+1,2)
+   call lagran4(xp(part_index(rank_loc+1,1)+i,:,j),var(i,:))
+ enddo
+
+ offset=0
+
+ call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+
+ call mpi_file_write_all(f_handle,var,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+ call mpi_file_close(f_handle,ierr)
 enddo
-
-offset=0
-
-call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
-
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
-
-call mpi_file_write_all(f_handle,var,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
-
-call mpi_file_close(f_handle,ierr)
 
 return
 end
@@ -291,34 +300,39 @@ use mpiIO
 use commondata
 use particle
 
-integer :: nt,i
+integer :: nt,i,j
 integer :: f_handle ! file handle
 integer(mpi_offset_kind) :: offset
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+character(len=3) :: setnum
 
 double precision :: var(part_index(rank_loc+1,2))
 
 write(time,'(I8.8)') nt
 namevar='Tp_f'
-fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
 
-do i=1,part_index(rank_loc+1,2)
-  call lagran4_T(xp(part_index(rank_loc+1,1)+i,:),var(i))
+do j=1,nset
+ write(setnum,'(i3.3)') j
+ fname=trim(folder)//'/'//trim(namevar)//'_'//trim(setnum)//'_'//time//'.dat'
+
+ do i=1,part_index(rank_loc+1,2)
+   call lagran4_T(xp(part_index(rank_loc+1,1)+i,:,j),var(i))
+ enddo
+
+ offset=0
+
+ call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'external32',mpi_info_null,ierr)
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'internal',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'native',mpi_info_null,ierr)
+
+ call mpi_file_write_all(f_handle,var,part_index(rank_loc+1,2),mpi_double_precision,mpi_status_ignore,ierr)
+
+ call mpi_file_close(f_handle,ierr)
 enddo
-
-offset=0
-
-call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
-
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save_scalar,'native',mpi_info_null,ierr)
-
-call mpi_file_write_all(f_handle,var,part_index(rank_loc+1,2),mpi_double_precision,mpi_status_ignore,ierr)
-
-call mpi_file_close(f_handle,ierr)
 
 return
 end
@@ -338,8 +352,9 @@ use particle
 use, intrinsic :: ISO_C_BINDING
 
 character(len=80) :: in,out
+character(len=3) :: setnum
 
-integer :: nt,ren
+integer :: nt,ren,j
 
 logical :: check
 
@@ -399,8 +414,11 @@ if(rank.eq.0)then
 #endif
 #endif
 #if particles == 1
-    ren=rename(trim(folder)//'/backup/pos.dat'//C_NULL_CHAR,trim(folder)//'/backup/pos_old.dat'//C_NULL_CHAR)
-    ren=rename(trim(folder)//'/backup/vel.dat'//C_NULL_CHAR,trim(folder)//'/backup/vel_old.dat'//C_NULL_CHAR)
+    do j=1,nset
+     write(setnum,'(i3.3)') j
+     ren=rename(trim(folder)//'/backup/pos_'//setnum//'.dat'//C_NULL_CHAR,trim(folder)//'/backup/pos_'//setnum//'_old.dat'//C_NULL_CHAR)
+     ren=rename(trim(folder)//'/backup/vel_'//setnum//'.dat'//C_NULL_CHAR,trim(folder)//'/backup/vel_'//setnum//'_old.dat'//C_NULL_CHAR)
+    enddo
 #endif
   endif
   in=trim(folder)//'/time_check.dat'
@@ -457,8 +475,11 @@ if(rank.eq.0)then
 #endif
 #endif
 #if particles == 1
-    call rename(trim(folder)//'/backup/pos.dat',trim(folder)//'/backup/pos_old.dat')
-    call rename(trim(folder)//'/backup/vel.dat',trim(folder)//'/backup/vel_old.dat')
+    do j=1,nset
+     write(setnum,'(i3.3)') j
+     call rename(trim(folder)//'/backup/pos_'//setnum//'.dat',trim(folder)//'/backup/pos_'//setnum//'_old.dat')
+     call rename(trim(folder)//'/backup/vel_'//setnum//'.dat',trim(folder)//'/backup/vel_'//setnum//'_old.dat')
+    enddo
 #endif
   endif
   call system('cp '//trim(folder)//'/time_check.dat '//trim(folder)//'/backup/time_check.dat')
@@ -700,28 +721,34 @@ use mpiIO
 use commondata
 use particle
 
+integer :: j
 integer :: f_handle ! file handle
 integer(mpi_offset_kind) :: offset
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+character(len=3) :: setnum
 
-double precision :: var(part_number,3),varloc(part_index(rank_loc+1,2),3)
+double precision :: var(part_number,3,nset),varloc(part_index(rank_loc+1,2),3)
 
-fname=trim(folder)//'/backup/'//trim(namevar)//'.dat'
+do j=1,nset
+  write(setnum,'(i3.3)') j
 
-offset=0
-varloc=var(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:)
+  fname=trim(folder)//'/backup/'//trim(namevar)//'_'//setnum//'.dat'
 
-call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
+  offset=0
+  varloc=var(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)
 
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+  call mpi_file_open(part_comm,fname,mpi_mode_create+mpi_mode_rdwr,mpi_info_null,f_handle,ierr)
 
-call mpi_file_write_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+  call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
 
-call mpi_file_close(f_handle,ierr)
+  call mpi_file_write_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+
+  call mpi_file_close(f_handle,ierr)
+enddo
 
 return
 end
@@ -781,15 +808,6 @@ if(check.eqv..true.)then
     read(11,*)
   enddo
 
-  ! do
-  ! read(11,'(a)',iostat=outcome) buf
-  ! if(outcome.eq.0)then
-  !   write(12,'(a)') trim(buf)
-  ! else
-  !   exit
-  ! endif
-  ! enddo
-
   do j=1,dump_failure
    read(11,'(a)') buf
    write(12,'(a)') trim(buf)
@@ -823,15 +841,6 @@ if(check.eqv..true.)then
   do j=1,i-2*dump_failure+2
     read(11,*)
   enddo
-
-  ! do
-  ! read(11,'(a)',iostat=outcome) buf
-  ! if(outcome.eq.0)then
-  !   write(12,'(a)') trim(buf)
-  ! else
-  !   exit
-  ! endif
-  ! enddo
 
   do j=1,dump_failure
    read(11,'(a)',iostat=outcome) buf

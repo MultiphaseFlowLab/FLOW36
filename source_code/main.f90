@@ -395,6 +395,7 @@ endif
 
   ! free all group communicators
   if(rank.lt.flow_comm_lim) call mpi_comm_free(flow_comm,ierr)
+  deallocate(stokes,dens_part,d_par)
 #if particles == 1
   if(rank.le.flow_comm_lim) call mpi_comm_free(comm_comm,ierr)
   if(rank.ge.leader)then

@@ -9,7 +9,9 @@ use surfactant
 use temperature
 use particle
 
-integer :: grav_dir,match_dens,match_visc,body_dir
+#define twowayc twowaycflag
+
+integer :: grav_dir,match_dens,match_visc,body_dir,i
 double precision :: Lx,Ly
 
  open(unit=66,file='./sc_compiled/input.f90',form='formatted',status='old',action='read')
@@ -88,16 +90,30 @@ double precision :: Lx,Ly
  read(66,*)
  read(66,'(i8)') part_flag
  read(66,'(i12)') part_number
- read(66,'(f16.6)') stokes
- read(66,'(f16.6)') dens_part
+ read(66,'(i8)') nset
  read(66,'(i8)') in_cond_part_pos
  read(66,'(i8)') in_cond_part_vel
  read(66,'(i8)') part_dump
 
  r_theta=r_theta*dble(nx*ny)
 
+ ! read particle parameters
+#if twowayc
+ nset=1
+#endif
+ allocate(stokes(nset))
+ allocate(dens_part(nset))
+ allocate(d_par(nset))
+ open(456,file='./sc_compiled/part_param.f90',form='formatted',status='old',action='read')
+ do i=1,nset
+  read(456,'(f12.5)') stokes(i)
+  read(456,'(f12.5)') dens_part(i)
+ enddo
+ close(456,status='keep')
  ! particle diameter (wall units)
- d_par=dsqrt(18.0d0*Stokes/dens_part)
+ do i=1,nset
+   d_par(i)=dsqrt(18.0d0*Stokes(i)/dens_part(i))
+ enddo
 
 ! if it is a simulation restart, use old flow field data and start from nt_restart
  if(restart.eq.1)then

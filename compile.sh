@@ -158,7 +158,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="5" # integer
+incond="0" # integer
 
 # Reynolds number
 Re="1.0" # real (double)
@@ -167,7 +167,7 @@ Re="1.0" # real (double)
 Co="0.2" # real (double)
 
 # mean pressure gradient (x and y), defined ad (p_out-p_in)/L
-gradpx="-1.0" # real (double)
+gradpx="0.0" # real (double)
 gradpy=" 0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
@@ -402,7 +402,7 @@ boussinnesq="0" # integer
 # Lagrangian Particle Tracking only
 part_flag="1" # integer
 
-part_number="10" # integer
+part_number="4" # integer
 
 # 1 use tracer particles (implies 1-way coupling), 0 use inertial particles
 tracer="0" # integer
@@ -426,7 +426,7 @@ part_gravity="1" # integer
 twoway="0" # integer
 
 # frequency of saving particle data
-part_dump="1000" # integer
+part_dump="20" # integer
 
 # initial conditions for the particle position
 # 0 : initialize random position
@@ -917,6 +917,7 @@ sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker
 sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
 sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
 sed -i "" "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "" "s/npartsets/nset=\"$nset\"/g" ./set_run/results/backup/restart_copy.sh
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -1005,6 +1006,7 @@ sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f9
 sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
 sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
 sed -i "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i "s/npartsets/nset=\"$nset\"/g" ./set_run/results/backup/restart_copy.sh
 fi
 
 if [ "$machine" == "4" ]; then
