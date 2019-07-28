@@ -237,17 +237,18 @@ else
 endif
 
 ! check that particle is inside domain (z direction, check with d_par)
-do j=1,nset
- do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
+if(rank.ge.leader)then
+ do j=1,nset
+  do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
     if(xp(i,3,j).lt.d_par(j)/2.0d0)then
      xp(i,3,j)=d_par(j)-xp(i,3,j)
     elseif(xp(i,3,j).gt.2.0d0*re-d_par(j)/2.0d0)then
      xp(i,3,j)=4.0d0*Re-d_par(j)-xp(i,3,j)
     endif
+  enddo
  enddo
-enddo
-call mpi_win_fence(0,window_xp,ierr)
-
+ call mpi_win_fence(0,window_xp,ierr)
+endif
 
 #if twowayc == 1
 call get_2WCforces
