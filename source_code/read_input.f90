@@ -108,12 +108,14 @@ double precision :: Lx,Ly
  allocate(stokes(nset))
  allocate(dens_part(nset))
  allocate(d_par(nset))
- open(456,file='./sc_compiled/part_param.f90',form='formatted',status='old',action='read')
- do i=1,nset
-  read(456,'(f12.5)') stokes(i)
-  read(456,'(f12.5)') dens_part(i)
- enddo
- close(456,status='keep')
+ if(part_flag.eq.1)then
+  open(456,file='./sc_compiled/part_param.f90',form='formatted',status='old',action='read')
+  do i=1,nset
+   read(456,'(f12.5)') stokes(i)
+   read(456,'(f12.5)') dens_part(i)
+  enddo
+  close(456,status='keep')
+ endif
 #if tracers == 1
  stokes=0.0d0
 #endif
