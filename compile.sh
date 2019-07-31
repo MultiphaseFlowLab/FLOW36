@@ -168,7 +168,7 @@ Co="0.2" # real (double)
 
 # mean pressure gradient (x and y), defined ad (p_out-p_in)/L
 gradpx="0.0" # real (double)
-gradpy=" 0.0" # real (double)
+gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
 cpi_flag="0"

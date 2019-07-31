@@ -85,6 +85,7 @@ double precision :: Lx,Ly
  read(66,*) !in_cond_part_pos
  read(66,*) !in_cond_part_vel
  read(66,'(i8)') part_dump
+ read(66,*) !subiteration
 
  xl=Lx*pi
  yl=Ly*pi
