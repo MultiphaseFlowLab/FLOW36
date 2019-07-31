@@ -95,8 +95,11 @@ double precision :: Lx,Ly
  read(66,'(i8)') in_cond_part_pos
  read(66,'(i8)') in_cond_part_vel
  read(66,'(i8)') part_dump
+ read(66,'(i8)') subiterations
 
  r_theta=r_theta*dble(nx*ny)
+
+ dt_part=dt/dble(subiterations)
 
  ! read particle parameters
 #if tracers == 1

@@ -428,6 +428,9 @@ twoway="0" # integer
 # frequency of saving particle data
 part_dump="1000" # integer
 
+# number of substep for particle time integration within one (flow field) time step
+subiterations="10" # integer
+
 # initial conditions for the particle position
 # 0 : initialize random position
 # 1 : read from input file (parallel read, binary file)
@@ -618,6 +621,7 @@ sed -i "" "s/npartset/$nset/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 sed -i "" "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
+sed -i "" "s/numsubiteration/$subiterations/g" ./set_run/sc_compiled/input.f90
 else
 sed -i "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
@@ -687,6 +691,7 @@ sed -i "s/npartset/$nset/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
+sed -i "s/numsubiteration/$subiterations/g" ./set_run/sc_compiled/input.f90
 fi
 # end of input file editing
 

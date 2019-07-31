@@ -9,18 +9,18 @@ use sim_par
 #define tracer tracerflag
 
 double precision, dimension(3) :: for
-integer :: i,j
+integer :: i,j,k
 
-! loop over nset
-do j=1,nset
+! loop over time substeps
+do k=1,subiterations
+ ! loop over nset
+ do j=1,nset
   ! loop over particles
   do i=part_index(rank_loc+1,1)+1,part_index(rank_loc+1,1)+part_index(rank_loc+1,2)
 #if tracer == 1
     ! tracers only
     call lagran4(xp(i,:,j),up(i,:,j))
-    xp(i,1,j)=xp(i,1,j)+dt*re*up(i,1,j)
-    xp(i,2,j)=xp(i,2,j)+dt*re*up(i,2,j)
-    xp(i,3,j)=xp(i,3,j)+dt*re*up(i,3,j)
+    xp(i,:,j)=xp(i,:,j)+dt_part*re*up(i,:,j)
     ! tracer velocity is fluid velocity at particle position
     call lagran4(xp(i,:,j),up(i,:,j))
 #elif tracer == 0
@@ -33,8 +33,8 @@ do j=1,nset
     endif
 
     ! time integration
-    xp(i,:,j)=xp(i,:,j)+dt*re*up(i,:,j)
-    up(i,:,j)=up(i,:,j)+dt*re*for
+    xp(i,:,j)=xp(i,:,j)+dt_part*re*up(i,:,j)
+    up(i,:,j)=up(i,:,j)+dt_part*re*for
 #endif
 
     ! check periodicity
@@ -57,6 +57,7 @@ do j=1,nset
      up(i,3,j)=-up(i,3,j)
     endif
   enddo
+ enddo
 enddo
 
 call mpi_win_fence(0,window_xp,ierr)

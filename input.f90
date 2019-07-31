@@ -76,3 +76,4 @@ npartset                        ! number of sets of particles
 incondpartpos                   ! particle initial condition position
 incondpartvel                   ! particle initial condition velocity
 particledump                    ! particle saving frequency
+numsubiteration                 ! number of subiteration for particle tracking
