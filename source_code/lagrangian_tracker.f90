@@ -28,6 +28,7 @@ do k=1,subiterations
     if(abs(stokes(j)).lt.1.0e-15)then
      ! for multiple sets of particles: when using tracer St=0, thus for=NaN
      for=0.0d0
+     call lagran4(xp(i,:,j),up(i,:,j))
     else
      call calculate_forces(xp(i,:,j),up(i,:,j),for,j)
     endif
