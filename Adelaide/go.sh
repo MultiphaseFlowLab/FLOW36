@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#SBATCH -p test
 #SBATCH -N1 -n1                             # n tasks on N node (total number of tasks)
 #SBATCH --time=5:00                         # time limits: hh:mm:ss
 #SBATCH --error error.err                   # std-error file
