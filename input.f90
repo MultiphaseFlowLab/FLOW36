@@ -29,7 +29,7 @@ delta_t                         ! dt
 bc_upbound                      ! boundary condition at z=1
 bc_lowbound                     ! boundary condition at z=-1
 ! phase field variables
-phasephiflag                    ! 1: phase field avtivated, 0: no phase field
+phasephiflag                    ! 1: phase field activated, 0: no phase field
 phaseprofflag                   ! 0: Standard model, 1: profile-corrected, 2: flux-corrected
 lamcorphi                       ! Value of lambda to correct phi
 matcheddens                     ! 1: matched densities, 0: otherwise
