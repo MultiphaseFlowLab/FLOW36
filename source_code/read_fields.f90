@@ -9,12 +9,11 @@ double precision :: u(nx,fpz,fpy)
 
 integer :: nt,restart
 integer :: f_handle
-
 integer(mpi_offset_kind) :: offset
-
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+logical :: check
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'.dat'
@@ -25,17 +24,22 @@ endif
 
 offset=0
 
-call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+inquire(file=trim(fname),exist=check)
 
+if(check.eqv..true.)then
+ call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'internal',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
 
-call mpi_file_read_all(f_handle,u,nx*fpy*fpz,mpi_double_precision,mpi_status_ignore,ierr)
-
-
-call mpi_file_close(f_handle,ierr)
+ call mpi_file_read_all(f_handle,u,nx*fpy*fpz,mpi_double_precision,mpi_status_ignore,ierr)
+ call mpi_file_close(f_handle,ierr)
+else
+ ! stop simulation
+ if(rank.eq.0) write(*,*) 'Missing ',trim(namevar),' fields'
+ call exit(0)
+endif
 
 return
 end
@@ -54,12 +58,11 @@ double precision :: u(spx,nz,spy,2),ucd(dimc(1),dimc(2),dimc(3),2)
 
 integer :: nt
 integer :: f_handle
-
 integer(mpi_offset_kind) :: offset
-
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+logical :: check
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'.dat'
@@ -70,15 +73,22 @@ endif
 
 offset=0
 
-call mpi_file_open(sp_save_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+inquire(file=trim(fname),exist=check)
 
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'internal',mpi_info_null,ierr)
+if(check.eqv..true.)then
+ call mpi_file_open(sp_save_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'internal',mpi_info_null,ierr)
 
-call mpi_file_read_all(f_handle,ucd,dimc(1)*dimc(2)*dimc(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
+ call mpi_file_read_all(f_handle,ucd,dimc(1)*dimc(2)*dimc(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
 
-call mpi_file_close(f_handle,ierr)
+ call mpi_file_close(f_handle,ierr)
 
-call expand_domain(ucd,u)
+ call expand_domain(ucd,u)
+else
+ ! stop simulation
+ if(rank.eq.0) write(*,*) 'Missing ',trim(namevar),' fields'
+ call exit(0)
+endif
 
 return
 end
@@ -98,12 +108,11 @@ double precision :: u(npsix,fpzpsi,fpypsi)
 
 integer :: nt,restart
 integer :: f_handle
-
 integer(mpi_offset_kind) :: offset
-
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+logical :: check
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'_fg.dat'
@@ -114,17 +123,22 @@ endif
 
 offset=0
 
-call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+inquire(file=trim(fname),exist=check)
 
+if(check.eqv..true.)then
+ call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'external32',mpi_info_null,ierr)
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'internal',mpi_info_null,ierr)
-!call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'native',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'external32',mpi_info_null,ierr)
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'internal',mpi_info_null,ierr)
+ !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'native',mpi_info_null,ierr)
 
-call mpi_file_read_all(f_handle,u,npsix*fpypsi*fpzpsi,mpi_double_precision,mpi_status_ignore,ierr)
-
-
-call mpi_file_close(f_handle,ierr)
+ call mpi_file_read_all(f_handle,u,npsix*fpypsi*fpzpsi,mpi_double_precision,mpi_status_ignore,ierr)
+ call mpi_file_close(f_handle,ierr)
+else
+ ! stop simulation
+ if(rank.eq.0) write(*,*) 'Missing ',trim(namevar),' fields'
+ call exit(0)
+endif
 
 return
 end
@@ -144,12 +158,11 @@ double precision :: u(spxpsi,npsiz,spypsi,2),ucd(dimc_fg(1),dimc_fg(2),dimc_fg(3
 
 integer :: nt
 integer :: f_handle
-
 integer(mpi_offset_kind) :: offset
-
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+logical :: check
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'_fg.dat'
@@ -160,15 +173,23 @@ endif
 
 offset=0
 
-call mpi_file_open(sp_save_comm_fg,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+inquire(file=trim(fname),exist=check)
 
-call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'internal',mpi_info_null,ierr)
+if(check.eqv..true.)then
+ call mpi_file_open(sp_save_comm_fg,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
-call mpi_file_read_all(f_handle,ucd,dimc_fg(1)*dimc_fg(2)*dimc_fg(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'internal',mpi_info_null,ierr)
 
-call mpi_file_close(f_handle,ierr)
+ call mpi_file_read_all(f_handle,ucd,dimc_fg(1)*dimc_fg(2)*dimc_fg(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
 
-call expand_domain_fg(ucd,u)
+ call mpi_file_close(f_handle,ierr)
+
+ call expand_domain_fg(ucd,u)
+else
+ ! stop simulation
+ if(rank.eq.0) write(*,*) 'Missing ',trim(namevar),' fields'
+ call exit(0)
+endif
 
 return
 end
@@ -200,9 +221,7 @@ endif
 
 
  open(unit=66,file=fname,form='unformatted',status='old',access='stream')
-
  read(66) temp_u
-
  close(66,status='keep')
 
 
@@ -225,12 +244,11 @@ double precision :: varloc(part_index(rank_loc+1,2),3)
 
 integer :: nt,restart,j
 integer :: f_handle
-
 integer(mpi_offset_kind) :: offset
-
 character(len=8) :: time
 character(len=40) :: fname
 character(len=3) :: setnum
+logical :: check
 
 do j=1,nset
   write(setnum,'(i3.3)') j
@@ -244,17 +262,23 @@ do j=1,nset
 
   offset=0
 
-  call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+  inquire(file=trim(fname),exist=check)
 
-  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
-  call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
-  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+  if(check.eqv..true.)then
+   call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
-  call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+   !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+   call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+   !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
 
-  call mpi_file_close(f_handle,ierr)
-
-  xp(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
+   call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+   call mpi_file_close(f_handle,ierr)
+   xp(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
+  else
+   ! stop simulation
+   if(rank.eq.leader) write(*,*) 'Missing pospar fields'
+   call exit(0)
+  endif
 enddo
 
 call mpi_win_fence(0,window_xp,ierr)
@@ -275,13 +299,11 @@ double precision :: varloc(part_index(rank_loc+1,2),3)
 
 integer :: nt,restart,j
 integer :: f_handle
-
 integer(mpi_offset_kind) :: offset
-
 character(len=8) :: time
 character(len=40) :: fname
 character(len=3) :: setnum
-
+logical :: check
 
 do j=1,nset
   write(setnum,'(i3.3)') j
@@ -295,17 +317,23 @@ do j=1,nset
 
   offset=0
 
-  call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
+  inquire(file=trim(fname),exist=check)
 
-  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
-  call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
-  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
+  if(check.eqv..true.)then
+   call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
 
-  call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+   !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
+   call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
+   !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
 
-  call mpi_file_close(f_handle,ierr)
-
-  up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
+   call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+   call mpi_file_close(f_handle,ierr)
+   up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
+  else
+   ! stop simulation
+   if(rank.eq.leader) write(*,*) 'Missing velpar fields'
+   call exit(0)
+  endif
 enddo
 
 call mpi_win_fence(0,window_up,ierr)
