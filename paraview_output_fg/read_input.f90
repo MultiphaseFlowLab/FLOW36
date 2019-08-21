@@ -91,8 +91,6 @@ double precision :: Lx,Ly
  yl=Ly*pi
  close(66)
 
-write(*,*) part_dump
-
  open(unit=68,file='./input_paraview.f90',form='formatted',status='old',action='read')
 
  read(68,'(i5)') spectral

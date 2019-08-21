@@ -133,7 +133,7 @@ else
 
  if(check.eqv..true.)then
   ! reading u
-  write(*,*) 'Reading step ',nstep,' out of ',nend
+  write(*,*) 'Reading step ',nstep,' out of ',nend,' , flow and particles'
   if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
     open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(666) tmp
