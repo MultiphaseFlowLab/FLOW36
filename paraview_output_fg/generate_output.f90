@@ -171,8 +171,8 @@ if(topflag.eq.1)then
   call dz(wc,tmpc)
   call spectral_to_phys_fg(tmpc,a33,0)
 
-  def=(a11)**2+(a12)**2+(a13)**2+(a21)**2+(a22)**2+(a23)**2+(a31)**2+(a32)**2+(a33)**2
-  rot=(a32-a23)**2+(a13-a31)**2+(a21-a12)**2
+  def=(a11)**2+(a22)**2+(a33)**2+0.5d0*((a13+a31)**2+(a12+a21)**2+(a23+a32)**2)
+  rot=0.5d0*((a32-a23)**2+(a13-a31)**2+(a21-a12)**2)
 
   Qtop=(def-rot)/(def+rot)
 
