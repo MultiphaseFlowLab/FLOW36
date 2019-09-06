@@ -21,6 +21,8 @@ double precision :: Lx, Ly
  read(66,*)
  read(66,*)
  read(66,*)
+ read(66,*)
+ read(66,*)
  read(66,'(f16.8)') Lx
  read(66,'(f16.8)') Ly
  read(66,*)
@@ -28,6 +30,9 @@ double precision :: Lx, Ly
  read(66,'(i8)') nend
  read(66,'(i8)') ndump
  read(66,'(i8)') sdump
+ read(66,*)
+ read(66,*)
+ read(66,*)
  read(66,'(es16.5)') dt
 
 
