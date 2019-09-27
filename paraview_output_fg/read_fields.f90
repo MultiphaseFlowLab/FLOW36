@@ -67,7 +67,7 @@ if(spectral.eq.0)then
 
  if(check.eqv..true.)then
   write(*,*) 'Reading step ',nstep,' out of ',nend,' , flow and particles'
-  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1) then
     ! reading u
     open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(666) inp
@@ -76,7 +76,7 @@ if(spectral.eq.0)then
     call coarse2fine(inpc,uc)
     call spectral_to_phys_fg(uc,u,0)
   endif
-  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1) then
     ! reading v
     namefile=trim(namedir)//'v_'//numfile//'.dat'
     open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -86,7 +86,7 @@ if(spectral.eq.0)then
     call coarse2fine(inpc,vc)
     call spectral_to_phys_fg(vc,v,0)
   endif
-  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1) then
+  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1) then
     ! reading w
     namefile=trim(namedir)//'w_'//numfile//'.dat'
     open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -96,7 +96,7 @@ if(spectral.eq.0)then
     call coarse2fine(inpc,wc)
     call spectral_to_phys_fg(wc,w,0)
   endif
-  if(phiflag.eq.1 .or. marflag.eq.1)then
+  if(phiflag.eq.1 .or. marflag.eq.1 .or. div2dflag.eq.1)then
     ! reading phi
     namefile=trim(namedir)//'phi_'//numfile//'.dat'
     open(669,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -168,7 +168,7 @@ else
     call coarse2fine(inpc,wc)
     call spectral_to_phys_fg(wc,w,0)
   endif
-  if(phiflag.eq.1)then
+  if(phiflag.eq.1 .or. marflag.eq.1 .or. div2dflag.eq.1)then
     ! reading phi
     namefile=trim(namedir)//'phic_'//numfile//'.dat'
     open(669,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -180,7 +180,7 @@ else
     call coarse2fine(inpc,phic)
     call spectral_to_phys_fg(phic,phi,0)
   endif
-  if(psiflag.eq.1)then
+  if(psiflag.eq.1 .or. marflag.eq.1)then
     namefile=trim(namedir)//'psic_fg_'//numfile//'.dat'
     open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(670) tmp_fg

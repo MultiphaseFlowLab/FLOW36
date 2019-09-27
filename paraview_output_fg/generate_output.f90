@@ -21,7 +21,7 @@ character(len=16) :: str4
 lf=achar(10)
 
 ! fields included
-nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+upflag+vorflag+strflag+topflag+marflag
+nfields=uflag+vflag+wflag+phiflag+psiflag+tempflag+upflag+vorflag+strflag+topflag+marflag+div2dflag
 
 ! calculate velocity fluctuations
 if(upflag.eq.1)then
@@ -231,10 +231,88 @@ if(marflag.eq.1)then
       enddo
     enddo
   enddo
-  coeff=3d0*Ch/(We*sqrt(8d0))
+  coeff=3.0d0*Ch/(We*sqrt(8.0d0))
   marx=coeff*marx
   mary=coeff*mary
   marz=coeff*marz
+
+endif
+
+
+! 2D divergence (on interface) of total velocity
+if(div2dflag.eq.1)then
+  do j=1,nyf
+   do i=1,nxf/2+1
+    tmpc1(i,:,j,1)=-kx(i)*phic(i,:,j,2)
+    tmpc1(i,:,j,2)=+kx(i)*phic(i,:,j,1)
+    tmpc2(i,:,j,1)=-ky(j)*phic(i,:,j,2)
+    tmpc2(i,:,j,2)=+ky(j)*phic(i,:,j,1)
+   enddo
+  enddo
+  call dz(phic,tmpc3)
+
+  call spectral_to_phys_fg(tmpc1,a11,0)
+  call spectral_to_phys_fg(tmpc2,a12,0)
+  call spectral_to_phys_fg(tmpc3,a13,0)
+
+  do j=1,nyf
+   do k=1,nzf
+    do i=1,nxf
+     coeff=dsqrt(a11(i,k,j)**2+a12(i,k,j)**2+a13(i,k,j)**2)
+     a11(i,k,j)=a11(i,k,j)/coeff
+     a12(i,k,j)=a12(i,k,j)/coeff
+     a13(i,k,j)=a13(i,k,j)/coeff
+    enddo
+   enddo
+  enddo
+
+  do j=1,nyf
+   do k=1,nzf
+    do i=1,nxf
+     a21(i,k,j)=a12(i,k,j)*w(i,k,j)-a13(i,k,j)*v(i,k,j)
+     a22(i,k,j)=a13(i,k,j)*u(i,k,j)-a11(i,k,j)*w(i,k,j)
+     a23(i,k,j)=a11(i,k,j)*v(i,k,j)-a12(i,k,j)*u(i,k,j)
+    enddo
+   enddo
+  enddo
+
+  call phys_to_spectral_fg(a21,tmpc1,0)
+  call phys_to_spectral_fg(a22,tmpc2,0)
+  call phys_to_spectral_fg(a23,tmpc3,0)
+
+  call dz(tmpc2,tmpc)
+  do j=1,nyf
+   do i=1,nxf/2+1
+    tmpc(i,:,j,1)=-tmpc(i,:,j,1)-ky(j)*tmpc3(i,:,j,2)
+    tmpc(i,:,j,2)=-tmpc(i,:,j,2)+ky(j)*tmpc3(i,:,j,1)
+   enddo
+  enddo
+  call spectral_to_phys_fg(tmpc,a31,0)
+
+  call dz(tmpc1,tmpc)
+  do j=1,nyf
+   do i=1,nxf/2+1
+    tmpc(i,:,j,1)=tmpc(i,:,j,1)+kx(i)*tmpc3(i,:,j,2)
+    tmpc(i,:,j,2)=tmpc(i,:,j,2)-kx(i)*tmpc3(i,:,j,1)
+   enddo
+  enddo
+  call spectral_to_phys_fg(tmpc,a32,0)
+
+  do j=1,nyf
+   do i=1,nxf/2+1
+    tmpc(i,:,j,1)=-kx(i)*tmpc2(i,:,j,2)+ky(j)*tmpc1(i,:,j,2)
+    tmpc(i,:,j,2)=+kx(i)*tmpc2(i,:,j,1)-ky(j)*tmpc1(i,:,j,1)
+   enddo
+  enddo
+  call spectral_to_phys_fg(tmpc,a33,0)
+
+  do j=1,nyf
+   do k=1,nzf
+    do i=1,nxf
+     div2d(i,k,j)=a11(i,k,j)*a31(i,k,j)+a12(i,k,j)*a32(i,k,j)+a13(i,k,j)*a33(i,k,j)
+    enddo
+   enddo
+  enddo
 
 endif
 
@@ -456,6 +534,20 @@ endif
   enddo
  endif
 
+
+ ! write 2D divergence on interface
+ if(div2dflag.eq.1)then
+  write(str4(1:16),'(i16)') numx*numy*numz
+  buffer = 'Div2D 1 '//str4//' float'//lf
+  write(66) trim(buffer)
+  do k=z_start,z_end,dnz
+   do j=y_start,y_end,dny
+    do i=x_start,x_end,dnx
+     write(66) real(div2d(i,k,j))
+    enddo
+   enddo
+  enddo
+ endif
 
  buffer=lf
  write(66) trim(buffer)

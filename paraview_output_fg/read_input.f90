@@ -86,10 +86,10 @@ double precision :: Lx,Ly
  read(66,*) !in_cond_part_vel
  read(66,'(i8)') part_dump
  read(66,*) !subiteration
-
+ close(66)
+ 
  xl=Lx*pi
  yl=Ly*pi
- close(66)
 
  open(unit=68,file='./input_paraview.f90',form='formatted',status='old',action='read')
 
@@ -121,6 +121,7 @@ double precision :: Lx,Ly
  read(68,'(i5)') strflag
  read(68,'(i5)') topflag
  read(68,'(i5)') marflag
+ read(68,'(i5)') div2dflag
  read(68,'(i5)') partposflag
  read(68,'(i5)') partvelflag
  read(68,*)
@@ -179,6 +180,14 @@ if(spectral.eq.1)then
 else
  write(*,'(1x,a,i8,a,i8,a,i5)') 'from ',nstart,' to ',nend,' with step ',ndump
 endif
+write(*,'(1x,a)') '----------------------------------------------------------------------'
+write(*,'(1x,a)') '                            fields                                    '
+write(*,'(3(a19,i2,3x))') 'u',uflag,'v',vflag,'w',wflag
+write(*,'(3(a19,i2,3x))') 'phi',phiflag,'psi',psiflag,'temperature',tempflag
+write(*,'(3(a19,i2,3x))') 'up (vec)',upflag,'vor (vec)',vorflag,'strain rate (vec)',strflag
+write(*,'(3(a19,i2,3x))') 'topology parameter',topflag,'Marangoni (vec)',marflag,'2D divergence',div2dflag
+write(*,'(2(a19,i2,3x))') 'part pos',partposflag,'part vel',partvelflag
+
 write(*,'(1x,a)') '----------------------------------------------------------------------'
 write(*,*)
 

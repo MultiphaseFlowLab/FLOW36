@@ -68,6 +68,10 @@ if(marflag.eq.1)then
   allocate(marz(nxf,nzf,nyf))
 endif
 
+if(div2dflag.eq.1)then
+  allocate(div2d(nxf,nzf,nyf))
+endif
+
 if(partposflag.eq.1)then
  allocate(xpar(part_number,3))
  if(partvelflag.eq.1)then
@@ -199,6 +203,10 @@ endif
 
 if(marflag.eq.1)then
   deallocate(marx,mary,marz)
+endif
+
+if(div2dflag.eq.1)then
+  deallocate(div2d)
 endif
 
 if(partposflag.eq.1)then
