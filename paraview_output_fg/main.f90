@@ -27,11 +27,11 @@ allocate(uc(nxf/2+1,nzf,nyf,2))
 allocate(vc(nxf/2+1,nzf,nyf,2))
 allocate(wc(nxf/2+1,nzf,nyf,2))
 
-if(phiflag.eq.1)then
+if(phiflag.eq.1.or.marflag.eq.1.or.div2dflag.eq.1)then
  allocate(phi(nxf,nzf,nyf))
  allocate(phic(nxf/2+1,nzf,nyf,2))
 endif
-if(psiflag.eq.1)then
+if(psiflag.eq.1.or.marflag.eq.1)then
  allocate(psi(nxf,nzf,nyf))
  allocate(psic(nxf/2+1,nzf,nyf,2))
 endif

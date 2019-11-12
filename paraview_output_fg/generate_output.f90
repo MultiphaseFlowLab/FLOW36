@@ -266,6 +266,7 @@ if(div2dflag.eq.1)then
    enddo
   enddo
 
+  ! divergence of total velocity
   do j=1,nyf
    do k=1,nzf
     do i=1,nxf
