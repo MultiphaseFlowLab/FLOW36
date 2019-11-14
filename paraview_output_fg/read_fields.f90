@@ -67,7 +67,7 @@ if(spectral.eq.0)then
 
  if(check.eqv..true.)then
   write(*,*) 'Reading step ',nstep,' out of ',nend,' , flow and particles'
-  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. toopflag.eq.1) then
+  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. topflag.eq.1) then
     ! reading u
     open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(666) inp
@@ -76,7 +76,7 @@ if(spectral.eq.0)then
     call coarse2fine(inpc,uc)
     call spectral_to_phys_fg(uc,u,0)
   endif
-  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. toopflag.eq.1) then
+  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. topflag.eq.1) then
     ! reading v
     namefile=trim(namedir)//'v_'//numfile//'.dat'
     open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -86,7 +86,7 @@ if(spectral.eq.0)then
     call coarse2fine(inpc,vc)
     call spectral_to_phys_fg(vc,v,0)
   endif
-  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. toopflag.eq.1) then
+  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. topflag.eq.1) then
     ! reading w
     namefile=trim(namedir)//'w_'//numfile//'.dat'
     open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
@@ -134,7 +134,7 @@ else
  if(check.eqv..true.)then
   ! reading u
   write(*,*) 'Reading step ',nstep,' out of ',nend,' , flow and particles'
-  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. toopflag.eq.1) then
+  if(uflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. topflag.eq.1) then
     open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(666) tmp
     close(666,status='keep')
@@ -145,7 +145,7 @@ else
     call spectral_to_phys_fg(uc,u,0)
   endif
   ! reading v
-  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. toopflag.eq.1) then
+  if(vflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. topflag.eq.1) then
     namefile=trim(namedir)//'vc_'//numfile//'.dat'
     open(667,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(667) tmp
@@ -157,7 +157,7 @@ else
     call spectral_to_phys_fg(vc,v,0)
   endif
   ! reading w
-  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. toopflag.eq.1) then
+  if(wflag.eq.1 .or. upflag.eq.1 .or. vorflag.eq.1 .or. strflag.eq.1 .or. div2dflag.eq.1 .or. topflag.eq.1) then
     namefile=trim(namedir)//'wc_'//numfile//'.dat'
     open(668,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(668) tmp
