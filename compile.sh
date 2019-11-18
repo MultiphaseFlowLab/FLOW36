@@ -8,6 +8,7 @@
 # 6 : Theta (ANL)
 # 7 : Bridges (PSC)
 # 8 : Adelaide
+# 9 : VSC4
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -113,6 +114,17 @@ cp ./Adelaide/makefile_intel ./makefile
 cp ./Adelaide/go.sh ./go.sh
 
 savespectral="0"
+elif [ "$machine" == "9" ]; then
+echo "=                                   VSC-4                                    ="
+cp ./VSC-4/makefile ./makefile
+cp ./VSC-4/go.sh ./go.sh
+module purge
+# load modules
+module load intel/16 intel-mpi/5.1.3 fftw/3.3.4-DP
+# or (but problem with .mod files)
+#module load gcc/5.3 intel-mpi/5.1.3 fftw/3.3.4-DP
+savespectral="0"
+
 fi
 echo "=============================================================================="
 echo ""
@@ -127,9 +139,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="5" # integer
-iy="5" # integer
-iz="5" # integer
+ix="9" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -161,13 +173,13 @@ nt_restart="0" # integer
 incond="0" # integer
 
 # Reynolds number
-Re="1.0" # real (double)
+Re="150" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
 
 # mean pressure gradient (x and y), defined ad (p_out-p_in)/L
-gradpx="0.0" # real (double)
+gradpx="-1.0" # real (double)
 gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
@@ -182,7 +194,7 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="5" #integer (up to 8 digits)
+nend="1000" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
 dump="2000" # integer
@@ -202,13 +214,13 @@ st_dump="-1" # integer
 start_stats="0" # integer
 
 # flag for mean, rms, skewness, flatness calculation
-mean_flag="1" # 0 to skip mean, rms, skewness and flatness calculation, 1 to do it
+mean_flag="0" # 0 to skip mean, rms, skewness and flatness calculation, 1 to do it
 
 # flag for budget calculation
-budget_flag="1" # 0 to skip budget calculation, 1 to do it
+budget_flag="0" # 0 to skip budget calculation, 1 to do it
 
 # flag for power spectra calculation
-spectra_flag="1" # 0 to skip power spectra calculation, 1 to do it
+spectra_flag="0" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
 dt="1.e-4" # real (exponential)
@@ -235,7 +247,7 @@ phi_flag="0" # integer
 # 3: profile-corrected turned off at the walls
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
-phicor_flag="4" # integer
+phicor_flag="0" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag 1 or 2)
 # Lam=0.3/Ch
@@ -369,7 +381,7 @@ psi_bulk="0.01" # real (double)
 ################################################################################
 # Temperature only
 # temperature flag, 0 : temperature deactivated, 1 : temperature activated
-temp_flag="1" # integer
+temp_flag="0" # integer
 
 # Rayleigh number
 # for Rayleigh-Benard choose Re=sqrt(Ra/Pr)/4
@@ -400,7 +412,7 @@ boussinnesq="0" # integer
 
 ################################################################################
 # Lagrangian Particle Tracking only
-part_flag="1" # integer
+part_flag="0" # integer
 
 part_number="4" # integer
 
