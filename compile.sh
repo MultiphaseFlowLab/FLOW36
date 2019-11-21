@@ -9,7 +9,7 @@
 # 7 : Bridges (PSC)
 # 8 : Adelaide
 # 9 : VSC4
-machine="0"
+machine="9"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -124,7 +124,7 @@ module load intel
 module load intel-mpi
 module load fftw
 #only for debug
-module list
+#module list
 savespectral="0"
 
 fi
@@ -141,7 +141,7 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="9" # integer
+ix="8" # integer
 iy="8" # integer
 iz="8" # integer
 
@@ -152,7 +152,7 @@ exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
-NZCPU="4" # integer
+NZCPU="96" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node

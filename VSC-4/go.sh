@@ -1,9 +1,10 @@
 #!/bin/bash
-
+####### 96 cores x node (2 x Intel)
 #SBATCH -J TEST
-#SBATCH -N 32
+#SBATCH -N 1
 #SBATCH --ntasks-per-node=96
-#SBATCH --time=02-23:59:00
+######SBATCH --ntasks-per-core=2 HT ON/OFF
+#SBATCH --time=00-00:05:00
 #SBATCH --partition=mem_0096
 #SBATCH --qos=mem_0096
 
