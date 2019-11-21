@@ -120,9 +120,11 @@ cp ./VSC-4/makefile ./makefile
 cp ./VSC-4/go.sh ./go.sh
 module purge
 # load modules
-module load intel/16 intel-mpi/5.1.3 fftw/3.3.4-DP
-# or (but problem with .mod files)
-#module load gcc/5.3 intel-mpi/5.1.3 fftw/3.3.4-DP
+module load intel
+module load intel-mpi
+module load fftw
+#only for debug
+module list
 savespectral="0"
 
 fi
