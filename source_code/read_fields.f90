@@ -14,6 +14,7 @@ character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
 logical :: check
+integer :: file_size
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'.dat'
@@ -24,7 +25,11 @@ endif
 
 offset=0
 
-inquire(file=trim(fname),exist=check)
+inquire(file=trim(fname),exist=check,size=file_size)
+if(file_size.ne.8*nx*ny*nz)then
+  if(rank.eq.0) write(*,*) 'Wrong file size'
+  call exit(0)
+endif
 
 if(check.eqv..true.)then
  call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
@@ -63,6 +68,7 @@ character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
 logical :: check
+integer :: file_size,mx,my,mz
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'.dat'
@@ -73,7 +79,14 @@ endif
 
 offset=0
 
-inquire(file=trim(fname),exist=check)
+mx=floor(2.0d0/3.0d0*dble(nx/2+1))
+my=floor(2.0d0/3.0d0*dble(ny/2+1))+floor(2.0d0/3.0d0*dble(ny/2))
+mz=floor(2.0d0/3.0d0*dble(nz))
+inquire(file=trim(fname),exist=check,size=file_size)
+if(file_size.ne.8*mx*my*mz*2)then
+  if(rank.eq.0) write(*,*) 'Wrong file size (spectral)'
+  call exit(0)
+endif
 
 if(check.eqv..true.)then
  call mpi_file_open(sp_save_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
@@ -113,6 +126,7 @@ character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
 logical :: check
+integer :: file_size
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'_fg.dat'
@@ -123,7 +137,11 @@ endif
 
 offset=0
 
-inquire(file=trim(fname),exist=check)
+inquire(file=trim(fname),exist=check,size=file_size)
+if(file_size.ne.8*npsix*npsiy*npsiz)then
+  if(rank.eq.0) write(*,*) 'Wrong file size in fine grid'
+  call exit(0)
+endif
 
 if(check.eqv..true.)then
  call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
@@ -163,6 +181,7 @@ character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
 logical :: check
+integer :: file_size,mx,my,mz
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'_fg.dat'
@@ -173,7 +192,14 @@ endif
 
 offset=0
 
-inquire(file=trim(fname),exist=check)
+mx=floor(2.0d0/3.0d0*dble(npsix/2+1))
+my=floor(2.0d0/3.0d0*dble(npsiy/2+1))+floor(2.0d0/3.0d0*dble(npsiy/2))
+mz=floor(2.0d0/3.0d0*dble(npsiz))
+inquire(file=trim(fname),exist=check,size=file_size)
+if(file_size.ne.8*mx*my*mz*2)then
+  if(rank.eq.0) write(*,*) 'Wrong file size in fine grid (spectral)'
+  call exit(0)
+endif
 
 if(check.eqv..true.)then
  call mpi_file_open(sp_save_comm_fg,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
@@ -206,11 +232,13 @@ use par_size
 double precision :: u(nx,fpz,fpy),temp_u(nx,nz,ny)
 
 integer :: nt
-
+integer :: file_size
 
 character(len=8) :: time
 character(len=40) :: fname
 character(len=5) :: namevar
+
+logical :: check
 
 if(restart.eq.0)then
  fname='./initial_fields/'//trim(namevar)//'.dat'
@@ -219,11 +247,21 @@ else
  fname=trim(folder)//'/'//trim(namevar)//'_'//time//'.dat'
 endif
 
+inquire(file=trim(fname),exist=check,size=file_size)
+if(file_size.ne.8*nx*ny*nz)then
+  if(rank.eq.0) write(*,*) 'Wrong file size'
+  call exit(0)
+endif
 
+if(check.eqv..true.)then
  open(unit=66,file=fname,form='unformatted',status='old',access='stream')
  read(66) temp_u
  close(66,status='keep')
-
+else
+ ! stop simulation
+ if(rank.eq.0) write(*,*) 'Missing ',trim(namevar),' fields'
+ call exit(0)
+endif
 
 u(1:nx,1:fpz,1:fpy)=temp_u(1:nx,fstart(2)+1:fstart(2)+fpz,fstart(3)+1:fstart(3)+fpy)
 

@@ -9,7 +9,7 @@
 # 7 : Bridges (PSC)
 # 8 : Adelaide
 # 9 : VSC4
-machine="9"
+machine="0"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -141,9 +141,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="8" # integer
-iy="8" # integer
-iz="8" # integer
+ix="6" # integer
+iy="6" # integer
+iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -152,7 +152,7 @@ exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
-NZCPU="96" # integer
+NZCPU="4" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
@@ -196,7 +196,7 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="1000" #integer (up to 8 digits)
+nend="5" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
 dump="2000" # integer
