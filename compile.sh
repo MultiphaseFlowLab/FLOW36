@@ -116,6 +116,8 @@ cp ./Adelaide/go.sh ./go.sh
 savespectral="0"
 elif [ "$machine" == "9" ]; then
 echo "=                                   VSC-4                                    ="
+echo "=                                                                            ="
+echo "=   13/12/2019: HT gives problems (no scalability), please do not use it     ="
 cp ./VSC-4/makefile ./makefile
 cp ./VSC-4/go.sh ./go.sh
 module purge
