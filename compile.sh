@@ -9,6 +9,7 @@
 # 7 : Bridges (PSC)
 # 8 : Adelaide
 # 9 : VSC4
+#10 : Joliot Curie - Irene (KNL)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -127,6 +128,12 @@ module load intel-mpi
 module load fftw
 #only for debug
 #module list
+savespectral="0"
+
+elif [ "$machine" == "10" ]; then
+echo "=                      Joliot-Curie (Irene-KNL)                              ="
+cp ./Irene_KNL/makefile ./makefile
+cp ./Irene_KNL/go.sh ./go.sh
 savespectral="0"
 
 fi
