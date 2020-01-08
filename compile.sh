@@ -134,6 +134,7 @@ elif [ "$machine" == "10" ]; then
 echo "=                      Joliot-Curie (Irene-KNL)                              ="
 cp ./Irene_KNL/makefile ./makefile
 cp ./Irene_KNL/go.sh ./go.sh
+module load fftw3
 savespectral="0"
 
 fi
