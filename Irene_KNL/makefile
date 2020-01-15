@@ -1,31 +1,30 @@
-#F90	= $(FC)
+#F90    = $(FC)
 
 FC	= mpifort
 LD	= $(FC)
-SWP	=
+SWP     =
 RM	= /bin/rm -f
 MP	=
-OLEVEL	= -O3
-FOPTS	= -align none -mcmodel medium -axMIC-AVX512 -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
-FFLAGS	= $(FOPTS) $(OLEVEL)
-LIBS    =  -I$(FFTW_INC) -L$(FFTW_LIB) -lfftw3 -lm -ldl
+OLEVEL  = -O3
+FOPTS   = -align none -mcmodel medium -axMIC-AVX512 -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/ -I$(FFTW3_INCDIR)
+FFLAGS  = $(FOPTS) $(OLEVEL)
+LIBS    = $(FFTW3_FFLAGS) -L$(FFTW3_LIBDIR) $(MKL_FFLAGS) ${MKL_LDFLAGS}
+LDFLAGS = $(FOPTS) $(OLEVEL)
+PROF    =
 
-LDFLAGS	= $(FOPTS) $(OLEVEL)
-PROF	=
+FLW_SRC = $(shell cat list_source.list)
+FLW_MOD = $(shell cat list_source.list | grep module)
 
-FLWOBJS =  $(shell cat list_source.list)
+OBJS = $(FLW_SRC:.f90=.o)
+MOD = $(FLW_MOD:.f90=.o)
 
-MOD	=
-OBJS	= $(FLWOBJS)
-EXEC    =  ./set_run/sc_compiled/flow36
+EXEC = ./set_run/sc_compiled/flow36
 
-$(EXEC):	$(OBJS)
-	$(LD) $(FFLAGS) $(OBJS) $(LIBS) -o $@
+$(EXEC): $(MOD) $(OBJS)
+        $(FC) $(OBJS) $(FFLAGS) $(LIBS) -o $@
+
+%.o: %.f90
+	$(FC) $< $(FFLAGS) $(LIBS) -c -o $@
 
 clean:
-	$(RM) $(OBJS) $(EXEC)
-
-.SUFFIXES: .o
-
-.f90.o:
-	$(FC)  -c $(FFLAGS) $<
+      	$(RM) $(MOD) $(OBJS) $(EXEC)
