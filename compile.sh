@@ -134,6 +134,9 @@ elif [ "$machine" == "10" ]; then
 echo "=                        Joliot-Curie (Irene-KNL)                            ="
 echo "=       DO NOT RUN PARTICLE SIMULATIONS, MISSING SHARED MEMORY ARRAYS        ="
 echo "=                 CHECK ISSUE ON GIT FOR FURTHER DETAILS                     ="
+module purge
+module load mpi
+module load fftw3
 cp ./Irene_KNL/makefile ./makefile
 cp ./Irene_KNL/go.sh ./go.sh
 module load fftw3
@@ -1063,7 +1066,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "11" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" ||"$machine" == "11" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1075,7 +1078,7 @@ sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/
 fi
 
 
-if [ "$machine" == "11" ]; then
+if [[ "$machine" == "10" || "$machine" == "11" ]]; then
 # some OpenMPI implementations do not like mpi_win_shared_query with baseptr
 #  as type(c_ptr) but as integer(type=mpi_address_kind). Those lines are
 #  removed here, particle part is broken for these machines.
