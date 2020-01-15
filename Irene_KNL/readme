@@ -1,0 +1,2 @@
+makefile - official makefile, no need to recompile twice
+makefile_intelmpi - old makefile adapted and using intelMPI librarires. Please note that intelMPI libraries are not supported on Irene-KNL

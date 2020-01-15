@@ -1,31 +1,21 @@
 #!/bin/bash
+#MSUB -q knl
+#MSUB -n 64
+#MSUB -N 1
+#MSUB -c 1
+#MSUB -r test
+#MSUB -T 300                  # Elapsed time limit in seconds
+#MSUB -o out_%I.o              # Standard output. %I is the job id
+#MSUB -e err_%I.e              # Error output. %I is the job id
 
-#SBATCH -N1 -n1                             # n tasks on N node (total number of tasks)
-#SBATCH --time=5:00                         # time limits: hh:mm:ss
-#SBATCH --error error.err                   # std-error file
-#SBATCH --output output.out                 # std-output file
-#SBATCH --account=IscrB_SURFER            # account number
-#SBATCH --partition=knl_usr_dbg             # partition to be used, queue dbg: debug, prod, bprod: bigprod
-#SBATCH --job-name=name                     # job name (for squeue)
-#SBATCH	--mem=30000
-
-# load modules
 module purge
-module load env-knl
-module load profile/global
-module load intel/pe-xe-2017--binary
-module load intelmpi/2017--binary
-module load fftw/3.3.5--intelmpi--2017--binary
-# or
-#module load gnu/6.1.0
-#module load openmpi/1-10.3--gnu--6.1.0
-#module load fftw/3.3.4--openmpi--1-10.3--gnu--6.1.0
+module load mpi
+module load fftw3
 
-mpirun -n NUMTASKS ./sc_compiled/flow36
+ccc_mprun ./sc_compiled/flow36
 
-
-# submit script with qsub
-
-# ncpus : number of CPUs per node
-# mpiprocs : number of MPI processes per node
-# mem : RAM memory per node
+######### submit script ccc_msub
+######### check queue with ccc_mpp -u user
+##### N : number of nodes (64 cores x nodes)
+##### n : number of MPI processes per node
+##### c : Hyperthreaing
