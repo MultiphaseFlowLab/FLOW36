@@ -10,6 +10,7 @@
 # 8 : Adelaide
 # 9 : VSC4
 #10 : Joliot Curie - Irene (KNL)
+#11 : Davide (CINECA)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -126,17 +127,30 @@ module purge
 module load intel
 module load intel-mpi
 module load fftw
-#only for debug
-#module list
+
 savespectral="0"
 
 elif [ "$machine" == "10" ]; then
-echo "=                      Joliot-Curie (Irene-KNL)                              ="
+echo "=                        Joliot-Curie (Irene-KNL)                            ="
 cp ./Irene_KNL/makefile ./makefile
 cp ./Irene_KNL/go.sh ./go.sh
 module load fftw3
+
 savespectral="0"
 
+elif [ "$machine" == "11" ]; then
+echo "=                            Davide (no GPU)                                 ="
+echo "=       DO NOT RUN PARTICLE SIMULATIONS, MISSING SHARED MEMORY ARRAYS        ="
+echo "=                 CHECK ISSUE ON GIT FOR FURTHER DETAILS                     ="
+module purge
+# load modules
+module load gnu
+module load openmpi
+module load fftw
+cp ./Davide/makefile ./makefile
+cp ./Davide/go.sh ./go.sh
+
+savespectral="0"
 fi
 echo "=============================================================================="
 echo ""
@@ -185,7 +199,7 @@ nt_restart="0" # integer
 incond="0" # integer
 
 # Reynolds number
-Re="150" # real (double)
+Re="150.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -1047,7 +1061,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [ "$machine" == "7" ]; then
+if [[ "$machine" == "7" || "$machine" == "11" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1058,6 +1072,13 @@ sed -i "s/integer :: number/integer(kind=mpi_address_kind) :: number/g" ./set_ru
 sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
 fi
 
+
+if [ "$machine" == "11" ]; then
+# some OpenMPI implementations do not like mpi_win_shared_query with baseptr
+#  as type(c_ptr) but as integer(type=mpi_address_kind). Those lines are
+#  removed here, particle part is broken for these machines.
+sed -i "s/  call mpi_win_shared_query/!  call mpi_win_shared_query/g" ./set_run/sc_compiled/initialize_particle.f90
+fi
 
 # only for intel compiler (needed for USE MPI_F08
 #source /opt/intel/compilers_and_libraries_2017/linux/bin/compilervars.sh intel64
