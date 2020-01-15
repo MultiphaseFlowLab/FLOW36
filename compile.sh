@@ -132,6 +132,8 @@ savespectral="0"
 
 elif [ "$machine" == "10" ]; then
 echo "=                        Joliot-Curie (Irene-KNL)                            ="
+echo "=       DO NOT RUN PARTICLE SIMULATIONS, MISSING SHARED MEMORY ARRAYS        ="
+echo "=                 CHECK ISSUE ON GIT FOR FURTHER DETAILS                     ="
 cp ./Irene_KNL/makefile ./makefile
 cp ./Irene_KNL/go.sh ./go.sh
 module load fftw3
