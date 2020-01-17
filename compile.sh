@@ -132,21 +132,16 @@ savespectral="0"
 
 elif [ "$machine" == "10" ]; then
 echo "=                        Joliot-Curie (Irene-KNL)                            ="
-echo "=       DO NOT RUN PARTICLE SIMULATIONS, MISSING SHARED MEMORY ARRAYS        ="
-echo "=                 CHECK ISSUE ON GIT FOR FURTHER DETAILS                     ="
 module purge
 module load mpi
 module load fftw3
 cp ./Irene_KNL/makefile ./makefile
 cp ./Irene_KNL/go.sh ./go.sh
-module load fftw3
 
 savespectral="0"
 
 elif [ "$machine" == "11" ]; then
 echo "=                            Davide (no GPU)                                 ="
-echo "=       DO NOT RUN PARTICLE SIMULATIONS, MISSING SHARED MEMORY ARRAYS        ="
-echo "=                 CHECK ISSUE ON GIT FOR FURTHER DETAILS                     ="
 module purge
 # load modules
 module load gnu
@@ -1077,13 +1072,6 @@ sed -i "s/integer :: number/integer(kind=mpi_address_kind) :: number/g" ./set_ru
 sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
 fi
 
-
-if [[ "$machine" == "10" || "$machine" == "11" ]]; then
-# some OpenMPI implementations do not like mpi_win_shared_query with baseptr
-#  as type(c_ptr) but as integer(type=mpi_address_kind). Those lines are
-#  removed here, particle part is broken for these machines.
-sed -i "s/  call mpi_win_shared_query/!  call mpi_win_shared_query/g" ./set_run/sc_compiled/initialize_particle.f90
-fi
 
 # only for intel compiler (needed for USE MPI_F08
 #source /opt/intel/compilers_and_libraries_2017/linux/bin/compilervars.sh intel64

@@ -21,10 +21,10 @@ MOD = $(FLW_MOD:.f90=.o)
 EXEC = ./set_run/sc_compiled/flow36
 
 $(EXEC): $(MOD) $(OBJS)
-	$(FC) $(OBJS) $(FFLAGS) $(LIBS) -o $@
+        $(FC) $(OBJS) $(FFLAGS) $(LIBS) -o $@
 
 %.o: %.f90
-      	$(FC) $< $(FFLAGS) $(LIBS) -c -o $@
+        $(FC) $< $(FFLAGS) $(LIBS) -c -o $@
 
 clean:
-      	$(RM) $(MOD) $(OBJS) $(EXEC)
+        $(RM) $(MOD) $(OBJS) $(EXEC)
