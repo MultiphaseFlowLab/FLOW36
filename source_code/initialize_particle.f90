@@ -7,7 +7,7 @@ use commondata
 use particle
 
 type(c_ptr) :: baseptr
-integer(kind=mpi_address_kind) :: varsize,lb
+integer(kind=mpi_address_kind) :: varsize,lb,varsize_tot
 integer :: number
 integer :: dispunit,delta,range
 integer :: shape3(3),shape2(3)
@@ -27,16 +27,17 @@ endif
 shape2=[part_number,3,nset]
 shape3=[nx,nz,ny]
 
-! some systems do not like number*varsize in mpi_win_shared_query call
-varsize=number*varsize
+! some systems do not like number*varsize in mpi_win_shared_query call, calculated before in varsize_tot
+
 
 ! allocate uf
 number=nx*ny*nz
+varsize_tot=number*varsize
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_u,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
   ! leader (global rank) is rank 0 in part_comm
-  call mpi_win_shared_query(window_u,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_u,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,uf,shape3)
@@ -45,7 +46,7 @@ call c_f_pointer(baseptr,uf,shape3)
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_v,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_v,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_v,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,vf,shape3)
@@ -54,7 +55,7 @@ call c_f_pointer(baseptr,vf,shape3)
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_w,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_w,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_w,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,wf,shape3)
@@ -63,17 +64,18 @@ call c_f_pointer(baseptr,wf,shape3)
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_T,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_T,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_T,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,Tf,shape3)
 
 ! allocate F_x
 number=nx*ny*nz
+varsize_tot=number*varsize
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_fx,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_fx,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_fx,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,fb_x,shape3)
@@ -82,7 +84,7 @@ call c_f_pointer(baseptr,fb_x,shape3)
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_fy,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_fy,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_fy,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,fb_y,shape3)
@@ -91,7 +93,7 @@ call c_f_pointer(baseptr,fb_y,shape3)
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_fz,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_fz,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_fz,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,fb_z,shape3)
@@ -99,11 +101,12 @@ call c_f_pointer(baseptr,fb_z,shape3)
 
 ! allocate particle data
 number=part_number*3*nset
+varsize_tot=number*varsize
 ! allocate xp
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_xp,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_xp,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_xp,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,xp,shape2)
@@ -112,7 +115,7 @@ call c_f_pointer(baseptr,xp,shape2)
 call mpi_win_allocate_shared(number*varsize,dispunit,mpi_info_null,part_comm,baseptr,window_up,ierr)
 ! get location of memory segment
 if(rank.gt.leader)then
-  call mpi_win_shared_query(window_up,0,varsize,dispunit,baseptr,ierr)
+  call mpi_win_shared_query(window_up,0,varsize_tot,dispunit,baseptr,ierr)
 endif
 ! associate C pointer to Fortran pointer
 call c_f_pointer(baseptr,up,shape2)
