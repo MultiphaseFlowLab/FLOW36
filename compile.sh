@@ -141,7 +141,7 @@ cp ./Irene_KNL/go.sh ./go.sh
 savespectral="0"
 
 elif [ "$machine" == "11" ]; then
-echo "=                            Davide (no GPU)                                 ="
+echo "=                              Davide (no GPU)                               ="
 module purge
 # load modules
 module load gnu
