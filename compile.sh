@@ -9,6 +9,8 @@
 # 7 : Bridges (PSC)
 # 8 : Adelaide
 # 9 : VSC4
+#10 : Joliot Curie - Irene (KNL)
+#11 : Davide (CINECA)
 # 12: GPU_version (local)
 machine="12"
 echo ""
@@ -117,6 +119,8 @@ cp ./Adelaide/go.sh ./go.sh
 savespectral="0"
 elif [ "$machine" == "9" ]; then
 echo "=                                   VSC-4                                    ="
+echo "=                                                                            ="
+echo "=   13/12/2019: HT gives problems (no scalability), please do not use it     ="
 cp ./VSC-4/makefile ./makefile
 cp ./VSC-4/go.sh ./go.sh
 module purge
@@ -124,8 +128,27 @@ module purge
 module load intel
 module load intel-mpi
 module load fftw
-#only for debug
-#module list
+
+savespectral="0"
+
+elif [ "$machine" == "10" ]; then
+echo "=                        Joliot-Curie (Irene-KNL)                            ="
+module purge
+module load mpi
+module load fftw3
+cp ./Irene_KNL/makefile ./makefile
+cp ./Irene_KNL/go.sh ./go.sh
+savespectral="0"
+
+elif [ "$machine" == "11" ]; then
+echo "=                              Davide (no GPU)                               ="
+module purge
+# load modules
+module load gnu
+module load openmpi
+module load fftw
+cp ./Davide/makefile ./makefile
+cp ./Davide/go.sh ./go.sh
 savespectral="0"
 
 elif [ "$machine" == "12" ]; then
@@ -188,7 +211,7 @@ nt_restart="0" # integer
 incond="0" # integer
 
 # Reynolds number
-Re="150" # real (double)
+Re="10.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -209,7 +232,7 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="1000" #integer (up to 8 digits)
+nend="5" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
 dump="2000" # integer
@@ -1068,7 +1091,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "12" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" ||"$machine" == "11" || "$machine" == "12" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
