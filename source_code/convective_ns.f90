@@ -5,6 +5,10 @@ use velocity
 use par_size
 use wavenumber
 use phase_field
+#define GPU_RUN gpucompflag
+#if GPU_RUN == 1
+use interfaccia
+#endif
 
 double precision :: s1(spx,nz,spy,2), s2(spx,nz,spy,2), s3(spx,nz,spy,2)
 double precision, allocatable, dimension(:,:,:) :: uu,uv,uw,vv,vw,ww
@@ -17,9 +21,9 @@ integer :: indx,indy
 integer :: i,j,k
 
 ! transform variables back to physical space and perform dealiasing
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(wc,w,1)
+call spectral_to_phys(uc,u,1,1)
+call spectral_to_phys(vc,v,1,1)
+call spectral_to_phys(wc,w,1,1)
 
 call courant_check(u,v,w)
 
@@ -54,12 +58,12 @@ enddo
 
 
 ! transform products uu,uv, ...  in spectral space
-call phys_to_spectral(uu,uuc,1)
-call phys_to_spectral(uv,uvc,1)
-call phys_to_spectral(uw,uwc,1)
-call phys_to_spectral(vv,vvc,1)
-call phys_to_spectral(vw,vwc,1)
-call phys_to_spectral(ww,wwc,1)
+call phys_to_spectral(uu,uuc,1,1)
+call phys_to_spectral(uv,uvc,1,1)
+call phys_to_spectral(uw,uwc,1,1)
+call phys_to_spectral(vv,vvc,1,1)
+call phys_to_spectral(vw,vwc,1,1)
+call phys_to_spectral(ww,wwc,1,1)
 
 deallocate(uu)
 deallocate(uv)
@@ -147,11 +151,11 @@ allocate(uu(nx,fpz,fpy))
 allocate(vv(nx,fpz,fpy))
 allocate(ww(nx,fpz,fpy))
 
-call spectral_to_phys(s1,uu,1)
-call spectral_to_phys(s2,vv,1)
-call spectral_to_phys(s3,ww,1)
+call spectral_to_phys(s1,uu,1,1)
+call spectral_to_phys(s2,vv,1,1)
+call spectral_to_phys(s3,ww,1,1)
 
-call spectral_to_phys(phic,phi,1)
+call spectral_to_phys(phic,phi,1,1)
 
 #if match_dens == 2
 do j=1,fpy
@@ -179,9 +183,9 @@ do j=1,fpy
 enddo
 #endif
 
-call phys_to_spectral(uu,s1,1)
-call phys_to_spectral(vv,s2,1)
-call phys_to_spectral(ww,s3,1)
+call phys_to_spectral(uu,s1,1,1)
+call phys_to_spectral(vv,s2,1,1)
+call phys_to_spectral(ww,s3,1,1)
 
 deallocate(uu)
 deallocate(vv)

@@ -39,7 +39,7 @@ elseif(in_cond_theta.eq.1)then
   elseif(checks.eqv..true.)then
     call read_fields_s(thetac,nt_restart,'Tc   ',restart)
     ! transform to physical space
-    call spectral_to_phys(thetac,theta,0)
+    call spectral_to_phys(thetac,theta,0,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing temperature input file ',time,' , stopping simulation'
     call exit(0)

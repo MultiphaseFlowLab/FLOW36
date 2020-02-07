@@ -33,7 +33,7 @@ integer :: i,j,k
 
 
 ! phi on coarse grid, physical space needed after surface force calculation
-call spectral_to_phys(phic,phi,1)
+call spectral_to_phys(phic,phi,1,0)
 
 ! calculate surface force
 call coarse2fine(phic,phic_fg)
@@ -103,9 +103,9 @@ do j=1,fpypsi
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1,0)
+call phys_to_spectral_fg(a5f,gradphiy,1,0)
+call phys_to_spectral_fg(a6f,gradphiz,1,0)
 
 call dz_fg(gradphiz,a4)
 
@@ -131,9 +131,9 @@ do j=1,fpypsi
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1,0)
+call phys_to_spectral_fg(a5f,gradphiy,1,0)
+call phys_to_spectral_fg(a6f,gradphiz,1,0)
 
 call dz_fg(gradphiz,a5)
 
@@ -159,9 +159,9 @@ do j=1,fpypsi
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1,0)
+call phys_to_spectral_fg(a5f,gradphiy,1,0)
+call phys_to_spectral_fg(a6f,gradphiz,1,0)
 
 deallocate(fgradphix)
 deallocate(fgradphiy)
@@ -241,9 +241,9 @@ do j=1,spy
 enddo
 call dz(phic,gradphiz)
 
-call spectral_to_phys(gradphix,fgradphix,0)
-call spectral_to_phys(gradphiy,fgradphiy,0)
-call spectral_to_phys(gradphiz,fgradphiz,0)
+call spectral_to_phys(gradphix,fgradphix,0,0)
+call spectral_to_phys(gradphiy,fgradphiy,0,0)
+call spectral_to_phys(gradphiz,fgradphiz,0,0)
 
 threshold=0.9d0
 ! gthreshold=0.5d0*(1.0d0-threshold**2)/(dsqrt(2.0d0)*ch)
@@ -265,9 +265,9 @@ do j=1,fpy
  enddo
 enddo
 
-call phys_to_spectral(fgradphix,gradphix,0)
-call phys_to_spectral(fgradphiy,gradphiy,0)
-call phys_to_spectral(fgradphiz,gradphiz,0)
+call phys_to_spectral(fgradphix,gradphix,0,0)
+call phys_to_spectral(fgradphiy,gradphiy,0,0)
+call phys_to_spectral(fgradphiz,gradphiz,0,0)
 
 deallocate(fgradphix,fgradphiy,fgradphiz)
 
@@ -310,17 +310,17 @@ deallocate(gradphix,gradphiy,gradphiz)
 ! enddo
 ! call dz(a4,gradphiz)
 !
-! call spectral_to_phys(gradphix,fgradphix,0)
-! call spectral_to_phys(gradphiy,fgradphiy,0)
-! call spectral_to_phys(gradphiz,fgradphiz,0)
+! call spectral_to_phys(gradphix,fgradphix,0,0)
+! call spectral_to_phys(gradphiy,fgradphiy,0,0)
+! call spectral_to_phys(gradphiz,fgradphiz,0,0)
 !
 ! fgradphix=a4f*fgradphix
 ! fgradphiy=a4f*fgradphiy
 ! fgradphiz=a4f*fgradphiz
 !
-! call phys_to_spectral(fgradphix,gradphix,0)
-! call phys_to_spectral(fgradphiy,gradphiy,0)
-! call phys_to_spectral(fgradphiz,gradphiz,0)
+! call phys_to_spectral(fgradphix,gradphix,0,0)
+! call phys_to_spectral(fgradphiy,gradphiy,0,0)
+! call phys_to_spectral(fgradphiz,gradphiz,0,0)
 !
 ! deallocate(fgradphix,fgradphiy,fgradphiz)
 ! deallocate(a4,a4f)
@@ -371,9 +371,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a4,a4f,0)
-call spectral_to_phys(a5,a5f,0)
-call spectral_to_phys(a6,a6f,0)
+call spectral_to_phys(a4,a4f,0,0)
+call spectral_to_phys(a5,a5f,0,0)
+call spectral_to_phys(a6,a6f,0,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -386,9 +386,9 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,a4,0)
-call phys_to_spectral(a5f,a5,0)
-call phys_to_spectral(a6f,a6,0)
+call phys_to_spectral(a4f,a4,0,0)
+call phys_to_spectral(a5f,a5,0,0)
+call phys_to_spectral(a6f,a6,0,0)
 
 allocate(a7(spx,nz,spy,2))
 
@@ -441,9 +441,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a4,a4f,0)
-call spectral_to_phys(a5,a5f,0)
-call spectral_to_phys(a6,a6f,0)
+call spectral_to_phys(a4,a4f,0,0)
+call spectral_to_phys(a5,a5f,0,0)
+call spectral_to_phys(a6,a6f,0,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -456,9 +456,9 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,a4,0)
-call phys_to_spectral(a5f,a5,0)
-call phys_to_spectral(a6f,a6,0)
+call phys_to_spectral(a4f,a4,0,0)
+call phys_to_spectral(a5f,a5,0,0)
+call phys_to_spectral(a6f,a6,0,0)
 
 allocate(a7(spx,nz,spy,2))
 
@@ -510,9 +510,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a4,a4f,0)
-call spectral_to_phys(a5,a5f,0)
-call spectral_to_phys(a6,a6f,0)
+call spectral_to_phys(a4,a4f,0,0)
+call spectral_to_phys(a5,a5f,0,0)
+call spectral_to_phys(a6,a6f,0,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -595,12 +595,12 @@ allocate(a7f(nx,fpz,fpy))
 allocate(a8f(nx,fpz,fpy))
 allocate(a9f(nx,fpz,fpy))
 
-call spectral_to_phys(a4,a4f,0)
-call spectral_to_phys(a5,a5f,0)
-call spectral_to_phys(a6,a6f,0)
-call spectral_to_phys(a7,a7f,0)
-call spectral_to_phys(a8,a8f,0)
-call spectral_to_phys(a9,a9f,0)
+call spectral_to_phys(a4,a4f,0,0)
+call spectral_to_phys(a5,a5f,0,0)
+call spectral_to_phys(a6,a6f,0,0)
+call spectral_to_phys(a7,a7f,0,0)
+call spectral_to_phys(a8,a8f,0,0)
+call spectral_to_phys(a9,a9f,0,0)
 
 deallocate(a4,a5,a6,a7,a8,a9)
 allocate(viscnon(nx,fpz,fpy))
@@ -643,9 +643,9 @@ allocate(a5(spx,nz,spy,2))
 allocate(a6(spx,nz,spy,2))
 allocate(a7(spx,nz,spy,2))
 
-call phys_to_spectral(a10f,a4,0)
-call phys_to_spectral(a11f,a5,0)
-call phys_to_spectral(a12f,a6,0)
+call phys_to_spectral(a10f,a4,0,0)
+call phys_to_spectral(a11f,a5,0,0)
+call phys_to_spectral(a12f,a6,0,0)
 
 do j=1,spy
   do i=1,spx
@@ -679,9 +679,9 @@ enddo
 
 deallocate(a5f,a6f)
 
-call phys_to_spectral(a10f,a4,0)
-call phys_to_spectral(a11f,a5,0)
-call phys_to_spectral(a12f,a6,0)
+call phys_to_spectral(a10f,a4,0,0)
+call phys_to_spectral(a11f,a5,0,0)
+call phys_to_spectral(a12f,a6,0,0)
 
 do j=1,spy
   do i=1,spx
@@ -714,9 +714,9 @@ enddo
 
 deallocate(viscnon,a7f,a8f,a9f)
 
-call phys_to_spectral(a10f,a4,0)
-call phys_to_spectral(a11f,a5,0)
-call phys_to_spectral(a12f,a6,0)
+call phys_to_spectral(a10f,a4,0,0)
+call phys_to_spectral(a11f,a5,0,0)
+call phys_to_spectral(a12f,a6,0,0)
 
 deallocate(a10f,a11f,a12f)
 
@@ -773,9 +773,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a4,a4f,0)
-call spectral_to_phys(a5,a5f,0)
-call spectral_to_phys(a6,a6f,0)
+call spectral_to_phys(a4,a4f,0,0)
+call spectral_to_phys(a5,a5f,0,0)
+call spectral_to_phys(a6,a6f,0,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -788,9 +788,9 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,a4,0)
-call phys_to_spectral(a5f,a5,0)
-call phys_to_spectral(a6f,a6,0)
+call phys_to_spectral(a4f,a4,0,0)
+call phys_to_spectral(a5f,a5,0,0)
+call phys_to_spectral(a6f,a6,0,0)
 
 allocate(a7(spx,nz,spy,2))
 
@@ -843,9 +843,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a4,a4f,0)
-call spectral_to_phys(a5,a5f,0)
-call spectral_to_phys(a6,a6f,0)
+call spectral_to_phys(a4,a4f,0,0)
+call spectral_to_phys(a5,a5f,0,0)
+call spectral_to_phys(a6,a6f,0,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -858,9 +858,9 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,a4,0)
-call phys_to_spectral(a5f,a5,0)
-call phys_to_spectral(a6f,a6,0)
+call phys_to_spectral(a4f,a4,0,0)
+call phys_to_spectral(a5f,a5,0,0)
+call phys_to_spectral(a6f,a6,0,0)
 
 allocate(a7(spx,nz,spy,2))
 
@@ -913,9 +913,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a4,a4f,0)
-call spectral_to_phys(a5,a5f,0)
-call spectral_to_phys(a6,a6f,0)
+call spectral_to_phys(a4,a4f,0,0,0)
+call spectral_to_phys(a5,a5f,0,0,0)
+call spectral_to_phys(a6,a6f,0,0,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -928,9 +928,9 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a4f,a4,0)
-call phys_to_spectral(a5f,a5,0)
-call phys_to_spectral(a6f,a6,0)
+call phys_to_spectral(a4f,a4,0,0)
+call phys_to_spectral(a5f,a5,0,0)
+call phys_to_spectral(a6f,a6,0,0)
 
 allocate(a7(spx,nz,spy,2))
 
@@ -988,7 +988,7 @@ enddo
 
 allocate(a4(spx,nz,spy,2))
 
-call phys_to_spectral(a4f,a4,0)
+call phys_to_spectral(a4f,a4,0,0)
 
 deallocate(a4f)
 
@@ -1050,7 +1050,7 @@ enddo
 
 allocate(a4(spx,nz,spy,2))
 
-call phys_to_spectral(a4f,a4,0)
+call phys_to_spectral(a4f,a4,0,0)
 
 deallocate(a4f)
 
@@ -1079,7 +1079,7 @@ enddo
 
 allocate(a4(spx,nz,spy,2))
 
-call phys_to_spectral(a4f,a4,0)
+call phys_to_spectral(a4f,a4,0,0)
 
 deallocate(a4f)
 
@@ -1099,9 +1099,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(uc-ucp,a4f,1)
-call spectral_to_phys(vc-vcp,a5f,1)
-call spectral_to_phys(wc-wcp,a6f,1)
+call spectral_to_phys(uc-ucp,a4f,1,0)
+call spectral_to_phys(vc-vcp,a5f,1,0)
+call spectral_to_phys(wc-wcp,a6f,1,0)
 
 #if match_dens == 0
 do j=1,fpy
@@ -1134,9 +1134,9 @@ allocate(a4(spx,nz,spy,2))
 allocate(a5(spx,nz,spy,2))
 allocate(a6(spx,nz,spy,2))
 
-call phys_to_spectral(a4f,a4,1)
-call phys_to_spectral(a5f,a5,1)
-call phys_to_spectral(a6f,a6,1)
+call phys_to_spectral(a4f,a4,1,0)
+call phys_to_spectral(a5f,a5,1,0)
+call phys_to_spectral(a6f,a6,1,0)
 
 deallocate(a4f)
 deallocate(a5f)
