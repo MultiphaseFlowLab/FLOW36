@@ -9,7 +9,8 @@
 # 7 : Bridges (PSC)
 # 8 : Adelaide
 # 9 : VSC4
-machine="9"
+# 12: GPU_version (local)
+machine="12"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -127,6 +128,14 @@ module load fftw
 #module list
 savespectral="0"
 
+elif [ "$machine" == "12" ]; then
+echo "=                                 GPU version                                ="
+rm makefile
+cp ./GPU_version/Makefile ./Makefile
+cp ./GPU_version/go.sh ./go.sh
+savespectral="0"
+
+
 fi
 echo "=============================================================================="
 echo ""
@@ -141,9 +150,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="8" # integer
-iy="8" # integer
-iz="8" # integer
+ix="6" # integer
+iy="6" # integer
+iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -152,11 +161,15 @@ exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
-NZCPU="96" # integer
+NZCPU="1" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
-nodesize="68" # integer
+nodesize="1" # integer
+
+#perform FFTs and DCT on GPU (1) or on CPU (0)
+#multi-GPU WARNING: NOT TESTED!!! The CUDA code has been tested only on single-GPU, local machine
+GPU_RUN="1" 
 
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
@@ -553,8 +566,8 @@ fi
 
 # copy executable and edit it
 cp ./go.sh ./set_run
-if [ "$machine" == "0" ]; then
-sed -i "" "s/NUMTASKS/$NNT/g" ./set_run/go.sh
+if [[ "$machine" == "0" || "$machine" == "12" ]]; then
+sed -i  "s/NUMTASKS/$NNT/g" ./set_run/go.sh
 else
 sed -i "s/NUMTASKS/$NNT/g" ./set_run/go.sh
 fi
@@ -566,76 +579,76 @@ fi
 
 # copy input file and edit it
 cp ./input.f90 ./set_run/sc_compiled
-if [ "$machine" == "0" ]; then
-sed -i "" "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/initialcondition/$incond/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nxxxxxx/$NX/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nyyyyyy/$NY/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nzzzzzz/$NZ/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Renum/$Re/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/courantnum/$Co/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gradpx/$gradpx/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gradpy/$gradpy/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/cpiflag/$cpi_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/repower/$repow/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/len_x/$lx/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/len_y/$ly/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nstart/$nstart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nend/$nend/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nfdump/$dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nsdump/$sdump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/faildump/$failure_dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/stats_dump/$st_dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/stats_start/$start_stats/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/delta_t/$dt/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bc_upbound/$bc_upb/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bc_lowbound/$bc_lb/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/phasephiflag/$phi_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/phaseprofflag/$phicor_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/lamcorphi/$lamcorphi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/matcheddens/$matchedrho/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/densratio/$rhor/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/matchedvisc/$matchedvis/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/viscratio/$visr/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nonnewtonian/$non_newtonian/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/muinfmuzero/$muinfmuzero/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/expnonnew/$exp_non_new/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/webernumber/$We/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/cahnnumber/$Ch/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/pecletnumber/$Pe/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/froudnumber/$Fr/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/phinitial_condition/$in_condphi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gravitydir/$gravdir/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gravitytype/$buoyancy/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bodyforce/$body_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bodyfcoeff/$Bd/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bodydirection/$bodydir/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/eleforce/$ele_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/elefcoeff/$stuart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/surfactantflag/$psi_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/surfpeclet/$Pe_psi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/exnumber/$Ex/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/pinumber/$PI/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/surfelasticity/$El/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/psinitial_condition/$in_condpsi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/temperatureflag/$temp_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/rayleighnumb/$Ra/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/prandtlnumb/$Pr/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Aboundary/$A/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Bboundary/$B/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Cboundary/$C/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Dboundary/$D/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Eboundary/$E/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/npartset/$nset/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/numsubiteration/$subiterations/g" ./set_run/sc_compiled/input.f90
+if [[ "$machine" == "0" || "$machine" == "12" ]]; then
+sed -i  "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/initialcondition/$incond/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nxxxxxx/$NX/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nyyyyyy/$NY/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nzzzzzz/$NZ/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/Renum/$Re/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/courantnum/$Co/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/gradpx/$gradpx/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/gradpy/$gradpy/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/cpiflag/$cpi_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/repower/$repow/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/len_x/$lx/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/len_y/$ly/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nstart/$nstart/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nend/$nend/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nfdump/$dump/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nsdump/$sdump/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/faildump/$failure_dump/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/stats_dump/$st_dump/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/stats_start/$start_stats/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/delta_t/$dt/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/bc_upbound/$bc_upb/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/bc_lowbound/$bc_lb/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/phasephiflag/$phi_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/phaseprofflag/$phicor_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/lamcorphi/$lamcorphi/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/matcheddens/$matchedrho/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/densratio/$rhor/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/matchedvisc/$matchedvis/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/viscratio/$visr/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/nonnewtonian/$non_newtonian/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/muinfmuzero/$muinfmuzero/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/expnonnew/$exp_non_new/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/webernumber/$We/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/cahnnumber/$Ch/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/pecletnumber/$Pe/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/froudnumber/$Fr/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/phinitial_condition/$in_condphi/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/gravitydir/$gravdir/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/gravitytype/$buoyancy/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/bodyforce/$body_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/bodyfcoeff/$Bd/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/bodydirection/$bodydir/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/eleforce/$ele_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/elefcoeff/$stuart/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/surfactantflag/$psi_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/surfpeclet/$Pe_psi/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/exnumber/$Ex/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/pinumber/$PI/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/surfelasticity/$El/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/psinitial_condition/$in_condpsi/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/temperatureflag/$temp_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/rayleighnumb/$Ra/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/prandtlnumb/$Pr/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/Aboundary/$A/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/Bboundary/$B/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/Cboundary/$C/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/Dboundary/$D/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/Eboundary/$E/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/npartset/$nset/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
+sed -i  "s/numsubiteration/$subiterations/g" ./set_run/sc_compiled/input.f90
 else
 sed -i "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
@@ -767,6 +780,24 @@ cp ./source_code/lagrangian_interpolator.f90 ./set_run/sc_compiled/
 cp ./source_code/lagrangian_tracker.f90 ./set_run/sc_compiled/
 cp ./source_code/save_flow_comm.f90 ./set_run/sc_compiled/
 
+if [ "$GPU_RUN" == "1" ]; then
+#CUDA files and interface
+cp ./source_code/init_gpu.cu ./set_run/sc_compiled/
+cp ./source_code/init_gpu.h  ./set_run/sc_compiled/
+cp ./source_code/free_gpu.cu ./set_run/sc_compiled/
+cp ./source_code/free_gpu.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_spec_phys.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_spec_phys.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_phys_spec.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_phys_spec.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_tran.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_tran.h  ./set_run/sc_compiled/
+
+cp ./source_code/cuda_variables.h ./set_run/sc_compiled/
+cp ./source_code/interfaccia.f90  ./set_run/sc_compiled/
+fi
+
+
 cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
 
@@ -849,95 +880,95 @@ echo "nz=$NZ;" >> ./set_run/results/input_param.m
 echo "nend=$nend;" >> ./set_run/results/input_param.m
 echo "little_endian=$endianness;" >> ./set_run/results/input_param.m
 
-if [ "$machine" == "0" ]; then
-sed -i "" "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nny/$NY/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnz/$NZ/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/phys_to_spectral.f90
-sed -i "" "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/phys_to_spectral.f90
-sed -i "" "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/spectral_to_phys.f90
-sed -i "" "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/spectral_to_phys.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/convective_ns.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/wave_numbers.f90
-sed -i "" "s/boundary_conditions_up/$bc_upb/g" ./set_run/sc_compiled/calculate_var.f90
-sed -i "" "s/boundary_conditions_down/$bc_lb/g" ./set_run/sc_compiled/calculate_var.f90
-sed -i "" "s/precisionflag/$fftw_flag/g" ./set_run/sc_compiled/create_plan.f90
-sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
-sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
-sed -i "" "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/non_newtonian/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/courant_check.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/wave_numbers.f90
-sed -i "" "s/buoyancytype/$buoyancy/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/initialize_phi.f90
-sed -i "" "s/meanflag/$mean_flag/g" ./set_run/sc_compiled/statistics.f90
-sed -i "" "s/budgetflag/$budget_flag/g" ./set_run/sc_compiled/statistics.f90
-sed -i "" "s/spectraflag/$spectra_flag/g" ./set_run/sc_compiled/statistics.f90
-sed -i "" "s/savespectralflag/$savespectral/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/courant_check.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/swap_grid.f90
-sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/swap_grid.f90
-sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
-sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/read_input.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/read_input.f90
-sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
-sed -i "" "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/npartsets/nset=\"$nset\"/g" ./set_run/results/backup/restart_copy.sh
+if [[ "$machine" == "0" || "$machine" == "12" ]]; then
+sed -i  "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/nnx/$NX/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/nny/$NY/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/nnz/$NZ/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/phys_to_spectral.f90
+sed -i  "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/phys_to_spectral.f90
+sed -i  "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/spectral_to_phys.f90
+sed -i  "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/spectral_to_phys.f90
+sed -i  "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/convective_ns.f90
+sed -i  "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/wave_numbers.f90
+sed -i  "s/boundary_conditions_up/$bc_upb/g" ./set_run/sc_compiled/calculate_var.f90
+sed -i  "s/boundary_conditions_down/$bc_lb/g" ./set_run/sc_compiled/calculate_var.f90
+sed -i  "s/precisionflag/$fftw_flag/g" ./set_run/sc_compiled/create_plan.f90
+sed -i  "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output.f90
+sed -i  "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
+sed -i  "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
+sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
+sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
+sed -i  "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
+sed -i  "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i  "s/non_newtonian/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
+sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/courant_check.f90
+sed -i  "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i  "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i  "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/wave_numbers.f90
+sed -i  "s/buoyancytype/$buoyancy/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i  "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/initialize_phi.f90
+sed -i  "s/meanflag/$mean_flag/g" ./set_run/sc_compiled/statistics.f90
+sed -i  "s/budgetflag/$budget_flag/g" ./set_run/sc_compiled/statistics.f90
+sed -i  "s/spectraflag/$spectra_flag/g" ./set_run/sc_compiled/statistics.f90
+sed -i  "s/savespectralflag/$savespectral/g" ./set_run/sc_compiled/write_output.f90
+sed -i  "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i  "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/sim_check.f90
+sed -i  "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/print_start.f90
+sed -i  "s/machineflag/$machine/g" ./set_run/sc_compiled/write_output.f90
+sed -i  "s/machineflag/$machine/g" ./set_run/sc_compiled/courant_check.f90
+sed -i  "s/machineflag/$machine/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/expansionx/$exp_x/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/expansiony/$exp_y/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
+sed -i  "s/expansionx/$exp_x/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i  "s/expansiony/$exp_y/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i  "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
+sed -i  "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
+sed -i  "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
+sed -i  "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
+sed -i  "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
+sed -i  "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
+sed -i  "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
+sed -i  "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i  "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/read_input.f90
+sed -i  "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/print_start.f90
+sed -i  "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i  "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i  "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i  "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
+sed -i  "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i  "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
+sed -i  "s/tracerflag/$tracer/g" ./set_run/sc_compiled/read_input.f90
+sed -i  "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i  "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
+sed -i  "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
+sed -i  "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
+sed -i  "s/npartsets/nset=\"$nset\"/g" ./set_run/results/backup/restart_copy.sh
 else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
@@ -1037,7 +1068,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [ "$machine" == "7" ]; then
+if [[ "$machine" == "7" || "$machine" == "12" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1047,6 +1078,15 @@ sed -i "s/integer :: number/integer(kind=mpi_address_kind) :: number/g" ./set_ru
 # PGI compiler does not have isnan
 sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
 fi
+
+#set the gpu flag to enable/disable the CUFFTs
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/main.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/phys_to_spectral.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/spectral_to_phys.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_bwd.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_fwd.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/convective_ns.f90
+
 
 
 # only for intel compiler (needed for USE MPI_F08
@@ -1059,6 +1099,14 @@ echo "=                      BEGINNING OF COMPILATION                           
 echo "=============================================================================="
 echo ""
 
+if [ "$GPU_RUN" == "1" ]; then
+#build GPU version of the CODE
+#make all, object rule specified partially, when modifing Fortran modules, re-build
+cp Makefile ./set_run/sc_compiled/
+cd ./set_run/sc_compiled
+make all
+else
+
 # double make needed because first one return errors for missing modules, but then creates them,
 # second make makes the code executable with the proper module
 # modules must be removed to update data inside them when changing simulation parameters like
@@ -1066,6 +1114,7 @@ echo ""
 make
 
 make
+fi
 
 echo ""
 echo "=============================================================================="
@@ -1085,6 +1134,6 @@ echo ""
 
 if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) ]]; then
 cd ./set_run
-./go.sh
+#./go.sh
 cd ..
 fi

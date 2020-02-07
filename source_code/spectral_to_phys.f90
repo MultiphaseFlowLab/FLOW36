@@ -1,15 +1,21 @@
-subroutine spectral_to_phys(uc,uout,aliasing)
+subroutine spectral_to_phys(uc,uout,aliasing,insolv)
 
 use commondata
 use par_size
 use mpi
+#define GPU_RUN gpucompflag
+#if GPU_RUN == 1
+use interfaccia
+#endif
 
 integer :: dims(2)
 integer :: rx,ry,rz
 integer :: aliasing
+integer :: insolv
 
 double precision :: uc(spx,nz,spy,2),uout(nx,fpz,fpy)
 double precision, allocatable :: u(:,:,:,:),wa(:,:,:,:)
+double precision, allocatable :: u_res(:,:,:,:)
 
 
 dims(1)=nzcpu
@@ -22,8 +28,15 @@ dims(2)=nycpu
 
 allocate(u(spx,nz,spy,2))
 u=uc
+#if GPU_run == 1
+  if (insolv == 1) then
+    call h_chebyshev_back(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing)
+  else
+	call dctz_bwd(u,u,spx,nz,spy,aliasing)
+  endif  
+#else
 call dctz_bwd(u,u,spx,nz,spy,aliasing)
-
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2)    change parallelization x-y to x-z
@@ -89,8 +102,18 @@ endif
 ! 3)    ifft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_bwd(u,u,spx,npz,ny,aliasing)
+#if GPU_run == 1
+  if (insolv == 1) then
+    !!choose between a full subroutine on the GPU or a host subroutine with fft on the device
+    !call h_ffty_back(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing)
+    call ffty_bwd(u,u,spx,npz,ny,aliasing,insolv)
+  else
+    call ffty_bwd(u,u,spx,npz,ny,aliasing,0)
+  endif
+#else
+call ffty_bwd(u,u,spx,npz,ny,aliasing,0)
 !call ffty_bwd(u,u,spx,npz,ny,0)
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to y-z
@@ -133,9 +156,16 @@ endif
 ! 5)    ifft x direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+#if GPU_run == 1
+  if (insolv == 1) then
+    call h_fftx_back(u(:,:,:,1),u(:,:,:,2),uout,aliasing)
+  else
+    call fftx_bwd(u,uout,nx,fpz,fpy,aliasing)
+  endif  
+#else
 call fftx_bwd(u,uout,nx,fpz,fpy,aliasing)
 !call fftx_bwd(u,uout,nx,fpz,fpy,0)
+#endif
 
 deallocate(u)
 
