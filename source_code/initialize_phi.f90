@@ -57,7 +57,7 @@ elseif(in_cond_phi.eq.1)then
   elseif(checks.eqv..true.)then
     call read_fields_s(phic,nt_restart,'phic ',restart)
     ! transform to physical space
-    call spectral_to_phys(phic,phi,0,0)
+    call spectral_to_phys(phic,phi,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing phase field input file ',time,' , stopping simulation'
     call exit(0)
@@ -491,7 +491,7 @@ deallocate(phic_fg)
 
 deallocate(sphi_o)
 
-#define match_dens 1
+#define match_dens matched_density
 #if match_dens != 1
 deallocate(ucp)
 deallocate(vcp)

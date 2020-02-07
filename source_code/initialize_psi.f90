@@ -31,7 +31,7 @@ if(in_cond_psi.eq.0)then
   psi_fg=psi_k
   call phys_to_spectral_fg(psi_fg,psic_fg,0)
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,0,0)
+  call spectral_to_phys(psic,psi,0)
 elseif(in_cond_psi.eq.1)then
   if(rank.eq.0) write(*,*) 'Initializing surfactant from data file (parallel read)'
   write(time,'(I8.8)') nt_restart
@@ -48,7 +48,7 @@ elseif(in_cond_psi.eq.1)then
   elseif(checks.eqv..true.)then
     call read_fields_s(psic,nt_restart,'psic ',restart)
     ! transform to physical space
-    call spectral_to_phys(psic,psi,0,0)
+    call spectral_to_phys(psic,psi,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing surfactant input file ',time,' , stopping simulation'
     call exit(0)
@@ -60,7 +60,7 @@ elseif(in_cond_psi.eq.2)then
   call psi_eq
   call phys_to_spectral_fg(psi_fg,psic_fg,0)
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,1,0)
+  call spectral_to_phys(psic,psi,1)
 elseif(in_cond_psi.eq.3)then
   if(rank.eq.0) write(*,*) 'Initializing equilibrium profile multiplied with Y gradient'
   ! linear profile, calculated on coarse grid
@@ -80,7 +80,7 @@ elseif(in_cond_psi.eq.5)then
   call psi_diff_test
   call phys_to_spectral_fg(psi_fg,psic_fg,0)
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,1,0)
+  call spectral_to_phys(psic,psi,1)
 elseif(in_cond_psi.eq.6)then
   if(rank.eq.0) write(*,*) 'Initializing surfactant from data file (parallel read, fine grid)'
   write(time,'(I8.8)') nt_restart
@@ -103,7 +103,7 @@ elseif(in_cond_psi.eq.6)then
     call exit(0)
   endif
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,0,0)
+  call spectral_to_phys(psic,psi,0)
 else
   if(rank.eq.0)write(*,*) 'Check initial condition value on psi'
   stop

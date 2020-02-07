@@ -14,10 +14,6 @@ use temperature
 use particle
 use wavenumber
 use comm_pattern
-#define GPU_RUN gpucompflag
-#if GPU_RUN == 1
-use interfaccia
-#endif
 
 #define machine machineflag
 #define phiflag phicompflag
@@ -228,10 +224,6 @@ endif
 #endif
 #endif
 
-#if GPU_run == 1
-  call H_INITIALIZE_GPU(spx,spy,nz,nx,flow_comm)
-#endif
-  
   gstime=mpi_wtime()
 
   ! loop over time
@@ -319,12 +311,6 @@ endif
     endif
 
   enddo
-
-
-#if GPU_run == 1
-  call H_FREE_GPU()
-#endif
-  
 
   if(rank.eq.0)then
     write(*,*) '-----------------------------------------------------------------------'

@@ -1,2 +1,2 @@
-mpirun -np NUMTASKS ./sc_compiled/surf_gpu.exe
+mpirun -n NUMTASKS ./sc_compiled/flow36
 

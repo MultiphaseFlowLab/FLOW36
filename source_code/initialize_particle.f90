@@ -168,7 +168,7 @@ integer :: i,j
 integer :: n_planes
 double precision :: part_height,level
 
-#define twowayc 0
+#define twowayc twowaycflag
 
 ! get fluid velocity for initial tracking
 call get_velocity
