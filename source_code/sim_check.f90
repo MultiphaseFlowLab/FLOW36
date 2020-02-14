@@ -339,7 +339,8 @@ re_bulk=re_bulk/2.0d0
 re_bulk=re_bulk*re
 
 #if cpiflag == 1
-  gradpx=Repow*re/(2*re_bulk)
+  re_bulk=re_bulk/re
+  gradpx=3.0d0/(repow*re_bulk)
 #endif
 
 

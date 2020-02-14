@@ -124,9 +124,9 @@ cp ./VSC-4/makefile ./makefile
 cp ./VSC-4/go.sh ./go.sh
 module purge
 # load modules
-module load intel
-module load intel-mpi
-module load fftw
+module load intel/19.0.5
+module load intel-mpi/2019.5-intel-19.0.5.281-77hdffd
+module load fftw/3.3.8-intel-19.0.5.281-un2sutg
 
 savespectral="0"
 
@@ -165,8 +165,8 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="6" # integer
-iy="6" # integer
+ix="5" # integer
+iy="5" # integer
 iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
@@ -196,10 +196,10 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="1" # integer
 
 # Reynolds number
-Re="150.0" # real (double)
+Re="100." # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -209,8 +209,8 @@ gradpx="-1.0" # real (double)
 gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
-cpi_flag="0"
-repow="30.6" #real (double) Flow-rate @ gradpx =1
+cpi_flag="1"
+repow="100.0" #B*Re_pi - re used to control the pressure gradient...
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
 lx="4.0" # real (double)
@@ -220,10 +220,10 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="5" #integer (up to 8 digits)
+nend="40000" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="2000" # integer
+dump="100" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -249,7 +249,7 @@ budget_flag="0" # 0 to skip budget calculation, 1 to do it
 spectra_flag="0" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
-dt="1.e-4" # real (exponential)
+dt="1.e-3" # real (exponential)
 
 # 0: no-slip
 # 1: free-slip
