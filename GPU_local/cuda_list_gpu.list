@@ -1,0 +1,6 @@
+cuda_spec_phys.o
+cuda_tran.o
+cuda_phys_spec.o
+init_gpu.o
+free_gpu.o
+

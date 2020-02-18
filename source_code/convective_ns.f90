@@ -17,9 +17,9 @@ integer :: indx,indy
 integer :: i,j,k
 
 ! transform variables back to physical space and perform dealiasing
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(wc,w,1)
+call spectral_to_phys(uc,u,1,1)
+call spectral_to_phys(vc,v,1,1)
+call spectral_to_phys(wc,w,1,1)
 
 call courant_check(u,v,w)
 
@@ -54,12 +54,12 @@ enddo
 
 
 ! transform products uu,uv, ...  in spectral space
-call phys_to_spectral(uu,uuc,1)
-call phys_to_spectral(uv,uvc,1)
-call phys_to_spectral(uw,uwc,1)
-call phys_to_spectral(vv,vvc,1)
-call phys_to_spectral(vw,vwc,1)
-call phys_to_spectral(ww,wwc,1)
+call phys_to_spectral(uu,uuc,1,1)
+call phys_to_spectral(uv,uvc,1,1)
+call phys_to_spectral(uw,uwc,1,1)
+call phys_to_spectral(vv,vvc,1,1)
+call phys_to_spectral(vw,vwc,1,1)
+call phys_to_spectral(ww,wwc,1,1)
 
 deallocate(uu)
 deallocate(uv)
@@ -147,11 +147,11 @@ allocate(uu(nx,fpz,fpy))
 allocate(vv(nx,fpz,fpy))
 allocate(ww(nx,fpz,fpy))
 
-call spectral_to_phys(s1,uu,1)
-call spectral_to_phys(s2,vv,1)
-call spectral_to_phys(s3,ww,1)
+call spectral_to_phys(s1,uu,1,0)
+call spectral_to_phys(s2,vv,1,0)
+call spectral_to_phys(s3,ww,1,0)
 
-call spectral_to_phys(phic,phi,1)
+call spectral_to_phys(phic,phi,1,0)
 
 #if match_dens == 2
 do j=1,fpy
@@ -179,9 +179,9 @@ do j=1,fpy
 enddo
 #endif
 
-call phys_to_spectral(uu,s1,1)
-call phys_to_spectral(vv,s2,1)
-call phys_to_spectral(ww,s3,1)
+call phys_to_spectral(uu,s1,1,0)
+call phys_to_spectral(vv,s2,1,0)
+call phys_to_spectral(ww,s3,1,0)
 
 deallocate(uu)
 deallocate(vv)

@@ -11,7 +11,8 @@
 # 9 : VSC4
 #10 : Joliot Curie - Irene (KNL)
 #11 : Davide (CINECA)
-machine="0"
+#12 : GPU local
+machine="12"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -147,10 +148,17 @@ module purge
 module load gnu
 module load openmpi
 module load fftw
-cp ./Davide/makefile ./makefile
+cp ./David/makefile ./makefile
 cp ./Davide/go.sh ./go.sh
 
 savespectral="0"
+
+elif [ "$machine" == "12" ]; then
+echo "=                                 GPU version                                ="
+cp ./GPU_local/go.sh ./go.sh
+#makefile is copied later
+savespectral="0"
+
 fi
 echo "=============================================================================="
 echo ""
@@ -176,12 +184,15 @@ exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
-NZCPU="4" # integer
+NZCPU="1" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
-nodesize="68" # integer
+nodesize="1" # integer
 
+#perform FFTs and DCT on GPU (1) or on CPU (0), implemented in CUDA C
+#multi-GPU WARNING: NOT TESTED!!! The CUDA code has been tested only on single-GPU, local machine
+GPU_RUN="1"
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
 restart="0" # integer
@@ -196,7 +207,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="5" # integer
 
 # Reynolds number
 Re="150.0" # real (double)
@@ -791,6 +802,24 @@ cp ./source_code/lagrangian_interpolator.f90 ./set_run/sc_compiled/
 cp ./source_code/lagrangian_tracker.f90 ./set_run/sc_compiled/
 cp ./source_code/save_flow_comm.f90 ./set_run/sc_compiled/
 
+if [ "$GPU_RUN" == "1" ]; then
+#CUDA files and Fortran-C interface
+cp ./source_code/init_gpu.cu ./set_run/sc_compiled/
+cp ./source_code/init_gpu.h  ./set_run/sc_compiled/
+cp ./source_code/free_gpu.cu ./set_run/sc_compiled/
+cp ./source_code/free_gpu.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_spec_phys.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_spec_phys.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_phys_spec.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_phys_spec.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_tran.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_tran.h  ./set_run/sc_compiled/
+
+cp ./source_code/cuda_variables.h ./set_run/sc_compiled/
+cp ./source_code/interfaccia.f90  ./set_run/sc_compiled/
+fi
+
+
 cp -r ./paraview_output_fg ./set_run
 cp -r ./stats_calc ./set_run
 
@@ -1061,7 +1090,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" ||"$machine" == "11" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" ||"$machine" == "11" || "$machine" == "12" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1071,6 +1100,14 @@ sed -i "s/integer :: number/integer(kind=mpi_address_kind) :: number/g" ./set_ru
 # PGI compiler does not have isnan
 sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
 fi
+
+
+#set the GPU flags to enable/disable the CUFFT calls
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/main.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/phys_to_spectral.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/spectral_to_phys.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_bwd.f90
+sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_fwd.f90
 
 
 # only for intel compiler (needed for USE MPI_F08
@@ -1087,10 +1124,19 @@ echo ""
 # second make makes the code executable with the proper module
 # modules must be removed to update data inside them when changing simulation parameters like
 # nx, ny, nz, nycpu, nzcpu
-make
+if [ "$GPU_RUN" == "1" ]; then
+cp ./GPU_local/Makefile ./set_run/sc_compiled/
+cd ./set_run/sc_compiled/
+make all
+cd ../../
+rm ./set_run/sc_compiled/Makefile
+else
 
 make
 
+make
+
+fi
 echo ""
 echo "=============================================================================="
 echo "=                            END OF COMPILATION                              ="
@@ -1109,6 +1155,6 @@ echo ""
 
 if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) ]]; then
 cd ./set_run
-./go.sh
+#./go.sh
 cd ..
 fi

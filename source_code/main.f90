@@ -14,6 +14,14 @@ use temperature
 use particle
 use wavenumber
 use comm_pattern
+#define GPU_RUN gpucompflag
+#if GPU_RUN == 1
+use interfaccia
+#endif
+
+
+
+
 
 #define machine machineflag
 #define phiflag phicompflag
@@ -224,6 +232,15 @@ endif
 #endif
 #endif
 
+
+!Initialize the GPU
+#if GPU_RUN == 1
+  call H_INITIALIZE_GPU(spx,spy,nz,nx,flow_comm)
+#endif
+
+
+
+
   gstime=mpi_wtime()
 
   ! loop over time
@@ -392,6 +409,11 @@ endif
 
   ! destroy fftw plans
   call destroy_plan
+
+#if GPU_RUN == 1
+  call H_FREE_GPU()
+#endif
+
 
   ! free all group communicators
   if(rank.lt.flow_comm_lim) call mpi_comm_free(flow_comm,ierr)
