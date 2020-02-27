@@ -286,7 +286,7 @@ __global__ void k_manip(double *a, int nz, int dim)
 //-------------------------------------------------------------------------------------
 {
   int index = threadIdx.x + blockIdx.x * blockDim.x + 1; //absolute thread index
-  int pos = (nz-1) * index;
+  int pos = nz * index - 1;
   if (pos < dim) //redundant
   {
     a[pos] = 2.0e0 * a[pos];
@@ -315,7 +315,7 @@ __global__ void k_manip_cmp (cufftDoubleComplex *a, int nz, int size)
 //-------------------------------------------------------------------------------------
 {
   int index = threadIdx.x + blockIdx.x * blockDim.x + 1; //absolute thread index plus one
-  int pos = (nz-1) * index;
+  int pos = nz * index - 1;
   if (pos < size) //redundant check actually
   {
     a[pos].x = 0.5e0 * a[pos].x;

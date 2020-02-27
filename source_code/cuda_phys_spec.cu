@@ -250,7 +250,7 @@ extern "C" void h_chebyshev_fwd(double *in_r, double *in_c, double *out_r, doubl
 
   //warning:GPU - the following two kernels should be merged in one kernel
   //Merge the output
-  k_sec_copy<<<(spx*spx*nz+dblk-1)/dblk,dblk>>>(d_batch, d_batch_c, nz*spx*spy);//#OUTPUT,INPUT,size -spx*spy,32*(nz/32+1)
+  k_sec_copy<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch, d_batch_c, nz*spx*spy);//#OUTPUT,INPUT,size -spx*spy,32*(nz/32+1)
   ok = cudaGetLastError();
   if(ok!=0) printf("===============>error in call kernel k_sec_copy not called!! - 2 \n");
 
