@@ -1,6 +1,8 @@
 #ifndef CUDA_TRAN
 #define CUDA_TRAN
 
+void __global__ k_alias_1st(double *a, double *b, int al_low, int nx, int dim);
+
 __global__ void k_merge_cmp(cufftDoubleComplex *out, double *re, double *im, int size);
 
 __global__ void k_sec_separate(cufftDoubleComplex *in,
@@ -30,6 +32,10 @@ __global__ void k_sec_copy(cufftDoubleComplex *out,
 __global__ void k_manip(double *a, int nz, int dim);
 
 __global__ void k_manip_cmp (cufftDoubleComplex *a, int nz, int size);
+
+__global__ void k_mirr_bigtime(double *out1, double *out2,
+		                       double *in1,  double *in2,
+                               int nx, int nx_big, int size);
 
 __global__ void k_mirror(double *out,
 		                 double *in,

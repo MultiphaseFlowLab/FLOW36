@@ -26,23 +26,26 @@ extern "C" void h_ffty_many_fwd(double *in_r, double *in_c, double *out_r, doubl
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*spx*nz*spy,cudaMemcpyHostToDevice);
   ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*spx*nz*spy,cudaMemcpyHostToDevice);
   if (ok!=0) printf("Error in copying to device!!\n");
+
   k_merge_cmp<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,spx*spy*nz);
   if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! ffty_fwd\n");
 //  ok = ok + cudaMemcpy2D(d_batch,       2 * sizeof(d_batch), in_r, sizeof(in_r), sizeof(in_r), spx*nz*spy, cudaMemcpyHostToDevice);
 //  ok = ok + cudaMemcpy2D(&d_batch[0].y, 2 * sizeof(d_batch), in_c, sizeof(in_c), sizeof(in_c), spx*nz*spy, cudaMemcpyHostToDevice);
 //  if (ok!=0) printf("Error in copying to device!!\n");
 
+
   //BACKWARDS FFT IN Y
-  cufftExecZ2Z(plan_y_many, d_batch, d_batch_c, CUFFT_FORWARD);//this can be done inplace
+  cufftExecZ2Z(plan_y_many, d_batch, d_batch, CUFFT_FORWARD);//this can be done inplace
   ok = cudaGetLastError();
   if (ok!=0) printf("Error in cufftExecZ2Z forward ffty many!!\n");
 
 
 
   //copy back to host
-  k_sec_separate<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch_c,ur_d,uc_d, spx*spy*nz);
+  k_sec_separate<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d, spx*spy*nz);
   ok = cudaGetLastError();
   if(ok!=0) printf("===============>error in call kernel k_sec_separate not called!! ffty_fwd\n");
+
   ok = ok + cudaMemcpy(out_r,ur_d,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
   ok = ok + cudaMemcpy(out_c,uc_d,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
   if (ok!=0) printf("Error in copying to host!!\n");
@@ -69,6 +72,7 @@ extern "C" void h_fftx_fwd(double *in_r, double *out_r, double *out_c, int alias
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*nx*nz*spy,cudaMemcpyHostToDevice);
   if (ok!=0) printf("Error in copying to device!! fftx_fwd\n");
 
+
   //execute
   cufftExecD2Z(plan_x_fwd, ur_d, d_batch);
   ok = cudaGetLastError();
@@ -84,6 +88,7 @@ extern "C" void h_fftx_fwd(double *in_r, double *out_r, double *out_c, int alias
 	ok = cudaGetLastError();
 	if (ok!=0) printf("===============>error in call kernel k_cmp_alias_y not called!! fftx_fwd\n");
   }
+
 
   //copy back to host
   k_sec_separate<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,spx*spy*nz);
@@ -232,12 +237,15 @@ extern "C" void h_chebyshev_fwd(double *in_r, double *in_c, double *out_r, doubl
 
 
   //make input for cufftD2Z even symmetrical ##format OUTPUT,INPUT,sizes
-  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(ur_d, d_uopr,
-		                                               nz, 2*(nz-1));
-  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(uc_d, d_uopc,
-		                                               nz, 2*(nz-1));
+  k_mirr_bigtime<<<(nz*spx*spy+dblk-1)/dblk,dblk>>>(ur_d, uc_d, d_uopr, d_uopc, nz, 2*(nz-1), spx*spy*nz);
+
+//
+//  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(ur_d, d_uopr,
+//		                                               nz, 2*(nz-1));
+//  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(uc_d, d_uopc,
+//		                                               nz, 2*(nz-1));
   ok = cudaGetLastError();
-  if(ok!=0) printf("===============>error in call kernel k_mirror not called - 2!! \n");
+  if(ok!=0) printf("===============>error in call kernel k_mirr_bigtime not called - 2!! \n");
 
 
   //EXECUTE THE DCT
@@ -263,8 +271,7 @@ extern "C" void h_chebyshev_fwd(double *in_r, double *in_c, double *out_r, doubl
 
 
   //manipulate last terms
-  k_manip_cmp<<<(nz+dblk-1)/dblk,dblk>>>(d_batch,
-	    								 nz, tot_size);
+  k_manip_cmp<<<(nz+dblk-1)/dblk,dblk>>>(d_batch, nz, tot_size);
 
   //inplace aliasing
   if(aliasing)
@@ -287,6 +294,7 @@ extern "C" void h_chebyshev_fwd(double *in_r, double *in_c, double *out_r, doubl
     k_sec_separate<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch_c,ur_d,uc_d,spx*spy*nz);
     ok = cudaGetLastError();
     if(ok!=0) printf("===============>error in call kernel k_sec_separate not called!! fftx_fwd\n");
+
     ok = ok + cudaMemcpy(out_r,ur_d,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
     ok = ok + cudaMemcpy(out_c,uc_d,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
 
@@ -404,7 +412,7 @@ void cuda_phys_to_spectral(double *d_uur, cufftDoubleComplex *d_uucmp)
 	k_cmp_alias<<<((al_up-al_low+1)*spx*nz+dblk-1)/dblk,dblk>>>(d_batch_c,
 			                                                      al_low, al_up-al_low+1, spy, spx*spy*nz);
 	ok = cudaGetLastError();
-	if (ok!=0) printf("===============>error in second call kernel k_cmp_alias_y not called - 2!! \n");
+	if (ok!=0) printf("===============>error in second call kernel k_ not called - 2!! \n");
   }
 
 

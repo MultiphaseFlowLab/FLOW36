@@ -10,6 +10,40 @@
 #define TILE_DIM   32
 #define BLOCK_ROWS 8
 
+
+void __global__ k_alias_1st(double *a, double *b, int al_low, int nx, int dim)
+//-------------------------------------------------------------------------------------
+//
+//     perform aliasing on cufftDoubleComplex velocity array in first dimension
+//
+//     Copyright Multiphase Flow Laboratory, University of Udine
+//     authors - D. Di Giusto, March 2020
+//
+//-------------------------------------------------------------------------------------
+{
+  int index = blockIdx.x * blockDim.x + threadIdx.x;   //absolute thread index
+  int check = al_low + index/(nx-al_low)*nx + index % (nx-al_low);
+
+  //each thread accesses only the values to be modified
+  if (check < dim)
+  {
+    a[check] = 0.0e0;
+    b[check] = 0.0e0;
+  }
+
+}//end kernel k_cmp_alias_small
+//*************************************************************************************
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//*************************************************************************************
 __global__ void k_merge_cmp(cufftDoubleComplex *out,
 		                    double *re, double *im,
 		                    int size)
@@ -322,6 +356,51 @@ __global__ void k_manip_cmp (cufftDoubleComplex *a, int nz, int size)
     a[pos].y = 0.5e0 * a[pos].y;
   }
 }//end kernel k_manip_cmp
+//*************************************************************************************
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//*************************************************************************************
+__global__ void k_mirr_bigtime(double *out1, double *out2,
+		                       double *in1,  double *in2,
+                               int nx, int nx_big, int size)
+//-------------------------------------------------------------------------------------
+//
+//	   Mirror array in 1st direction, general form
+//
+//     Copyright Multiphase Flow Laboratory, University of Udine
+//     authors - D. Di Giusto, Jan 2020
+//
+//-------------------------------------------------------------------------------------
+{
+
+	extern __shared__ double tile[];
+
+	int index = blockIdx.x * blockDim.x + threadIdx.x; //absolute thread index
+
+
+	int p  = index / nx;    //period in first array
+	int clk = index % nx; //clock in first array
+
+	if (index < size)
+	{
+	  out1[clk + p * nx_big] = in1[index]; //write copy to output
+	  out2[clk + p * nx_big] = in2[index]; //write copy to output
+
+	  if (clk > 0 && clk < nx-1)
+	  {
+	    out1[nx_big - clk + p * nx_big] = in1[index];
+	    out2[nx_big - clk + p * nx_big] = in2[index];
+	  }
+	}
+}//end kernel k_mirr_bigtime
 //*************************************************************************************
 //
 //

@@ -37,13 +37,15 @@ extern "C" void h_ffty_many_bwd(double *in_r, double *in_c, double *out_r, doubl
 //  ok = ok + cudaMemcpy2D(&d_batch[0].y, 2 * sizeof(d_batch), in_c, sizeof(in_c), sizeof(in_c), spx*nz*spy, cudaMemcpyHostToDevice);
 //  if (ok!=0) printf("Error in copying to device!!\n");
 
-  //BACKWARDS FFT IN Y
-  cufftExecZ2Z(plan_y_many, d_batch, d_batch_c, CUFFT_INVERSE);
+
+  //BACKWARDS FFT IN Y //in place
+  cufftExecZ2Z(plan_y_many, d_batch, d_batch, CUFFT_INVERSE);
   ok = cudaGetLastError();
   if (ok!=0) printf("Error in cufftExecZ2Z inverse ffty many!!\n");
 
+
   //copy back to host
-  k_sec_separate<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch_c,ur_d,uc_d, spx*spy*nz);
+  k_sec_separate<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch, ur_d, uc_d, spx*spy*nz);
   ok = cudaGetLastError();
   if(ok!=0) printf("===============>error in call kernel k_sec_separate not called!! fftx_fwd\n");
   ok = ok + cudaMemcpy(out_r,ur_d,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
@@ -92,16 +94,20 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
   if (ok!=0) printf ("===============>error in call kernel k_t102 not called!! \n");
 
 
+
   //perform inplace aliasing
   if (aliasing == 1)
   {
 	  int ali = floor(2.0*double(nz)/3.0); //arrays start from zero
 
-	  k_alias_small<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopr, ali, nz);
-      k_alias_small<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopc, ali, nz);
+	  k_alias_1st<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopr, d_uopc, ali, nz, spx*spy*nz);//evaluate a merging of the two kernels
+
+//	  k_alias_small<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopr, ali, nz);
+//      k_alias_small<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopc, ali, nz);
       ok = cudaGetLastError();
-      if (ok!=0) printf("===============>error in call kernel k_alias_small not called!! \n");
+      if (ok!=0) printf("===============>error in call kernel k_alias_1st not called!! \n");
   }
+
 
   //manipulate the input arrays
   //WARNING: this kernel does very little and it should be evaluated if the overhead is big. actually I just need one block with nz threads, NOT  nz,(spx*spy+1)/32*32
@@ -112,12 +118,15 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
 
 
 
-//wARNING: tutti i kernel accoppiati possono essere ridotti ad un unico kernel che ha il doppio delle thread ed esegue su due matrici
+
   //make input for cufftD2Z even symmetrical ##format OUTPUT,INPUT,sizes
-  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(ur_d, d_uopr, nz, 2*(nz-1));
-  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(uc_d,  d_uopc, nz, 2*(nz-1));
+  k_mirr_bigtime<<<(nz*spx*spy+dblk-1)/dblk,dblk>>>(ur_d, uc_d, d_uopr,  d_uopc, nz, 2*(nz-1), spx*spy*nz);
+
+//  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(ur_d, d_uopr, nz, 2*(nz-1));
+//  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(uc_d,  d_uopc, nz, 2*(nz-1));
   ok = cudaGetLastError();
-  if (ok!=0) printf("===============>error in call kernel k_mirror not called!! \n");
+  if (ok!=0) printf("===============>error in call kernel k_mirr_bigtime not called!! \n");
+
 
 
 
@@ -126,6 +135,7 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
   cufftExecD2Z(plan_z, uc_d,  d_batch_c);
   ok = cudaGetLastError();
   if(ok!=0) printf("===============>error in call cufftD2Z not called!! \n");
+
 
 
 
@@ -171,14 +181,11 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
 
   k_t102<<<tgrid2,tBlock>>>(d_uopr,ur_d,nz,spx,spy);
   k_t102<<<tgrid2,tBlock>>>(d_uopc,uc_d,nz,spx,spy);
-
-
-  //copy back to host
   ok = cudaGetLastError();
-  if(ok!=0) printf("===============>error in call kernel k_sec_separate not called!! cheb_back\n");
+  if(ok!=0) printf("===============>error in call kernel k_transpose_back not called!! cheb_back\n");
+
   ok = ok + cudaMemcpy(out_r,d_uopr,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
   ok = ok + cudaMemcpy(out_c,d_uopc,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
-
 //  ok = ok + cudaMemcpy2D(out_r, sizeof(out_r),d_batch_c,       2 * sizeof(d_batch_c),sizeof(d_batch_c), spx*nz*spy, cudaMemcpyDeviceToHost);
 //  ok = ok + cudaMemcpy2D(out_c, sizeof(out_c),&d_batch_c[0].y, 2 * sizeof(d_batch_c),sizeof(d_batch_c), spx*nz*spy, cudaMemcpyDeviceToHost);
   if (ok!=0) printf("Error in copying to host!!\n");
@@ -213,6 +220,8 @@ extern "C" void h_ffty_back(double *in_r, double *in_c, double *out_r, double *o
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*spx*spy*nz,cudaMemcpyHostToDevice);
   ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*spx*spy*nz,cudaMemcpyHostToDevice);
   if (ok!=0) printf("Error in copying to device!!\n");
+
+  //merge to cufftDoubleComplex
   k_merge_cmp<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,spx*spy*nz);
   if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! ffty_back\n");
 //  ok = ok + cudaMemcpy2D(d_batch,       2 * sizeof(d_batch), in_r, sizeof(in_r), sizeof(in_r), spx*nz*spy, cudaMemcpyHostToDevice);
