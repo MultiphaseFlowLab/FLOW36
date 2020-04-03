@@ -30,7 +30,7 @@ extern "C" void h_ffty_many_bwd(double *in_r, double *in_c, double *out_r, doubl
 
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*spx*npz*ny,cudaMemcpyHostToDevice);
   ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*spx*npz*ny,cudaMemcpyHostToDevice);
-  if (ok!=0) printf("Error in copying to device!!\n");
+  if (ok!=0) printf("Error in copying to device!! ffty_many_bwd\n");
   k_merge_cmp<<<(spx*ny*npz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,spx*ny*npz);
   if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! ffty_back\n");
 //  ok = ok + cudaMemcpy2D(d_batch,       2 * sizeof(d_batch), in_r, sizeof(in_r), sizeof(in_r), spx*nz*spy, cudaMemcpyHostToDevice);
@@ -74,7 +74,7 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
 
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*spx*nz*spy,cudaMemcpyHostToDevice);
   ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*spx*nz*spy,cudaMemcpyHostToDevice);
-  if (ok!=0) printf("Error in copying to device!!\n");
+  if (ok!=0) printf("Error in copying to device!! cheb back\n");
 
 
   //grid,block sizes for xzy to zxy transposition
@@ -219,7 +219,7 @@ extern "C" void h_ffty_back(double *in_r, double *in_c, double *out_r, double *o
   //copy to device
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*spx*ny*npz,cudaMemcpyHostToDevice);
   ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*spx*ny*npz,cudaMemcpyHostToDevice);
-  if (ok!=0) printf("Error in copying to device!!\n");
+  if (ok!=0) printf("Error in copying to device!! ffty back\n");
 
   //merge to cufftDoubleComplex
   k_merge_cmp<<<(spx*ny*npz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,spx*ny*npz);
@@ -320,7 +320,7 @@ extern "C" void h_fftx_back(double *in_r, double *in_c, double *out_r, int alias
   //copy to device
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*(nx/2+1)*npy*npz,cudaMemcpyHostToDevice);
   ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*(nx/2+1)*npy*npz,cudaMemcpyHostToDevice);
-  if (ok!=0) printf("Error in copying to device!!\n");
+  if (ok!=0) printf("Error in copying to device!! fftx back\n");
   k_merge_cmp<<<((nx/2+1)*npy*npz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,(nx/2+1)*npy*npz);
   if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! ffty_back\n");
 

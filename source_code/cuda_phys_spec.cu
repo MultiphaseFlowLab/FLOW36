@@ -25,7 +25,7 @@ extern "C" void h_ffty_many_fwd(double *in_r, double *in_c, double *out_r, doubl
 
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*nsx*npz*ny,cudaMemcpyHostToDevice);
   ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*nsx*npz*ny,cudaMemcpyHostToDevice);
-  if (ok!=0) printf("Error in copying to device!!\n");
+  if (ok!=0) printf("Error in copying to device!! ffty fwd\n");
 
   k_merge_cmp<<<(nsx*ny*npz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,nsx*ny*npz);
   if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! ffty_fwd\n");
@@ -215,7 +215,7 @@ extern "C" void h_chebyshev_fwd(double *in_r, double *in_c, double *out_r, doubl
   dblk = 128;
 
   ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*nsx*nz*npy,cudaMemcpyHostToDevice);
-  ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*npx*nz*npy,cudaMemcpyHostToDevice);
+  ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*nsx*nz*npy,cudaMemcpyHostToDevice);
   if (ok!=0) printf("Error in copying to device!! dct_fwd\n");
 
 
