@@ -106,7 +106,7 @@ endif
 #if GPU_RUN == 1
   if (insolv == 1) then
   !!choose between a full subroutine on the GPU or a host subroutine with fft on the device
-    !call h_ffty_back(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing)
+    !call h_ffty_back(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing) !NOT TESTED!
     call ffty_bwd(u,u,spx,npz,ny,aliasing,insolv)
   else
     call ffty_bwd(u,u,spx,npz,ny,aliasing,0)

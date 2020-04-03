@@ -11,7 +11,7 @@
 #include "cuda_variables.h"
 #include "init_gpu.h"
 
-extern "C" void h_initialize_gpu(int spx_f, int spy_f, int nz_f, int nx_f, MPI_Fint *FLOW_COMM)
+extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int fpy_f, int npy_f, int ny_f, int spy_f, int nz_f, int fpz_f, int npz_f, MPI_Fint *FLOW_COMM)
 //-------------------------------------------------------------------------------------
 //
 //     Initialize the GPU
@@ -57,10 +57,17 @@ extern "C" void h_initialize_gpu(int spx_f, int spy_f, int nz_f, int nx_f, MPI_F
   }
   else
   {
-	//openmpi
-    ilGPU = atoi(getenv("OMPI_COMM_WORLD_LOCAL_RANK"));
-  }
+	 //reference: http://on-demand.gputechconf.com/gtc/2014/presentations/S4236-multi-gpu-programming-mpi.pdf
+	//rely on process placement: deviceCount == ranks per node (Piz Daint)
+	ilGPU = idGPU % deviceCount;
 
+	//possible to use environment variables provided by MPI launcher
+//#ifdef OPENMPI
+//    ilGPU = atoi(getenv("OMPI_COMM_WORLD_LOCAL_RANK"));
+//#elif MVAPICH2
+//    ilGPU = atoi(getenv("MV2_COMM_WORLD_LOCAL_RANK"));
+//#endif
+  }
 
   cudaSetDevice(ilGPU);
 
@@ -72,16 +79,24 @@ extern "C" void h_initialize_gpu(int spx_f, int spy_f, int nz_f, int nx_f, MPI_F
 
 
   spx = spx_f;
-  spy = spy_f;
-  nz  = nz_f;
+  nsx = nsx_f;
   nx  = nx_f;
+  npx = npx_f;
 
-  int d_dim = nx * nz * spy;
-  if (spx*spy*2*(nz-1) > nx * nz * spy)
-  {
-    d_dim = spx * spy * 2 * (nz-1);
-  }
+  spy = spy_f;
+  fpy = fpy_f;
+  npy = npy_f;
+  ny  = ny_f;
 
+  nz  = nz_f;
+  fpz = fpz_f;
+  npz = npz_f;
+
+  //calculate max array dim
+  int d_dim = nx * fpz * fpy;
+  if (spx * spy * 2 * (nz-1) > d_dim) d_dim = spx*spy*2*(nz-1);
+  if (spx * fpz * ny         > d_dim) d_dim = spx*fpz*ny;
+  if (spx * nz * fpy         > d_dim) d_dim = spx*nz*fpy;
 
   //allocate on GPU
   //integer arrays
@@ -108,8 +123,8 @@ extern "C" void h_initialize_gpu(int spx_f, int spy_f, int nz_f, int nx_f, MPI_F
   if (ok!=0) printf ("Allocation of double arrays failed\n");
 
   //allocate output arrays for Chebyshev inverse DCT
-  ok = ok + cudaMalloc((void **)&d_batch,  sizeof(cufftDoubleComplex)*nz*spx*spy);
-  ok = ok + cudaMalloc((void **)&d_batch_c,sizeof(cufftDoubleComplex)*nz*spx*spy);
+  ok = ok + cudaMalloc((void **)&d_batch,  sizeof(cufftDoubleComplex)*d_dim);
+  ok = ok + cudaMalloc((void **)&d_batch_c,sizeof(cufftDoubleComplex)*d_dim);
   if (ok!=0) printf("Output arrays for Chebyshev not allocated correctly!!\n");
 
   //mixed products
@@ -128,36 +143,34 @@ extern "C" void h_initialize_gpu(int spx_f, int spy_f, int nz_f, int nx_f, MPI_F
 
   cudaEventRecord(start);
   //create plans for cufft transformations
-  cufftPlan1d(&plan_z, (nz-1)*2, CUFFT_D2Z, spx*spy);
-  cufftPlan1d(&plan_y,      spy, CUFFT_Z2Z, spx*nz);
-  cufftPlan1d(&plan_x,       nx, CUFFT_Z2D, spy*nz);
-  cufftPlan1d(&plan_x_fwd,  nx, CUFFT_D2Z, spy*nz);
+  cufftPlan1d(&plan_z,      (nz-1)*2,  CUFFT_D2Z,  spx*spy);//OK both ways
+  cufftPlan1d(&plan_y,      ny,        CUFFT_Z2Z,  spx*npz);//never tested
+  cufftPlan1d(&plan_x,      (nx/2+1),  CUFFT_Z2D,  npy*npz);//OK so npz=fpz and npy=fpy
+  cufftPlan1d(&plan_x_fwd,  nx,        CUFFT_D2Z,  fpy*fpz);//OK so ...
 //  cufftPlan1d(&plan_y_fwd, spy, CUFFT_Z2Z, spx*nz);
-  ok = cudaGetLastError();
-  if (ok!=0) printf("Error in creating the plans !!\n");
-  cudaEventRecord(stop);
-  cudaEventSynchronize(stop);
-  float milliseconds = 0;
-  cudaEventElapsedTime(&milliseconds, start, stop);
-  printf("Time elapsed in cufft planes creation: %f milliseconds\n",milliseconds);
 
 
 
   // CUFFT plan in y for data of order xzy
 //  int datasize=spy;//
   int rank = 1; // --- 1D FFTs
-  int n[] = { spy }; // --- Size of the Fourier transform
-  int istride = spx*nz, ostride = spx*nz; // --- Distance between two successive input/output elements
+  int n[] = { ny }; // --- Size of the Fourier transform
+  int istride = spx*npz, ostride = spx*npz; // --- Distance between two successive input/output elements
   int idist = 1, odist = 1; // --- Distance between batches
   int inembed[] = { 0 }; // --- Input size with pitch (ignored for 1D transforms)
   int onembed[] = { 0 }; // --- Output size with pitch (ignored for 1D transforms)
-  int batch = spx*nz; // --- Number of batched executions
+  int batch = spx*npz; // --- Number of batched executions
 
   ok = ok + cufftPlanMany(&plan_y_many, rank, n,
                           inembed, istride, idist,
                           onembed, ostride, odist, CUFFT_Z2Z, batch);
 
   if (ok!=0) printf ("Error in creating the batched many plan\n");
+  cudaEventRecord(stop);
+  cudaEventSynchronize(stop);
+  float milliseconds = 0;
+  cudaEventElapsedTime(&milliseconds, start, stop);
+  printf("Time elapsed in cufft planes creation: %f milliseconds\n",milliseconds);
 
 
 

@@ -235,7 +235,7 @@ endif
 
 !Initialize the GPU
 #if GPU_RUN == 1
-  call H_INITIALIZE_GPU(spx,spy,nz,nx,flow_comm)
+  call H_INITIALIZE_GPU(spx,nx,spx,nx/2+1,fpy,spy,ny,spy,nz,fpz,fpz,flow_comm) !!spx=nsx, npz=fpz,npy=fpy
 #endif
 
 

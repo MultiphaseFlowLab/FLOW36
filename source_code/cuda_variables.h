@@ -17,14 +17,24 @@
 //GPU version variables-------------------------------------------------------------
 //integers
 _DECL int spx      _INIT(0);
-_DECL int spy      _INIT(0);
-_DECL int nz       _INIT(0);
+_DECL int nsx      _INIT(0);
 _DECL int nx       _INIT(0);
+_DECL int npx      _INIT(0);
+_DECL int spy      _INIT(0);
+_DECL int fpy      _INIT(0);
+_DECL int npy      _INIT(0);
+_DECL int ny       _INIT(0);
+_DECL int nz       _INIT(0);
+_DECL int fpz      _INIT(0);
+_DECL int npz      _INIT(0);
+
 _DECL int aliasing _INIT(0);
 _DECL int dblk     _INIT(0);
 _DECL int ok       _INIT(0);
 _DECL int nbx      _INIT(0);
 _DECL int nby      _INIT(0);
+
+
 //doubles
 _DECL double xl       _INIT(0);
 _DECL double yl       _INIT(0);
@@ -118,20 +128,20 @@ _DECL cufftDoubleComplex *d_uuc2 _INIT(NULL);
 _DECL double *dz_d    _INIT(NULL);
 
 //mixed product terms
-_DECL double *d_uu  _INIT(NULL);
-_DECL double *d_uv  _INIT(NULL);
-_DECL double *d_uw  _INIT(NULL);
-_DECL double *d_vv  _INIT(NULL);
-_DECL double *d_vw  _INIT(NULL);
-_DECL double *d_ww  _INIT(NULL);
+//_DECL double *d_uu  _INIT(NULL);
+//_DECL double *d_uv  _INIT(NULL);
+//_DECL double *d_uw  _INIT(NULL);
+//_DECL double *d_vv  _INIT(NULL);
+//_DECL double *d_vw  _INIT(NULL);
+//_DECL double *d_ww  _INIT(NULL);
 
 //mixed products in spectral space
-_DECL cufftDoubleComplex *d_uuc _INIT(NULL);
-_DECL cufftDoubleComplex *d_uvc _INIT(NULL);
-_DECL cufftDoubleComplex *d_uwc _INIT(NULL);
-_DECL cufftDoubleComplex *d_vvc _INIT(NULL);
-_DECL cufftDoubleComplex *d_vwc _INIT(NULL);
-_DECL cufftDoubleComplex *d_wwc _INIT(NULL);
+//_DECL cufftDoubleComplex *d_uuc _INIT(NULL);
+//_DECL cufftDoubleComplex *d_uvc _INIT(NULL);
+//_DECL cufftDoubleComplex *d_uwc _INIT(NULL);
+//_DECL cufftDoubleComplex *d_vvc _INIT(NULL);
+//_DECL cufftDoubleComplex *d_vwc _INIT(NULL);
+//_DECL cufftDoubleComplex *d_wwc _INIT(NULL);
 
 
 
@@ -147,12 +157,12 @@ _DECL double *d_uext  _INIT(NULL);
 _DECL cufftDoubleComplex *d_batch   _INIT(NULL);
 _DECL cufftDoubleComplex *d_batch_c _INIT(NULL);
 
-_DECL cufftDoubleComplex *d_uf  _INIT(NULL);
-_DECL cufftDoubleComplex *d_uf2 _INIT(NULL);
+//_DECL cufftDoubleComplex *d_uf  _INIT(NULL);
+//_DECL cufftDoubleComplex *d_uf2 _INIT(NULL);
 
-_DECL cufftDoubleComplex *h_check   _INIT(NULL);
-_DECL double *h_che2 _INIT(NULL);
-_DECL double *h_che22 _INIT(NULL);
+//_DECL cufftDoubleComplex *h_check   _INIT(NULL);
+//_DECL double *h_che2 _INIT(NULL);
+//_DECL double *h_che22 _INIT(NULL);
 
 
 

@@ -11,13 +11,20 @@ module interfaccia
 ! 
 !*********************************************************************
   interface
-     subroutine h_initialize_gpu(spx_f,spy_f,nz_f,nx_f,f_handle) bind(c)
+     subroutine h_initialize_gpu(spx_f,nx_f,nsx_f,npx_f,fpy_f,npy_f,ny_f,spy_f,nz_f,fpz_f,npz_f,f_handle) bind(c)
        use, intrinsic :: iso_c_binding
        implicit none
        integer(c_int),value :: spx_f
+       integer(c_int),value :: nx_f
+       integer(c_int),value :: nsx_f
+       integer(c_int),value :: npx_f
+       integer(c_int),value :: fpy_f
+       integer(c_int),value :: npy_f
+       integer(c_int),value :: ny_f
        integer(c_int),value :: spy_f
        integer(c_int),value :: nz_f
-       integer(c_int),value :: nx_f
+       integer(c_int),value :: fpz_f
+       integer(c_int),value :: npz_f
        integer(c_int) :: f_handle
      end subroutine h_initialize_gpu
      
