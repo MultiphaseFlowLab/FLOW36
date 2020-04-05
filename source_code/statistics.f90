@@ -183,9 +183,9 @@ flowiter=flowiter+1
 #define budget budgetflag
 #define spectra spectraflag
 
-call spectral_to_phys(uc,u,0)
-call spectral_to_phys(vc,v,0)
-call spectral_to_phys(wc,w,0)
+call spectral_to_phys(uc,u,0,0)
+call spectral_to_phys(vc,v,0,0)
+call spectral_to_phys(wc,w,0,0)
 
 
 #if mean == 1
@@ -461,7 +461,7 @@ do j=1,spy
 enddo
 
 ! solve for k2=0
-call spectral_to_phys(wc,w,1)
+call spectral_to_phys(wc,w,1,0)
 pm=0.0d0
 do k=1,fpz
   do j=1,fpy
@@ -480,7 +480,7 @@ if(rank.eq.0)then
   f(1,:,1,2)=0.0d0
 endif
 
-call spectral_to_phys(f,press,0)
+call spectral_to_phys(f,press,0,0)
 
 ! take mean in x,y
 pm=0.0d0
@@ -516,12 +516,12 @@ enddo
 budget_data=0.0d0
 
 ! turbulent production
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(wc,w,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(wc,w,1,0)
 
 call dz(uc,stmp)
-call spectral_to_phys(stmp,ftmp,1)
+call spectral_to_phys(stmp,ftmp,1,0)
 
 utm=0.0d0
 vtm=0.0d0
@@ -573,9 +573,9 @@ do j=1,fpy
 enddo
 ftmp=ftmp*0.5d0
 
-call phys_to_spectral(ftmp,stmp,1)
+call phys_to_spectral(ftmp,stmp,1,0)
 call dz(stmp,s2tmp)
-call spectral_to_phys(s2tmp,ftmp,1)
+call spectral_to_phys(s2tmp,ftmp,1,0)
 
 tmp1=0.0d0
 do j=1,fpy
@@ -600,9 +600,9 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(ftmp,stmp,1)
+call phys_to_spectral(ftmp,stmp,1,0)
 call dz(stmp,s2tmp)
-call spectral_to_phys(s2tmp,ftmp,1)
+call spectral_to_phys(s2tmp,ftmp,1,0)
 
 tmp1=0.0d0
 do j=1,fpy
@@ -628,10 +628,10 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(ftmp,stmp,1)
+call phys_to_spectral(ftmp,stmp,1,0)
 call dz(stmp,s2tmp)
 call dz(s2tmp,stmp)
-call spectral_to_phys(stmp,ftmp,1)
+call spectral_to_phys(stmp,ftmp,1,0)
 
 tmp1=0.0d0
 do j=1,fpy
@@ -658,7 +658,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(ftmp,stmp,1)
+call phys_to_spectral(ftmp,stmp,1,0)
 
 do j=1,spy
   do k=1,nz
@@ -669,7 +669,7 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 tmp1=0.0d0
 do j=1,fpy
@@ -690,7 +690,7 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -703,7 +703,7 @@ enddo
 ! dz
 call dz(stmp,s2tmp)
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -723,7 +723,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(ftmp,stmp,1)
+call phys_to_spectral(ftmp,stmp,1,0)
 
 do j=1,spy
   do k=1,nz
@@ -734,7 +734,7 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -754,7 +754,7 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -767,7 +767,7 @@ enddo
 ! dz
 call dz(stmp,s2tmp)
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -787,7 +787,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(ftmp,stmp,1)
+call phys_to_spectral(ftmp,stmp,1,0)
 
 do j=1,spy
   do k=1,nz
@@ -798,7 +798,7 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -818,7 +818,7 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -831,7 +831,7 @@ enddo
 ! dz
 call dz(stmp,s2tmp)
 
-call spectral_to_phys(s2tmp,f2tmp,1)
+call spectral_to_phys(s2tmp,f2tmp,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -870,9 +870,9 @@ integer :: indx,indy
 integer :: i,j,k
 
 ! transform variables back to physical space and perform dealiasing
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(wc,w,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(wc,w,1,0)
 
 allocate(uu(nx,fpz,fpy))
 allocate(uv(nx,fpz,fpy))
@@ -905,12 +905,12 @@ enddo
 
 
 ! transform products uu,uv, ...  in spectral space
-call phys_to_spectral(uu,uuc,1)
-call phys_to_spectral(uv,uvc,1)
-call phys_to_spectral(uw,uwc,1)
-call phys_to_spectral(vv,vvc,1)
-call phys_to_spectral(vw,vwc,1)
-call phys_to_spectral(ww,wwc,1)
+call phys_to_spectral(uu,uuc,1,0)
+call phys_to_spectral(uv,uvc,1,0)
+call phys_to_spectral(uw,uwc,1,0)
+call phys_to_spectral(vv,vvc,1,0)
+call phys_to_spectral(vw,vwc,1,0)
+call phys_to_spectral(ww,wwc,1,0)
 
 deallocate(uu)
 deallocate(uv)
@@ -1057,9 +1057,9 @@ integer :: pl_comm,red_comm
 
 type(c_ptr) :: plan_x,plan_y
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(wc,w,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(wc,w,1,0)
 
 utm=0.0d0
 vtm=0.0d0

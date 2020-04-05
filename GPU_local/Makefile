@@ -31,7 +31,7 @@ CUDA_OBJS =  $(shell cat ../../GPU_local/cuda_list_gpu.list)
 
 
 
-alld:
+all:
 	make	EXE "PROG = surf36_gpu.exe" \
 		"GCC = gcc" \
 		"GCCFLAGS = -fno-exceptions " \
@@ -41,9 +41,9 @@ alld:
 		"F90FLAGS = -O3" \
 		"NVCC = nvcc" \
 		"NVCCFLAGS = -O3 -use_fast_math -arch=sm_61 --ptxas-options=-v" \
-		"INCD = -I"$(CUDA_PATH)"/include " \
+		"INCD = -I"$(CUDA_PATH)"/include -I/usr/include/mpi " \
 		"LIBS = -L"$(CUDA_PATH)"/lib64 -lcudart -lcurand -lcufft -lstdc++ -lfftw3"	
-all:
+alld:
 	make	EXE "PROG = surf36_gpu.exe" \
 		"GCC = gcc" \
 		"GCCFLAGS = -fno-exceptions " \

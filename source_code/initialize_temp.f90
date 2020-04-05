@@ -22,7 +22,7 @@ if(in_cond_theta.eq.0)then
   read(66,'(f16.8)') theta_k
   close(66,status='keep')
   theta=theta_k
-  call phys_to_spectral(theta,thetac,0)
+  call phys_to_spectral(theta,thetac,0,0)
 elseif(in_cond_theta.eq.1)then
   if(rank.eq.0)write(*,*) 'Reading from data file (parallel read)'
   write(time,'(I8.8)') nt_restart
@@ -35,11 +35,11 @@ elseif(in_cond_theta.eq.1)then
   if(checkf.eqv..true.)then
     call read_fields(theta,nt_restart,'T    ',restart)
     ! transform physical variable to spectral space
-    call phys_to_spectral(theta,thetac,0)
+    call phys_to_spectral(theta,thetac,0,0)
   elseif(checks.eqv..true.)then
     call read_fields_s(thetac,nt_restart,'Tc   ',restart)
     ! transform to physical space
-    call spectral_to_phys(thetac,theta,0)
+    call spectral_to_phys(thetac,theta,0,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing temperature input file ',time,' , stopping simulation'
     call exit(0)

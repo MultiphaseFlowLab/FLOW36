@@ -29,9 +29,9 @@ if(in_cond_psi.eq.0)then
   read(66,'(f16.6)') psi_k
   close(66,status='keep')
   psi_fg=psi_k
-  call phys_to_spectral_fg(psi_fg,psic_fg,0)
+  call phys_to_spectral_fg(psi_fg,psic_fg,0,0)
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,0)
+  call spectral_to_phys(psic,psi,0,0)
 elseif(in_cond_psi.eq.1)then
   if(rank.eq.0) write(*,*) 'Initializing surfactant from data file (parallel read)'
   write(time,'(I8.8)') nt_restart
@@ -44,43 +44,43 @@ elseif(in_cond_psi.eq.1)then
   if(checkf.eqv..true.)then
     call read_fields(psi,nt_restart,'psi  ',restart)
     ! transform physical variable to spectral space
-    call phys_to_spectral(psi,psic,0)
+    call phys_to_spectral(psi,psic,0,0)
   elseif(checks.eqv..true.)then
     call read_fields_s(psic,nt_restart,'psic ',restart)
     ! transform to physical space
-    call spectral_to_phys(psic,psi,0)
+    call spectral_to_phys(psic,psi,0,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing surfactant input file ',time,' , stopping simulation'
     call exit(0)
   endif
   call coarse2fine(phic,phic_fg)
-  call spectral_to_phys_fg(phic_fg,phi_fg,0)
+  call spectral_to_phys_fg(phic_fg,phi_fg,0,0)
 elseif(in_cond_psi.eq.2)then
   if(rank.eq.0) write(*,*) 'Initializing equilibrium profile'
   call psi_eq
-  call phys_to_spectral_fg(psi_fg,psic_fg,0)
+  call phys_to_spectral_fg(psi_fg,psic_fg,0,0)
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,1)
+  call spectral_to_phys(psic,psi,1,0)
 elseif(in_cond_psi.eq.3)then
   if(rank.eq.0) write(*,*) 'Initializing equilibrium profile multiplied with Y gradient'
   ! linear profile, calculated on coarse grid
   call psi_grady
-  call phys_to_spectral(psi,psic,0)
+  call phys_to_spectral(psi,psic,0,0)
   call coarse2fine(psic,psic_fg)
-  call spectral_to_phys_fg(psic_fg,psi_fg,0)
+  call spectral_to_phys_fg(psic_fg,psi_fg,0,0)
 elseif(in_cond_psi.eq.4)then
   if(rank.eq.0) write(*,*) 'Initializing equilibrium profile multiplied with Z gradient'
   ! linear profile, calculated on coarse grid
   call psi_gradz
-  call phys_to_spectral(psi,psic,0)
+  call phys_to_spectral(psi,psic,0,0)
   call coarse2fine(psic,psic_fg)
-  call spectral_to_phys_fg(psic_fg,psi_fg,0)
+  call spectral_to_phys_fg(psic_fg,psi_fg,0,0)
 elseif(in_cond_psi.eq.5)then
   if(rank.eq.0) write(*,*) 'Initializing Diffusion Test 2D'
   call psi_diff_test
-  call phys_to_spectral_fg(psi_fg,psic_fg,0)
+  call phys_to_spectral_fg(psi_fg,psic_fg,0,0)
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,1)
+  call spectral_to_phys(psic,psi,1,0)
 elseif(in_cond_psi.eq.6)then
   if(rank.eq.0) write(*,*) 'Initializing surfactant from data file (parallel read, fine grid)'
   write(time,'(I8.8)') nt_restart
@@ -93,17 +93,17 @@ elseif(in_cond_psi.eq.6)then
   if(checkf.eqv..true.)then
     call read_fields_fg(psi_fg,nt_restart,'psi  ',restart)
     ! transform physical variable to spectral space
-    call phys_to_spectral_fg(psi_fg,psic_fg,0)
+    call phys_to_spectral_fg(psi_fg,psic_fg,0,0)
   elseif(checks.eqv..true.)then
     call read_fields_s_fg(psic_fg,nt_restart,'psic ',restart)
     ! transform to physical space
-    call spectral_to_phys_fg(psic_fg,psi_fg,0)
+    call spectral_to_phys_fg(psic_fg,psi_fg,0,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing surfactant input file ',time,' , stopping simulation'
     call exit(0)
   endif
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,0)
+  call spectral_to_phys(psic,psi,0,0)
 else
   if(rank.eq.0)write(*,*) 'Check initial condition value on psi'
   stop
@@ -133,7 +133,7 @@ read(66,'(f16.6)') psi_k
 close(66,status='keep')
 
 call coarse2fine(phic,phic_fg)
-call spectral_to_phys_fg(phic_fg,phi_fg,0)
+call spectral_to_phys_fg(phic_fg,phi_fg,0,0)
 
 do j=1,fpypsi
   do k=1,fpzpsi
@@ -247,9 +247,9 @@ close(66,status='keep')
 allocate(x_fg(npsix),y_fg(npsiy),z_fg(npsiz))
 
 ! take phi to fine grid
-call phys_to_spectral(phi,phic,0)
+call phys_to_spectral(phi,phic,0,0)
 call coarse2fine(phic,phic_fg)
-call spectral_to_phys_fg(phic_fg,phi_fg,0)
+call spectral_to_phys_fg(phic_fg,phi_fg,0,0)
 
 ! define axes in fine grid
 x_fg(1)=0.0d0

@@ -40,7 +40,7 @@ s_coeff=((4.0d0*pe*ch**2)/dt)**0.5d0
 if(in_cond_phi.eq.0)then
   if(rank.eq.0)write(*,*) 'Initializing phi=-1'
   phi=-1.0d0
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.1)then
   if(rank.eq.0)write(*,*) 'Initializing phase fields from data file (parallel read)'
   write(time,'(I8.8)') nt_restart
@@ -53,11 +53,11 @@ elseif(in_cond_phi.eq.1)then
   if(checkf.eqv..true.)then
     call read_fields(phi,nt_restart,'phi  ',restart)
     ! transform physical variable to spectral space
-    call phys_to_spectral(phi,phic,0)
+    call phys_to_spectral(phi,phic,0,0)
   elseif(checks.eqv..true.)then
     call read_fields_s(phic,nt_restart,'phic ',restart)
     ! transform to physical space
-    call spectral_to_phys(phic,phi,0)
+    call spectral_to_phys(phic,phi,0,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing phase field input file ',time,' , stopping simulation'
     call exit(0)
@@ -65,35 +65,35 @@ elseif(in_cond_phi.eq.1)then
 elseif(in_cond_phi.eq.2)then
   if(rank.eq.0) write(*,*) 'Initializing phase fields from data file (serial read)'
   call read_fields_serial(phi,nt_restart,'phi  ',restart)
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.3)then
   if(rank.eq.0) write(*,*) 'Initializing 2D drop'
   call drop_2d
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.4)then
   if(rank.eq.0) write(*,*) 'Initializing 3D drop'
   call drop_3d
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.5)then
   if(rank.eq.0) write(*,*) 'Initializing stratified phase field'
   call stratified
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.6)then
   if(rank.eq.0) write(*,*) 'Initializing array of drops in x-y plane'
   call drop_array
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.7)then
   if(rank.eq.0) write(*,*) 'Initializing 2D droplet attached to the bottom wall'
   call drop_wall
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.8)then
   if(rank.eq.0) write(*,*) 'Initializing 2D droplets closed to Kiss <3'
   call drop_kiss
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 elseif(in_cond_phi.eq.9)then
   if(rank.eq.0) write(*,*) 'Initializing Layer of phi=+1'
   call layer
-  call phys_to_spectral(phi,phic,0)
+  call phys_to_spectral(phi,phic,0,0)
 else
   if(rank.eq.0)write(*,*) 'Check initial condition value on phi'
   stop

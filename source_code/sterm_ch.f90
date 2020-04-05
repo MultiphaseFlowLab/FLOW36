@@ -54,8 +54,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 allocate(convf(nx,fpz,fpy))
 
@@ -75,8 +75,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -89,8 +89,8 @@ enddo
 ! w*(d phi /dz)
 call dz(phic,a1)
 
-call spectral_to_phys(wc,w,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(wc,w,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -100,7 +100,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(convf,a1,1)
+call phys_to_spectral(convf,a1,1,0)
 
 deallocate(convf)
 ! sum all the convective terms to sphi
@@ -109,7 +109,7 @@ sphi=sphi-a1
 !Calculate nabla^2 \phi^3
 a1f=phi**(3.0d0)
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 allocate(a2(spx,nz,spy,2))
 allocate(a3(spx,nz,spy,2))
@@ -164,8 +164,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 allocate(convf(nx,fpz,fpy))
 
@@ -188,8 +188,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -205,8 +205,8 @@ phiny=a1f
 ! w*(d phi /dz)
 call dz(phic,a1)
 
-call spectral_to_phys(wc,w,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(wc,w,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -219,7 +219,7 @@ enddo
 allocate(phinz(nx,fpz,fpy))
 phinz=a1f
 
-call phys_to_spectral(convf,a1,1)
+call phys_to_spectral(convf,a1,1,0)
 
 deallocate(convf)
 ! sum all the convective terms to sphi
@@ -260,9 +260,9 @@ deallocate(phinx,phiny,phinz)
 allocate(a2(spx,nz,spy,2))
 allocate(a3(spx,nz,spy,2))
 
-call phys_to_spectral(a4f,a1,1)
-call phys_to_spectral(a5f,a2,1)
-call phys_to_spectral(a6f,a3,1)
+call phys_to_spectral(a4f,a1,1,0)
+call phys_to_spectral(a5f,a2,1,0)
+call phys_to_spectral(a6f,a3,1,0)
 
 deallocate(a4f,a5f,a6f)
 
@@ -295,7 +295,7 @@ deallocate(a4,a5,a6)
 !Calculate nabla^2 \phi^3
 a1f=phi**(3.0d0)
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 call dz(a1,a2)
 call dz(a2,a3)
@@ -349,8 +349,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 allocate(phinx(nx,fpz,fpy))
 phinx=a1f
 
@@ -372,8 +372,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 allocate(phiny(nx,fpz,fpy))
 phiny=a1f
 
@@ -388,8 +388,8 @@ enddo
 ! w*(d phi /dz)
 call dz(phic,a1)
 
-call spectral_to_phys(wc,w,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(wc,w,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 allocate(phinz(nx,fpz,fpy))
 phinz=a1f
 
@@ -401,7 +401,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(convf,a1,1)
+call phys_to_spectral(convf,a1,1,0)
 deallocate(convf)
 ! sum all the convective terms to sphi
 sphi=sphi-a1
@@ -409,7 +409,7 @@ sphi=sphi-a1
 ! computing 1/Pe nabla^2 phi^3
 a1f=phi**(3d0)
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 allocate(a2(spx,nz,spy,2))
 allocate(a3(spx,nz,spy,2))
@@ -458,9 +458,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a1,a4f,1)
-call spectral_to_phys(a2,a5f,1)
-call spectral_to_phys(a3,a6f,1)
+call spectral_to_phys(a1,a4f,1,0)
+call spectral_to_phys(a2,a5f,1,0)
+call spectral_to_phys(a3,a6f,1,0)
 
 a1f=1d0-phi**(2d0)
 
@@ -489,9 +489,9 @@ enddo
 
 deallocate(a1f,phinx,phiny,phinz)
 
-call phys_to_spectral(a4f,a1,1)
-call phys_to_spectral(a5f,a2,1)
-call phys_to_spectral(a6f,a3,1)
+call phys_to_spectral(a4f,a1,1,0)
+call phys_to_spectral(a5f,a2,1,0)
+call phys_to_spectral(a6f,a3,1,0)
 
 ! COMPUITING THE DIVERGENCE OF THE CORRECTION
 allocate(a4(spx,nz,spy,2))
@@ -556,8 +556,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 allocate(convf(nx,fpz,fpy))
 
@@ -580,8 +580,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -597,8 +597,8 @@ phiny=a1f
 ! w*(d phi /dz)
 call dz(phic,a1)
 
-call spectral_to_phys(wc,w,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(wc,w,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -611,7 +611,7 @@ enddo
 allocate(phinz(nx,fpz,fpy))
 phinz=a1f
 
-call phys_to_spectral(convf,a1,1)
+call phys_to_spectral(convf,a1,1,0)
 
 deallocate(convf)
 ! sum all the convective terms to sphi
@@ -651,9 +651,9 @@ deallocate(phinx,phiny,phinz)
 allocate(a2(spx,nz,spy,2))
 allocate(a3(spx,nz,spy,2))
 
-call phys_to_spectral(a4f,a1,1)
-call phys_to_spectral(a5f,a2,1)
-call phys_to_spectral(a6f,a3,1)
+call phys_to_spectral(a4f,a1,1,0)
+call phys_to_spectral(a5f,a2,1,0)
+call phys_to_spectral(a6f,a3,1,0)
 
 deallocate(a4f,a5f,a6f)
 
@@ -691,7 +691,7 @@ enddo
 nabc=(lamphi/pe)*nabc-(lamphi/(sqrt(2d0)*ch*pe))*(a4+a5+a6)
 deallocate(a4,a5,a6)
 allocate(nabcf(nx,fpz,fpy))
-call spectral_to_phys(nabc,nabcf,1)
+call spectral_to_phys(nabc,nabcf,1,0)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -699,7 +699,7 @@ do j=1,fpy
     enddo
   enddo
 enddo
-call phys_to_spectral(nabcf,nabc,1)
+call phys_to_spectral(nabcf,nabc,1,0)
 deallocate(nabcf)
 
 sphi=sphi+nabc
@@ -708,7 +708,7 @@ deallocate(nabc)
 !Calculate nabla^2 \phi^3
 a1f=phi**(3.0d0)
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 call dz(a1,a2)
 call dz(a2,a3)
@@ -760,8 +760,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 allocate(convf(nx,fpz,fpy))
 
@@ -784,8 +784,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -801,8 +801,8 @@ phiny=a1f
 ! w*(d phi /dz)
 call dz(phic,a1)
 
-call spectral_to_phys(wc,w,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(wc,w,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -815,7 +815,7 @@ enddo
 allocate(phinz(nx,fpz,fpy))
 phinz=a1f
 
-call phys_to_spectral(convf,a1,1)
+call phys_to_spectral(convf,a1,1,0)
 
 deallocate(convf)
 ! sum all the convective terms to sphi
@@ -825,7 +825,7 @@ sphi=sphi-a1
 ! calculate nabla^2 phi^3
 a1f=phi**(3.0d0)
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 allocate(a2(spx,nz,spy,2))
 allocate(a3(spx,nz,spy,2))
@@ -877,9 +877,9 @@ deallocate(phinx,phiny,phinz,a1f)
 allocate(a2(spx,nz,spy,2))
 allocate(a3(spx,nz,spy,2))
 
-call phys_to_spectral(a4f,a1,1)
-call phys_to_spectral(a5f,a2,1)
-call phys_to_spectral(a6f,a3,1)
+call phys_to_spectral(a4f,a1,1,0)
+call phys_to_spectral(a5f,a2,1,0)
+call phys_to_spectral(a6f,a3,1,0)
 
 deallocate(a4f,a5f,a6f)
 
@@ -944,8 +944,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 allocate(phinx(nx,fpz,fpy))
 phinx=a1f
 
@@ -967,8 +967,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 allocate(phiny(nx,fpz,fpy))
 phiny=a1f
 
@@ -983,8 +983,8 @@ enddo
 ! w*(d phi /dz)
 call dz(phic,a1)
 
-call spectral_to_phys(wc,w,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(wc,w,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 allocate(phinz(nx,fpz,fpy))
 phinz=a1f
 
@@ -996,7 +996,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(convf,a1,1)
+call phys_to_spectral(convf,a1,1,0)
 deallocate(convf)
 ! sum all the convective terms to sphi
 sphi=sphi-a1
@@ -1004,7 +1004,7 @@ sphi=sphi-a1
 ! computing 1/Pe nabla^2 phi^3
 a1f=phi**(3d0)
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 allocate(a2(spx,nz,spy,2))
 allocate(a3(spx,nz,spy,2))
@@ -1053,9 +1053,9 @@ allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-call spectral_to_phys(a1,a4f,1)
-call spectral_to_phys(a2,a5f,1)
-call spectral_to_phys(a3,a6f,1)
+call spectral_to_phys(a1,a4f,1,0)
+call spectral_to_phys(a2,a5f,1,0)
+call spectral_to_phys(a3,a6f,1,0)
 
 a1f=1d0-phi**(2d0)
 
@@ -1081,9 +1081,9 @@ enddo
 
 deallocate(a1f,phinx,phiny,phinz)
 
-call phys_to_spectral(a4f,a1,1)
-call phys_to_spectral(a5f,a2,1)
-call phys_to_spectral(a6f,a3,1)
+call phys_to_spectral(a4f,a1,1,0)
+call phys_to_spectral(a5f,a2,1,0)
+call phys_to_spectral(a6f,a3,1,0)
 
 ! COMPUITING THE DIVERGENCE OF THE CORRECTION
 allocate(a4(spx,nz,spy,2))

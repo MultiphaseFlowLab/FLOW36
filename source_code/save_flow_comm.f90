@@ -23,17 +23,17 @@ character(len=5) :: namevar
  ! save fields at end of timestep according to ndump value
  if(mod(i,ndump).eq.0) then
   if(rank.eq.0) write(*,*) 'saving solution in physical space'
-  call spectral_to_phys(uc,u,0)
+  call spectral_to_phys(uc,u,0,0)
   namevar='u'
   call write_output(u,i,namevar)
-  call spectral_to_phys(vc,v,0)
+  call spectral_to_phys(vc,v,0,0)
   namevar='v'
   call write_output(v,i,namevar)
-  call spectral_to_phys(wc,w,0)
+  call spectral_to_phys(wc,w,0,0)
   namevar='w'
   call write_output(w,i,namevar)
 #if phiflag == 1
-   call spectral_to_phys(phic,phi,0)
+   call spectral_to_phys(phic,phi,0,0)
    namevar='phi'
    call write_output(phi,i,namevar)
 #if psiflag == 1
@@ -43,7 +43,7 @@ character(len=5) :: namevar
 #endif
 #endif
 #if tempflag == 1
-  call spectral_to_phys(thetac,theta,0)
+  call spectral_to_phys(thetac,theta,0,0)
   namevar='T'
   call write_output(theta,i,namevar)
 #endif
@@ -107,17 +107,17 @@ character(len=5) :: namevar
  ! save fields at end of timestep according to ndump value
  if(mod(i,ndump).ne.0) then
   if(rank.eq.0) write(*,*) 'Writing final fields in physical space'
-  call spectral_to_phys(uc,u,0)
+  call spectral_to_phys(uc,u,0,0)
   namevar='u'
   call write_output(u,i,namevar)
-  call spectral_to_phys(vc,v,0)
+  call spectral_to_phys(vc,v,0,0)
   namevar='v'
   call write_output(v,i,namevar)
-  call spectral_to_phys(wc,w,0)
+  call spectral_to_phys(wc,w,0,0)
   namevar='w'
   call write_output(w,i,namevar)
 #if phiflag == 1
-   call spectral_to_phys(phic,phi,0)
+   call spectral_to_phys(phic,phi,0,0)
    namevar='phi'
    call write_output(phi,i,namevar)
 #if psiflag == 1
@@ -127,7 +127,7 @@ character(len=5) :: namevar
 #endif
 #endif
 #if tempflag == 1
-  call spectral_to_phys(thetac,theta,0)
+  call spectral_to_phys(thetac,theta,0,0)
   namevar='T'
   call write_output(theta,i,namevar)
 #endif

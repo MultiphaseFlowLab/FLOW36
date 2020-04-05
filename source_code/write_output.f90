@@ -516,23 +516,23 @@ if(rank.lt.flow_comm_lim)then
   call write_output_recovery_s(thetac,'Tc   ')
 #endif
 #elif spectral_flag == 0
-  call spectral_to_phys(uc,u,0)
-  call spectral_to_phys(vc,v,0)
-  call spectral_to_phys(wc,w,0)
+  call spectral_to_phys(uc,u,0,0)
+  call spectral_to_phys(vc,v,0,0)
+  call spectral_to_phys(wc,w,0,0)
   call write_output_recovery(u,'u    ')
   call write_output_recovery(v,'v    ')
   call write_output_recovery(w,'w    ')
 #if phiflag == 1
-  call spectral_to_phys(phic,phi,0)
+  call spectral_to_phys(phic,phi,0,0)
   call write_output_recovery(phi,'phi  ')
 #if psiflag == 1
   call fine2coarse(psic_fg,psic)
-  call spectral_to_phys(psic,psi,0)
+  call spectral_to_phys(psic,psi,0,0)
   call write_output_recovery_fg(psi_fg,'psi  ')
 #endif
 #endif
 #if tempflag == 1
-  call spectral_to_phys(thetac,theta,0)
+  call spectral_to_phys(thetac,theta,0,0)
   call write_output_recovery(theta,'T    ')
 #endif
 #endif

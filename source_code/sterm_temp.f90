@@ -27,8 +27,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(uc,u,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(uc,u,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -39,7 +39,7 @@ do j=1,fpy
 enddo
 
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 ! sum -u*(d theta /dx) to stheta
 stheta=-a1
@@ -53,8 +53,8 @@ do j=1,spy
   enddo
 enddo
 
-call spectral_to_phys(vc,v,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(vc,v,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -64,7 +64,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 ! sum -v*(d theta /dy) to stheta
 stheta=stheta-a1
@@ -73,8 +73,8 @@ stheta=stheta-a1
 
 call dz(thetac,a1)
 
-call spectral_to_phys(wc,w,1)
-call spectral_to_phys(a1,a1f,1)
+call spectral_to_phys(wc,w,1,0)
+call spectral_to_phys(a1,a1f,1,0)
 
 do j=1,fpy
   do k=1,fpz
@@ -84,7 +84,7 @@ do j=1,fpy
   enddo
 enddo
 
-call phys_to_spectral(a1f,a1,1)
+call phys_to_spectral(a1f,a1,1,0)
 
 ! sum -w*(d theta /dz) to stheta
 stheta=stheta-a1

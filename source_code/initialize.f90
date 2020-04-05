@@ -53,8 +53,8 @@ allocate(sgradpy(spx,nz,spy,2))
 fgradpx=gradpx
 fgradpy=gradpy
 
-call phys_to_spectral(fgradpx,sgradpx,0)
-call phys_to_spectral(fgradpy,sgradpy,0)
+call phys_to_spectral(fgradpx,sgradpx,0,0)
+call phys_to_spectral(fgradpy,sgradpy,0,0)
 
 
 ! declarations of differents initial conditions for velocity
@@ -64,9 +64,9 @@ if(in_cond.eq.0)then
   v=0.0d0
   w=0.0d0
   ! transform physical variable to spectral space
-  call phys_to_spectral(u,uc,0)
-  call phys_to_spectral(v,vc,0)
-  call phys_to_spectral(w,wc,0)
+  call phys_to_spectral(u,uc,0,0)
+  call phys_to_spectral(v,vc,0,0)
+  call phys_to_spectral(w,wc,0,0)
 elseif(in_cond.eq.1)then
   if(rank.eq.0) write(*,*) 'Initializing laminar Poiseuille flow in x direction'
   do k=1,fpz
@@ -75,9 +75,9 @@ elseif(in_cond.eq.1)then
   v=0.0d0
   w=0.0d0
   ! transform physical variable to spectral space
-  call phys_to_spectral(u,uc,0)
-  call phys_to_spectral(v,vc,0)
-  call phys_to_spectral(w,wc,0)
+  call phys_to_spectral(u,uc,0,0)
+  call phys_to_spectral(v,vc,0,0)
+  call phys_to_spectral(w,wc,0,0)
 elseif(in_cond.eq.2)then
   if(rank.eq.0) write(*,*) 'Initializing laminar Poiseuille flow in y direction'
   do k=1,fpz
@@ -86,9 +86,9 @@ elseif(in_cond.eq.2)then
   u=0.0d0
   w=0.0d0
   ! transform physical variable to spectral space
-  call phys_to_spectral(u,uc,0)
-  call phys_to_spectral(v,vc,0)
-  call phys_to_spectral(w,wc,0)
+  call phys_to_spectral(u,uc,0,0)
+  call phys_to_spectral(v,vc,0,0)
+  call phys_to_spectral(w,wc,0,0)
 elseif(in_cond.eq.3)then
   if(rank.eq.0) write(*,*) 'Initializing velocity fields from data file'
   write(time,'(I8.8)') nt_restart
@@ -103,17 +103,17 @@ elseif(in_cond.eq.3)then
     call read_fields(v,nt_restart,'v    ',restart)
     call read_fields(w,nt_restart,'w    ',restart)
     ! transform physical variable to spectral space
-    call phys_to_spectral(u,uc,0)
-    call phys_to_spectral(v,vc,0)
-    call phys_to_spectral(w,wc,0)
+    call phys_to_spectral(u,uc,0,0)
+    call phys_to_spectral(v,vc,0,0)
+    call phys_to_spectral(w,wc,0,0)
   elseif(checks.eqv..true.)then
     call read_fields_s(uc,nt_restart,'uc   ',restart)
     call read_fields_s(vc,nt_restart,'vc   ',restart)
     call read_fields_s(wc,nt_restart,'wc   ',restart)
     ! transform to physical space
-    call spectral_to_phys(uc,u,0)
-    call spectral_to_phys(vc,v,0)
-    call spectral_to_phys(wc,w,0)
+    call spectral_to_phys(uc,u,0,0)
+    call spectral_to_phys(vc,v,0,0)
+    call spectral_to_phys(wc,w,0,0)
   else
     if(rank.eq.0) write(*,'(1x,a,a,a)') 'Missing flow input files ',time,' , stopping simulation'
     call exit(0)
@@ -124,9 +124,9 @@ elseif(in_cond.eq.4)then
   call read_fields_serial(v,nt_restart,'v    ',restart)
   call read_fields_serial(w,nt_restart,'w    ',restart)
   ! transform physical variable to spectral space
-  call phys_to_spectral(u,uc,0)
-  call phys_to_spectral(v,vc,0)
-  call phys_to_spectral(w,wc,0)
+  call phys_to_spectral(u,uc,0,0)
+  call phys_to_spectral(v,vc,0,0)
+  call phys_to_spectral(w,wc,0,0)
 elseif(in_cond.eq.5)then
   if(rank.eq.0) write(*,*) 'Initializing shear flow y direction'
   u=0.0d0
@@ -135,9 +135,9 @@ elseif(in_cond.eq.5)then
    v(:,k,:)=z(fstart(2)+k)
   enddo
   ! transform physical variable to spectral space
-  call phys_to_spectral(u,uc,0)
-  call phys_to_spectral(v,vc,0)
-  call phys_to_spectral(w,wc,0)
+  call phys_to_spectral(u,uc,0,0)
+  call phys_to_spectral(v,vc,0,0)
+  call phys_to_spectral(w,wc,0,0)
 elseif(in_cond.eq.6)then
   if(rank.eq.0) write(*,*) 'Initializing shear flow x direction'
   v=0.0d0
@@ -146,9 +146,9 @@ elseif(in_cond.eq.6)then
    u(:,k,:)=z(fstart(2)+k)
   enddo
   ! transform physical variable to spectral space
-  call phys_to_spectral(u,uc,0)
-  call phys_to_spectral(v,vc,0)
-  call phys_to_spectral(w,wc,0)
+  call phys_to_spectral(u,uc,0,0)
+  call phys_to_spectral(v,vc,0,0)
+  call phys_to_spectral(w,wc,0,0)
 else
   if(rank.eq.0) write(*,*) 'Dafuq? Check in_cond input value'
   stop
