@@ -11,6 +11,7 @@
 # 9 : VSC4
 #10 : Joliot Curie - Irene (KNL)
 #11 : Davide (CINECA)
+#12 : HAWK (HLRS - AMD Epyc Rome)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -151,6 +152,18 @@ cp ./Davide/makefile ./makefile
 cp ./Davide/go.sh ./go.sh
 
 savespectral="0"
+elif [ "$machine" == "12" ]; then
+echo "=                               HAWK Epyc Rome                               ="
+module purge
+# load modules
+module load gcc
+module load openmpi
+# check aocl for AMD-optimized FFTW, see https://kb.hlrs.de/platforms/index.php/Libraries(Hawk)
+module load fftw
+cp ./HAWK/makefile ./makefile
+cp ./HAWK/go.sh ./go.sh
+
+savespectral="0"
 fi
 echo "=============================================================================="
 echo ""
@@ -165,13 +178,13 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="5" # integer
-iy="5" # integer
+ix="6" # integer
+iy="6" # integer
 iz="6" # integer
 
 # dual grid for surfactant, expansion factors:
-exp_x="1" # integer, (2**ix)*exp_x
-exp_y="1" # integer, (2**iy)*exp_y
+exp_x="2" # integer, (2**ix)*exp_x
+exp_y="2" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
@@ -196,10 +209,10 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="1" # integer
+incond="0" # integer
 
 # Reynolds number
-Re="100." # real (double)
+Re="10.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -209,7 +222,7 @@ gradpx="-1.0" # real (double)
 gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
-cpi_flag="1"
+cpi_flag="0"
 repow="100.0" #B*Re_pi - re used to control the pressure gradient...
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
@@ -220,7 +233,7 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="40000" #integer (up to 8 digits)
+nend="10" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
 dump="100" # integer
@@ -548,7 +561,9 @@ rm -r ./set_run/go.sh
 rm -r ./set_run/sc_compiled
 rm -r ./set_run/paraview_output_fg
 rm -r ./set_run/stats_calc
-rm -r ./set_run/nohup.out
+rm -r ./set_run/*.out
+rm -r ./set_run/*.err
+rm -r ./set_run/*.log
 if [ "$restart" == "0" ]; then
  rm -r ./set_run/initial_fields/*
  rm -r ./set_run/results
@@ -1061,7 +1076,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" ||"$machine" == "11" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90

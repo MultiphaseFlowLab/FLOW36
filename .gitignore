@@ -1,5 +1,6 @@
 set_run/
 initial_fields/
 /makefile
+/go.sh
 grid_check/grid_check
 paraview_output/*.mod
