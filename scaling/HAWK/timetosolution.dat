@@ -1,4 +1,4 @@
-         N_y CPU         N_z CPU         N_tasks     512**3 HT 1     512**3 HT 2    1024**3 HT 1  times given in seconds
+         N_y CPU         N_z CPU         N_tasks     512**3 HT 1     512**3 HT 2    1024**3 HT 1  times given in seconds for flow, phi, psi (x2x2x1)
                8               8              64     7.15476e+01     7.15758e+01     4.96259e+02 
                8              16             128     5.23228e+01     5.22678e+01     2.51514e+02 
               16              16             256     2.36703e+01     3.83749e+01     1.41919e+02 
