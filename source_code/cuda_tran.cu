@@ -10,11 +10,43 @@
 #define TILE_DIM   32
 #define BLOCK_ROWS 8
 
-
-void __global__ k_alias_1st(double *a, double *b, int al_low, int nx, int dim)
+void __global__ k_alias_1st_cmp(cufftDoubleComplex *a, int al_low, int nx, int dim)
 //-------------------------------------------------------------------------------------
 //
 //     perform aliasing on cufftDoubleComplex velocity array in first dimension
+//
+//     Copyright Multiphase Flow Laboratory, University of Udine
+//     authors - D. Di Giusto, March 2020
+//
+//-------------------------------------------------------------------------------------
+{
+  int index = blockIdx.x * blockDim.x + threadIdx.x;   //absolute thread index
+  int check = al_low + index/(nx-al_low)*nx + index % (nx-al_low);
+
+  //each thread accesses only the values to be modified
+  if (check < dim)
+  {
+    a[check].x = 0.0e0;
+    a[check].y = 0.0e0;
+  }
+
+}//end kernel k_cmp_alias_small
+//*************************************************************************************
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//*************************************************************************************
+void __global__ k_alias_1st(double *a, double *b, int al_low, int nx, int dim)
+//-------------------------------------------------------------------------------------
+//
+//     perform aliasing on double velocity arrays in first dimension
 //
 //     Copyright Multiphase Flow Laboratory, University of Udine
 //     authors - D. Di Giusto, March 2020

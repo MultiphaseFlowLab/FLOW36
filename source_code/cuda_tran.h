@@ -1,6 +1,8 @@
 #ifndef CUDA_TRAN
 #define CUDA_TRAN
 
+void __global__ k_alias_1st_cmp(cufftDoubleComplex *a, int al_low, int nx, int dim);
+
 void __global__ k_alias_1st(double *a, double *b, int al_low, int nx, int dim);
 
 __global__ void k_merge_cmp(cufftDoubleComplex *out, double *re, double *im, int size);

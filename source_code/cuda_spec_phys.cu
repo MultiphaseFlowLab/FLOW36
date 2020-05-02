@@ -99,11 +99,7 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
   if (aliasing == 1)
   {
 	  int ali = floor(2.0*double(nz)/3.0); //arrays start from zero
-
 	  k_alias_1st<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopr, d_uopc, ali, nz, spx*spy*nz);//evaluate a merging of the two kernels
-
-//	  k_alias_small<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopr, ali, nz);
-//      k_alias_small<<<((nz-ali)*spx*spy+dblk-1)/dblk,dblk>>>(d_uopc, ali, nz);
       ok = cudaGetLastError();
       if (ok!=0) printf("===============>error in call kernel k_alias_1st not called!! \n");
   }
@@ -118,26 +114,18 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
 
 
 
-
   //make input for cufftD2Z even symmetrical ##format OUTPUT,INPUT,sizes
   k_mirr_bigtime<<<(nz*spx*spy+dblk-1)/dblk,dblk>>>(ur_d, uc_d, d_uopr,  d_uopc, nz, 2*(nz-1), spx*spy*nz);
-
-//  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(ur_d, d_uopr, nz, 2*(nz-1));
-//  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(uc_d,  d_uopc, nz, 2*(nz-1));
   ok = cudaGetLastError();
   if (ok!=0) printf("===============>error in call kernel k_mirr_bigtime not called!! \n");
 
 
 
-
   //execute the inverse Chebyshev DCT
-  cufftExecD2Z(plan_z, ur_d, d_batch);
+  cufftExecD2Z(plan_z, ur_d,  d_batch);
   cufftExecD2Z(plan_z, uc_d,  d_batch_c);
   ok = cudaGetLastError();
   if(ok!=0) printf("===============>error in call cufftD2Z not called!! \n");
-
-
-
 
 
   //-------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -165,7 +153,6 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
 
 
 
-
   //merge the two outputs of the Chebyshev DFT and normalize
   double norm_fac = 0.5e0;
   k_sep_cmp<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch,   ur_d, norm_fac, nz*spx*spy);
@@ -174,11 +161,8 @@ extern "C" void h_chebyshev_back(double *in_r, double *in_c, double *out_r, doub
   if(ok!=0) printf("===============>error in call kernel k_sec_copy not called!! \n");
 
 
-
   //transpose back from zxy to xzy
   dim3 tgrid2(nby,nbx,spy);
-//  k_cmp_t102<<<tgrid2,tBlock>>>(d_batch_c, d_batch, nz, spx, spy);//#OUTPUT,INPUT,SIZES
-
   k_t102<<<tgrid2,tBlock>>>(d_uopr,ur_d,nz,spx,spy);
   k_t102<<<tgrid2,tBlock>>>(d_uopc,uc_d,nz,spx,spy);
   ok = cudaGetLastError();
@@ -318,10 +302,10 @@ extern "C" void h_fftx_back(double *in_r, double *in_c, double *out_r, int alias
   dblk = 128;
 
   //copy to device
-  ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*(nx/2+1)*npy*npz,cudaMemcpyHostToDevice);
-  ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*(nx/2+1)*npy*npz,cudaMemcpyHostToDevice);
+  ok = ok + cudaMemcpy(ur_d,in_r,sizeof(double)*(nx/2+1)*fpy*fpz,cudaMemcpyHostToDevice);
+  ok = ok + cudaMemcpy(uc_d,in_c,sizeof(double)*(nx/2+1)*fpy*fpz,cudaMemcpyHostToDevice);
   if (ok!=0) printf("Error in copying to device!! fftx back\n");
-  k_merge_cmp<<<((nx/2+1)*npy*npz+dblk-1)/dblk,dblk>>>(d_batch,ur_d,uc_d,(nx/2+1)*npy*npz);
+  k_merge_cmp<<<((nx/2+1)*fpy*fpz+dblk-1)/dblk,dblk>>>(d_batch, ur_d, uc_d, (nx/2+1)*fpy*fpz);
   if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! ffty_back\n");
 
 //  ok = ok + cudaMemcpy2D(d_batch,       2 * sizeof(d_batch), in_r, sizeof(in_r), sizeof(in_r), spx*nz*spy, cudaMemcpyHostToDevice);
@@ -331,10 +315,10 @@ extern "C" void h_fftx_back(double *in_r, double *in_c, double *out_r, int alias
   if (aliasing == 1)
   {
     int al_low = floor(2.0/3.0*(nx/2+1)); //arrays start from zero
-	int al_up  = nx/2;//corresponds to nz-1, alias the last position of the c array to be set to zero
-	k_cmp_alias<<<((al_up-al_low+1)*npy*npz+dblk-1)/dblk,dblk>>>(d_batch, al_low, al_up-al_low+1, (nx/2+1), (nx/2+1)*npy*npz);
+
+	k_alias_1st_cmp<<<(((nx/2+1)-al_low)*fpy*fpz+dblk-1)/dblk,dblk>>>(d_batch, al_low, (nx/2+1), (nx/2+1)*fpy*fpz);
 	ok = cudaGetLastError();
-    if (ok!=0) printf("===============>error in second call kernel k_cmp_alias_y not called!! \n");
+    if (ok!=0) printf("===============>error in second call kernel k_alias_1st not called!! \n");
   }
 
 

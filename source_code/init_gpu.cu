@@ -1,8 +1,5 @@
 #include <cuda.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include <cufft.h>
 #include <complex.h>
 #include <mpi.h>
@@ -107,19 +104,9 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   //double arrays
   ok = ok + cudaMalloc((void **)&ur_d,    sizeof(double)*d_dim);
   ok = ok + cudaMalloc((void **)&uc_d,    sizeof(double)*d_dim);
-//  ok = ok + cudaMalloc((void **)&d_uout,  sizeof(double)*nx*spy*nz);
 
   ok = ok + cudaMalloc((void **)&d_uopr,  sizeof(double)*d_dim);
   ok = ok + cudaMalloc((void **)&d_uopc,  sizeof(double)*d_dim);
-//  ok = ok + cudaMalloc((void **)&d_uext,  sizeof(double)*d_dim);
-
-//  ok = ok + cudaMalloc((void **)&vr_d,    sizeof(double)*spx*nz*spy);
-//  ok = ok + cudaMalloc((void **)&vc_d,    sizeof(double)*spx*nz*spy);
-//  ok = ok + cudaMalloc((void **)&d_vout,  sizeof(double)*nx*spy*nz);
-
-//  ok = ok + cudaMalloc((void **)&wr_d,    sizeof(double)*spx*nz*spy);
-//  ok = ok + cudaMalloc((void **)&wc_d,    sizeof(double)*spx*nz*spy);
-//  ok = ok + cudaMalloc((void **)&d_wout,  sizeof(double)*nx*spy*nz);
   if (ok!=0) printf ("Allocation of double arrays failed\n");
 
   //allocate output arrays for Chebyshev inverse DCT
@@ -127,15 +114,7 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   ok = ok + cudaMalloc((void **)&d_batch_c,sizeof(cufftDoubleComplex)*d_dim);
   if (ok!=0) printf("Output arrays for Chebyshev not allocated correctly!!\n");
 
-  //mixed products
-//  ok = ok + cudaMalloc((void **)&d_uu,   sizeof(double)*nx*nz*spy);
-//  ok = ok + cudaMalloc((void **)&d_uuc,  sizeof(cufftDoubleComplex)*nz*spx*spy);
-//  ok = ok + cudaMalloc((void **)&d_uuc2,  sizeof(cufftDoubleComplex)*nz*spx*spy);
 
-  if (ok!=0) printf("Failed allocation of mixed product arrays!\n");
-
-
-  //
   cudaEvent_t start, stop;
   cudaEventCreate(&start);
   cudaEventCreate(&stop);
@@ -145,9 +124,8 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   //create plans for cufft transformations
   cufftPlan1d(&plan_z,      (nz-1)*2,  CUFFT_D2Z,  spx*spy);//OK both ways
   cufftPlan1d(&plan_y,      ny,        CUFFT_Z2Z,  spx*npz);//never tested
-  cufftPlan1d(&plan_x,      (nx/2+1),  CUFFT_Z2D,  npy*npz);//OK so npz=fpz and npy=fpy
+  cufftPlan1d(&plan_x,      nx,  CUFFT_Z2D,  fpy*fpz);//OK so npz=fpz and npy=fpy
   cufftPlan1d(&plan_x_fwd,  nx,        CUFFT_D2Z,  fpy*fpz);//OK so ...
-//  cufftPlan1d(&plan_y_fwd, spy, CUFFT_Z2Z, spx*nz);
 
 
 
@@ -170,7 +148,7 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   cudaEventSynchronize(stop);
   float milliseconds = 0;
   cudaEventElapsedTime(&milliseconds, start, stop);
-  printf("Time elapsed in cufft planes creation: %f milliseconds\n",milliseconds);
+  if(idGPU == 0) printf("Time elapsed in cufft planes creation: %f milliseconds\n",milliseconds);
 
 
 
