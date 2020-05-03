@@ -12,7 +12,13 @@
 #10 : Joliot Curie - Irene (KNL)
 #11 : Davide (CINECA)
 #12 : GPU local
+#13 : Piz Daint (CSCS)
 machine="12"
+#################################################################################################
+#perform FFTs and DCT on GPU (1) or on CPU (0), implemented in CUDA C
+#multi-GPU WARNING: validated for 1 timestep, 2x2 MPI tasks on local machine
+GPU_RUN="1"
+#################################################################################################
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -159,6 +165,21 @@ cp ./GPU_local/go.sh ./go.sh
 #makefile is copied later
 savespectral="0"
 
+
+elif [ "$machine" == "13" ]; then
+echo "=                                 Piz Daint                                  ="
+module load daint-gpu
+module load cudatoolkit
+module swap PrgEnv-cray/6.0.5 PrgEnv-gnu
+module load fftw
+cp ./Piz_Daint/go.sh ./go.sh
+  if [ "$GPU_RUN" == "1" ]; then
+  cp ./Piz_Daint/Makefile_GPU ./makefile
+  else
+  cp ./Piz_Daint/makefile ./makefile
+  fi
+savespectral="0"
+
 fi
 echo "=============================================================================="
 echo ""
@@ -189,10 +210,6 @@ NZCPU="1" # integer
 multinode="0" # integer
 # number of MPI processes per node
 nodesize="1" # integer
-
-#perform FFTs and DCT on GPU (1) or on CPU (0), implemented in CUDA C
-#multi-GPU WARNING: NOT TESTED!!! The CUDA code has been tested only on single-GPU, local machine
-GPU_RUN="1"
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
 restart="0" # integer
@@ -814,6 +831,10 @@ cp ./source_code/cuda_phys_spec.cu ./set_run/sc_compiled/
 cp ./source_code/cuda_phys_spec.h  ./set_run/sc_compiled/
 cp ./source_code/cuda_tran.cu ./set_run/sc_compiled/
 cp ./source_code/cuda_tran.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_spec_phys_fg.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_spec_phys_fg.h  ./set_run/sc_compiled/
+cp ./source_code/cuda_phys_spec_fg.cu ./set_run/sc_compiled/
+cp ./source_code/cuda_phys_spec_fg.h  ./set_run/sc_compiled/
 
 cp ./source_code/cuda_variables.h ./set_run/sc_compiled/
 cp ./source_code/interfaccia.f90  ./set_run/sc_compiled/
@@ -1090,7 +1111,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" ||"$machine" == "11" || "$machine" == "12" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" ||"$machine" == "11" || "$machine" == "12" || "$machine" == "13" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1108,7 +1129,19 @@ sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/phys_to_spectral.f90
 sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/spectral_to_phys.f90
 sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_bwd.f90
 sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_fwd.f90
-
+#PHIFLAG to allocate cuFFTs_fg memory spaces on GPU
+if [ "$GPU_RUN" == "1" ]; then
+  sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/init_gpu.cu
+  sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/init_gpu.cu
+  sed -i  "s/expansionx/$exp_x/g" ./set_run/sc_compiled/init_gpu.cu
+  sed -i  "s/expansiony/$exp_y/g" ./set_run/sc_compiled/init_gpu.cu
+  sed -i  "s/expansionz/$exp_z/g" ./set_run/sc_compiled/init_gpu.cu
+  sed -i  "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/free_gpu.cu
+  sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/free_gpu.cu
+  sed -i  "s/expansionx/$exp_x/g" ./set_run/sc_compiled/free_gpu.cu
+  sed -i  "s/expansiony/$exp_y/g" ./set_run/sc_compiled/free_gpu.cu
+  sed -i  "s/expansionz/$exp_z/g" ./set_run/sc_compiled/free_gpu.cu
+fi
 
 # only for intel compiler (needed for USE MPI_F08
 #source /opt/intel/compilers_and_libraries_2017/linux/bin/compilervars.sh intel64

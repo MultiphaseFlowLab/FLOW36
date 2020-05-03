@@ -15,8 +15,8 @@ double precision :: b1s(spxpsi,npsiz,spypsi,2)
 integer :: i,j,k
 
 call coarse2fine(phic,phic_fg)
-call spectral_to_phys_fg(phic_fg,phi_fg,1)
-call spectral_to_phys_fg(psic_fg,psi_fg,1)
+call spectral_to_phys_fg(phic_fg,phi_fg,1,1)
+call spectral_to_phys_fg(psic_fg,psi_fg,1,1)
 
 
 do j=1,fpypsi
@@ -46,7 +46,7 @@ do j=1,spypsi
   enddo
 enddo
 
-call spectral_to_phys_fg(spsi,fspsi,1)
+call spectral_to_phys_fg(spsi,fspsi,1,1)
 
 do j=1,fpypsi
   do k=1,fpzpsi
@@ -68,7 +68,7 @@ do j=1,spypsi
   enddo
 enddo
 
-call spectral_to_phys_fg(b1s,a1,1)   ! d phi/dx
+call spectral_to_phys_fg(b1s,a1,1,1)   ! d phi/dx
 
 b1s=0.0d0
 a4=0.0d0
@@ -81,7 +81,7 @@ do j=1,spypsi
   enddo
 enddo
 
-call spectral_to_phys_fg(b1s,a4,1)   ! d psi/dx
+call spectral_to_phys_fg(b1s,a4,1,1)   ! d psi/dx
 
 do j=1,fpypsi
   do k=1,fpzpsi
@@ -103,7 +103,7 @@ do j=1,spypsi
   enddo
 enddo
 
-call spectral_to_phys_fg(b1s,a1,1)   ! d phi/dy
+call spectral_to_phys_fg(b1s,a1,1,1)   ! d phi/dy
 
 b1s=0.0d0
 do j=1,spypsi
@@ -115,7 +115,7 @@ do j=1,spypsi
   enddo
 enddo
 
-call spectral_to_phys_fg(b1s,a4,1)   ! d psi/dy
+call spectral_to_phys_fg(b1s,a4,1,1)   ! d psi/dy
 
 do j=1,fpypsi
   do k=1,fpzpsi
@@ -129,11 +129,11 @@ enddo
 ! d phi/dz
 call dz_fg(phic_fg,b1s)
 
-call spectral_to_phys_fg(b1s,a1,1)   ! d phi/dz
+call spectral_to_phys_fg(b1s,a1,1,1)   ! d phi/dz
 
 call dz_fg(psic_fg,b1s)
 
-call spectral_to_phys_fg(b1s,a4,1)   ! d psi/dz
+call spectral_to_phys_fg(b1s,a4,1,1)   ! d psi/dz
 
 do j=1,fpypsi
   do k=1,fpzpsi
@@ -143,7 +143,7 @@ do j=1,fpypsi
   enddo
 enddo
 ! transform non-linear term to spectral space
-call phys_to_spectral_fg(fspsi,spsi,1)
+call phys_to_spectral_fg(fspsi,spsi,1,1)
 
 return
 end

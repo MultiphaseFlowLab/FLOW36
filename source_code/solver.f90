@@ -116,20 +116,20 @@ if(rank.lt.flow_comm_lim)then
  ! only if surfactant calculated on finer grid than phase field
 #if expx != 1 || expy != 1 || expz != 1
  ! for phase field calculation
- call spectral_to_phys(uc,u,1,0)
- call spectral_to_phys(vc,v,1,0)
- call spectral_to_phys(wc,w,1,0)
+ call spectral_to_phys(uc,u,1,1)
+ call spectral_to_phys(vc,v,1,1)
+ call spectral_to_phys(wc,w,1,1)
  ! for surfactant calculation
  call coarse2fine(uc,uc_fg)
- call spectral_to_phys_fg(uc_fg,u_fg,1)
+ call spectral_to_phys_fg(uc_fg,u_fg,1,1)
  call coarse2fine(vc,vc_fg)
- call spectral_to_phys_fg(vc_fg,v_fg,1)
+ call spectral_to_phys_fg(vc_fg,v_fg,1,1)
  call coarse2fine(wc,wc_fg)
- call spectral_to_phys_fg(wc_fg,w_fg,1)
+ call spectral_to_phys_fg(wc_fg,w_fg,1,1)
 #else
- call spectral_to_phys(uc,u,1,0)
- call spectral_to_phys(vc,v,1,0)
- call spectral_to_phys(wc,w,1,0)
+ call spectral_to_phys(uc,u,1,1)
+ call spectral_to_phys(vc,v,1,1)
+ call spectral_to_phys(wc,w,1,1)
  uc_fg=uc
  vc_fg=vc
  wc_fg=wc

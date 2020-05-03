@@ -37,7 +37,7 @@ character(len=5) :: namevar
    namevar='phi'
    call write_output(phi,i,namevar)
 #if psiflag == 1
-    call spectral_to_phys_fg(psic_fg,psi_fg,0)
+    call spectral_to_phys_fg(psic_fg,psi_fg,0,0)
     namevar='psi'
     call write_output_fg(psi_fg,i,namevar)
 #endif
@@ -121,7 +121,7 @@ character(len=5) :: namevar
    namevar='phi'
    call write_output(phi,i,namevar)
 #if psiflag == 1
-    call spectral_to_phys_fg(psic_fg,psi_fg,0)
+    call spectral_to_phys_fg(psic_fg,psi_fg,0,0)
     namevar='psi'
     call write_output_fg(psi_fg,i,namevar)
 #endif

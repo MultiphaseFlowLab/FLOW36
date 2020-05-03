@@ -37,7 +37,7 @@ call spectral_to_phys(phic,phi,1,0)
 
 ! calculate surface force
 call coarse2fine(phic,phic_fg)
-call spectral_to_phys_fg(phic_fg,phi_fg,1)
+call spectral_to_phys_fg(phic_fg,phi_fg,1,1)
 
 allocate(gradphix(spxpsi,npsiz,spypsi,2))
 allocate(gradphiy(spxpsi,npsiz,spypsi,2))
@@ -60,13 +60,13 @@ do j=1,spypsi
   enddo
 enddo
 
-call spectral_to_phys_fg(gradphix,fgradphix,1)
-call spectral_to_phys_fg(gradphiy,fgradphiy,1)
+call spectral_to_phys_fg(gradphix,fgradphix,1,1)
+call spectral_to_phys_fg(gradphiy,fgradphiy,1,1)
 
 ! z component
 call dz_fg(phic_fg,gradphiz)
 
-call spectral_to_phys_fg(gradphiz,fgradphiz,1)
+call spectral_to_phys_fg(gradphiz,fgradphiz,1,1)
 
 ! phi gradient in physical space in fgradphix,fgradphiy,fgradphiz
 
@@ -77,7 +77,7 @@ allocate(sigma(npsix,fpzpsi,fpypsi))
 sigma=1.0d0
 #elif psiflag == 1
 ! Langmuir EOS for surface tension
-call spectral_to_phys_fg(psic_fg,psi_fg,1)
+call spectral_to_phys_fg(psic_fg,psi_fg,1,1)
 sigma=1.0d0+el*log(1.0d0-psi_fg)
 ! check if sigma<0.5: avoid unphysical value of surface tension (easier way)
 sigma=max(sigma,0.5d0)
@@ -103,9 +103,9 @@ do j=1,fpypsi
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1,1)
+call phys_to_spectral_fg(a5f,gradphiy,1,1)
+call phys_to_spectral_fg(a6f,gradphiz,1,1)
 
 call dz_fg(gradphiz,a4)
 
@@ -131,9 +131,9 @@ do j=1,fpypsi
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1,1)
+call phys_to_spectral_fg(a5f,gradphiy,1,1)
+call phys_to_spectral_fg(a6f,gradphiz,1,1)
 
 call dz_fg(gradphiz,a5)
 
@@ -159,9 +159,9 @@ do j=1,fpypsi
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f,gradphix,1,1)
+call phys_to_spectral_fg(a5f,gradphiy,1,1)
+call phys_to_spectral_fg(a6f,gradphiz,1,1)
 
 deallocate(fgradphix)
 deallocate(fgradphiy)

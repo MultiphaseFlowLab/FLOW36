@@ -112,7 +112,7 @@ endif
     call ffty_bwd(u,u,spx,npz,ny,aliasing,0)
   endif
 #else
-call ffty_bwd(u,u,spx,npz,ny,aliasing)
+call ffty_bwd(u,u,spx,npz,ny,aliasing,0)
 !call ffty_bwd(u,u,spx,npz,ny,0,0)
 #endif
 
@@ -178,16 +178,21 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-subroutine spectral_to_phys_fg(uc,uout,aliasing)
+subroutine spectral_to_phys_fg(uc,uout,aliasing,insolv)
 
 use commondata
 use par_size
 use dual_grid
 use mpi
+#define GPU_RUN gpucompflag
+#if GPU_RUN == 1
+use interfaccia
+#endif
 
 integer :: dims(2)
 integer :: rx,ry,rz
 integer :: aliasing
+integer :: insolv
 
 double precision :: uc(spxpsi,npsiz,spypsi,2),uout(npsix,fpzpsi,fpypsi)
 double precision, allocatable :: u(:,:,:,:),wa(:,:,:,:)
@@ -203,8 +208,16 @@ dims(2)=nycpu
 
 allocate(u(spxpsi,npsiz,spypsi,2))
 u=uc
-call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
 
+#if GPU_RUN == 1
+  if (insolv == 1) then
+    call h_chebback_fg(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing)
+  else
+    call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
+  endif  
+#else
+call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2)    change parallelization x-y to x-z
@@ -268,7 +281,15 @@ endif
 ! 3)    ifft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing)
+#if GPU_RUN == 1
+  if (insolv == 1) then
+    call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing,insolv)
+  else
+	call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing,0)
+  endif
+#else
+call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing,0)
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to y-z
@@ -309,8 +330,15 @@ endif
 ! 5)    ifft x direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+#if GPU_RUN == 1
+  if (insolv == 1) then
+    call h_fftxback_fg(u(:,:,:,1),u(:,:,:,2),uout,aliasing)
+  else
+    call fftx_bwd_fg(u,uout,npsix,fpzpsi,fpypsi,aliasing)
+  endif  
+#else
 call fftx_bwd_fg(u,uout,npsix,fpzpsi,fpypsi,aliasing)
+#endif
 
 deallocate(u)
 

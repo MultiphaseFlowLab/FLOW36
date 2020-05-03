@@ -85,3 +85,5 @@ cuda_tran.o:		cuda_tran.cu		cuda_variables.h	cuda_tran.h
 cuda_phys_spec.o:	cuda_phys_spec.cu	cuda_variables.h	cuda_phys_spec.h	cuda_tran.h
 init_gpu.o:		init_gpu.cu		cuda_variables.h	init_gpu.h
 free_gpu.o:		free_gpu.cu		cuda_variables.h	free_gpu.h
+cuda_spec_phys_fg.o:	cuda_spec_phys_fg.cu	cuda_variables.h	cuda_spec_phys_fg.h	cuda_tran.h
+cuda_phys_spec_fg.o:	cuda_phys_spec_fg.cu	cuda_variables.h	cuda_phys_spec_fg.h	cuda_tran.h

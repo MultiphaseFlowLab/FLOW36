@@ -200,18 +200,21 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-subroutine phys_to_spectral_fg(u,uout,aliasing)
+subroutine phys_to_spectral_fg(u,uout,aliasing,insolv)
 
 use commondata
 use par_size
 use dual_grid
 use mpi
-
+#define GPU_RUN gpucompflag
+#if GPU_RUN == 1
+use interfaccia
+#endif
 
 integer :: dims(2)
 integer :: rx,ry,rz,nsx,ngsx
 integer :: ngx,ngy,ngz,npx,npy,npz
-integer :: aliasing
+integer :: aliasing, insolv
 
 double precision :: u(npsix,fpzpsi,fpypsi),uout(spxpsi,npsiz,spypsi,2)
 double precision, allocatable :: uc(:,:,:,:),wa(:,:,:,:)
@@ -248,9 +251,16 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(uc(npx,npz,npy,2))
-call fftx_fwd_fg(u,uc,npsix,npz,npy,aliasing)
-!call fftx_fwd(u,uc,nx,npz,npy,0)
 
+#if GPU_RUN == 1
+  if (insolv == 1) then
+    call h_fftxfwd_fg(u(:,:,:),uc(:,:,:,1),uc(:,:,:,2),aliasing)
+  else 
+    call fftx_fwd_fg(u,uc,npsix,npz,npy,aliasing)
+  endif	 
+#else
+  call fftx_fwd_fg(u,uc,npsix,npz,npy,aliasing)
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2)    change parallelization y-z to x-z
@@ -297,9 +307,15 @@ npx=nsx
 ! 3)    fft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing)
-!call ffty_fwd(uc,uc,nsx,npz,ny,0)
-
+#if GPU_RUN == 1
+  if (insolv == 1) then
+  	call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing,insolv)
+  else
+	call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing,0)
+  endif
+#else
+call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing,0)
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to x-y
@@ -336,8 +352,15 @@ rz=mod(npsiz,nzcpu)
 ! 5)    dct z direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+#if GPU_RUN == 1
+  if (insolv == 1) then
+    call h_chebfwd_fg(uc(:,:,:,1),uc(:,:,:,2),uout(:,:,:,1),uout(:,:,:,2),aliasing)
+  else
+    call dctz_fwd_fg(uc,uout,nsx,npsiz,npy,aliasing)
+  endif
+#else
 call dctz_fwd_fg(uc,uout,nsx,npsiz,npy,aliasing)
-
+#endif
 
 deallocate(uc)
 

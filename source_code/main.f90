@@ -14,6 +14,7 @@ use temperature
 use particle
 use wavenumber
 use comm_pattern
+use dual_grid
 #define GPU_RUN gpucompflag
 #if GPU_RUN == 1
 use interfaccia
@@ -235,7 +236,8 @@ endif
 
 !Initialize the GPU
 #if GPU_RUN == 1
-  call H_INITIALIZE_GPU(spx,nx,spx,nx/2+1,fpy,fpy,ny,spy,nz,fpz,fpz,flow_comm) !!check sizes
+  call H_INITIALIZE_GPU(spx,nx,spx,nx/2+1,fpy,fpy,ny,spy,nz,fpz,fpz, &
+	 &	 npsix,fpypsi,fpzpsi,spxpsi,spypsi,npsiz,npsiy,flow_comm)
 #endif
 
 

@@ -8,7 +8,8 @@
 #include "cuda_variables.h"
 #include "init_gpu.h"
 
-extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int fpy_f, int npy_f, int ny_f, int spy_f, int nz_f, int fpz_f, int npz_f, MPI_Fint *FLOW_COMM)
+extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int fpy_f, int npy_f, int ny_f, int spy_f, int nz_f, int fpz_f, int npz_f,
+								 int npsix_f, int fpypsi_f, int fpzpsi_f, int spxpsi_f, int spypsi_f, int npsiz_f, int npsiy_f, MPI_Fint *FLOW_COMM)
 //-------------------------------------------------------------------------------------
 //
 //     Initialize the GPU
@@ -18,6 +19,12 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
 //
 //-------------------------------------------------------------------------------------
 {
+#define phiflag phicompflag
+#define psiflag psicompflag
+#define expx expansionx
+#define expy expansiony
+#define expz expansionz
+
 
   //------------------------------------check how many GPU devices are available----------------------------
   MPI_Comm Cflow_comm;
@@ -89,6 +96,18 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   fpz = fpz_f;
   npz = npz_f;
 
+  npsix  = npsix_f;
+  fpypsi = fpypsi_f;
+  fpzpsi = fpzpsi_f;
+
+  spxpsi = spxpsi_f;
+  spypsi = spypsi_f;
+  npsiz  = npsiz_f;
+
+  npsiy = npsiy_f;
+
+
+
   //calculate max array dim
   int d_dim = nx * fpz * fpy;
   if (spx * spy * 2 * (nz-1) > d_dim) d_dim = spx*spy*2*(nz-1);
@@ -96,9 +115,6 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   if (spx * nz * fpy         > d_dim) d_dim = spx*nz*fpy;
 
   //allocate on GPU
-  //integer arrays
-//  ok = ok + cudaMalloc((void **)&dz_d,      sizeof(double)*nz);
-//  ok = ok + cudaMalloc((void **)&fstart_d, sizeof(int)*nz);
 
 
   //double arrays
@@ -113,6 +129,28 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   ok = ok + cudaMalloc((void **)&d_batch,  sizeof(cufftDoubleComplex)*d_dim);
   ok = ok + cudaMalloc((void **)&d_batch_c,sizeof(cufftDoubleComplex)*d_dim);
   if (ok!=0) printf("Output arrays for Chebyshev not allocated correctly!!\n");
+
+  #if phiflag == 1 || psiflag == 1 || expx != 1 || expy != 1 || expz != 1
+  //calculate max array dim
+  int dim_psi = npsix * fpzpsi * fpypsi;
+  if (spxpsi * spypsi * 2 * (npsiz-1) > dim_psi) dim_psi = spxpsi*spypsi*2*(npsiz-1);
+  if (spxpsi * fpzpsi * npsiy         > dim_psi) dim_psi = spxpsi*fpzpsi*npsiy;
+  if (spxpsi * npsiz * fpypsi         > dim_psi) dim_psi = spxpsi*npsiz*fpypsi;
+
+  //fg arrays
+  //double arrays
+  ok = ok + cudaMalloc((void **)&psir_d,    sizeof(double)*dim_psi);
+  ok = ok + cudaMalloc((void **)&psic_d,    sizeof(double)*dim_psi);
+
+  ok = ok + cudaMalloc((void **)&d_psir,  sizeof(double)*dim_psi);
+  ok = ok + cudaMalloc((void **)&d_psic,  sizeof(double)*dim_psi);
+  if (ok!=0) printf ("Allocation of double fg arrays failed\n");
+
+  //allocate output arrays for Chebyshev inverse DCT
+  ok = ok + cudaMalloc((void **)&d_phic,  sizeof(cufftDoubleComplex)*dim_psi);
+  ok = ok + cudaMalloc((void **)&d_phic_c,sizeof(cufftDoubleComplex)*dim_psi);
+  if (ok!=0) printf("Output arrays for Chebyshev fg not allocated correctly!!\n");
+  #endif
 
 
   cudaEvent_t start, stop;
@@ -143,22 +181,26 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
                           inembed, istride, idist,
                           onembed, ostride, odist, CUFFT_Z2Z, batch);
 
+#if phiflag == 1 || psiflag == 1 || expx != 1 || expy != 1 || expz != 1
+  cufftPlan1d(&plan_z_psi,  (npsiz-1)*2,  CUFFT_D2Z,  spxpsi*spypsi);//OK both ways
+  cufftPlan1d(&plan_x_psi,  npsix,        CUFFT_Z2D,  fpypsi*fpzpsi);//OK so npz=fpz and npy=fpy
+  cufftPlan1d(&plan_x_fwd_psi,  npsix,    CUFFT_D2Z,  fpypsi*fpzpsi);//OK so ...
+
+  int n_psi[] = { npsiy }; // --- Size of the Fourier transform
+  int istride_psi = spxpsi*fpzpsi, ostride_psi = spxpsi*fpzpsi; // --- Distance between two successive input/output elements
+  int batch_psi = spxpsi*fpzpsi; // --- Number of batched executions
+
+  ok = ok + cufftPlanMany(&plan_y_many_psi, rank, n_psi,
+                            inembed, istride_psi, idist,
+                            onembed, ostride_psi, odist, CUFFT_Z2Z, batch_psi);
+#endif
+
   if (ok!=0) printf ("Error in creating the batched many plan\n");
   cudaEventRecord(stop);
   cudaEventSynchronize(stop);
   float milliseconds = 0;
   cudaEventElapsedTime(&milliseconds, start, stop);
   if(idGPU == 0) printf("Time elapsed in cufft planes creation: %f milliseconds\n",milliseconds);
-
-
-
-
-
-
-
-
-
-
 
 
 }// end subroutine h_initialize_gpu

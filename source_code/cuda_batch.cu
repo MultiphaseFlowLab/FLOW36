@@ -8,7 +8,6 @@
 
 #define VAR_DECLS
 #include "cuda_batch.h"
-#define MODULO(X,Y) (((X)%(Y))>=0) ? ((X)%(Y)) : ((X)%(Y) + (Y))
 
 void h_batch(int nx,int ny,cufftDoubleComplex* h_signal)
 {

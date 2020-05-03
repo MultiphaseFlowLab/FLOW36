@@ -1,8 +1,5 @@
 #include <cuda.h>
 #include <stdio.h>
-#include <stdlib.h>
-//##include <mpi.h>
-#include <string.h>
 #include <math.h>
 #include <cufft.h>
 #include <complex.h>
@@ -49,6 +46,7 @@ extern "C" void h_ffty_many_fwd(double *in_r, double *in_c, double *out_r, doubl
   ok = ok + cudaMemcpy(out_r,ur_d,sizeof(double)*nsx*npz*ny,cudaMemcpyDeviceToHost);
   ok = ok + cudaMemcpy(out_c,uc_d,sizeof(double)*nsx*npz*ny,cudaMemcpyDeviceToHost);
   if (ok!=0) printf("Error in copying to host!!\n");
+
 }
 
 
@@ -340,161 +338,6 @@ extern "C" void h_chebyshev_fwd(double *in_r, double *in_c, double *out_r, doubl
 //
 //
 //*************************************************************************************
-void cuda_phys_to_spectral(double *d_uur, cufftDoubleComplex *d_uucmp)
-//-------------------------------------------------------------------------------------
-//
-//     Subroutine physical to spectral for single GPU
-//     WARNING: memory management needs improvement, could consider working on in-place transposition
-//     or batched FFTs that need no transposition, despite the current approach grants coalescence for
-//     the other kernels
-//
-//     Next step will be to split the function between the three forward transformations
-//
-//     Copyright Multiphase Flow Laboratory, University of Udine
-//     authors - D. Di Giusto, Jan 2020
-//
-//-------------------------------------------------------------------------------------
-{
-  //EXECUTE FORWARD FFT in x
-
-  //execute  //EXECUTE THE PLAN D2Z
-
-  cufftExecD2Z(plan_x, d_uur, d_batch_c);
-  ok = cudaGetLastError();
-  if (ok!=0) printf("Error in forward fft D2Z!!\n");
-
-
-  //inplace dealiasing
-  if(aliasing)
-  {
-    int al_low = floor(2.0/3.0*(spx)); //arrays start from zero
-	int al_up  = spx-1;//corresponds to spx, alias the last position of the c array to be set to zero
-	k_cmp_alias<<<((al_up-al_low+1)*spy*nz+dblk-1)/dblk,dblk>>>(d_batch_c,
-			                                                      al_low, al_up-al_low+1, spx, spx*spy*nz);
-	ok = cudaGetLastError();
-	if (ok!=0) printf("===============>error in second call kernel k_cmp_alias_y not called - 2!! \n");
-  }
-
-
-  //transpose to gain coalescence in y
-  //grid,block sizes for xyz to yxz transposition: WARNING: repetition 012 to 102
-  int TILE_DIM = 32;
-  int BLOCK_ROWS = 8;
-  int nbx = spx/TILE_DIM;
-  int nby = spy/TILE_DIM;
-  if (spx  % TILE_DIM != 0) nbx = nbx + 1;
-  if (spy  % TILE_DIM != 0) nby = nby + 1;
-  dim3 tgrid11(nbx,nby,nz);
-  dim3 tBlock(TILE_DIM, BLOCK_ROWS,1);
-
-
-  //transpose from xyz to yxz to gain coalescence in y
-  k_cmp_t102<<<tgrid11,tBlock>>>(d_batch, d_batch_c,
-		                         spx, spy, nz);//##OUTPUT,INPUT,sizes
-  ok = cudaGetLastError();
-  if(ok!=0) printf("error in call kernel k_t102 not called - 2!! \n");
-
-
-
-  //execute the forward FFT
-  cufftExecZ2Z(plan_y, d_batch, d_batch_c, CUFFT_FORWARD);
-  ok = cudaGetLastError();
-  if(ok!=0) printf("Error in cufftExecZ2Z execution!!\n");
-
-
-
-
-  //inplace aliasing
-  if(aliasing)
-  {
-    int al_low  = floor(2.0/3.0*(spy/2));//first aliased position
-	int al_up   = spy-floor(2.0/3.0*(spy/2))-1;//last aliased position
-	k_cmp_alias<<<((al_up-al_low+1)*spx*nz+dblk-1)/dblk,dblk>>>(d_batch_c,
-			                                                      al_low, al_up-al_low+1, spy, spx*spy*nz);
-	ok = cudaGetLastError();
-	if (ok!=0) printf("===============>error in second call kernel k_ not called - 2!! \n");
-  }
-
-
-
-  //transpose from yxz to zxy to gain coalescence in z
-  nbx = spy/TILE_DIM;
-  nby = nz/TILE_DIM;
-  if (spy  % TILE_DIM != 0) nbx = nbx + 1;
-  if (nz   % TILE_DIM != 0) nby = nby + 1;
-  dim3 tgrid22(nbx,nby,spx);
-
-  k_cmp_t210<<<tgrid22,tBlock>>>(d_batch, d_batch_c,
-		                         spy, spx, nz);//##OUTPUT,INPUT,sizes
-  ok = cudaGetLastError();
-  if(ok!=0) printf("===============>error in call kernel k_cmp_t210 not called - 2!! \n");
-
-
-
-  //Separate R and I
-  double norm_fact = 1.0e0;
-  int tot_size  = spx*spy*nz;
-
-  k_sec_separate<<<(nz*spx*spy+dblk-1)/dblk,dblk>>>(d_batch, d_uur, d_uext, tot_size);//WARNING: this kernel needs no norm_fact to multiply actually
-  ok = cudaGetLastError();
-  if(ok!=0) printf("===============>error in call kernel k_sec_separate not called!! \n");
-
-
-
-  //make input for cufftD2Z even symmetrical ##format OUTPUT,INPUT,sizes
-  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(d_uopr, d_uur,
-		                                               nz, 2*(nz-1));
-  k_mirror<<<spx*spy,32*(nz/32+1),nz*sizeof(double)>>>(d_uopc, d_uext,
-		                                               nz, 2*(nz-1));
-  ok = cudaGetLastError();
-  if(ok!=0) printf("===============>error in call kernel k_mirror not called - 2!! \n");
-
-
-
-  //EXECUTE THE DCT
-  //EXECUTE THE PLAN D2Z
-  cufftExecD2Z(plan_z, d_uopr, d_uucmp);//batched spx * spy times, on 2*(nz-1)
-  cufftExecD2Z(plan_z, d_uopc, d_batch_c);
-  ok = cudaGetLastError();
-  if(ok!=0) printf("===============>error in cufftExecD2Z - 2!! \n");
-  //This transform can also be performed using the Z2D or the Z2Z; each gives different precision: WARNING!
-
-
-
-  //Merge the output
-  k_sec_copy<<<(spx*spx*nz+dblk-1)/dblk,dblk>>>(d_uucmp, d_batch_c,
-		                                        nz*spx*spy);//#OUTPUT,INPUT,size -spx*spy,32*(nz/32+1)
-  ok = cudaGetLastError();
-  if(ok!=0) printf("===============>error in call kernel k_sec_copy not called!! - 2 \n");
-
-
-  //normalize the result
-  tot_size = spy * spx * nz;
-  norm_fact = 2.0e0 / (double)(nz-1);
-  k_norm_cmp<<<(spy*spx*nz+dblk-1)/dblk,dblk>>>(d_uucmp, norm_fact, tot_size);
-
-
-
-  //manipulate last terms
-  k_manip_cmp<<<(nz+dblk-1)/dblk,dblk>>>(d_uucmp,
-		                                 nz, tot_size);
-
-  //inplace aliasing
-  if(aliasing)
-  {
-    int al_low  = floor(2.0*(double)(nz)/3.0);//first aliased position
-	int al_up   = nz-1;//last aliased position
-	k_cmp_alias<<<((al_up-al_low+1)*spy*spx+dblk-1)/dblk,dblk>>>(d_uucmp,
-			                                                      al_low, al_up-al_low+1, nz, spx*spy*nz);
-	ok = cudaGetLastError();
-	if (ok!=0) printf("===============>error in second call kernel k_cmp_alias_y not called - 2!! \n");
-  }
-
-
-  //OUTPUT IS IN FORMAT zxy
-}
-
-
 ////EXTRA PIECES-------------------------------------------------------------------------------------------------------
 //  cufftDoubleComplex *h_ress=(cufftDoubleComplex*)malloc(sizeof(cufftDoubleComplex) * spx*nz*spy);
 //  ok = ok + cudaMemcpy(h_ress,d_uucmp,sizeof(cufftDoubleComplex)*spx*nz*spy,cudaMemcpyDeviceToHost);

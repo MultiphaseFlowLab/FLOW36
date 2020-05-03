@@ -69,13 +69,17 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-subroutine ffty_bwd_fg(ui,uo,nsx,npz,ny,aliasing)
+subroutine ffty_bwd_fg(ui,uo,nsx,npz,ny,aliasing,inloop)
 
 use fftw3
+#define GPU_RUN gpucompflag
+#if GPU_RUN == 1
+use interfaccia
+#endif
 implicit none
 
 integer(c_int) :: nsx,ny,npz
-integer :: aliasing
+integer :: aliasing, inloop
 
 real(c_double) :: ui(nsx,npz,ny,2),uo(nsx,npz,ny,2)
 complex(c_double_complex) :: wt(nsx,npz,ny),wot(nsx,npz,ny)
@@ -88,13 +92,28 @@ endif
 
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 
-call fftw_execute_dft(plan_y_bwd_fg,wt,wot)
+#if GPU_RUN == 1
+  if (inloop == 1) then
+    call h_fftymanybwd_fg(ui(:,:,:,1),ui(:,:,:,2),uo(:,:,:,1),uo(:,:,:,2),aliasing)
+    uo=uo/dble(ny)
+  else
+	call fftw_execute_dft(plan_y_bwd_fg,wt,wot)
+    uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
+    uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
 
+    uo=uo/dble(ny)
+  endif
+#else
+  
+  call fftw_execute_dft(plan_y_bwd_fg,wt,wot)
 
-uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
-uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
+  uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
+  uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
 
-uo=uo/dble(ny)
+  uo=uo/dble(ny)
+
+#endif
+
 
 return
 end

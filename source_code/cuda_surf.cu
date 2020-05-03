@@ -13,7 +13,6 @@
 #include "cuda_tran.h"
 #include "cuda_phys_spec.h"
 
-#define MODULO(X,Y) (((X)%(Y))>=0) ? ((X)%(Y)) : ((X)%(Y) + (Y))
 
 
 //__global__ void k_mirror_c(int N, cufftDoubleReal *in, cufftDoubleComplex *out)
