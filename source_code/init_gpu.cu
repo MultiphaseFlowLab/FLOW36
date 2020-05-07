@@ -63,14 +63,16 @@ extern "C" void h_initialize_gpu(int spx_f, int nx_f, int nsx_f, int npx_f, int 
   {
 	 //reference: http://on-demand.gputechconf.com/gtc/2014/presentations/S4236-multi-gpu-programming-mpi.pdf
 	//rely on process placement: deviceCount == ranks per node (Piz Daint)
-	ilGPU = idGPU % deviceCount;
+	//should work on marconi100 as well if the processes are distributed equally per socket as there are 2 sockets
 
 	//possible to use environment variables provided by MPI launcher
-//#ifdef OPENMPI
-//    ilGPU = atoi(getenv("OMPI_COMM_WORLD_LOCAL_RANK"));
-//#elif MVAPICH2
-//    ilGPU = atoi(getenv("MV2_COMM_WORLD_LOCAL_RANK"));
-//#endif
+#ifdef OPENMPI
+    ilGPU = atoi(getenv("OMPI_COMM_WORLD_LOCAL_RANK"));
+#elif MVAPICH2
+    ilGPU = atoi(getenv("MV2_COMM_WORLD_LOCAL_RANK"));
+#else
+    ilGPU = idGPU % deviceCount;
+#endif
   }
 
   cudaSetDevice(ilGPU);

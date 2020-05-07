@@ -4,7 +4,14 @@ This version of Flow 36 uses the CUFFT library to perform the FFTs and the DCT, 
 
 The initialisation is based on the CPU so the result shall be fully compatible, except for the different approximation.
 
-To build the GPU-version, just set the flag GPU_RUN to 1 in the compile.sh and select the machine GPU_local (#12)
+To build the GPU version, set the variable GPU_RUN to 1 in the compile.sh.
+
+Marconi 100:
+the file go.sh is not automatically compiled, not straightforward!
+Each node has 4 Tesla V100 GPUs. Set number of tasks per node and number of GPUs according to your necessities (always the same in pure flow solver)
+Modify also the mpi wrapper creation (mpirun -np ..)
+
+Launch with SBATCH go.sh
 
 #Notes:
 
@@ -14,4 +21,4 @@ instead, the FFT in x and y are performed with the original memory layout.
 
 #Warning: multi-GPU version
 
-The initialization of the GPUs has not been tested for a multiple MPI task execution!!!
+output is valid after one timestep up to 4 MPI tasks (2x2)

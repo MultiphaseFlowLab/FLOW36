@@ -13,7 +13,8 @@
 #11 : Davide (CINECA)
 #12 : GPU local
 #13 : Piz Daint (CSCS)
-machine="12"
+#14 : Marconi100 (CINECA)
+machine="14"
 #################################################################################################
 #perform FFTs and DCT on GPU (1) or on CPU (0), implemented in CUDA C
 #multi-GPU WARNING: validated for 1 timestep, 2x2 MPI tasks on local machine
@@ -180,6 +181,24 @@ cp ./Piz_Daint/go.sh ./go.sh
   fi
 savespectral="0"
 
+
+elif [ "$machine" == "14" ]; then
+echo "=                                Marconi 100                                 ="
+module load gnu/8.4.0   
+module load cuda/10.1   
+module load spectrum_mpi/10.3.1--binary   
+module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
+
+cp ./Marconi100/go.sh ./go.sh
+  if [ "$GPU_RUN" == "1" ]; then
+  cp ./Marconi100/Makefile_GPU ./makefile
+  else
+  cp ./Marconi100/makefile ./makefile
+  fi
+savespectral="0"
+
+
+
 fi
 echo "=============================================================================="
 echo ""
@@ -204,8 +223,8 @@ exp_y="1" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
-NYCPU="1" # integer
-NZCPU="1" # integer
+NYCPU="4" # integer
+NZCPU="2" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
@@ -1158,11 +1177,11 @@ echo ""
 # modules must be removed to update data inside them when changing simulation parameters like
 # nx, ny, nz, nycpu, nzcpu
 if [ "$GPU_RUN" == "1" ]; then
-cp ./GPU_local/Makefile ./set_run/sc_compiled/
+cp ./makefile ./set_run/sc_compiled/
 cd ./set_run/sc_compiled/
 make all
 cd ../../
-rm ./set_run/sc_compiled/Makefile
+rm ./set_run/sc_compiled/makefile
 else
 
 make
