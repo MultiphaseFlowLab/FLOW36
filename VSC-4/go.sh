@@ -9,9 +9,9 @@
 #SBATCH --qos=mem_0096
 
 # load modules
-module load intel
-module load intel-mpi
-module load fftw
+module load intel/19.0.5
+module load intel-mpi/2019.7.pre
+module load fftw/3.3.8-intel-19.0.5.281-un2sutg
 # or (problem with .mod files)
 #module load gcc/5.3 intel-mpi/5.1.3 fftw/3.3.4-DP
 

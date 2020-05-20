@@ -126,7 +126,7 @@ cp ./VSC-4/go.sh ./go.sh
 module purge
 # load modules
 module load intel/19.0.5
-module load intel-mpi/2019.5-intel-19.0.5.281-77hdffd
+module load intel-mpi/2019.7.pre
 module load fftw/3.3.8-intel-19.0.5.281-un2sutg
 
 savespectral="0"
