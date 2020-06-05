@@ -58,6 +58,7 @@ endif
 
 allocate(uc(npx,npz,npy,2))
 #if GPU_RUN == 1
+  !!insolv switches between CPU and GPU subroutines to mantain initialization on CPU
   if (insolv == 1) then
     call h_fftx_fwd(u(:,:,:),uc(:,:,:,1),uc(:,:,:,2),aliasing)
   else 

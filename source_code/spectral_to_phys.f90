@@ -29,6 +29,7 @@ dims(2)=nycpu
 allocate(u(spx,nz,spy,2))
 u=uc
 #if GPU_RUN == 1
+  !!insolv switches between CPU and GPU subroutines to mantain initialization on CPU
   if (insolv == 1) then
     call h_chebyshev_back(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing)
   else
