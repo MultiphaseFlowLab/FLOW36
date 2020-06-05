@@ -219,3 +219,61 @@ extern "C" void h_fftymanyfwd_fg(double *in_r, double *in_c, double *out_r, doub
 //
 //
 //*************************************************************************************
+extern "C" void h_ffty_fwd_fg(double *in_r, double *in_c, double *out_r, double *out_c, int aliasing)
+{
+  dblk = 128;
+  int dthr = 8;
+  dim3 threadsPerBlock(dthr, dthr, dthr);
+
+  ok = ok + cudaMemcpy(psir_d, in_r,sizeof(double)*spxpsi*fpzpsi*npsiy, cudaMemcpyHostToDevice);
+  ok = ok + cudaMemcpy(psic_d, in_c,sizeof(double)*spxpsi*fpzpsi*npsiy, cudaMemcpyHostToDevice);
+  if (ok!=0) printf("Error in copying to device!! fg\n");
+
+  k_merge_cmp<<<(spxpsi*npsiy*fpzpsi+dblk-1)/dblk,dblk>>>(d_phic, psir_d, psic_d, spxpsi*npsiy*fpzpsi);
+  if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! fg\n");
+
+
+
+  //BACKWARDS FFT IN Y
+  cufftExecZ2Z(plan_y_many_psi, d_phic, d_phic, CUFFT_FORWARD);//this can be done inplace
+  ok = cudaGetLastError();
+  if (ok!=0) printf("Error in cufftExecZ2Z forward ffty many!! fg\n");
+
+
+  //perform inplace aliasing
+  if (aliasing == 1)
+  {
+	//3rd dimension aliasing
+	int al_low  = floor(2.0/3.0*(npsiy/2+1))-1;//first aliased position
+	int al_up   = npsiy-floor(2.0/3.0*(npsiy/2));//last aliased position
+    //grid for working on the x pencils
+    dim3 grid_aly((spxpsi+dthr-1)/dthr,(al_up-al_low+dthr-1)/dthr,(fpzpsi+dthr-1)/dthr);
+	k_alias_3rd<<<grid_aly,threadsPerBlock>>>(d_phic, al_low, al_up-al_low, spxpsi, npsiy, fpzpsi);
+    ok = cudaGetLastError();
+    if(ok!=0) printf("===============>error in call kernel k_alias_3rd not called!! fg\n");
+  }
+
+
+  //copy back to host
+  k_sec_separate<<<(spxpsi*npsiy*fpzpsi+dblk-1)/dblk,dblk>>>(d_phic, psir_d, psic_d, spxpsi*npsiy*fpzpsi);
+  ok = cudaGetLastError();
+  if(ok!=0) printf("===============>error in call kernel k_sec_separate not called!! psi\n");
+
+  ok = ok + cudaMemcpy(out_r, psir_d, sizeof(double)*spxpsi*fpzpsi*npsiy, cudaMemcpyDeviceToHost);
+  ok = ok + cudaMemcpy(out_c, psic_d, sizeof(double)*spxpsi*fpzpsi*npsiy, cudaMemcpyDeviceToHost);
+  if (ok!=0) printf("Error in copying to host!!\n");
+
+
+}//end subroutine h_ffty_fwd_fg
+//*************************************************************************************
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//*************************************************************************************

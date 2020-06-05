@@ -7,5 +7,6 @@ extern "C" void h_fftxback_fg(double *in_r, double *in_c, double *out_r, int ali
 
 extern "C" void h_fftymanybwd_fg(double *in_r, double *in_c, double *out_r, double *out_c, int aliasing);
 
+extern "C" void h_ffty_bwd_fg(double *in_r, double *in_c, double *out_r, double *out_c, int aliasing);
 
 #endif

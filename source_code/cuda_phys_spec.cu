@@ -126,61 +126,47 @@ extern "C" void h_ffty_fwd(double *in_r, double *in_c, double *out_r, double *ou
 //
 //-------------------------------------------------------------------------------------
 {
-  //copy to device
-  ok = ok + cudaMemcpy2D(d_batch,       2 * sizeof(d_batch), in_r, sizeof(in_r), sizeof(in_r), spx*nz*spy, cudaMemcpyHostToDevice);
-  ok = ok + cudaMemcpy2D(&d_batch[0].y, 2 * sizeof(d_batch), in_c, sizeof(in_c), sizeof(in_c), spx*nz*spy, cudaMemcpyHostToDevice);
-  if (ok!=0) printf("Error in copying to device!! ffty_fwd\n");
+  dblk = 128;
+  //a little bit heavy for local GPU, should be good on Teslas!
+  int dthr = 8;
+  dim3 threadsPerBlock(dthr, dthr, dthr);
 
-  //transpose from xzy to yzx
-  int TILE_DIM=32;
-  int BLOCK_ROWS=8;
-  nbx = nx/TILE_DIM;
-  nby = spy/TILE_DIM;
-  if (nx   % TILE_DIM != 0) nbx = nbx + 1;
-  if (spy  % TILE_DIM != 0) nby = nby + 1;
-  dim3 tgrid1(nbx,nby,nz);
-  dim3 tBlock(TILE_DIM, BLOCK_ROWS,1);
+  ok = ok + cudaMemcpy(ur_d,in_r, sizeof(double)*spx*npz*ny, cudaMemcpyHostToDevice);
+  ok = ok + cudaMemcpy(uc_d,in_c, sizeof(double)*spx*npz*ny, cudaMemcpyHostToDevice);
+  if (ok!=0) printf("Error in copying to device!! ffty fwd\n");
+
+  k_merge_cmp<<<(spx*ny*npz+dblk-1)/dblk,dblk>>>(d_batch, ur_d, uc_d, spx*ny*npz);
+  if (ok!=0) printf("===============>error in call kernel k_merge_cmp not called!! ffty_fwd\n");
 
 
-  //transpose to gain coalescence in y
-  k_cmp_t210<<<tgrid1,tBlock>>>(d_batch_c, d_batch, spx, nz, spy);//#OUTPUT,INPUT,sizes
+  //BACKWARDS FFT IN Y
+  cufftExecZ2Z(plan_y_many, d_batch, d_batch, CUFFT_FORWARD);//this can be done inplace
   ok = cudaGetLastError();
-  if(ok!=0) printf("error in call kernel k_t210 not called!!\n");
+  if (ok!=0) printf("Error in cufftExecZ2Z forward ffty many!!\n");
 
 
-  //execute the forward FFT
-  cufftExecZ2Z(plan_y, d_batch_c, d_batch, CUFFT_FORWARD);
-  ok = cudaGetLastError();
-  if(ok!=0) printf("Error in cufftExecZ2Z execution!!\n");
-
-
-  //inplace aliasing
-  if(aliasing)
+  //perform inplace aliasing
+  if (aliasing == 1)
   {
-    int al_low  = floor(2.0/3.0*(spy/2));//first aliased position
-	int al_up   = spy-floor(2.0/3.0*(spy/2))-1;//last aliased position
-	k_cmp_alias<<<((al_up-al_low+1)*spx*nz+dblk-1)/dblk,dblk>>>(d_batch, al_low, al_up-al_low+1, spy, spx*spy*nz);
-	ok = cudaGetLastError();
-	if (ok!=0) printf("===============>error in call kernel k_cmp_alias_y not called - 2!! \n");
+	//3rd dimension aliasing
+	int al_low  = floor(2.0/3.0*(ny/2+1))-1;//first aliased position
+	int al_up   = ny-floor(2.0/3.0*(ny/2));//last aliased position
+    //grid for working on the x pencils
+    dim3 grid_aly((spx+dthr-1)/dthr,(al_up-al_low+dthr-1)/dthr,(npz+dthr-1)/dthr);
+	k_alias_3rd<<<grid_aly,threadsPerBlock>>>(d_batch, al_low, al_up-al_low, spx, ny, npz);
+    ok = cudaGetLastError();
+    if(ok!=0) printf("===============>error in call kernel k_alias_3rd not called!! \n");
   }
 
-  //transpose back for fortran
-  dim3 tgrid2(nby,nbx,nz);
-  k_cmp_t210<<<tgrid2,tBlock>>>(d_batch_c, d_batch, spy, nz, spx);//#OUTPUT,INPUT,sizes
-  ok = cudaGetLastError();
-  if(ok!=0) printf("error in call kernel k_t210 not called!! \n");
 
   //copy back to host
-  k_sec_separate<<<(spx*spy*nz+dblk-1)/dblk,dblk>>>(d_batch_c,ur_d,uc_d,spx*spy*nz);
+  k_sec_separate<<<(spx*ny*npz+dblk-1)/dblk,dblk>>>(d_batch, ur_d, uc_d, spx*ny*npz);
   ok = cudaGetLastError();
   if(ok!=0) printf("===============>error in call kernel k_sec_separate not called!! ffty_fwd\n");
-  ok = ok + cudaMemcpy(out_r,ur_d,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
-  ok = ok + cudaMemcpy(out_c,uc_d,sizeof(double)*spx*nz*spy,cudaMemcpyDeviceToHost);
 
 
-
-//  ok = ok + cudaMemcpy2D(out_r, sizeof(out_r),d_batch_c,       2 * sizeof(d_batch_c),sizeof(d_batch_c), spx*nz*spy, cudaMemcpyDeviceToHost);
-//  ok = ok + cudaMemcpy2D(out_c, sizeof(out_c),&d_batch_c[0].y, 2 * sizeof(d_batch_c),sizeof(d_batch_c), spx*nz*spy, cudaMemcpyDeviceToHost);
+  ok = ok + cudaMemcpy(out_r, ur_d, sizeof(double)*spx*npz*ny, cudaMemcpyDeviceToHost);
+  ok = ok + cudaMemcpy(out_c, uc_d, sizeof(double)*spx*npz*ny, cudaMemcpyDeviceToHost);
   if (ok!=0) printf("Error in copying to host!! ffty_fwd\n");
 
 

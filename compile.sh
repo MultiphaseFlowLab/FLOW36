@@ -14,7 +14,7 @@
 #12 : GPU local
 #13 : Piz Daint (CSCS)
 #14 : Marconi100 (CINECA)
-machine="14"
+machine="12"
 #################################################################################################
 #perform FFTs and DCT on GPU (1) or on CPU (0), implemented in CUDA C
 #multi-GPU WARNING: validated for 1 timestep, 2x2 MPI tasks on local machine
@@ -163,6 +163,12 @@ savespectral="0"
 elif [ "$machine" == "12" ]; then
 echo "=                                 GPU version                                ="
 cp ./GPU_local/go.sh ./go.sh
+  if [ "$GPU_RUN" == "1" ]; then
+    cp ./GPU_local/Makefile ./makefile
+  else
+  cp ./Local/makefile ./makefile
+  cp ./Local/go.sh ./go.sh
+  fi
 #makefile is copied later
 savespectral="0"
 
@@ -1146,8 +1152,7 @@ fi
 sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/main.f90
 sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/phys_to_spectral.f90
 sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/spectral_to_phys.f90
-sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_bwd.f90
-sed -i "s/gpucompflag/$GPU_RUN/g" ./set_run/sc_compiled/ffty_fwd.f90
+
 #PHIFLAG to allocate cuFFTs_fg memory spaces on GPU
 if [ "$GPU_RUN" == "1" ]; then
   sed -i  "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/init_gpu.cu

@@ -119,15 +119,13 @@ npx=nsx
 
 #if GPU_RUN == 1
   if (insolv == 1) then
-    !!choose between a full subroutine on the GPU or a host subroutine with fft on the device
-    !call h_ffty_fwd(uc(:,:,:,1),uc(:,:,:,2),uc(:,:,:,1),uc(:,:,:,2),aliasing)
-    call ffty_fwd(uc,uc,nsx,npz,ny,aliasing,insolv)
+    call h_ffty_fwd(uc(:,:,:,1),uc(:,:,:,2),uc(:,:,:,1),uc(:,:,:,2),aliasing)
   else
-    call ffty_fwd(uc,uc,nsx,npz,ny,aliasing,0)
+    call ffty_fwd(uc,uc,nsx,npz,ny,aliasing)
   endif
 #else
 
-call ffty_fwd(uc,uc,nsx,npz,ny,aliasing,0)
+call ffty_fwd(uc,uc,nsx,npz,ny,aliasing)
 !call ffty_fwd(uc,uc,nsx,npz,ny,0)
 
 #endif
@@ -309,12 +307,12 @@ npx=nsx
 
 #if GPU_RUN == 1
   if (insolv == 1) then
-  	call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing,insolv)
+    call h_ffty_fwd_fg(uc(:,:,:,1),uc(:,:,:,2),uc(:,:,:,1),uc(:,:,:,2),aliasing)
   else
-	call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing,0)
+	call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing)
   endif
 #else
-call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing,0)
+call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing)
 #endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

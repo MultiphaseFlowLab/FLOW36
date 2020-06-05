@@ -181,6 +181,26 @@ module interfaccia
        real(c_double), dimension(*) :: out_c
        integer(c_int), value :: aliasing 
      end subroutine h_fftymanybwd_fg
+     
+     subroutine h_ffty_bwd_fg(in_r,in_c,out_r,out_c,aliasing) bind(c)
+       use, intrinsic :: iso_c_binding
+       implicit none
+       real(c_double), dimension(*) :: in_r
+       real(c_double), dimension(*) :: in_c
+       real(c_double), dimension(*) :: out_r
+       real(c_double), dimension(*) :: out_c
+       integer(c_int), value :: aliasing
+     end subroutine h_ffty_bwd_fg
+
+     subroutine h_ffty_fwd_fg(in_r,in_c,out_r,out_c,aliasing) bind(c)
+       use, intrinsic :: iso_c_binding
+       implicit none
+       real(c_double), dimension(*) :: in_r
+       real(c_double), dimension(*) :: in_c
+       real(c_double), dimension(*) :: out_r
+       real(c_double), dimension(*) :: out_c
+       integer(c_int), value :: aliasing
+     end subroutine h_ffty_fwd_fg
 
      
   end interface     

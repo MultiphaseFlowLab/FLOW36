@@ -105,15 +105,13 @@ endif
 
 #if GPU_RUN == 1
   if (insolv == 1) then
-  !!choose between a full subroutine on the GPU or a host subroutine with fft on the device
-    !call h_ffty_back(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing) !NOT TESTED!
-    call ffty_bwd(u,u,spx,npz,ny,aliasing,insolv)
+    call h_ffty_back(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing)
   else
-    call ffty_bwd(u,u,spx,npz,ny,aliasing,0)
+    call ffty_bwd(u,u,spx,npz,ny,aliasing)
   endif
 #else
-call ffty_bwd(u,u,spx,npz,ny,aliasing,0)
-!call ffty_bwd(u,u,spx,npz,ny,0,0)
+call ffty_bwd(u,u,spx,npz,ny,aliasing)
+!call ffty_bwd(u,u,spx,npz,ny,0)
 #endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -283,12 +281,12 @@ endif
 
 #if GPU_RUN == 1
   if (insolv == 1) then
-    call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing,insolv)
+    call h_ffty_bwd_fg(u(:,:,:,1),u(:,:,:,2),u(:,:,:,1),u(:,:,:,2),aliasing)
   else
-	call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing,0)
+	call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing)
   endif
 #else
-call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing,0)
+call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing)
 #endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

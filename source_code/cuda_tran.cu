@@ -10,6 +10,49 @@
 #define TILE_DIM   32
 #define BLOCK_ROWS 8
 
+__global__ void k_alias_3rd(cufftDoubleComplex *a, int al_low, int al_up, int spx, int ny, int npz)
+//-------------------------------------------------------------------------------------
+//
+//     Perform aliasing in third direction of array:
+//	   NEW: 3D grid-block structures, simplifies a lot!
+
+//     Copyright Multiphase Flow Laboratory, University of Udine
+//     authors - D. Di Giusto, May 2020
+//
+//-------------------------------------------------------------------------------------
+{
+  int x_index = blockIdx.x*blockDim.x + threadIdx.x; //absolute x,y,z indexes
+  int y_index = blockIdx.y*blockDim.y + threadIdx.y;
+  int z_index = blockIdx.z*blockDim.z + threadIdx.z;
+
+  if (x_index < spx)
+  {
+    if (z_index < npz)
+    {
+      if (y_index < al_up)
+      {
+    	int ind = x_index + spx * (z_index + npz * (al_low+y_index));
+
+    	a[ind].x = 0.0e0;
+    	a[ind].y = 0.0e0;
+      }
+    }
+  }
+
+}//end kernel k_alias_3rd
+//*************************************************************************************
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//*************************************************************************************
+
 void __global__ k_alias_1st_cmp(cufftDoubleComplex *a, int al_low, int nx, int dim)
 //-------------------------------------------------------------------------------------
 //

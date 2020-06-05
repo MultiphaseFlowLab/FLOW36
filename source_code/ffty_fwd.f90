@@ -1,17 +1,13 @@
-subroutine ffty_fwd(ui,uo,nsx,npz,ny,aliasing,inloop)
+subroutine ffty_fwd(ui,uo,nsx,npz,ny,aliasing)
 
 use fftw3
-#define GPU_RUN gpucompflag
-#if GPU_RUN == 1
-use interfaccia
-#endif
 implicit none
 
 !type(c_ptr) :: plan
 integer(c_int) :: nsx,ny,npz
 !integer(c_int) :: dims(1)
 !integer(c_int) :: inembed(3),onembed(3),istride,ostride,idist,odist
-integer :: aliasing, inloop
+integer :: aliasing
 
 real(c_double) :: ui(nsx,npz,ny,2),uo(nsx,npz,ny,2)
 complex(c_double_complex) :: wt(nsx,npz,ny),wot(nsx,npz,ny)
@@ -34,22 +30,12 @@ wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 ! &    wot,onembed,ostride,odist,-1,FFTW_ESTIMATE)
 
 
-#if GPU_RUN == 1
-  if (inloop == 1) then
-    call h_ffty_many_fwd(ui(:,:,:,1),ui(:,:,:,2),uo(:,:,:,1),uo(:,:,:,2),aliasing)
-  else
-    call fftw_execute_dft(plan_y_fwd,wt,wot)
-    uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
-    uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
-  endif
-#else
 
 call fftw_execute_dft(plan_y_fwd,wt,wot)
 !call fftw_destroy_plan(plan)
 
 uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
 uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
-#endif
 
 
 ! dealiasing
@@ -65,17 +51,13 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-subroutine ffty_fwd_fg(ui,uo,nsx,npz,ny,aliasing,inloop)
+subroutine ffty_fwd_fg(ui,uo,nsx,npz,ny,aliasing)
 
 use fftw3
-#define GPU_RUN gpucompflag
-#if GPU_RUN == 1
-use interfaccia
-#endif
 implicit none
 
 integer(c_int) :: nsx,ny,npz
-integer :: aliasing, inloop
+integer :: aliasing
 
 real(c_double) :: ui(nsx,npz,ny,2),uo(nsx,npz,ny,2)
 complex(c_double_complex) :: wt(nsx,npz,ny),wot(nsx,npz,ny)
@@ -84,21 +66,10 @@ complex(c_double_complex) :: wt(nsx,npz,ny),wot(nsx,npz,ny)
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 
 
-#if GPU_RUN == 1
-  if (inloop == 1) then
-    call h_fftymanyfwd_fg(ui(:,:,:,1),ui(:,:,:,2),uo(:,:,:,1),uo(:,:,:,2),aliasing)
-  else
-	call fftw_execute_dft(plan_y_fwd_fg,wt,wot)
-    uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
-    uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
-  endif
-#else
-
   call fftw_execute_dft(plan_y_fwd_fg,wt,wot)
 
   uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
   uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
-#endif
 
 
 ! dealiasing
