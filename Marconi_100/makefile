@@ -1,6 +1,6 @@
 #F90	= $(FC)
 
-FC	= mpifort
+FC	= mpif90
 #FC      = mpiifort
 LD	= $(FC)
 SWP	=

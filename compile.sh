@@ -168,9 +168,14 @@ elif [ "$machine" == "13" ]; then
 echo "=                              Marconi-100 (no GPU)                               ="
 module purge
 # load modules
+module load profile/advanced
 module load gnu
-module load openmpi
-module load fftw
+module load cuda/10.1
+module load openmpi/4.0.3--gnu--8.4.0
+module load fftw/3.3.8--gnu--8.4.0
+# MPI spectrum implementation (please swap also go.sh and makefile)
+#module load spectrum_mpi/10.3.1--binary
+#module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
 cp ./Marconi_100/makefile ./makefile
 cp ./Marconi_100/go.sh ./go.sh
 
@@ -190,8 +195,8 @@ fftw_flag="0"
 
 # number of grid points (edit only exponent)
 ix="9" # integer
-iy="8" # integer
-iz="8" # integer
+iy="9" # integer
+iz="9" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -200,7 +205,7 @@ exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
-NZCPU="4" # integer
+NZCPU="32" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
@@ -1087,7 +1092,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
