@@ -12,6 +12,7 @@
 #10 : Joliot Curie - Irene (KNL)
 #11 : Davide (CINECA)
 #12 : HAWK (HLRS - AMD Epyc Rome)
+#13 : M100 (CINECA)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -163,6 +164,16 @@ module load fftw
 cp ./HAWK/makefile ./makefile
 cp ./HAWK/go.sh ./go.sh
 
+elif [ "$machine" == "13" ]; then
+echo "=                              Marconi-100 (no GPU)                               ="
+module purge
+# load modules
+module load gnu
+module load openmpi
+module load fftw
+cp ./Marconi_100/makefile ./makefile
+cp ./Marconi_100/go.sh ./go.sh
+
 savespectral="0"
 fi
 echo "=============================================================================="
@@ -178,13 +189,13 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="6" # integer
-iy="6" # integer
-iz="6" # integer
+ix="9" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
-exp_x="2" # integer, (2**ix)*exp_x
-exp_y="2" # integer, (2**iy)*exp_y
+exp_x="1" # integer, (2**ix)*exp_x
+exp_y="1" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
@@ -209,10 +220,10 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="3" # integer
 
 # Reynolds number
-Re="10.0" # real (double)
+Re="150.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -233,10 +244,10 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="10" #integer (up to 8 digits)
+nend="400000" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="100" # integer
+dump="2000" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -262,7 +273,7 @@ budget_flag="0" # 0 to skip budget calculation, 1 to do it
 spectra_flag="0" # 0 to skip power spectra calculation, 1 to do it
 
 # dt
-dt="1.e-3" # real (exponential)
+dt="0.5e-4" # real (exponential)
 
 # 0: no-slip
 # 1: free-slip
