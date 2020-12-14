@@ -171,11 +171,11 @@ module purge
 module load profile/advanced
 module load gnu
 module load cuda/10.1
-module load openmpi/4.0.3--gnu--8.4.0
-module load fftw/3.3.8--gnu--8.4.0
+#module load openmpi/4.0.3--gnu--8.4.0
+#module load fftw/3.3.8--gnu--8.4.0
 # MPI spectrum implementation (please swap also go.sh and makefile)
-#module load spectrum_mpi/10.3.1--binary
-#module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
+module load spectrum_mpi/10.3.1--binary
+module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
 cp ./Marconi_100/makefile ./makefile
 cp ./Marconi_100/go.sh ./go.sh
 
@@ -194,8 +194,8 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="9" # integer
-iy="9" # integer
+ix="7" # integer
+iy="7" # integer
 iz="9" # integer
 
 # dual grid for surfactant, expansion factors:
@@ -205,7 +205,7 @@ exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
-NZCPU="32" # integer
+NZCPU="48" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
@@ -225,10 +225,10 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="3" # integer
+incond="1" # integer
 
 # Reynolds number
-Re="150.0" # real (double)
+Re="50.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -238,12 +238,12 @@ gradpx="-1.0" # real (double)
 gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
-cpi_flag="0"
+cpi_flag="1"
 repow="100.0" #B*Re_pi - re used to control the pressure gradient...
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
-lx="4.0" # real (double)
-ly="2.0" # real (double)
+lx="1.0" # real (double)
+ly="1.0" # real (double)
 
 # initial time step
 nstart="0" # integer
