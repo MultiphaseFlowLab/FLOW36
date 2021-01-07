@@ -190,9 +190,10 @@ savespectral="0"
 
 elif [ "$machine" == "14" ]; then
 echo "=                                Marconi 100                                 ="
-module load gnu/8.4.0   
-module load cuda/10.1   
-module load spectrum_mpi/10.3.1--binary   
+module load profile/advanced
+module load gnu/8.4.0
+module load cuda/10.2
+module load spectrum_mpi/10.3.1--binary
 module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
 
 cp ./Marconi100/go.sh ./go.sh

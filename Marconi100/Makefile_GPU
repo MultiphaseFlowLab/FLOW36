@@ -34,9 +34,9 @@ all:
                 "F90 = mpifort" \
                 "F90FLAGS = -O3 $(FLIBS)" \
                 "NVCC = nvcc" \
-                "NVCCFLAGS = $(CPPFLAGS) -O3 -use_fast_math -arch=sm_70 --ptxas-options=-v" \
+                "NVCCFLAGS = $(CPPFLAGS) -O3 -use_fast_math -arch=sm_70 --ptxas-options=-v -std=c++11" \
                 "INCD = -I"$(CUDA_PATH)"/include -I"$(MPI_PATH)"/include -I"$(FFTWINC)" " \
-                "LIBS = -L"$(CUDA_PATH)"/lib64 -lcudart -lcurand -lcufft -lstdc++ -L"$(FFTWLIB)" -lfftw3"       
+                "LIBS = -L"$(CUDA_PATH)"/lib64 -lcudart -lcurand -lcufft -lstdc++ -L"$(FFTWLIB)" -lfftw3"
 alld:
 	make    EXE "PROG = surf36_gpu.exe" \
                 "GCC = gcc" \
@@ -48,7 +48,7 @@ alld:
                 "NVCC = nvcc" \
                 "NVCCFLAGS = $(CPPFLAGS) -g -G -arch=sm_70 --ptxas-options=-v" \
                 "INCD = -I"$(CUDA_PATH)"/include -I"$(MPI_PATH)"/include -I"$(FFTWINC)" " \
-                "LIBS = -L"$(CUDA_PATH)"/lib64 -lcudart -lcurand -lcufft -lstdc++ -L"$(FFTWLIB)" -lfftw3"               
+                "LIBS = -L"$(CUDA_PATH)"/lib64 -lcudart -lcurand -lcufft -lstdc++ -L"$(FFTWLIB)" -lfftw3"
 
 .SUFFIXES: .cu .h .c .F90 .f90 .o
 .c.o:
@@ -57,7 +57,7 @@ alld:
 	$(NVCC) $(NVCCFLAGS) $(INCD) -c $< $*.o
 .f90.o:
 	$(F90) $(CPPFLAGS) $(F90FLAGS) -c $<
-        
+
 EXE: $(C_OBJS) $(F_OBJS) $(CUDA_OBJS)
 	$(F90) -o $(PROG) $(C_OBJS) $(F_OBJS) $(CUDA_OBJS) $(LIBS)
 
