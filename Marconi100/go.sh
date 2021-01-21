@@ -9,6 +9,9 @@
 #SBATCH --error="err.err"
 #SBATCH --output="out.out"
 
+##load modules
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 module load profile/advanced
 module load gnu/8.4.0
 module load cuda/10.2
