@@ -58,6 +58,8 @@ double precision :: Lx,Ly
  read(66,*) !body_flag
  read(66,*) !body_c
  read(66,*) !body_dir
+ read(66,*) !sgradp_flag
+ read(66,*) !sgradp_dir
  read(66,*) !rep_flag
  read(66,*) !rep_c
  read(66,*)
@@ -87,7 +89,7 @@ double precision :: Lx,Ly
  read(66,'(i8)') part_dump
  read(66,*) !subiteration
  close(66)
- 
+
  xl=Lx*pi
  yl=Ly*pi
 

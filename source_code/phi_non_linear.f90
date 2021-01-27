@@ -28,6 +28,7 @@ integer :: i,j,k
 #define match_dens matched_density
 #define b_type buoyancytype
 #define bodyflag bodycompflag
+#define sgradpflag sgradpcompflag
 #define eleflag elecompflag
 #define non_new_flag non_newtonian
 
@@ -1167,12 +1168,25 @@ wcp=wc
 
 ! add body force contribution to N-S non-linear terms (kind of Boussinesq approximation)
 ! body force direction array is [x,z,y] to keep the array ordering as usual in the code
+! only active in phi=+1
 #if bodyflag == 1
 allocate(a4(spx,nz,spy,2))
 call phys_to_spectral(phi+1.0d0,a4,0)
 s1=s1+body_d(1)*body_c*0.5d0*a4
 s2=s2+body_d(3)*body_c*0.5d0*a4
 s3=s3+body_d(2)*body_c*0.5d0*a4
+deallocate(a4)
+#endif
+
+
+! add s-shaped pressure gradient contribution to N-S non-linear terms
+! body force direction array is [x,z,y] to keep the array ordering as usual in the code
+! no sense to have pressure gradient along z, i.e. sgradp_d
+#if sgradpflag == 1
+allocate(a4(spx,nz,spy,2))
+call phys_to_spectral(phi,a4,0)
+s1=s1+sgradp_d(1)*a4
+s2=s2+sgradp_d(3)*a4
 deallocate(a4)
 #endif
 

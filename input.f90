@@ -49,6 +49,8 @@ gravitytype                     ! type of buoyancy considered
 bodyforce                       ! 1: body force activated, 0: body force deactivated
 bodyfcoeff                      ! coefficient of body force
 bodydirection                   ! direction of body force
+sgradpforce                     ! 1: S-shaped pressure gradient activated, 0: force deactivated
+sgradpdirection                 ! direction of S-shaped pressure gradient 
 eleforce                        ! 1: electric force activated, 0: electric force deactivated
 elefcoeff                       ! Stuart number
 ! surfactant variables

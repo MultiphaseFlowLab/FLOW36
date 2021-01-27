@@ -12,7 +12,7 @@ use particle
 #define twowayc twowaycflag
 #define tracers tracerflag
 
-integer :: grav_dir,match_dens,match_visc,body_dir,i
+integer :: grav_dir,match_dens,match_visc,body_dir,sgradp_dir,i
 double precision :: Lx,Ly
 
  open(unit=66,file='./sc_compiled/input.f90',form='formatted',status='old',action='read')
@@ -68,6 +68,8 @@ double precision :: Lx,Ly
  read(66,'(i5)') body_flag
  read(66,'(f16.6)') body_c
  read(66,'(i5)') body_dir
+ read(66,'(i5)') sgradp_flag
+ read(66,'(i5)') sgradp_dir
  read(66,'(i5)') ele_flag
  read(66,'(f16.6)') stuart
  read(66,*)
@@ -200,6 +202,16 @@ double precision :: Lx,Ly
   body_d=[0.0d0,0.0d0,1.0d0]
  elseif(body_dir.eq.-3)then
   body_d=[0.0d0,0.0d0,-1.0d0]
+ endif
+
+ if(sgradp_dir.eq.1)then
+  sgradp_d=[1.0d0,0.0d0,0.0d0]
+ elseif(sgradp_dir.eq.-1)then
+  sgradp_d=[-1.0d0,0.0d0,0.0d0]
+ elseif(sgradp_dir.eq.2)then
+  sgradp_d=[0.0d0,1.0d0,0.0d0]
+ elseif(sgradp_dir.eq.-2)then
+  sgradp_d=[0.0d0,-1.0d0,0.0d0]
  endif
 
  if(rank.eq.0) call print_start
