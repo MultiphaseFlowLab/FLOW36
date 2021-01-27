@@ -242,8 +242,8 @@ cpi_flag="0"
 repow="100.0" #B*Re_pi - re used to control the pressure gradient...
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
-lx="1.0" # real (double)
-ly="1.0" # real (double)
+lx="4.0" # real (double)
+ly="2.0" # real (double)
 
 # initial time step
 nstart="0" # integer
@@ -252,7 +252,7 @@ nstart="0" # integer
 nend="400000" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="10" # integer
+dump="100" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -285,15 +285,15 @@ dt="0.5e-4" # real (exponential)
 # 2: y shear flow (+1 at z=1, -1 at z=-1)
 # 3: x shear flow (+1 at z=1, -1 at z=-1)
 # boundary condition, z=1
-bc_upb="1" # integer
+bc_upb="0" # integer
 
 # boundary condition, z=-1
-bc_lb="1" # integer
+bc_lb="0" # integer
 
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="1" # integer
+phi_flag="0" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -333,10 +333,10 @@ exp_non_new="0.9"
 We="1.0" # real (double)
 
 # Cahn number
-Ch="0.08" # real (double)
+Ch="0.02" # real (double)
 
 # Peclet number
-Pe="100.0" # real (double)
+Pe="150.0" # real (double)
 
 # Froud number
 Fr="0.1" # real (double)
