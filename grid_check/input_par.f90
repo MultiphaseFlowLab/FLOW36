@@ -1,10 +1,10 @@
-512                 ! nx
-256                 ! ny
-513                 ! nz
+128                 ! nx
+128                 ! ny
+129                 ! nz
 
 4.0                 ! Lx (x domain size divided by pi)
 2.0                 ! Ly (y domain size divided by pi)
 
-300.0               ! Reynolds
+100.0               ! Reynolds
 
-0.02                ! Cahn (verify input Cahn number)
+0.04                ! Cahn (verify input Cahn number)

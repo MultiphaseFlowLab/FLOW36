@@ -153,16 +153,19 @@ cp ./Davide/makefile ./makefile
 cp ./Davide/go.sh ./go.sh
 
 savespectral="0"
+
 elif [ "$machine" == "12" ]; then
 echo "=                               HAWK Epyc Rome                               ="
 module purge
 # load modules
-module load gcc
-module load openmpi
+module load gcc/9.2.0
+module load openmpi/4.0.4
 # check aocl for AMD-optimized FFTW, see https://kb.hlrs.de/platforms/index.php/Libraries(Hawk)
-module load fftw
+module load fftw/3.3.8
 cp ./HAWK/makefile ./makefile
 cp ./HAWK/go.sh ./go.sh
+
+savespectral="0"
 
 elif [ "$machine" == "13" ]; then
 echo "=                              Marconi-100 (no GPU)                               ="
