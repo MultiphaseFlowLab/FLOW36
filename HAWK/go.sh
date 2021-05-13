@@ -5,8 +5,8 @@
 # AMD Rome Epyc: 2X AMD Epyc Rome 7742, 64 cores/socket, 128 cores/node, support hyperthreading 2x
 
 # select=<number of nodes>:<node_resource_variable=type>
-#PBS -l select=1:node_type=rome:node_type_mem=256gb:mpiprocs=128:ncpus=128:mem=250gb
-#PBS -l walltime=00:20:00
+#PBS -l select=64:node_type=rome:node_type_mem=256gb:mpiprocs=128:ncpus=128:mem=250gb
+#PBS -l walltime=23:59:00
 #PBS -o output.out
 #PBS -e error.err
 #PBS -N job_name
@@ -17,11 +17,10 @@
 cd $PBS_O_WORKDIR
 
 module purge
-# load modules
-module load gcc
-module load openmpi
+module load gcc/9.2.0
+module load openmpi/4.0.4
 # check aocl for AMD-optimized FFTW, see https://kb.hlrs.de/platforms/index.php/Libraries(Hawk)
-module load fftw
+module load fftw/3.3.8
 
 # Launch the parallel mpi application (compiled with intel mpi) to the allocated compute nodes
 mpirun -np NUMTASKS ./sc_compiled/flow36
