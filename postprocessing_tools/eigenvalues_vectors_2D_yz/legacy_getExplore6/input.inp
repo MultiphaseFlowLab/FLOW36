@@ -1,0 +1,38 @@
+####### input file FB
+# Time step at wich FIELDS are plot  
+    0         ... STEPIN 
+    270000        ... STEPFIN
+    1000        ... DSTEP
+
+# portion of the domain 
+     1          ... NX1 
+     1          ... NY1 
+         512        ... NX2  
+         256        ... NY2 
+     1          ... DNZ 
+     1          ... DNX 
+     1          ... DNY
+              
+# Domain dimension - units
+ 12.56637       ... Lx
+ 6.283185       ... Ly
+   2.0000       ... Lz
+
+# Reynolds, Capillary, Cahn 
+  150.00       ... RE
+  0.1        ... CA
+  0.0185        ... CH 
+ 
+# directory input files 
+../RUN/OUTPUT
+
+# directory output files
+./OUTPUT
+########################################################################
+# COSA FARE?
+      0     ...capture_interfaces 
+      0     ...plot_paraview
+      0     ...fluid_statistics
+      1     ...phi_statistics and Mass Center
+########################################################################
+#....

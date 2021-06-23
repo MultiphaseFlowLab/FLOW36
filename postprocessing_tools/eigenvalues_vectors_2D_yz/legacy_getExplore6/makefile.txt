@@ -1,0 +1,17 @@
+SWI = -O3 -fconvert=big-endian -mcmodel=medium -ffixed-line-length-132 -fbounds-check
+OBJS = main.f \
+namedir.f \
+afgen.f \
+acgen.f \
+getinputdata.f \
+readft12_pll_1.f \
+fft_phys.f \
+fft_param.f \
+FFTW/dctxx.f \
+FFTW/fftbwdxxini.f \
+explore6.f \
+
+
+ ./xforplot :  $(OBJS)
+	gfortran $(SWI) -o $@ $(OBJS) -I$//sw/lib/include/ -L$//sw/lib/ -lfftw3 -lm 
+
