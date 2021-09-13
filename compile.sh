@@ -13,6 +13,7 @@
 #11 : Davide (CINECA)
 #12 : HAWK (HLRS - AMD Epyc Rome)
 #13 : M100 (CINECA)
+#14 : G100 (CINECA)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -181,6 +182,21 @@ module load spectrum_mpi/10.3.1--binary
 module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
 cp ./Marconi_100/makefile ./makefile
 cp ./Marconi_100/go.sh ./go.sh
+
+savespectral="0"
+
+elif [ "$machine" == "14" ]; then
+echo "=                                Galileo-100                                ="
+module purge
+# load modules
+module load profile/advanced
+module load gnu
+# intel-mpi
+module load intel/oneapi-2021--binary
+module load intelmpi/oneapi-2021--binary
+module load fftw/3.3.9--intelmpi--oneapi-2021--binary
+cp ./Galileo_100/makefile ./makefile
+cp ./Galileo_100/go.sh ./go.sh
 
 savespectral="0"
 fi
