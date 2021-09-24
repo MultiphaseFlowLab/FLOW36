@@ -257,8 +257,8 @@ gradpx="0.0" # real (double)
 gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
-cpi_flag="0"
-repow="100.0" #B*Re_pi - re used to control the pressure gradient...
+cpi_flag="0" #if activated, gradpx should be set to -1.
+repow="100.0" #B*Re_pi - re used to control the pressure gradient
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
 lx="4.0" # real (double)
