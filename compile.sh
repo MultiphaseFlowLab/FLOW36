@@ -14,7 +14,8 @@
 #12 : HAWK (HLRS - AMD Epyc Rome)
 #13 : M100 (CINECA)
 #14 : G100 (CINECA)
-machine="0"
+#15 : Tersicore (Uniud)
+machine="15"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -199,6 +200,25 @@ cp ./Galileo_100/makefile ./makefile
 cp ./Galileo_100/go.sh ./go.sh
 
 savespectral="0"
+
+elif [ "$machine" == "15" ]; then
+echo "=                                Tersicore (GPU)                                ="
+#must compile with nvfortran
+cp ./Tersicore_gpu/makefile ./makefile
+cp ./Tersicore_gpu/go.sh ./go.sh
+#Setup the environment (otherwise gfortran is used)
+NVARCH=Linux_x86_64
+export NVARCH
+NVCOMPILERS=/opt/nvidia/hpc_sdk
+export NVCOMPILERS
+MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/compilers/man
+export MANPATH
+PATH=$NVCOMPILERS/$NVARCH/22.2/compilers/bin:$PATH
+export PATH
+export PATH=$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/bin:$PATH
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/man
+
+savespectral="0"
 fi
 echo "=============================================================================="
 echo ""
@@ -230,6 +250,12 @@ multinode="0" # integer
 # number of MPI processes per node
 nodesize="68" # integer
 
+# acceleration strategy
+# 0: CPU-only
+# 1: OpenACC directives are used to accelerate the code using Nvidia GPUs
+openacc_flag="0"
+# PAY ATTENTION, acceleration supported only for machine 15
+
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
 restart="0" # integer
@@ -244,16 +270,16 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="3" # integer
 
 # Reynolds number
-Re="50.0" # real (double)
+Re="220.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
 
 # mean pressure gradient (x and y), defined ad (p_out-p_in)/L
-gradpx="0.0" # real (double)
+gradpx="-1.0" # real (double)
 gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
@@ -960,6 +986,7 @@ sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
@@ -1127,7 +1154,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1173,7 +1200,8 @@ echo ""
 
 
 
-if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) ]]; then
+if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) || ( "$machine" == "15" ) ]]; then
+rm *.o
 cd ./set_run
 ./go.sh
 cd ..

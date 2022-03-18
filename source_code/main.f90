@@ -16,6 +16,7 @@ use wavenumber
 use comm_pattern
 
 #define machine machineflag
+#define openaccflag openacccomplag
 #define phiflag phicompflag
 #define psiflag psicompflag
 #define tempflag tempcompflag
@@ -25,6 +26,10 @@ use comm_pattern
 #define sdump spectral_dump_frequency
 #define cpiflag cpicompflag
 
+#if openaccflag == 1
+use openacc
+#endif
+
 
 integer :: i,j,k
 integer :: dims(2)
@@ -32,6 +37,7 @@ integer :: g_size(3),s_size(3)
 integer :: fysize(nycpu),fzsize(nzcpu)
 integer :: cysize(nzcpu),cxsize(nycpu)
 integer :: l_comm
+integer :: numdevices, devicenum
 
 double precision :: stime,etime,dtime,mtime,gstime,getime,time
 double precision :: dx,dy
@@ -122,6 +128,15 @@ if(rank.lt.flow_comm_lim)then
 
 ! define dual grid communication pattern
   call define_address
+
+! assign GPU to rank
+#if openaccflag == 1
+  numdevices=acc_get_num_devices(acc_device_nvidia)
+  devicenum=mod(rank,numdevices)
+  call acc_set_device_num(devicenum,acc_device_nvidia)
+! debug only (to be removed)
+! write(*,*) "MPI Rank, GPU number", rank, devicenum
+#endif
 endif
 
   ! create fftw plans

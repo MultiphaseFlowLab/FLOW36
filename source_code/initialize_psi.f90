@@ -288,7 +288,7 @@ do j=1,fpypsi
         if(y_fg(jg)-yc.ge.0.0d0) angle=pi-angle
         psi_c=0.5d0*(1.0d0-dcos(angle))
         ! remove psi=0.0d0 and psi=1.0d0 (logarithmic term explodes with these limiting values)
-        psi_c=min(max(psi_c,1e-6),1.0d0-1e-6)
+        psi_c=min(max(psi_c,dble(1e-6)),1.0d0-dble(1e-6))
         psi_c=psi_c/(psi_k/(psi_k+(exp(-1.0d0/(2.0d0*P_i)-1.0d0/(2.0d0*Ex*P_i)))*(1-psi_k)))
         psi_fg(i,k,j)=psi_c*psi_fg(i,k,j)
       endif
