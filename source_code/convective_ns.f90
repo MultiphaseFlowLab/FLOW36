@@ -39,6 +39,7 @@ allocate(wwc(spx,nz,spy,2))
 
 
 ! form products uu,uv,uw, ...
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx

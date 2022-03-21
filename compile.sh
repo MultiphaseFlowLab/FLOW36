@@ -207,14 +207,10 @@ echo "=                                Tersicore (GPU)                          
 cp ./Tersicore_gpu/makefile ./makefile
 cp ./Tersicore_gpu/go.sh ./go.sh
 #Setup the environment (otherwise gfortran is used)
-NVARCH=Linux_x86_64
-export NVARCH
-NVCOMPILERS=/opt/nvidia/hpc_sdk
-export NVCOMPILERS
-MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/compilers/man
-export MANPATH
-PATH=$NVCOMPILERS/$NVARCH/22.2/compilers/bin:$PATH
-export PATH
+NVARCH=Linux_x86_64; export NVARCH
+NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
+MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/compilers/man; export MANPATH
+PATH=$NVCOMPILERS/$NVARCH/22.2/compilers/bin:$PATH; export PATH
 export PATH=$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/bin:$PATH
 export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/man
 
@@ -1079,6 +1075,7 @@ sed -i "s/marconi_flag/$marconi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90

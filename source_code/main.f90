@@ -16,7 +16,7 @@ use wavenumber
 use comm_pattern
 
 #define machine machineflag
-#define openaccflag openacccomplag
+#define openaccflag openacccompflag
 #define phiflag phicompflag
 #define psiflag psicompflag
 #define tempflag tempcompflag
