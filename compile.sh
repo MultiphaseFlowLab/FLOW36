@@ -15,7 +15,7 @@
 #13 : M100 (CINECA)
 #14 : G100 (CINECA)
 #15 : Tersicore (Uniud)
-machine="15"
+machine="0"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="

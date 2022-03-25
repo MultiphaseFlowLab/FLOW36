@@ -40,7 +40,6 @@ enddo
 if(isnan(gradpx).eq.1) lcomax=7.0d0
 #elif machine == 7
 if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
-#else
 #elif machine == 15
 if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 #else
