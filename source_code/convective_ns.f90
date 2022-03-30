@@ -83,6 +83,7 @@ allocate(wwcz(spx,nz,spy,2))
 
 ! x derivatives
 indx=cstart(1)
+!$acc parallel loop
 do i=1,spx
   uucx(i,:,:,1)=-uuc(i,:,:,2)*kx(indx+i)
   uucx(i,:,:,2)=uuc(i,:,:,1)*kx(indx+i)
@@ -95,6 +96,7 @@ enddo
 
 ! y derivatives
 indy=cstart(3)
+!$acc parallel loop
 do j=1,spy
   uvcy(:,:,j,1)=-uvc(:,:,j,2)*ky(indy+j)
   uvcy(:,:,j,2)=uvc(:,:,j,1)*ky(indy+j)
