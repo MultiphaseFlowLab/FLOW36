@@ -15,7 +15,7 @@
 #13 : M100 (CINECA)
 #14 : G100 (CINECA)
 #15 : Tersicore (Uniud)
-machine="0"
+machine="1"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -240,7 +240,7 @@ exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
 NYCPU="1" # integer
-NZCPU="4" # integer
+NZCPU="2" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
@@ -293,7 +293,7 @@ nstart="0" # integer
 nend="400000" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="100" # integer
+dump="10" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -983,6 +983,9 @@ sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
@@ -1076,6 +1079,9 @@ sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90

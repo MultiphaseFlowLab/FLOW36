@@ -135,7 +135,7 @@ if(rank.lt.flow_comm_lim)then
   devicenum=mod(rank,numdevices)
   call acc_set_device_num(devicenum,acc_device_nvidia)
 ! debug only (to be removed)
-! write(*,*) "MPI Rank, GPU number", rank, devicenum
+!  write(*,*) "MPI Rank, GPU number", rank, devicenum
 #endif
 endif
 

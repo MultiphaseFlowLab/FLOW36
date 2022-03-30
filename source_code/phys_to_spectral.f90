@@ -1,9 +1,9 @@
-subroutine phys_to_spectral(u,uout,aliasing)
+subroutine phys_to_spectral(u,uout)
 
 use commondata
 use par_size
 use mpi
-
+use fftx_fwd_module
 
 integer :: dims(2) !,coord(2)
 integer :: rx,ry,rz,nsx,ngsx
@@ -53,7 +53,7 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(uc(npx,npz,npy,2))
-call fftx_fwd(u,uc,nx,npz,npy,aliasing)
+call fftx_fwd(u,uc,aliasing)
 !call fftx_fwd(u,uc,nx,npz,npy,0)
 
 
@@ -176,6 +176,7 @@ use commondata
 use par_size
 use dual_grid
 use mpi
+use fftx_fwd_module
 
 
 integer :: dims(2)
@@ -218,7 +219,7 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(uc(npx,npz,npy,2))
-call fftx_fwd_fg(u,uc,npsix,npz,npy,aliasing)
+call fftx_fwd_fg(u,uc,aliasing)
 !call fftx_fwd(u,uc,nx,npz,npy,0)
 
 

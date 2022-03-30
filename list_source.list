@@ -12,8 +12,6 @@
 ./set_run/sc_compiled/solver.f90
 ./set_run/sc_compiled/convective_ns.f90
 ./set_run/sc_compiled/wave_numbers.f90
-./set_run/sc_compiled/phys_to_spectral.f90
-./set_run/sc_compiled/spectral_to_phys.f90
 ./set_run/sc_compiled/fftx_fwd.f90
 ./set_run/sc_compiled/fftx_bwd.f90
 ./set_run/sc_compiled/ffty_fwd.f90
@@ -24,6 +22,8 @@
 ./set_run/sc_compiled/xy2xz.f90
 ./set_run/sc_compiled/dctz_fwd.f90
 ./set_run/sc_compiled/dctz_bwd.f90
+./set_run/sc_compiled/phys_to_spectral.f90
+./set_run/sc_compiled/spectral_to_phys.f90
 ./set_run/sc_compiled/dz.f90
 ./set_run/sc_compiled/time_integration.f90
 ./set_run/sc_compiled/hist_term.f90

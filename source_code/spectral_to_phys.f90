@@ -3,11 +3,11 @@ subroutine spectral_to_phys(uc,uout,aliasing)
 use commondata
 use par_size
 use mpi
+use fftx_bwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz
 integer :: aliasing
-
 double precision :: uc(spx,nz,spy,2),uout(nx,fpz,fpy)
 double precision, allocatable :: u(:,:,:,:),wa(:,:,:,:)
 
@@ -134,8 +134,8 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-call fftx_bwd(u,uout,nx,fpz,fpy,aliasing)
-!call fftx_bwd(u,uout,nx,fpz,fpy,0)
+call fftx_bwd(u,uout,aliasing)
+
 
 deallocate(u)
 
@@ -153,6 +153,7 @@ use commondata
 use par_size
 use dual_grid
 use mpi
+use fftx_bwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz
@@ -279,7 +280,7 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-call fftx_bwd_fg(u,uout,npsix,fpzpsi,fpypsi,aliasing)
+call fftx_bwd_fg(u,uout,aliasing)
 
 deallocate(u)
 

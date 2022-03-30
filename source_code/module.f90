@@ -148,6 +148,17 @@ end module fftw3
 
 
 
+
+module cufftplans
+ use, intrinsic :: iso_c_binding
+ integer :: cudaplan_x_fwd, cudaplan_y_fwd, cudaplan_z_fwd
+ integer :: cudaplan_x_bwd, cudaplan_y_bwd, cudaplan_z_bwd
+ integer :: cudaplan_x_fwd_fg, cudaplan_y_fwd_fg, cudaplan_z_fwd_fg
+ integer :: cudaplan_x_bwd_fg, cudaplan_y_bwd_fg, cudaplan_z_bwd_fg
+ integer :: gerr
+end module cufftplans
+
+
 module sterms
  double precision, allocatable, dimension(:,:,:,:) :: s1_o,s2_o,s3_o, sphi_o, spsi_o, stheta_o
 end module sterms
