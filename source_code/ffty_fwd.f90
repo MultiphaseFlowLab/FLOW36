@@ -1,67 +1,103 @@
-subroutine ffty_fwd(ui,uo,nsx,npz,ny,aliasing)
-
-use fftw3
+module ffty_fwd_module
 implicit none
+contains
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine ffty_fwd(ui,uo,aliasing)
 
-!type(c_ptr) :: plan
-integer(c_int) :: nsx,ny,npz
-!integer(c_int) :: dims(1)
-!integer(c_int) :: inembed(3),onembed(3),istride,ostride,idist,odist
-integer :: aliasing
+#define openaccflag openacccompflag
+#if openaccflag == 0
+use fftw3
+#endif
+#if openaccflag == 1
+use cufft
+use openacc
+use cufftplans
+#endif
 
-real(c_double) :: ui(nsx,npz,ny,2),uo(nsx,npz,ny,2)
-complex(c_double_complex) :: wt(nsx,npz,ny),wot(nsx,npz,ny)
+implicit none
+integer :: aliasing,nsx,ny,npz
+real(c_double), dimension(:,:,:,:) :: ui, uo
+complex(c_double_complex), allocatable :: wt(:,:,:),wot(:,:,:)
 
+!! get dimensions
+nsx=size(ui,1)
+npz=size(ui,2)
+ny=size(ui,3)
+!! temp for storing complex fft results
+allocate(wt(nsx,npz,ny))
+allocate(wot(nsx,npz,ny))
 
+#if openaccflag == 0
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
-
-!inembed=[nsx,npz,ny]
-!onembed=[nsx,npz,ny]
-!istride=nsx*npz
-!ostride=nsx*npz
-!idist=1
-!odist=1
-
-!dims(1)=ny
-
-
-!! -1=FFT_FORWARD
-!plan=fftw_plan_many_dft(1,dims,nsx*npz,wt,inembed,istride,idist, &
-! &    wot,onembed,ostride,odist,-1,FFTW_ESTIMATE)
 
 call fftw_execute_dft(plan_y_fwd,wt,wot)
 
-!call fftw_destroy_plan(plan)
-
 uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
 uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
-
-
 
 ! dealiasing
 if(aliasing.eq.1)then
  uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),1)=0.0d0
  uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
 endif
+#endif
 
-return
-end
 
+#if openaccflag == 1
+!$acc kernels
+wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
+!$acc end kernels
+!$acc data copyin(wt), copyout(wot)
+!$acc host_data use_device(wt,wot)
+gerr=gerr+cufftExecZ2Z(cudaplan_y_fwd,wt,wot,CUFFT_FORWARD)
+!$acc end host_data
+!$acc end data
+!$acc kernels
+uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
+uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
+!$acc end kernels
+!$acc kernels
+if(aliasing.eq.1)then
+ uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),1)=0.0d0
+ uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
+endif
+!$acc end kernels
+#endif
+
+deallocate(wt,wot)
+end subroutine
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine ffty_fwd_fg(ui,uo,aliasing)
 
-subroutine ffty_fwd_fg(ui,uo,nsx,npz,ny,aliasing)
-
+#define openaccflag openacccompflag  
+#if openaccflag == 0
 use fftw3
-implicit none
+#endif
+#if openaccflag == 1
+use cufft
+use openacc
+use cufftplans
+#endif
 
+implicit none
 integer(c_int) :: nsx,ny,npz
 integer :: aliasing
+real(c_double), dimension(:,:,:,:) :: ui,uo
+complex(c_double_complex), allocatable :: wt(:,:,:),wot(:,:,:)
 
-real(c_double) :: ui(nsx,npz,ny,2),uo(nsx,npz,ny,2)
-complex(c_double_complex) :: wt(nsx,npz,ny),wot(nsx,npz,ny)
+! get dimensions
+nsx=size(ui,1)
+npz=size(ui,2)
+ny=size(ui,3)
+! temp for storing complex fft results
+allocate(wt(nsx,npz,ny))
+allocate(wot(nsx,npz,ny))
 
+#if openaccflag == 0
 
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 
@@ -70,13 +106,38 @@ call fftw_execute_dft(plan_y_fwd_fg,wt,wot)
 uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
 uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
 
-
-
 ! dealiasing
 if(aliasing.eq.1)then
  uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),1)=0.0d0
  uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
 endif
+#endif
 
-return
-end
+
+#if openaccflag == 1
+!$acc kernels
+wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
+!$acc end kernels
+!$acc data copyin(wt), copyout(wot)
+!$acc host_data use_device(wt,wot)
+gerr=gerr+cufftExecZ2Z(cudaplan_y_fwd_fg,wt,wot,CUFFT_FORWARD)
+!$acc end host_data
+!$acc end data
+!$acc kernels
+uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
+uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
+!$acc end kernels
+!$acc kernels
+if(aliasing.eq.1)then
+ uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),1)=0.0d0
+ uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
+endif
+!$acc end kernels
+#endif
+
+deallocate(wt,wot)
+end subroutine
+end module
+
+
+

@@ -4,6 +4,7 @@ use commondata
 use par_size
 use mpi
 use fftx_bwd_module
+use ffty_bwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz
@@ -89,8 +90,8 @@ endif
 ! 3)    ifft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_bwd(u,u,spx,npz,ny,aliasing)
-!call ffty_bwd(u,u,spx,npz,ny,0)
+!call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing)
+call ffty_bwd(u,u,aliasing)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to y-z
@@ -154,6 +155,7 @@ use par_size
 use dual_grid
 use mpi
 use fftx_bwd_module
+use ffty_bwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz
@@ -238,7 +240,7 @@ endif
 ! 3)    ifft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing)
+call ffty_bwd_fg(u,u,aliasing)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to y-z

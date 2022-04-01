@@ -126,7 +126,7 @@ odist=1
 dims(1)=ny
 
 
-!#if openaccflag == 0
+#if openaccflag == 0
 ! create FFTW plan (CPU)
 #if flag_fftw == 0
 plan_y_fwd=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
@@ -135,16 +135,16 @@ plan_y_fwd=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
 plan_y_fwd=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
  &    b_out,onembed,ostride,odist,-1,FFTW_PATIENT)
 #endif
-!#endif
+#endif
 
 
-!#if openaccflag == 1
+#if openaccflag == 1
 ! Create cuFFT plan (GPU)
-!gerr=gerr+cufftCreate(cudaplan_y_fwd)
-!gerr=gerr+cufftPlanMany(cudaplan_y_fwd,1,dims,inembed,istride,idist,onembed,&
-! &    ostride,odist,CUFFT_Z2Z,nsx*npz)
-!write(*,*) "cplanyfwd:", gerr !!to be removed
-!#endif
+gerr=gerr+cufftCreate(cudaplan_y_fwd)
+gerr=gerr+cufftPlanMany(cudaplan_y_fwd,1,dims,inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_Z2Z,nsx*npz)
+write(*,*) "cplanyfwd:", gerr !!to be removed
+#endif
 
 
 ! bwd
@@ -157,7 +157,7 @@ odist=1
 
 dims(1)=ny
 
-!#if openaccflag == 0
+#if openaccflag == 0
 ! +1=FFT_BACKWARD
 #if flag_fftw == 0
 plan_y_bwd=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
@@ -166,15 +166,15 @@ plan_y_bwd=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
 plan_y_bwd=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
  &    b_t,onembed,ostride,odist,+1,FFTW_PATIENT)
 #endif
-!#endif
+#endif
 
-!#if openaccflag == 1
-!! Create cuFFT plan (GPU)
-!gerr=gerr+cufftCreate(cudaplan_y_bwd)
-!gerr=gerr+cufftPlanMany(cudaplan_y_bwd,1,dims,inembed,istride,idist,onembed,&
-! &    ostride,odist,CUFFT_Z2Z,nsx*npz)
-!write(*,*) "cplanyfwd:", gerr !!to be removed
-!#endif
+#if openaccflag == 1
+! Create cuFFT plan (GPU)
+gerr=gerr+cufftCreate(cudaplan_y_bwd)
+gerr=gerr+cufftPlanMany(cudaplan_y_bwd,1,dims,inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_Z2Z,nsx*npz)
+write(*,*) "cplanybwd:", gerr !!to be removed
+#endif
 
 
 
@@ -227,7 +227,7 @@ subroutine create_plan_fg
 use fftw3
 use commondata
 use par_size
-use dual_grid
+use dual_grid !!until hybrid transfroms, then removed
 
 #define openaccflag openacccompflag
 #if openaccflag ==0
@@ -242,7 +242,6 @@ integer :: nsx,npz
 integer :: rx,rz
 integer(c_int) :: dims(1)
 integer(c_int) :: inembed(3),onembed(3),istride,ostride,idist,odist
-
 real(c_double), allocatable :: b_in(:,:,:)
 real(c_double) :: tin(npsiz),tout(npsiz)
 complex(c_double_complex), allocatable :: b_out(:,:,:), b_t(:,:,:)
@@ -350,9 +349,8 @@ odist=1
 
 dims(1)=npsiy
 
-!#if openaccflag == 0
+#if openaccflag == 0
 ! create FFTW plan (CPU)
-! -1=FFT_FORWARD
 #if flag_fftw == 0
 plan_y_fwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
  &    b_out,onembed,ostride,odist,-1,FFTW_ESTIMATE)
@@ -360,15 +358,15 @@ plan_y_fwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
 plan_y_fwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
  &    b_out,onembed,ostride,odist,-1,FFTW_PATIENT)
 #endif
-!#endif
+#endif
 
-!#if openaccflag == 1
-!! Create cuFFT plan (GPU)
-!gerr=gerr+cufftCreate(cudaplan_y_fwd_fg)
-!gerr=gerr+cufftPlanMany(cudaplan_y_fwd_fg,1,dims,inembed,istride,idist,onembed,&
-! &    ostride,odist,CUFFT_Z2D,nsx*npz)
-!write(*,*) "cplanxbwd_fg:", gerr  !!to be removed
-!#endif
+#if openaccflag == 1
+! Create cuFFT plan (GPU)
+gerr=gerr+cufftCreate(cudaplan_y_fwd_fg)
+gerr=gerr+cufftPlanMany(cudaplan_y_fwd_fg,1,dims,inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_Z2Z,nsx*npz)
+write(*,*) "cplanxbwd_fg:", gerr  !!to be removed
+#endif
 
 ! bwd
 inembed=[nsx,npz,npsiy]
@@ -380,9 +378,8 @@ odist=1
 
 dims(1)=npsiy
 
-!#if openaccflag == 0
+#if openaccflag == 0
 ! create FFTW plan (CPU)
-! +1=FFT_BACKWARD
 #if flag_fftw == 0
 plan_y_bwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
  &    b_t,onembed,ostride,odist,+1,FFTW_ESTIMATE)
@@ -390,15 +387,15 @@ plan_y_bwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
 plan_y_bwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
  &    b_t,onembed,ostride,odist,+1,FFTW_PATIENT)
 #endif
-!#endif
+#endif
 
-!#if openaccflag == 1
-!! Create cuFFT plan (GPU)
-!gerr=gerr+cufftCreate(cudaplan_y_bwd_fg)
-!gerr=gerr+cufftPlanMany(cudaplan_y_bwd_fg,1,dims,inembed,istride,idist,onembed,&
-! &    ostride,odist,CUFFT_Z2D,nsx*npz)
-!write(*,*) "cplanybwd_fg:", gerr  !!to be removed
-!#endif
+#if openaccflag == 1
+! Create cuFFT plan (GPU)
+gerr=gerr+cufftCreate(cudaplan_y_bwd_fg)
+gerr=gerr+cufftPlanMany(cudaplan_y_bwd_fg,1,dims,inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_Z2Z,nsx*npz)
+write(*,*) "cplanybwd_fg:", gerr  !!to be removed
+#endif
 
 deallocate(b_t)
 deallocate(b_out)

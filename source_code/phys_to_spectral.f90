@@ -4,6 +4,7 @@ use commondata
 use par_size
 use mpi
 use fftx_fwd_module
+use ffty_fwd_module
 
 integer :: dims(2) !,coord(2)
 integer :: rx,ry,rz,nsx,ngsx
@@ -106,9 +107,8 @@ npx=nsx
 ! 3)    fft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_fwd(uc,uc,nsx,npz,ny,aliasing)
-!call ffty_fwd(uc,uc,nsx,npz,ny,0)
-
+!call ffty_fwd(uc,uc,nsx,npz,ny,aliasing)
+call ffty_fwd(uc,uc,aliasing)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to x-y
@@ -177,7 +177,7 @@ use par_size
 use dual_grid
 use mpi
 use fftx_fwd_module
-
+use ffty_fwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz,nsx,ngsx
@@ -268,7 +268,7 @@ npx=nsx
 ! 3)    fft y direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call ffty_fwd_fg(uc,uc,nsx,npz,npsiy,aliasing)
+call ffty_fwd_fg(uc,uc,aliasing)
 !call ffty_fwd(uc,uc,nsx,npz,ny,0)
 
 

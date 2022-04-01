@@ -15,7 +15,7 @@
 #13 : M100 (CINECA)
 #14 : G100 (CINECA)
 #15 : Tersicore (Uniud)
-machine="1"
+machine="15"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -229,9 +229,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="7" # integer
-iy="7" # integer
-iz="7" # integer
+ix="8" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -249,7 +249,7 @@ nodesize="68" # integer
 # acceleration strategy
 # 0: CPU-only
 # 1: OpenACC directives are used to accelerate the code using Nvidia GPUs
-openacc_flag="0"
+openacc_flag="1"
 # PAY ATTENTION, acceleration supported only for machine 15
 
 ################################################################################
@@ -266,7 +266,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="3" # integer
+incond="0" # integer
 
 # Reynolds number
 Re="220.0" # real (double)
@@ -985,6 +985,8 @@ sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
@@ -1081,6 +1083,8 @@ sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
