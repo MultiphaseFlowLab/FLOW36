@@ -73,7 +73,7 @@ end subroutine
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine fftx_bwd_fg(uc,ur,aliasing)
 
-#define openaccflag openacccompflag  
+#define openaccflag openacccompflag
 #if openaccflag == 0
 use fftw3
 #endif

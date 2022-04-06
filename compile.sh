@@ -290,10 +290,10 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="400000" #integer (up to 8 digits)
+nend="100" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="10" # integer
+dump="100" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -987,6 +987,7 @@ sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_fwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
@@ -1085,6 +1086,7 @@ sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_fwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90

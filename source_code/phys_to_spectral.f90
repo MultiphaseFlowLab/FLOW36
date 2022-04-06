@@ -5,6 +5,7 @@ use par_size
 use mpi
 use fftx_fwd_module
 use ffty_fwd_module
+use dctz_fwd_module
 
 integer :: dims(2) !,coord(2)
 integer :: rx,ry,rz,nsx,ngsx
@@ -149,7 +150,8 @@ rz=mod(nz,nzcpu)
 ! 5)    dct z direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call dctz_fwd(uc,uout,nsx,nz,npy,aliasing)
+!call dctz_fwd(uc,uout,nsx,nz,npy,aliasing)
+call dctz_fwd(uc,uout,aliasing)
 !uout=uc
 
 
@@ -178,6 +180,7 @@ use dual_grid
 use mpi
 use fftx_fwd_module
 use ffty_fwd_module
+use dctz_fwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz,nsx,ngsx
@@ -307,7 +310,8 @@ rz=mod(npsiz,nzcpu)
 ! 5)    dct z direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-call dctz_fwd_fg(uc,uout,nsx,npsiz,npy,aliasing)
+!call dctz_fwd_fg(uc,uout,nsx,npsiz,npy,aliasing)
+call dctz_fwd_fg(uc,uout,aliasing)
 
 
 deallocate(uc)

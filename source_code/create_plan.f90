@@ -13,11 +13,10 @@ use cufft
 use cufftplans
 #endif
 
-integer :: nsx,npz
-integer :: rx,rz
+integer :: nsx,npz,npy
+integer :: rx,rz,ry
 integer(c_int) :: dims(1)
 integer(c_int) :: inembed(3),onembed(3),istride,ostride,idist,odist
-
 real(c_double), allocatable :: b_in(:,:,:)
 real(c_double) :: tin(nz),tout(nz)
 complex(c_double_complex), allocatable :: b_out(:,:,:), b_t(:,:,:)
@@ -184,23 +183,60 @@ deallocate(b_out)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! dct z
+ry=mod(ny,nzcpu)
+npy=int((ny-ry)/nzcpu)
+if(ry.eq.0)then
+ ngy=npy
+else
+ ngy=npy+1
+endif
 
-! fwd
+if(floor(real(rank)/real(nycpu)).lt.ry)then
+ npy=int((ny-ry)/nzcpu)+1
+endif
+rz=mod(nz,nzcpu)
+
+
+!fwd
+#if openaccflag == 0
 #if flag_fftw == 0
 plan_z_fwd=fftw_plan_r2r_1d(nz,tin,tout, FFTW_REDFT00, FFTW_ESTIMATE)
 #elif flag_fftw == 1
 plan_z_fwd=fftw_plan_r2r_1d(nz,tin,tout, FFTW_REDFT00, FFTW_PATIENT)
 #endif
-!plan_z_fwd=fftw_plan_r2r_1d(nz,tin,tout, FFTW_REDFT00, FFTW_EXHAUSTIVE)
+#endif
+
+
+#if openaccflag == 1
+print*,"fpy",fpy
+print*,"npy",npy
+print*,"nsx",nsx
+print*,"nz",nz
+! Done in a single block by transposing the matrix
+! Othersiw, it cannot be done as an entire block.
+! DCTs by rows and slices are much slower 
+inembed=[2*(nz-1),nsx,fpy]
+istride=1
+idist=2*(nz-1)
+onembed=[nz,nsx,fpy]
+ostride=1
+odist=nz
+dims(1)=2*(nz-1)
+! Create cuFFT plan (GPU)
+gerr=cufftCreate(cudaplan_z_fwd)
+gerr=gerr+cufftPlanMany(cudaplan_z_fwd,1,dims,inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_D2Z,nsx*npy)
+write(*,*) "cplanzfwd:", gerr !!to be removed
+#endif
 
 
 ! bwd
+
 #if flag_fftw == 0
 plan_z_bwd=fftw_plan_r2r_1d(nz,tout,tin, FFTW_REDFT00, FFTW_ESTIMATE)
 #elif flag_fftw == 1
 plan_z_bwd=fftw_plan_r2r_1d(nz,tout,tin, FFTW_REDFT00, FFTW_PATIENT)
 #endif
-!plan_z_bwd=fftw_plan_r2r_1d(nz,tout,tin, FFTW_REDFT00, FFTW_EXHAUSTIVE)
 
 
 
@@ -210,9 +246,6 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
 
 
 
@@ -405,12 +438,28 @@ deallocate(b_out)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! dct z
 
 ! fwd
+#if openaccflag == 0
 #if flag_fftw == 0
 plan_z_fwd_fg=fftw_plan_r2r_1d(npsiz,tin,tout, FFTW_REDFT00, FFTW_ESTIMATE)
 #elif flag_fftw == 1
 plan_z_fwd_fg=fftw_plan_r2r_1d(npsiz,tin,tout, FFTW_REDFT00, FFTW_PATIENT)
 #endif
+#endif
 
+#if openaccflag == 1
+! Faster with a large block of transforms
+inembed=[2*(npsiz-1),nsx,fpypsi]
+istride=1
+idist=2*(npsiz-1)
+onembed=[npsiz,nsx,fpypsi]
+ostride=1
+odist=npsiz
+! Create cuFFT plan (GPU)
+gerr=cufftCreate(cudaplan_z_fwd_fg)
+gerr=gerr+cufftPlanMany(cudaplan_z_fwd_fg,1,2*(npsiz-1),inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_D2Z,nsx*npy)
+write(*,*) "cplanzfwd:", gerr !!to be removed
+#endif
 
 ! bwd
 #if flag_fftw == 0

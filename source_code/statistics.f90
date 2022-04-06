@@ -475,7 +475,7 @@ call mpi_reduce(pm,ptm,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 
 if(rank.eq.0)then
   ptm=ptm/dble(nx*ny)
-  call dctz_fwd(ptm,ptm,1,nz,1,1)
+  !call dctz_fwd(ptm,ptm,1,nz,1,1)
   f(1,:,1,1)=-dble(nx*ny)*ptm
   f(1,:,1,2)=0.0d0
 endif
