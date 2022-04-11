@@ -58,7 +58,7 @@ plan_x_fwd=fftw_plan_many_dft_r2c(1,dims,fpz*fpy,b_in,inembed,istride,idist,&
 gerr=gerr+cufftCreate(cudaplan_x_fwd)
 gerr=gerr+cufftPlanMany(cudaplan_x_fwd,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_D2Z,fpz*fpy)
-if (gerr.ne.0) write(*,*) "cplanxfwd:", gerr !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan X FWD:", gerr 
 #endif
 
 
@@ -89,7 +89,7 @@ plan_x_bwd=fftw_plan_many_dft_c2r(1,dims,fpz*fpy,b_t,inembed,istride,idist, &
 gerr=gerr+cufftCreate(cudaplan_x_bwd)
 gerr=gerr+cufftPlanMany(cudaplan_x_bwd,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_Z2D,fpz*fpy)
-if (gerr.ne.0) write(*,*) "cplanxbwd:", gerr  !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan X BWD:", gerr
 #endif
 
 deallocate(b_in)
@@ -142,7 +142,7 @@ plan_y_fwd=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
 gerr=gerr+cufftCreate(cudaplan_y_fwd)
 gerr=gerr+cufftPlanMany(cudaplan_y_fwd,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_Z2Z,nsx*npz)
-write(*,*) "cplanyfwd:", gerr !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Y FWD:", gerr
 #endif
 
 
@@ -172,7 +172,7 @@ plan_y_bwd=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
 gerr=gerr+cufftCreate(cudaplan_y_bwd)
 gerr=gerr+cufftPlanMany(cudaplan_y_bwd,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_Z2Z,nsx*npz)
-write(*,*) "cplanybwd:", gerr !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Y BWD:", gerr
 #endif
 
 
@@ -208,17 +208,13 @@ plan_z_fwd=fftw_plan_r2r_1d(nz,tin,tout, FFTW_REDFT00, FFTW_PATIENT)
 
 
 #if openaccflag == 1
-print*,"fpy",fpy
-print*,"npy",npy
-print*,"nsx",nsx
-print*,"nz",nz
-! Done in a single block by transposing the matrix
-! Othersiw, it cannot be done as an entire block.
-! DCTs by rows and slices are much slower 
-inembed=[2*(nz-1),nsx,fpy]
+! Done in a single block by transposing the matrix (see dctz_*.f90)
+! If not tranposed, it cannot be done as an entire block.
+! DCTs by rows and slices are much slower (5 to 10 times slower)
+inembed=[2*(nz-1),nsx,npy]
 istride=1
 idist=2*(nz-1)
-onembed=[nz,nsx,fpy]
+onembed=[nz,nsx,npy]
 ostride=1
 odist=nz
 dims(1)=2*(nz-1)
@@ -226,19 +222,42 @@ dims(1)=2*(nz-1)
 gerr=cufftCreate(cudaplan_z_fwd)
 gerr=gerr+cufftPlanMany(cudaplan_z_fwd,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_D2Z,nsx*npy)
-write(*,*) "cplanzfwd:", gerr !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Z FWD:", gerr
+! Create cuFFT plan (GPU) for 1D back
+gerr=cufftCreate(cudaplan_z_fwd_1d)
+gerr=gerr+cufftPlan1d(cudaplan_z_fwd_1d,2*(nz-1),CUFFT_D2Z,1)
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Z FWD 1D:", gerr
 #endif
 
 
 ! bwd
-
+#if openaccflag == 0
 #if flag_fftw == 0
 plan_z_bwd=fftw_plan_r2r_1d(nz,tout,tin, FFTW_REDFT00, FFTW_ESTIMATE)
 #elif flag_fftw == 1
 plan_z_bwd=fftw_plan_r2r_1d(nz,tout,tin, FFTW_REDFT00, FFTW_PATIENT)
 #endif
+#endif
 
-
+#if openaccflag == 1
+inembed=[2*(nz-1),nsx,npy]
+istride=1
+idist=2*(nz-1)
+onembed=[nz,nsx,npy]
+ostride=1
+odist=nz
+dims(1)=2*(nz-1)
+! Create cuFFT plan (GPU)
+! Same as fwd (can be simplifed, no effects on performance, keep it for simmetry)
+gerr=cufftCreate(cudaplan_z_bwd)
+gerr=gerr+cufftPlanMany(cudaplan_z_bwd,1,dims,inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_D2Z,nsx*npy)
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Z BWD:", gerr
+! Create cuFFT plan (GPU) for 1D back
+gerr=cufftCreate(cudaplan_z_bwd_1d)
+gerr=gerr+cufftPlan1d(cudaplan_z_bwd_1d,2*(nz-1),CUFFT_D2Z,1)
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Z BWD 1D:", gerr
+#endif
 
 return
 end
@@ -271,8 +290,8 @@ use cufft
 use cufftplans
 #endif
 
-integer :: nsx,npz
-integer :: rx,rz
+integer :: nsx,npz,npy
+integer :: rx,rz,ry
 integer(c_int) :: dims(1)
 integer(c_int) :: inembed(3),onembed(3),istride,ostride,idist,odist
 real(c_double), allocatable :: b_in(:,:,:)
@@ -318,7 +337,7 @@ plan_x_fwd_fg=fftw_plan_many_dft_r2c(1,dims,fpzpsi*fpypsi,b_in,inembed,istride,i
 gerr=gerr+cufftCreate(cudaplan_x_fwd_fg)
 gerr=gerr+cufftPlanMany(cudaplan_x_fwd_fg,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_D2Z,fpzpsi*fpypsi)
-if (gerr.ne.0) write(*,*) "cplanxfwd_fg:", gerr !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan X FWD FG:", gerr
 #endif
 
 
@@ -348,7 +367,7 @@ plan_x_bwd_fg=fftw_plan_many_dft_c2r(1,dims,fpzpsi*fpypsi,b_t,inembed,istride,id
 gerr=gerr+cufftCreate(cudaplan_x_bwd_fg)
 gerr=gerr+cufftPlanMany(cudaplan_x_bwd_fg,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_Z2D,fpzpsi*fpypsi)
-if (gerr.ne.0) write(*,*) "cplanxbwd_fg:", gerr  !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan X BWD FG:", gerr
 #endif
 
 
@@ -398,7 +417,7 @@ plan_y_fwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_t,inembed,istride,idist, &
 gerr=gerr+cufftCreate(cudaplan_y_fwd_fg)
 gerr=gerr+cufftPlanMany(cudaplan_y_fwd_fg,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_Z2Z,nsx*npz)
-write(*,*) "cplanxbwd_fg:", gerr  !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Y FWD FG:", gerr
 #endif
 
 ! bwd
@@ -427,7 +446,7 @@ plan_y_bwd_fg=fftw_plan_many_dft(1,dims,nsx*npz,b_out,inembed,istride,idist, &
 gerr=gerr+cufftCreate(cudaplan_y_bwd_fg)
 gerr=gerr+cufftPlanMany(cudaplan_y_bwd_fg,1,dims,inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_Z2Z,nsx*npz)
-write(*,*) "cplanybwd_fg:", gerr  !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Y BWD FG:", gerr
 #endif
 
 deallocate(b_t)
@@ -436,6 +455,20 @@ deallocate(b_out)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! dct z
+
+ry=mod(npsiy,nzcpu)
+npy=int((npsiy-ry)/nzcpu)
+if(ry.eq.0)then
+ ngy=npy
+else
+ ngy=npy+1
+endif
+
+if(floor(real(rank)/real(nycpu)).lt.ry)then
+ npy=int((npsiy-ry)/nzcpu)+1
+endif
+rz=mod(npsiz,nzcpu)
+
 
 ! fwd
 #if openaccflag == 0
@@ -448,26 +481,43 @@ plan_z_fwd_fg=fftw_plan_r2r_1d(npsiz,tin,tout, FFTW_REDFT00, FFTW_PATIENT)
 
 #if openaccflag == 1
 ! Faster with a large block of transforms
-inembed=[2*(npsiz-1),nsx,fpypsi]
+inembed=[2*(npsiz-1),nsx,npy] 
 istride=1
 idist=2*(npsiz-1)
-onembed=[npsiz,nsx,fpypsi]
+onembed=[npsiz,nsx,npy]
 ostride=1
 odist=npsiz
 ! Create cuFFT plan (GPU)
 gerr=cufftCreate(cudaplan_z_fwd_fg)
 gerr=gerr+cufftPlanMany(cudaplan_z_fwd_fg,1,2*(npsiz-1),inembed,istride,idist,onembed,&
  &    ostride,odist,CUFFT_D2Z,nsx*npy)
-write(*,*) "cplanzfwd:", gerr !!to be removed
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Z FWD FG:", gerr
 #endif
 
+
+
 ! bwd
+#if openaccflag == 0
 #if flag_fftw == 0
 plan_z_bwd_fg=fftw_plan_r2r_1d(npsiz,tout,tin, FFTW_REDFT00, FFTW_ESTIMATE)
 #elif flag_fftw == 1
 plan_z_bwd_fg=fftw_plan_r2r_1d(npsiz,tout,tin, FFTW_REDFT00, FFTW_PATIENT)
 #endif
+#endif
 
+#if openaccflag == 1
+inembed=[2*(npsiz-1),nsx,npy]
+istride=1
+idist=2*(npsiz-1)
+onembed=[npsiz,nsx,npy]
+ostride=1
+odist=npsiz
+! Create cuFFT plan (GPU)
+gerr=cufftCreate(cudaplan_z_bwd_fg)
+gerr=gerr+cufftPlanMany(cudaplan_z_bwd_fg,1,2*(npsiz-1),inembed,istride,idist,onembed,&
+ &    ostride,odist,CUFFT_D2Z,nsx*npy)
+if (gerr.ne.0) write(*,*) "Error in cuFFT plan Z BWD FG:", gerr
+#endif
 
 return
 end

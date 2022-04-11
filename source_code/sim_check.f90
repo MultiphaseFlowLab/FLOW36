@@ -189,31 +189,34 @@ use commondata
 use par_size
 use velocity
 use temperature
+use dctz_bwd_module
 
 double precision, dimension(spx,nz,spy,2) :: tau,nu
-double precision :: tau_c(1,nz,1,2),nu_c(1,nz,1,2)
+double precision, dimension(nz) :: tau_c,nu_c
 double precision :: tau_wm1,tau_wp1,nu_wm1,nu_wp1
 
 call dz(uc+vc,tau)
 
 tau_c=0.0d0
-tau_c(1,:,1,1)=tau(1,:,1,1)
+tau_c=tau(1,:,1,1)
 
-call dctz_bwd(tau_c,tau_c,1,nz,1,0)
+!call dctz_bwd(tau_c,tau_c,1,nz,1,0)
+call dctz_bwd_1d(tau_c,tau_c)
 
-tau_wm1=tau_c(1,nz,1,1)/dble(nx*ny)
-tau_wp1=tau_c(1,1,1,1)/dble(nx*ny)
+tau_wm1=tau_c(nz)/dble(nx*ny)
+tau_wp1=tau_c(1)/dble(nx*ny)
 
 
 call dz(thetac,nu)
 
 nu_c=0.0d0
-nu_c(1,:,1,1)=nu(1,:,1,1)
+nu_c(:)=nu(1,:,1,1)
 
-call dctz_bwd(nu_c,nu_c,1,nz,1,0)
+!call dctz_bwd(nu_c,nu_c,1,nz,1,0)
+call dctz_bwd_1d(nu_c,nu_c)
 
-nu_wm1=nu_c(1,nz,1,1)/dble(nx*ny)
-nu_wp1=nu_c(1,1,1,1)/dble(nx*ny)
+nu_wm1=nu_c(nz)/dble(nx*ny)
+nu_wp1=nu_c(1)/dble(nx*ny)
 
 return
 end
@@ -226,11 +229,11 @@ use commondata
 use par_size
 use phase_field
 use grid
+use dctz_bwd_module
 
 double precision :: int_phi
-double precision, dimension(nz) :: dz,phi_mm
-double precision, dimension(nz,2) :: phi_mmc
-
+double precision, dimension(nz) :: dz,tmp,tmpc
+double precision, dimension(nz) :: phi_mm
 integer :: k
 
 
@@ -240,9 +243,10 @@ do i=2,nz-1
   dz(i)=(z(i-1)-z(i+1))*0.5d0
 enddo
 
-call dctz_bwd(phic(1,:,1,1),phi_mmc,1,nz,1,0)
+!call dctz_bwd(phic(1,:,1,1),phi_mmc,1,nz,1,0)
+call dctz_bwd_1d(tmp,tmpc)
 
-phi_mm=phi_mmc(:,1)/dble(nx*ny)
+phi_mm=tmpc/dble(nx*ny)
 
 int_phi=0.0d0
 do k=1,nz
@@ -263,11 +267,10 @@ use commondata
 use par_size
 use surfactant
 use grid
+use dctz_bwd_module
 
 double precision :: int_psi
-double precision, dimension(nz) :: dz,psi_mm
-double precision, dimension(nz,2) :: psi_mmc
-
+double precision, dimension(nz) :: dz,tmp,tmpc,psi_mm
 integer :: k
 
 
@@ -277,9 +280,11 @@ do i=2,nz-1
   dz(i)=(z(i-1)-z(i+1))*0.5d0
 enddo
 
-call dctz_bwd(psic(1,:,1,1),psi_mmc,1,nz,1,0)
+tmp=psic(1,:,1,1)
+!call dctz_bwd(psic(1:1,:,1:1,:),psi_mmc,0)
+call dctz_bwd_1d(tmp,tmpc)
 
-psi_mm=psi_mmc(:,1)/dble(nx*ny)
+psi_mm=tmpc/dble(nx*ny)
 
 int_psi=0.0d0
 do k=1,nz
@@ -301,11 +306,11 @@ use par_size
 use velocity
 use grid
 use sim_par
+use dctz_bwd_module
 
 double precision :: re_bulk
 double precision, dimension(nz) :: dz,ubulk,vbulk,wbulk
-double precision, dimension(nz,2) :: tmp_mmc
-
+double precision, dimension(nz) :: tmp,tmpc
 integer :: k
 
 #define cpiflag cpicompflag
@@ -316,14 +321,20 @@ do i=2,nz-1
   dz(i)=(z(i-1)-z(i+1))*0.5d0
 enddo
 
-call dctz_bwd(uc(1,:,1,1),tmp_mmc,1,nz,1,0)
-ubulk=tmp_mmc(:,1)/dble(nx*ny)
+tmp=uc(1,:,1,1)
+!call dctz_bwd(uc(1,:,1,1),tmp_mmc,1,nz,1,0)
+call dctz_bwd_1d(tmp,tmpc)
+ubulk=tmpc/dble(nx*ny)
 
-call dctz_bwd(vc(1,:,1,1),tmp_mmc,1,nz,1,0)
-vbulk=tmp_mmc(:,1)/dble(nx*ny)
+tmp=vc(1,:,1,1)
+!call dctz_bwd(vc(1,:,1,1),tmp_mmc,1,nz,1,0)
+call dctz_bwd_1d(tmp,tmpc)
+vbulk=tmpc/dble(nx*ny)
 
-call dctz_bwd(wc(1,:,1,1),tmp_mmc,1,nz,1,0)
-wbulk=tmp_mmc(:,1)/dble(nx*ny)
+tmp=wc(1,:,1,1)
+!call dctz_bwd(wc(1,:,1,1),tmp_mmc,1,nz,1,0)
+call dctz_bwd_1d(tmp,tmpc)
+wbulk=tmpc/dble(nx*ny)
 
 
 re_bulk=0.0d0

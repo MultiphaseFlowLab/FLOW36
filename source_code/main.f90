@@ -141,7 +141,7 @@ endif
 
   ! create fftw plans
   if(rank.eq.0) then
-    write(*,*) 'Starting FFTW plan creation ...'
+    write(*,*) 'Starting FFTW/cuFFT plan creation...'
     write(*,*) 'This may take a while'
   endif
   stime=mpi_wtime()
@@ -151,7 +151,7 @@ endif
   dtime=etime-stime
   call mpi_reduce(dtime,mtime,1,mpi_double,mpi_sum,0,mpi_comm_world,ierr)
   mtime=mtime/dble(ntask)
-  string='Time elapsed for FFTW plan creation='
+  string='Time elapsed for FFTW or cuFFT plan creation='
   if(rank.eq.0) call write_time(string,mtime)
 
 

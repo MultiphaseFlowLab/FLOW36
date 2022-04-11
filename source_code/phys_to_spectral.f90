@@ -11,7 +11,6 @@ integer :: dims(2) !,coord(2)
 integer :: rx,ry,rz,nsx,ngsx
 integer :: ngx,ngy,ngz,npx,npy,npz
 integer :: aliasing
-
 !double precision :: stime,etime,dtime,mtime
 double precision :: u(nx,fpz,fpy),uout(spx,nz,spy,2)
 double precision, allocatable :: uc(:,:,:,:),wa(:,:,:,:)

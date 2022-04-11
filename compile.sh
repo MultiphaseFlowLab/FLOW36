@@ -15,7 +15,7 @@
 #13 : M100 (CINECA)
 #14 : G100 (CINECA)
 #15 : Tersicore (Uniud)
-machine="15"
+machine="1"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -202,7 +202,7 @@ cp ./Galileo_100/go.sh ./go.sh
 savespectral="0"
 
 elif [ "$machine" == "15" ]; then
-echo "=                                Tersicore (GPU)                                ="
+echo "=                                Tersicore (GPU)                              ="
 #must compile with nvfortran
 cp ./Tersicore_gpu/makefile ./makefile
 cp ./Tersicore_gpu/go.sh ./go.sh
@@ -229,9 +229,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="8" # integer
-iy="8" # integer
-iz="8" # integer
+ix="7" # integer
+iy="7" # integer
+iz="7" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -266,7 +266,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="0" # integer
+incond="3" # integer
 
 # Reynolds number
 Re="220.0" # real (double)
@@ -603,7 +603,7 @@ echo ""
 
 if [ "$machine" == "0" ]; then
 echo ""
-echo "==============================OS X Version===================================="
+echo "============================= OS X Version ==================================="
 echo ""
 echo "                                   ###                                        "
 echo "                                 ####                                         "
@@ -620,6 +620,40 @@ echo "                            ###############                               
 echo "                             ####   #####                                     "
 echo ""
 echo "=============================================================================="
+fi
+
+if [ "$openacc_flag" == "1" ]; then
+if [[ "$machine" == "15" || "$machine" == "16" ]]; then
+echo ""
+echo "=============================== GPU Version =================================="
+echo ""
+echo "                              .^!?Y555555J?!:                                 "
+echo "                          .~J5PP5YJJJ??JJJY5PP5?                              "
+echo "                        :YGPYJ???????!~7?777??J5PP?.                          "
+echo "                      :5G5??????????!~~!???????7?JPGJ.                        "
+echo "                     ?B5???????????7~::~7??????????JPG~                       "
+echo "                    YBY7???????????7~::~!????????????5B7                      "
+echo "                   ?BY7????????????7~^^~!?????????????5B~                     "
+echo "                  :B57?????????????7~~~~7??????????????GP                     "
+echo "                  JBJ7???????????7!~~~~~~!7???????????75B^                    "
+echo "                  5GJ77!!!!7???7?7777~~7777!~~~~7?7777?YB!                    "
+echo "                  ?BJ^^^^^^^7~^^^!?77::?777^^^^^^~^^^^~5B^                    "
+echo "                  :B5:::....::::::^:^..^:::.....::::::^GP                     "
+echo "                   ?B7.     ...  ..........     .    .YB^                     "
+echo "                    JB!    :::... ......!.:^^:^^.    ?B!                      "
+echo "                     7BJ.  !.!~^~~~~~:^7Y?Y:!J~~.  :5G^                       "
+echo "                      :5G7....:...... .: :.^:.:: :JGJ.                        "
+echo "                        :JPY~.               .:75P7.                          "
+echo "                           ^?55J7~::....:^~7J5Y7:                             "
+echo "                              .:!?JYY55YYJ7~                                  "
+echo ""
+echo "=============================================================================="
+else
+echo ""
+echo "Wrong configuration, GPU acceleration not supported, check openacc_flag and machine"
+echo ""
+exit 1
+fi
 fi
 
 mkdir -p set_run
@@ -988,6 +1022,7 @@ sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_fwd.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
@@ -1087,6 +1122,7 @@ sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_fwd.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90

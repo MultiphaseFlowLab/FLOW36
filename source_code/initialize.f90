@@ -56,7 +56,6 @@ fgradpy=gradpy
 call phys_to_spectral(fgradpx,sgradpx,0)
 call phys_to_spectral(fgradpy,sgradpy,0)
 
-
 ! declarations of differents initial conditions for velocity
 if(in_cond.eq.0)then
   if(rank.eq.0) write(*,*) 'Initializing zero flow field'

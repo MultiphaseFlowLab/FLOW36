@@ -5,6 +5,7 @@ use par_size
 use mpi
 use fftx_bwd_module
 use ffty_bwd_module
+use dctz_bwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz
@@ -23,8 +24,10 @@ dims(2)=nycpu
 
 allocate(u(spx,nz,spy,2))
 u=uc
-call dctz_bwd(u,u,spx,nz,spy,aliasing)
+!call dctz_bwd(u,u,spx,nz,spy,aliasing)
+call dctz_bwd(u,u,aliasing)
 
+!write(*,*) "After bwd"
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2)    change parallelization x-y to x-z
@@ -156,6 +159,7 @@ use dual_grid
 use mpi
 use fftx_bwd_module
 use ffty_bwd_module
+use dctz_bwd_module
 
 integer :: dims(2)
 integer :: rx,ry,rz
@@ -175,7 +179,8 @@ dims(2)=nycpu
 
 allocate(u(spxpsi,npsiz,spypsi,2))
 u=uc
-call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
+!call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
+call dctz_bwd_fg(u,u,aliasing)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

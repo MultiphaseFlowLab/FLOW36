@@ -18,7 +18,7 @@ use cufftplans
 
 integer(c_int) :: nsx,nz,npy
 real(c_double), dimension(:,:,:,:) :: uin, uout
-real(c_double) :: tin(nz), tout(nz)
+real(c_double), allocatable ::  tin(:),tout(:)
 integer :: aliasing,i,k,j
 real(c_double), allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
@@ -28,8 +28,10 @@ nsx=size(uin,1)
 nz=size(uin,2)
 npy=size(uin,3)
 
+
 #if openaccflag == 0
 ! single dct at a time, try with many dft
+allocate(tin(nz),tout(nz))
 do i=1,nsx
  do j=1,npy
   do k=1,2
@@ -47,8 +49,8 @@ if(aliasing.eq.1)then
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,1)=0.0d0
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0
 endif
+deallocate(tin,tout)
 #endif
-
 
 
 
@@ -59,8 +61,7 @@ allocate(a(2*(nz-1),nsx,npy))
 allocate(b(2*(nz-1),nsx,npy))
 allocate(ac(nz,nsx,npy))
 allocate(bc(nz,nsx,npy))
-!trasnpose the z-row and make them even symmetric (no R2R)
-
+!trasnpose the z-row and make them even symmetric (no R2R in cuFFT)
 !$acc data copyin(uin) create(a,b,ac,bc) copyout(uout)
 !$acc kernels
 do j=1,npy
@@ -76,16 +77,14 @@ do j=1,npy
  enddo
 enddo
 !$acc end kernels
-
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_fwd,a,ac)
 !$acc end host_data
 !$acc host_data use_device(b,bc) 
 gerr=gerr+cufftExecD2Z(cudaplan_z_fwd,b,bc)
 !$acc end host_data
-
 !$acc kernels
- do j=1,npy
+do j=1,npy
   do i=1,nsx
    do k=1,nz
     uout(i,k,j,1)=dble(ac(k,i,j))/dble(nz-1)
@@ -128,12 +127,10 @@ use cufftplans
 implicit none
 integer(c_int) :: nsx,nz,npy
 real(c_double), dimension(:,:,:,:) :: uin, uout
-real(c_double) :: tin(nz),tout(nz)
+real(c_double), allocatable ::  tin(:),tout(:)
 integer :: aliasing,i,k,j
 double precision, allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
-real(c_double), allocatable :: as(:,:), bs(:,:)
-complex(c_double_complex), allocatable :: acs(:,:), bcs(:,:)
 
 ! get dimensions
 nsx=size(uin,1)
@@ -141,6 +138,7 @@ nz=size(uin,2)
 npy=size(uin,3)
 
 #if openaccflag == 0
+allocate(tin(nz),tout(nz))
 ! single dct at a time, try with many dft
 do i=1,nsx
  do j=1,npy
@@ -157,70 +155,62 @@ if(aliasing.eq.1)then
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,1)=0.0d0
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0
 endif
+deallocate(tin,tout)
 #endif
 
 
 #if openaccflag == 1
-!input and output for the two FFTs (use FFT to compute DCT)
-allocate(a(nsx,2*(nz-1),npy))
-allocate(b(nsx,2*(nz-1),npy))
-allocate(ac(nsx,nz,npy))
-allocate(bc(nsx,nz,npy))
-!make the vector even + simmetric
-!$acc parallel loop collapse(2)
-do i=1,nsx
- do j=1,npy
-   do k=1,nz-1
-    a(i,k,j)=uin(i,k,j,1)
-    b(i,k,j)=uin(i,k,j,2)
-   enddo
-   do k=nz,2*(nz-1)
-    a(i,k,j)=uin(i,2*(nz-1)-k+2,j,1)
-    b(i,k,j)=uin(i,2*(nz-1)-k+2,j,2)
-   enddo
+allocate(a(2*(nz-1),nsx,npy))
+allocate(b(2*(nz-1),nsx,npy))
+allocate(ac(nz,nsx,npy))
+allocate(bc(nz,nsx,npy))
+
+!trasnpose the z-row and make them even symmetric (no R2R in cuFFT)
+!$acc data copyin(uin) create(a,b,ac,bc) copyout(uout)
+!$acc parallel loop collapse(2) async
+do j=1,npy
+ do i=1,nsx
+  do k=1,nz-1
+   a(k,i,j)=uin(i,k,j,1)
+   b(k,i,j)=uin(i,k,j,2)
+  enddo
+  do k=nz,2*(nz-1)
+   a(k,i,j)=uin(i,2*(nz-1)-k+2,j,1)
+   b(k,i,j)=uin(i,2*(nz-1)-k+2,j,2)
+  enddo
  enddo
 enddo
-!$acc end parallel
-
-allocate(as(nsx,2*(nz-1)))
-allocate(bs(nsx,2*(nz-1)))
-allocate(acs(nsx,nz))
-allocate(bcs(nsx,nz))
-
-do j=1,npy
- as=a(:,:,j)
- !$acc data copyin(as)  copyout(acs) 
- !$acc host_data use_device(as,acs) 
-  gerr=gerr+cufftExecD2Z(cudaplan_z_fwd,as,acs)
- !$acc end host_data
- !$acc end data
- bs=b(:,:,j)
- !$acc data copyin(bs)  copyout(bcs) 
- !$acc host_data use_device(bs,bcs) 
-  gerr=gerr+cufftExecD2Z(cudaplan_z_fwd,bs,bcs)
- !$acc end host_data
- !$acc end data
- !$acc kernels
- ac(:,:,j)=acs
- bc(:,:,j)=bcs
- !$acc end kernels
-enddo
-
+!$acc wait
+!$acc host_data use_device(a,ac)
+ gerr=gerr+cufftExecD2Z(cudaplan_z_fwd_fg,a,ac)
+!$acc end host_data
+!$acc host_data use_device(b,bc) 
+gerr=gerr+cufftExecD2Z(cudaplan_z_fwd_fg,b,bc)
+!$acc end host_data
 !$acc kernels
-uout(1:nsx,1:nz,1:npy,1)=dble(ac(1:nsx,1:nz,1:npy))
-uout(1:nsx,1:nz,1:npy,2)=dble(bc(1:nsx,1:nz,1:npy))
-uout=uout/dble(nz-1)
+ do j=1,npy
+  do i=1,nsx
+   do k=1,nz
+    uout(i,k,j,1)=dble(ac(k,i,j))/dble(nz-1)
+    uout(i,k,j,2)=dble(bc(k,i,j))/dble(nz-1)
+   enddo
+  enddo
+enddo
+!$acc end kernels
+!$acc end data
+!$acc kernels
 uout(:,nz,:,1)=0.5d0*uout(:,nz,:,1)
 uout(:,nz,:,2)=0.5d0*uout(:,nz,:,2)
+!$acc end kernels
 !dealiasing
+!$acc kernels
 if(aliasing.eq.1)then
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,1)=0.0d0
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0
 endif
 !$acc end kernels
+deallocate(a,b,ac,bc)
 #endif
-
-deallocate(a,b,ac,bc,as,bs,acs,bcs)
 
 end subroutine
 end module

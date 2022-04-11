@@ -155,6 +155,8 @@ module cufftplans
  integer :: cudaplan_x_bwd, cudaplan_y_bwd, cudaplan_z_bwd
  integer :: cudaplan_x_fwd_fg, cudaplan_y_fwd_fg, cudaplan_z_fwd_fg
  integer :: cudaplan_x_bwd_fg, cudaplan_y_bwd_fg, cudaplan_z_bwd_fg
+ integer :: cudaplan_z_fwd_1d
+ integer :: cudaplan_z_bwd_1d
  integer :: gerr
 end module cufftplans
 
