@@ -17,7 +17,7 @@ use cufftplans
 #endif
 
 implicit none
-integer :: aliasing,i,nx,npz,npy
+integer :: aliasing,nx,npz,npy
 real(c_double), dimension(:,:,:) :: u
 real(c_double), dimension(:,:,:,:) :: uc
 complex(c_double_complex), allocatable :: wt(:,:,:)
@@ -68,7 +68,7 @@ end subroutine
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine fftx_fwd_fg(u,uc,aliasing)
 
-#define openaccflag openacccompflag  
+#define openaccflag openacccompflag
 #if openaccflag == 0
 use fftw3
 #endif
@@ -79,14 +79,14 @@ use cufftplans
 #endif
 
 implicit none
-integer :: aliasing,i,nx,npz,npy 
+integer :: aliasing,nx,npz,npy
 real(c_double), dimension(:,:,:) :: u
 real(c_double), dimension(:,:,:,:) :: uc
 complex(c_double_complex),  allocatable :: wt(:,:,:)
 
 !! get dimensions (npsix, npsiy, npsiz)
-nx=size(u,1)  
-npz=size(u,2) 
+nx=size(u,1)
+npz=size(u,2)
 npy=size(u,3)
 !! temp for storing complex fft results
 allocate(wt(nx/2+1,npz,npy))
@@ -126,4 +126,3 @@ endif
 deallocate(wt)
 end subroutine
 end module
-

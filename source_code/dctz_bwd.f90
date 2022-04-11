@@ -1,6 +1,6 @@
 module dctz_bwd_module
 implicit none
-contains 
+contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -55,7 +55,7 @@ deallocate(tin,tout)
 
 #if openaccflag == 1
 ! trick to make DCT faster and in one block (not possible otherwise)
-! transpose uin and uout and perform DCT along 1st direction 
+! transpose uin and uout and perform DCT along 1st direction
 allocate(a(2*(nz-1),nsx,npy))
 allocate(b(2*(nz-1),nsx,npy))
 allocate(ac(nz,nsx,npy))
@@ -88,7 +88,7 @@ enddo
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_bwd,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc) 
+!$acc host_data use_device(b,bc)
 gerr=gerr+cufftExecD2Z(cudaplan_z_bwd,b,bc)
 !$acc end host_data
 !$acc kernels
@@ -154,6 +154,7 @@ enddo
 deallocate(tin,tout)
 #endif
 
+
 #if openaccflag == 1
 ! trick to make DCT faster and in one block (see above)
 allocate(a(2*(nz-1),nsx,npy))
@@ -189,7 +190,7 @@ enddo
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_bwd_fg,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc) 
+!$acc host_data use_device(b,bc)
 gerr=gerr+cufftExecD2Z(cudaplan_z_bwd_fg,b,bc)
 !$acc end host_data
 
@@ -224,12 +225,12 @@ use cufftplans
 
 implicit none
 integer(c_int) :: nsx,nz,npy
-integer :: aliasing,i,k,j
+integer :: k
 real(c_double), dimension(:) :: rin, rout
 real(c_double), allocatable :: a(:)
 complex(c_double_complex), allocatable :: ac(:)
 
-
+! aliasing = 0 by default
 ! get dimensions
 nz=size(rin)
 

@@ -17,7 +17,7 @@ use cufftplans
 #endif
 
 implicit none
-integer :: aliasing,i,nx,npy,npz
+integer :: aliasing,nx,npy,npz
 real(c_double), dimension(:,:,:) :: ur
 real(c_double), dimension(:,:,:,:) :: uc
 complex(c_double_complex), allocatable :: wt(:,:,:)
