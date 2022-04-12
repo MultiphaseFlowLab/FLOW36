@@ -51,6 +51,8 @@ if(isnan(gradpx).eqv..true.) lcomax=7.0d0
 if(isnan(phic(1,1,1,1)).eq.1) lcomax=7.0d0
 #elif machine == 7
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+#elif machine == 15
+if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 #else
 if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #endif
@@ -59,6 +61,8 @@ if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #if machine == 4
 if(isnan(psic_fg(1,1,1,1)).eq.1) lcomax=7.0d0
 #elif machine == 7
+if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+#elif machine == 15
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #else
 if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0

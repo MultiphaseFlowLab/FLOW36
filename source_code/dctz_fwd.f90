@@ -20,8 +20,11 @@ integer(c_int) :: nsx,nz,npy
 real(c_double), dimension(:,:,:,:) :: uin, uout
 real(c_double), allocatable ::  tin(:),tout(:)
 integer :: aliasing,i,k,j
+!used only with cuFFT
+#if openaccflag == 1
 real(c_double), allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
+#endif
 
 ! get dimensions
 nsx=size(uin,1)
@@ -129,8 +132,11 @@ integer(c_int) :: nsx,nz,npy
 real(c_double), dimension(:,:,:,:) :: uin, uout
 real(c_double), allocatable ::  tin(:),tout(:)
 integer :: aliasing,i,k,j
+!used only with cuFFT
+#if openaccflag == 1
 double precision, allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
+#endif
 
 ! get dimensions
 nsx=size(uin,1)

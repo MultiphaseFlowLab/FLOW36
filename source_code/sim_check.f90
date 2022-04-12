@@ -199,7 +199,6 @@ call dz(uc+vc,tau)
 
 tau_c=0.0d0
 tau_c=tau(1,:,1,1)
-
 !call dctz_bwd(tau_c,tau_c,1,nz,1,0)
 call dctz_bwd_1d(tau_c,tau_c)
 
@@ -243,6 +242,7 @@ do i=2,nz-1
   dz(i)=(z(i-1)-z(i+1))*0.5d0
 enddo
 
+tmp=phic(1,:,1,1)
 !call dctz_bwd(phic(1,:,1,1),phi_mmc,1,nz,1,0)
 call dctz_bwd_1d(tmp,tmpc)
 

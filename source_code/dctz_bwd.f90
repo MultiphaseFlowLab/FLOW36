@@ -1,6 +1,6 @@
 module dctz_bwd_module
 implicit none
-contains
+contains 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -21,8 +21,11 @@ integer(c_int) :: nsx,nz,npy
 integer :: aliasing,i,k,j
 real(c_double), dimension(:,:,:,:) :: uin, uout
 real(c_double), allocatable :: tin(:),tout(:)
+!used only with cuFFT
+#if openaccflag == 1  
 real(c_double), allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
+#endif
 
 ! get dimensions
 nsx=size(uin,1)
@@ -55,7 +58,7 @@ deallocate(tin,tout)
 
 #if openaccflag == 1
 ! trick to make DCT faster and in one block (not possible otherwise)
-! transpose uin and uout and perform DCT along 1st direction
+! transpose uin and uout and perform DCT along 1st direction 
 allocate(a(2*(nz-1),nsx,npy))
 allocate(b(2*(nz-1),nsx,npy))
 allocate(ac(nz,nsx,npy))
@@ -88,7 +91,7 @@ enddo
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_bwd,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc)
+!$acc host_data use_device(b,bc) 
 gerr=gerr+cufftExecD2Z(cudaplan_z_bwd,b,bc)
 !$acc end host_data
 !$acc kernels
@@ -124,9 +127,12 @@ implicit none
 integer(c_int) :: nsx,nz,npy
 integer :: aliasing,i,k,j
 real(c_double), allocatable :: tin(:),tout(:)
- real(c_double), dimension(:,:,:,:) :: uin, uout
+real(c_double), dimension(:,:,:,:) :: uin, uout
+!used only with cuFFT
+#if openaccflag == 1 
 real(c_double), allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
+#endif
 
 ! get dimensions
 nsx=size(uin,1)
@@ -190,7 +196,7 @@ enddo
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_bwd_fg,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc)
+!$acc host_data use_device(b,bc) 
 gerr=gerr+cufftExecD2Z(cudaplan_z_bwd_fg,b,bc)
 !$acc end host_data
 
@@ -224,13 +230,16 @@ use cufftplans
 #endif
 
 implicit none
-integer(c_int) :: nsx,nz,npy
-integer :: k
+integer(c_int) :: nz !sx,nz,npy
 real(c_double), dimension(:) :: rin, rout
+!use only with cuFFT
+#if openaccflag == 1
+integer :: k
 real(c_double), allocatable :: a(:)
 complex(c_double_complex), allocatable :: ac(:)
+#endif
 
-! aliasing = 0 by default
+! aliasing = 0 by default 
 ! get dimensions
 nz=size(rin)
 
