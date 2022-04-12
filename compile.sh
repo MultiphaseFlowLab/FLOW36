@@ -15,7 +15,7 @@
 #13 : M100 (CINECA)
 #14 : G100 (CINECA)
 #15 : Tersicore (Uniud)
-machine="1"
+machine="15"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -25,11 +25,15 @@ cp ./Local_Mac/makefile ./makefile
 cp ./Local_Mac/go.sh ./go.sh
 # save recovery files in modal space (1) or physical space (0)
 savespectral="1"
+openacc_flag="0"
+
 elif [ "$machine" == "1" ]; then
 echo "=                                Local machine                               ="
 cp ./Local/makefile ./makefile
 cp ./Local/go.sh ./go.sh
 savespectral="1"
+openacc_flag="0"
+
 elif [ "$machine" == "2" ]; then
 echo "=                            Marconi A1 Broadwell                            ="
 cp ./Marconi/makefile ./makefile
@@ -45,6 +49,8 @@ module load fftw/3.3.5--intelmpi--2017--binary
 #module load openmpi/1-10.3--gnu--6.1.0
 #module load fftw/3.3.4--openmpi--1-10.3--gnu--6.1.0
 savespectral="0"
+openacc_flag="0"
+
 elif [ "$machine" == "3" ]; then
 echo "=                                   VSC-3                                    ="
 cp ./VSC-3/makefile ./makefile
@@ -55,12 +61,15 @@ module load intel/16 intel-mpi/5.1.3 fftw/3.3.4-DP
 # or (but problem with .mod files)
 #module load gcc/5.3 intel-mpi/5.1.3 fftw/3.3.4-DP
 savespectral="0"
+openacc_flag="0"
+
 elif [ "$machine" == "4" ]; then
 echo "=                                  Vesta                                     ="
 cp ./Vesta/makefile ./makefile
 cp ./Vesta/go.sh ./go.sh
-
 savespectral="1"
+openacc_flag="0"
+
 elif [ "$machine" == "5" ]; then
 echo "=                              Marconi A2 KNL                                ="
 module purge
@@ -72,19 +81,20 @@ module load intelmpi/2017--binary
 module load fftw/3.3.5--intelmpi--2017--binary
 cp ./Marconi_KNL/makefile ./makefile
 cp ./Marconi_KNL/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
+
 elif [ "$machine" == "6" ]; then
 echo "=                                  Theta                                     ="
 # load modules
 #module load gcc
 module load fftw
 module load craype-hugepages16M
-
 cp ./Theta/makefile ./makefile
 cp ./Theta/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
+
 elif [ "$machine" == "7" ]; then
 echo "=                                  Bridges                                   ="
 module purge
@@ -96,30 +106,27 @@ module load mpi/pgi_openmpi/19.4
 module load fftw3/3.3.4
 cp ./Bridges/makefile ./makefile
 cp ./Bridges/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
+
 elif [ "$machine" == "8" ]; then
 echo "=                                 Adelaide                                   ="
 module purge
 # load modules
-
 # IMPORTANT: if OpenMPI line 946 must be replaced with: if [[ "$machine" == "7" || "$machine" == "8"]]; then
-
 # Intel version
 module load intel
 module load mpich
-
 # GCC version
 #module load gcc
 #module load #some version of MPI/OpenMPI for gcc
-
 module load FFTW
-
 # change to makefile_intel/makefile_gnu according to needs
 cp ./Adelaide/makefile_intel ./makefile
 cp ./Adelaide/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
+
 elif [ "$machine" == "9" ]; then
 echo "=                                   VSC-4                                    ="
 echo "=                                                                            ="
@@ -131,8 +138,8 @@ module purge
 module load intel/19.0.5
 module load intel-mpi/2019.7.pre
 module load fftw/3.3.8-intel-19.0.5.281-un2sutg
-
 savespectral="0"
+openacc_flag="0"
 
 elif [ "$machine" == "10" ]; then
 echo "=                        Joliot-Curie (Irene-KNL)                            ="
@@ -141,8 +148,8 @@ module load mpi
 module load fftw3
 cp ./Irene_KNL/makefile ./makefile
 cp ./Irene_KNL/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
 
 elif [ "$machine" == "11" ]; then
 echo "=                              Davide (no GPU)                               ="
@@ -153,8 +160,8 @@ module load openmpi
 module load fftw
 cp ./Davide/makefile ./makefile
 cp ./Davide/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
 
 elif [ "$machine" == "12" ]; then
 echo "=                               HAWK Epyc Rome                               ="
@@ -166,11 +173,11 @@ module load openmpi/4.0.4
 module load fftw/3.3.8
 cp ./HAWK/makefile ./makefile
 cp ./HAWK/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
 
 elif [ "$machine" == "13" ]; then
-echo "=                              Marconi-100 (no GPU)                               ="
+echo "=                              Marconi-100 (no GPU)                          ="
 module purge
 # load modules
 module load profile/advanced
@@ -183,11 +190,11 @@ module load spectrum_mpi/10.3.1--binary
 module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
 cp ./Marconi_100/makefile ./makefile
 cp ./Marconi_100/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
 
 elif [ "$machine" == "14" ]; then
-echo "=                                Galileo-100                                ="
+echo "=                                Galileo-100                                 ="
 module purge
 # load modules
 module load profile/advanced
@@ -198,11 +205,11 @@ module load intelmpi/oneapi-2021--binary
 module load fftw/3.3.9--intelmpi--oneapi-2021--binary
 cp ./Galileo_100/makefile ./makefile
 cp ./Galileo_100/go.sh ./go.sh
-
 savespectral="0"
+openacc_flag="0"
 
 elif [ "$machine" == "15" ]; then
-echo "=                                Tersicore (GPU)                              ="
+echo "=                                Tersicore (GPU)                             ="
 #must compile with nvfortran
 cp ./Tersicore_gpu/makefile ./makefile
 cp ./Tersicore_gpu/go.sh ./go.sh
@@ -213,8 +220,14 @@ MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/compilers/man; export MANPATH
 PATH=$NVCOMPILERS/$NVARCH/22.2/compilers/bin:$PATH; export PATH
 export PATH=$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/bin:$PATH
 export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/man
-
 savespectral="0"
+openacc_flag="1"
+
+elif [ "$machine" == "16" ]; then
+echo "=                              Marconi-100 (GPU)                             ="
+savespectral="0"
+openacc_flag="1"
+
 fi
 echo "=============================================================================="
 echo ""
@@ -222,7 +235,7 @@ echo ""
 ################################################################################
 # define simulation parameters
 
-# fftw plan craation flag
+# fftw plan craation flag (only for CPU - FFTW library)
 # 0: FFTW_ESTIMATE, faster plan creation, transforms may be slower
 # 1: FFTW_PATIENT, try several algorithms, choose the best one, slower plan creation, transforms may be faster
 fftw_flag="0"
@@ -239,18 +252,17 @@ exp_y="1" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
-NYCPU="1" # integer
-NZCPU="2" # integer
+NYCPU="2" # integer
+NZCPU="1" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
 nodesize="68" # integer
 
-# acceleration strategy
-# 0: CPU-only
-# 1: OpenACC directives are used to accelerate the code using Nvidia GPUs
-openacc_flag="1"
-# PAY ATTENTION, acceleration supported only for machine 15
+# PAY ATTENTION (GPU)
+# Acceleration strategy
+# On Machines 15 and 16, GPUs are used by default (openacc_flag=1).
+# OpenACC directives are used to accelerate the code w/ GPUs
 
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
@@ -290,7 +302,7 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="100" #integer (up to 8 digits)
+nend="10" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
 dump="100" # integer
@@ -334,7 +346,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="0" # integer
+phi_flag="1" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -374,7 +386,7 @@ exp_non_new="0.9"
 We="1.0" # real (double)
 
 # Cahn number
-Ch="0.02" # real (double)
+Ch="0.08" # real (double)
 
 # Peclet number
 Pe="150.0" # real (double)
@@ -426,7 +438,7 @@ stuart="1.0" # real (double)
 # 7: Drop attached to the bottom wall z_c=-1 (radius)
 # 8: 2x 2D Droplets in kissing mode. (radius, ygap , zgap)
 # 9: Layer of phi=+1 (mean height, thickness)
-in_condphi="5" # integer
+in_condphi="4" # integer
 radius="0.5" # real (double)
 height="0.0" # real (double)
 wave_amp_x="0.0" # real (double)
@@ -623,7 +635,6 @@ echo "==========================================================================
 fi
 
 if [ "$openacc_flag" == "1" ]; then
-if [[ "$machine" == "15" || "$machine" == "16" ]]; then
 echo ""
 echo "=============================== GPU Version =================================="
 echo ""
@@ -648,12 +659,7 @@ echo "                           ^?55J7~::....:^~7J5Y7:                         
 echo "                              .:!?JYY55YYJ7~                                  "
 echo ""
 echo "=============================================================================="
-else
 echo ""
-echo "Wrong configuration, GPU acceleration not supported, check openacc_flag and machine"
-echo ""
-exit 1
-fi
 fi
 
 mkdir -p set_run
@@ -1024,6 +1030,8 @@ sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_fwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/destroy_plan.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/statistics.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
@@ -1124,6 +1132,8 @@ sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_fwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/destroy_plan.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/statistics.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90

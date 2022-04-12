@@ -1040,7 +1040,16 @@ use velocity
 use mpi
 use stats
 use grid
+
+#define openaccflag openacccompflag
+#if openaccflag == 0
 use fftw3
+#endif
+#if openaccflag == 1
+use cufft
+use openacc
+use cufftplans
+#endif
 
 double precision, dimension(nz) :: um,vm,wm,utm,vtm,wtm
 double precision, dimension(nx,ny) :: up,vp,wp,utp,vtp,wtp
@@ -1140,6 +1149,7 @@ endif
 
 call mpi_comm_free(red_comm,ierr)
 
+#if openaccflag == 0
 ! calculate power spectra, done only from rank 0
 if(rank.eq.0)then
 ! create plan for fft x and fft y
@@ -1178,6 +1188,12 @@ if(rank.eq.0)then
   call fftw_destroy_plan(plan_y)
 
 endif
+#endif
+
+#if openaccflag == 1
+!same block as above to be implemented.
+!At the moment, no computation is performed if GPUs are used.
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! power spectra at z^+=15
@@ -1236,6 +1252,7 @@ endif
 
 call mpi_comm_free(red_comm,ierr)
 
+#if openaccflag == 0
 ! calculate power spectra, done only from rank 0
 if(rank.eq.0)then
 ! create plan for fft x and fft y
@@ -1271,6 +1288,12 @@ if(rank.eq.0)then
   call fftw_destroy_plan(plan_y)
 
 endif
+#endif
+
+#if openaccflag == 1
+!Same block as above to be implemented.
+!At the moment, no computation is performed if GPUs are used.
+#endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! power spectra at z^+=Re
@@ -1330,6 +1353,7 @@ endif
 
 call mpi_comm_free(red_comm,ierr)
 
+#if openaccflag == 0
 ! calculate power spectra, done only from rank 0
 if(rank.eq.0)then
 ! create plan for fft x and fft y
@@ -1364,6 +1388,12 @@ if(rank.eq.0)then
   call fftw_destroy_plan(plan_x)
   call fftw_destroy_plan(plan_y)
 endif
+#endif
+
+#if openaccflag == 1
+!Same block as above to be implemented.
+!At the moment, no computation is performed if GPUs are used.
+#endif
 
 ! mean over all samples and normalize transform
 ! x: mean over ny samples, normalize transform by nx^2 (square of the modulus)

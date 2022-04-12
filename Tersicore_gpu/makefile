@@ -4,7 +4,7 @@ LD	= $(FC)
 RM	= /bin/rm -f
 FOPTS	= -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess -mcmodel=medium -Mlarge_arrays  -module=./set_run/sc_compiled
 FFLAGS	= $(FOPTS)
-LIBS    = -L/usr/local/cuda/lib64 -lcufft -L$FFTW_LIB -lfftw3 -lm -ldl
+LIBS    = -L/usr/local/cuda/lib64 -lcufft 
 
 LDFLAGS	= $(FOPTS)
 

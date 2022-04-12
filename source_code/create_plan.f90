@@ -2,7 +2,6 @@ subroutine create_plan
 
 use commondata
 use par_size
-use fftw3 !!until hybrid transfroms, then removed
 
 #define openaccflag openacccompflag
 #if openaccflag ==0
