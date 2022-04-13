@@ -235,7 +235,7 @@ echo ""
 ################################################################################
 # define simulation parameters
 
-# fftw plan craation flag (only for CPU - FFTW library)
+# FFTW plan craation flag (only for CPU - FFTW library, ignored when GPUs are used)
 # 0: FFTW_ESTIMATE, faster plan creation, transforms may be slower
 # 1: FFTW_PATIENT, try several algorithms, choose the best one, slower plan creation, transforms may be faster
 fftw_flag="0"
@@ -259,8 +259,7 @@ multinode="0" # integer
 # number of MPI processes per node
 nodesize="68" # integer
 
-# PAY ATTENTION (GPU)
-# Acceleration strategy
+# REMARKS on GPUs and Acceleration strategy
 # On Machines 15 and 16, GPUs are used by default (openacc_flag=1).
 # OpenACC directives are used to accelerate the code w/ GPUs
 
