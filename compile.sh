@@ -12,10 +12,11 @@
 #10 : Joliot Curie - Irene (KNL)
 #11 : Davide (CINECA)
 #12 : HAWK (HLRS - AMD Epyc Rome)
-#13 : M100 (CINECA)
+#13 : M100 (CINECA) - no GPU
 #14 : G100 (CINECA)
 #15 : Tersicore (Uniud)
-machine="15"
+#16 : M100 (CINECA) - GPU
+machine="16"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -216,15 +217,26 @@ cp ./Tersicore_gpu/go.sh ./go.sh
 #Setup the environment (otherwise gfortran is used)
 NVARCH=Linux_x86_64; export NVARCH
 NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
-MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/compilers/man; export MANPATH
-PATH=$NVCOMPILERS/$NVARCH/22.2/compilers/bin:$PATH; export PATH
-export PATH=$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/bin:$PATH
-export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.2/comm_libs/mpi/man
+MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.3/compilers/man; export MANPATH
+PATH=$NVCOMPILERS/$NVARCH/22.3/compilers/bin:$PATH; export PATH
+export PATH=$NVCOMPILERS/$NVARCH/22.3/comm_libs/mpi/bin:$PATH
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.3/comm_libs/mpi/man
 savespectral="0"
 openacc_flag="1"
 
 elif [ "$machine" == "16" ]; then
 echo "=                              Marconi-100 (GPU)                             ="
+echo "=                                                                            ="
+echo "=                               Reminder (2022)                              ="
+echo "=      Do not compile on login nodes with hpc-sdk (kernel panic)             ="
+echo "= salloc -N1 --exclusive -A <acc> -p <part> --time=<t> to use compute nodes  ="
+module purge
+# load modules
+module load profile/advanced
+module load hpc-sdk/2021--binary
+module load cuda/11.3
+cp ./Marconi_100_gpu/makefile ./makefile
+cp ./Marconi_100_gpu/go.sh ./go.sh
 savespectral="0"
 openacc_flag="1"
 
@@ -242,9 +254,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="7" # integer
-iy="7" # integer
-iz="7" # integer
+ix="8" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -252,8 +264,8 @@ exp_y="1" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
-NYCPU="2" # integer
-NZCPU="1" # integer
+NYCPU="1" # integer
+NZCPU="4" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node
@@ -262,7 +274,6 @@ nodesize="68" # integer
 # REMARKS on GPUs and Acceleration strategy
 # On Machines 15 and 16, GPUs are used by default (openacc_flag=1).
 # OpenACC directives are used to accelerate the code w/ GPUs
-
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
 restart="0" # integer
@@ -277,7 +288,7 @@ nt_restart="0" # integer
 # 5 : shear flow y direction
 # 6 : shear flow x direction
 # always keep list of initial conditions updated
-incond="3" # integer
+incond="0" # integer
 
 # Reynolds number
 Re="220.0" # real (double)
@@ -345,7 +356,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="1" # integer
+phi_flag="0" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -1208,7 +1219,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" || "$machine" == "16" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1251,10 +1262,11 @@ echo "==========================================================================
 echo "                NYCPU=$NYCPU      NZCPU=$NZCPU    NX=$NX     NY=$NY     NZ=$NZ"
 echo ""
 
+if [ "$machine" == "16" ]; then
+rm *.o
+fi
 
-
-
-if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) || ( "$machine" == "15" ) ]]; then
+if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) || ( "$machine" == "15" )  ]]; then
 rm *.o
 cd ./set_run
 ./go.sh
