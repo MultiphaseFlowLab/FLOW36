@@ -14,7 +14,7 @@
 #12 : HAWK (HLRS - AMD Epyc Rome)
 #13 : M100 (CINECA) - no GPU
 #14 : G100 (CINECA)
-#15 : Tersicore (Uniud)
+#15 : Tersicore o Zonker (Uniud)
 #16 : M100 (CINECA) - GPU
 machine="16"
 echo ""
@@ -210,10 +210,11 @@ savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "15" ]; then
-echo "=                                Tersicore (GPU)                             ="
-#must compile with nvfortran
-cp ./Tersicore_gpu/makefile ./makefile
-cp ./Tersicore_gpu/go.sh ./go.sh
+echo "=                                Local (GPU)                             ="
+echo "=               Run on tersicore (2 GPUs) or zonker (1 GPU)              ="
+#must compile with nvfortran a
+cp ./Local_gpu/makefile ./makefile
+cp ./Local_gpu/go.sh ./go.sh
 #Setup the environment (otherwise gfortran is used)
 NVARCH=Linux_x86_64; export NVARCH
 NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
