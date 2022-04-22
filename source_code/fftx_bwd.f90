@@ -50,8 +50,6 @@ if(aliasing.eq.1)then
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,1)=0.0d0
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,2)=0.0d0
 endif
-!$acc end kernels
-!$acc kernels
 wt(1:nx/2+1,1:npz,1:npy)=dcmplx(uc(1:nx/2+1,1:npz,1:npy,1),uc(1:nx/2+1,1:npz,1:npy,2))
 !$acc end kernels
 !$acc data copyin(wt) copyout(ur)
@@ -116,8 +114,6 @@ if(aliasing.eq.1)then
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,1)=0.0d0
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,2)=0.0d0
 endif
-!$acc end kernels
-!$acc kernels
 wt(1:nx/2+1,1:npz,1:npy)=dcmplx(uc(1:nx/2+1,1:npz,1:npy,1),uc(1:nx/2+1,1:npz,1:npy,2))
 !$acc end kernels
 !$acc data copyin(uc) copyout(ur)

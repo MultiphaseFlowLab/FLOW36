@@ -1,6 +1,6 @@
 module dctz_fwd_module
 implicit none
-contains 
+contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -59,7 +59,7 @@ deallocate(tin,tout)
 
 #if openaccflag == 1
 ! trick to make DCT faster and in one block (not possible otherwise)
-! transpose uin and uout and perform DCT along 1st direction 
+! transpose uin and uout and perform DCT along 1st direction
 allocate(a(2*(nz-1),nsx,npy))
 allocate(b(2*(nz-1),nsx,npy))
 allocate(ac(nz,nsx,npy))
@@ -83,7 +83,7 @@ enddo
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_fwd,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc) 
+!$acc host_data use_device(b,bc)
 gerr=gerr+cufftExecD2Z(cudaplan_z_fwd,b,bc)
 !$acc end host_data
 !$acc kernels
@@ -100,9 +100,7 @@ enddo
 !$acc kernels
 uout(:,nz,:,1)=0.5d0*uout(:,nz,:,1)
 uout(:,nz,:,2)=0.5d0*uout(:,nz,:,2)
-!$acc end kernels
 !dealiasing
-!$acc kernels
 if(aliasing.eq.1)then
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,1)=0.0d0
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0
@@ -190,7 +188,7 @@ enddo
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_fwd_fg,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc) 
+!$acc host_data use_device(b,bc)
 gerr=gerr+cufftExecD2Z(cudaplan_z_fwd_fg,b,bc)
 !$acc end host_data
 !$acc kernels
@@ -207,9 +205,7 @@ enddo
 !$acc kernels
 uout(:,nz,:,1)=0.5d0*uout(:,nz,:,1)
 uout(:,nz,:,2)=0.5d0*uout(:,nz,:,2)
-!$acc end kernels
 !dealiasing
-!$acc kernels
 if(aliasing.eq.1)then
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,1)=0.0d0
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0

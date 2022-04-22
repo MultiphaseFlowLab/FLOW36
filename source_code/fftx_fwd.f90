@@ -52,8 +52,6 @@ gerr=gerr+cufftExecD2Z(cudaplan_x_fwd,u,wt)
 !$acc kernels
 uc(1:nx/2+1,1:npz,1:npy,1)=dble(wt(1:nx/2+1,1:npz,1:npy))
 uc(1:nx/2+1,1:npz,1:npy,2)=aimag(wt(1:nx/2+1,1:npz,1:npy))
-!$acc end kernels
-!$acc kernels
 if(aliasing.eq.1)then
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,1)=0.0d0
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,2)=0.0d0
@@ -114,8 +112,6 @@ gerr=gerr+cufftExecD2Z(cudaplan_x_fwd_fg,u,wt)
 !$acc kernels
 uc(1:nx/2+1,1:npz,1:npy,1)=dble(wt(1:nx/2+1,1:npz,1:npy))
 uc(1:nx/2+1,1:npz,1:npy,2)=aimag(wt(1:nx/2+1,1:npz,1:npy))
-!$acc end kernels
-!$acc kernels
 if(aliasing.eq.1)then
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,1)=0.0d0
  uc(floor(2.0/3.0*real(nx/2+1))+1:nx/2+1,1:npz,1:npy,2)=0.0d0

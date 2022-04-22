@@ -53,8 +53,6 @@ if(aliasing.eq.1)then
  ui(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1))+1:ny-floor(2.0/3.0*real(ny/2)),1)=0.0d0
  ui(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1))+1:ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
 endif
-!$acc end kernels
-!$acc kernels
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 !$acc end kernels
 !$acc data copyin(wt) copyout(wot)
@@ -65,8 +63,6 @@ gerr=gerr+cufftExecZ2Z(cudaplan_y_bwd,wt,wot,CUFFT_INVERSE)
 !$acc kernels
 uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
 uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
-!$acc end kernels
-!$acc kernels
 uo=uo/dble(ny)
 !$acc end kernels
 #endif
@@ -125,8 +121,6 @@ if(aliasing.eq.1)then
  ui(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1))+1:ny-floor(2.0/3.0*real(ny/2)),1)=0.0d0
  ui(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1))+1:ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
 endif
-!$acc end kernels
-!$acc kernels
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 !$acc end kernels
 !$acc data copyin(wt) copyout(wot)
@@ -137,8 +131,6 @@ gerr=gerr+cufftExecZ2Z(cudaplan_y_bwd_fg,wt,wot,CUFFT_INVERSE)
 !$acc kernels
 uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
 uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
-!$acc end kernels
-!$acc kernels
 uo=uo/dble(ny)
 !$acc end kernels
 #endif

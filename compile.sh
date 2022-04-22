@@ -233,9 +233,9 @@ echo "=      Do not compile on login nodes with hpc-sdk (kernel panic)          
 echo "= salloc -N1 --exclusive -A <acc> -p <part> --time=<t> to use compute nodes  ="
 module purge
 # load modules
-module load profile/advanced
-module load hpc-sdk/2021--binary
-module load cuda/11.3
+module load profile/candidate
+module load hpc-sdk/2022--binary
+module load cuda/11.6
 cp ./Marconi_100_gpu/makefile ./makefile
 cp ./Marconi_100_gpu/go.sh ./go.sh
 savespectral="0"

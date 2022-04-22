@@ -1,6 +1,6 @@
 module dctz_bwd_module
 implicit none
-contains 
+contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -22,7 +22,7 @@ integer :: aliasing,i,k,j
 real(c_double), dimension(:,:,:,:) :: uin, uout
 real(c_double), allocatable :: tin(:),tout(:)
 !used only with cuFFT
-#if openaccflag == 1  
+#if openaccflag == 1
 real(c_double), allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
 #endif
@@ -58,7 +58,7 @@ deallocate(tin,tout)
 
 #if openaccflag == 1
 ! trick to make DCT faster and in one block (not possible otherwise)
-! transpose uin and uout and perform DCT along 1st direction 
+! transpose uin and uout and perform DCT along 1st direction
 allocate(a(2*(nz-1),nsx,npy))
 allocate(b(2*(nz-1),nsx,npy))
 allocate(ac(nz,nsx,npy))
@@ -69,8 +69,6 @@ if(aliasing.eq.1)then
  uin(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,1)=0.0d0
  uin(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0
 endif
-!$acc end kernels
-!$acc kernels
 uin(:,nz,:,1)=2.0d0*uin(:,nz,:,1)
 uin(:,nz,:,2)=2.0d0*uin(:,nz,:,2)
 !$acc end kernels
@@ -91,7 +89,7 @@ enddo
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_bwd,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc) 
+!$acc host_data use_device(b,bc)
 gerr=gerr+cufftExecD2Z(cudaplan_z_bwd,b,bc)
 !$acc end host_data
 !$acc kernels
@@ -129,7 +127,7 @@ integer :: aliasing,i,k,j
 real(c_double), allocatable :: tin(:),tout(:)
 real(c_double), dimension(:,:,:,:) :: uin, uout
 !used only with cuFFT
-#if openaccflag == 1 
+#if openaccflag == 1
 real(c_double), allocatable :: a(:,:,:), b(:,:,:)
 complex(c_double_complex), allocatable :: ac(:,:,:), bc(:,:,:)
 #endif
@@ -173,8 +171,6 @@ if(aliasing.eq.1)then
  uin(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,1)=0.0d0
  uin(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0
 endif
-!$acc end kernels
-!$acc kernels
 uin(:,nz,:,1)=2.0d0*uin(:,nz,:,1)
 uin(:,nz,:,2)=2.0d0*uin(:,nz,:,2)
 !$acc end kernels
@@ -192,14 +188,12 @@ do j=1,npy
  enddo
 enddo
 !$acc end kernels
-
 !$acc host_data use_device(a,ac)
  gerr=gerr+cufftExecD2Z(cudaplan_z_bwd_fg,a,ac)
 !$acc end host_data
-!$acc host_data use_device(b,bc) 
+!$acc host_data use_device(b,bc)
 gerr=gerr+cufftExecD2Z(cudaplan_z_bwd_fg,b,bc)
 !$acc end host_data
-
 !$acc kernels
  do j=1,npy
   do i=1,nsx
@@ -239,7 +233,7 @@ real(c_double), allocatable :: a(:)
 complex(c_double_complex), allocatable :: ac(:)
 #endif
 
-! aliasing = 0 by default 
+! aliasing = 0 by default
 ! get dimensions
 nz=size(rin)
 
