@@ -11,9 +11,9 @@ character(len=8) :: numfile
 namedir='../results/'
 write(numfile,'(i8.8)') nstep
 
-namefile=trim(namedir)//'phi_'//numfile//'.dat'
+namefile=trim(namedir)//'u_'//numfile//'.dat'
 open(666,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
-read(666) phi
+read(666) u
 close(666,status='keep')
 
 return

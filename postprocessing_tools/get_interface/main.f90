@@ -4,74 +4,99 @@ use mpi
 use commondata
 implicit none
 
-integer :: ierr,i
-
-
-call mpi_init(ierr)
-
-call mpi_comm_size(mpi_comm_world,ntask,ierr)
-call mpi_comm_rank(mpi_comm_world,rank,ierr)
+integer :: i
 
 call read_input
-call mpi_barrier(mpi_comm_world,ierr)
-
 
 allocate(x(nx))
 allocate(y(ny))
 allocate(z(nz))
-
-allocate(w(nx,nz,ny))
 allocate(phi(nx,nz,ny))
 
 call read_grid
 
-open(55,file='./output/int_pos.dat',status='new',form='formatted')
-write(55,'(3(a16))')  'time','z_max','z_min'
-close(55,status='keep')
-
 do i=nstart,nend,ndump
   write(*,*) 'Step ',i,' of ',nend
-  call find_int(i)
+  call capture_interface(i)
 enddo
 
 
 deallocate(x,y,z)
-deallocate(w,phi)
+deallocate(phi)
 
 return
 end program
 
+
+
+
+
+
+
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-subroutine find_int(nstep)
+subroutine capture_interface(nstep)
 
 use commondata
-
-integer :: nstep,i,j,kpos(1)
-
-double precision :: zpos2(nx,ny),zpos(ny)
+integer :: nstep,i,j,k
+double precision :: inte(nx,ny,2)
+double precision :: pro,mang,mean(2)
+character(len=40) :: namefile
 
 call read_fields(nstep)
 
-
-! get interface height
-do j=1,ny
-  do i=1,nx
-    kpos=minloc(dabs(phi(i,:,j)))
-    zpos2(i,j)=z(kpos(1))
+do i=1,nx
+  do j=1,ny
+    !! lower interface
+    do k=2,nz/2-1
+      pro=phi(i,k-1,j)*phi(i,k,j)
+      if (pro .lt. 0.0d0) then
+        mang=((phi(i,k,j)-phi(i,k-1,j))/(z(k)-z(k-1)))
+        inte(i,j,1)=-phi(i,k-1,j)/mang + z(k-1)
+      endif
+    enddo
+    !! upper interface
+    do k=nz/2-1,nz-1
+      pro=phi(i,k-1,j)*phi(i,k,j)
+      if (pro .lt. 0.0d0) then
+        mang=((phi(i,k,j)-phi(i,k-1,j))/(z(k)-z(k-1)))
+        inte(i,j,2)=-phi(i,k-1,j)/mang + z(k-1)
+      endif
+    enddo
   enddo
 enddo
 
-zpos=(zpos2(1,:)+zpos2(2,:))/2.0d0
-! outer units
-zpos=zpos/re-1.0d0
+! Compute the Mean Value of the Interface
+mean=0.0d0
+do i=1,nx
+  do j=1,ny
+    do k=1,2
+      mean(k)=mean(k)+inte(i,j,k)/dble(nx*ny)
+    enddo
+  enddo
+enddo
 
-!write(*,*) dt,dt*dble(nstep)
+do i=1,nx
+  do j=1,ny
+    do k=1,2
+      inte(i,j,k)=inte(i,j,k)-mean(k)
+    enddo
+  enddo
+enddo
 
-open(55,file='./output/int_pos.dat',status='old',form='formatted',access='append')
-write(55,'(3(e16.8))') dt*dble(nstep),maxval(zpos),minval(zpos)
-close(55,status='keep')
 
-return 
+write(namefile,'(a,i8.8,a)') './output/interface1_',nstep,'.dat'
+
+open(unit=55,file=namefile,form='unformatted',position='append',access='stream',status='new')
+write(55) inte(:,:,1)
+close(55)
+
+write(namefile,'(a,i8.8,a)') './output/interface2_',nstep,'.dat'
+
+open(unit=55,file=namefile,form='unformatted',position='append',access='stream',status='new')
+write(55) inte(:,:,2)
+close(55)
+
+return
 end
-

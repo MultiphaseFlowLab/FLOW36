@@ -27,7 +27,7 @@ FLWOBJS = \
 
 MOD	= 
 OBJS	= $(FLWOBJS) 
-EXEC    =  ./get_int
+EXEC    =  ./get_tauwall
 
 $(EXEC):	$(OBJS)
 	$(LD) $(FFLAGS) $(OBJS) $(LIBS) -o $@ 

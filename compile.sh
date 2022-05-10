@@ -16,7 +16,7 @@
 #14 : G100 (CINECA)
 #15 : Tersicore o Zonker (Uniud)
 #16 : M100 (CINECA) - GPU
-machine="16"
+machine="0"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
