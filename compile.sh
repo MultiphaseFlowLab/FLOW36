@@ -233,9 +233,8 @@ echo "=      Do not compile on login nodes with hpc-sdk (kernel panic)          
 echo "= salloc -N1 --exclusive -A <acc> -p <part> --time=<t> to use compute nodes  ="
 module purge
 # load modules
-module load profile/candidate
+module load profile/global
 module load hpc-sdk/2022--binary
-module load cuda/11.6
 cp ./Marconi_100_gpu/makefile ./makefile
 cp ./Marconi_100_gpu/go.sh ./go.sh
 savespectral="0"
@@ -255,9 +254,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="8" # integer
-iy="8" # integer
-iz="8" # integer
+ix="7" # integer
+iy="7" # integer
+iz="7" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -265,7 +264,7 @@ exp_y="1" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
-NYCPU="1" # integer
+NYCPU="4" # integer
 NZCPU="4" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
@@ -313,7 +312,7 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="10" #integer (up to 8 digits)
+nend="15" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
 dump="100" # integer
@@ -323,7 +322,7 @@ sdump="-1" # integer
 
 # frequency of solution saving in spectral space, needed to restart the simulation
 #                       from a checkpoint if it crashes (those files are not kept)
-failure_dump="500" # integer
+failure_dump="10" # integer
 
 # Run time statistics calculation parameters
 # frequency of statistics calculation (leave -1 to skip statistics calculation)

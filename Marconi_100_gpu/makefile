@@ -1,11 +1,12 @@
-FC	= mpif90
+#FC	= mpipgifort #if using mpi spectrum
+FC	= mpif90     #if using hpc-sdk
 LD	= $(FC)
 RM	= /bin/rm -f
 FOPTS   = -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess  -module=./set_run/sc_compiled
-FFLAGS	= $(FOPTS) 
-LIBS    = -I$(CUDA_INC) -L$(CUDA_LIB) -lcufft 
+FFLAGS	= $(FOPTS)
+LIBS    = -cudalib=cufft
 
-LDFLAGS	= $(FOPTS) 
+LDFLAGS	= $(FOPTS)
 
 FLWOBJS =  $(shell cat list_source.list)
 
