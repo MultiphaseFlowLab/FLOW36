@@ -123,10 +123,11 @@ deallocate(wwc)
 
 
 ! form non linear terms
+!$acc kernels
 s1=-(uucx+uvcy+uwcz)
 s2=-(uvcx+vvcy+vwcz)
 s3=-(uwcx+vwcy+wwcz)
-
+!$acc end kernels
 
 deallocate(uucx)
 deallocate(uvcy)

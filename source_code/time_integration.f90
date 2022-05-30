@@ -7,9 +7,11 @@ use par_size
 double precision :: s1(spx,nz,spy,2), s2(spx,nz,spy,2), s3(spx,nz,spy,2)
 double precision :: h1(spx,nz,spy,2), h2(spx,nz,spy,2), h3(spx,nz,spy,2)
 
+!$acc kernels
 h1=dt*s1
 h2=dt*s2
 h3=dt*s3
+!$acc end kernels
 
 return
 end
@@ -26,9 +28,11 @@ use sterms
 double precision :: s1(spx,nz,spy,2), s2(spx,nz,spy,2), s3(spx,nz,spy,2)
 double precision :: h1(spx,nz,spy,2), h2(spx,nz,spy,2), h3(spx,nz,spy,2)
 
+!$acc kernels
 h1=0.5d0*dt*(3.0d0*s1-s1_o)
 h2=0.5d0*dt*(3.0d0*s2-s2_o)
 h3=0.5d0*dt*(3.0d0*s3-s3_o)
+!$acc end kernels
 
 return
 end

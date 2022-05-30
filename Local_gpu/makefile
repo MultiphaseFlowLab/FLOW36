@@ -2,7 +2,7 @@
 FC	= mpif90
 LD	= $(FC)
 RM	= /bin/rm -f
-FOPTS	= -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess -mcmodel=medium -Mlarge_arrays  -module=./set_run/sc_compiled
+FOPTS	= -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess -Mconcur -mcmodel=medium -Mlarge_arrays  -module=./set_run/sc_compiled
 FFLAGS	= $(FOPTS)
 LIBS    = -L/usr/local/cuda/lib64 -lcufft 
 
@@ -23,3 +23,4 @@ clean:
 
 .f90.o:
 	$(FC)  -c $(FFLAGS) $<
+

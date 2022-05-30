@@ -36,9 +36,11 @@ if(rank.lt.flow_comm_lim)then
  allocate(s2(spx,nz,spy,2))
  allocate(s3(spx,nz,spy,2))
 
+ !$acc kernels
  s1=0.0d0
  s2=0.0d0
  s3=0.0d0
+ !$acc end kernels
 
  ! calculate convective terms of N-S equation and store them in s1,s2,s3
  call convective_ns(s1,s2,s3)
@@ -46,21 +48,29 @@ if(rank.lt.flow_comm_lim)then
 ! add mean pressure gradient to S term
 #if cpiflag == 0
 #if match_dens == 2
- ! rescale NS equation if rhor > 1 for improved stability
+  ! rescale NS equation if rhor > 1 for improved stability
+  !$acc kernels
   s1=s1-sgradpx/rhor
   s2=s2-sgradpy/rhor
+  !$acc end kernels
 #else
+  !$acc kernels
   s1=s1-sgradpx
   s2=s2-sgradpy
+  !$acc end kernels
 #endif
 #elif cpiflag == 1
 #if match_dens == 2
- ! rescale NS equation if rhor > 1 for improved stability
+  ! rescale NS equation if rhor > 1 for improved stability
+  !$acc kernels
   s1=s1-sgradpx*dabs(gradpx)/rhor
   s2=s2-sgradpy*dabs(gradpy)/rhor
+  !$acc end kernels
 #else
+  !$acc kernels
   s1=s1-sgradpx*dabs(gradpx)
   s2=s2-sgradpy*dabs(gradpy)
+  !$acc end kernels
 #endif
 #endif
 
@@ -89,6 +99,7 @@ if(rank.lt.flow_comm_lim)then
    call adams_bashforth(s1,s2,s3,h1,h2,h3)
  endif
 
+ !GPU kernels lead to performance derating (GPU version)
  s1_o=s1
  s2_o=s2
  s3_o=s3

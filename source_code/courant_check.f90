@@ -18,6 +18,7 @@ integer :: i,j,k
 #define psi_flag psicompflag
 #define machine machineflag
 
+!$acc kernels
 dx=xl/real(nx-1)
 dy=yl/real(ny-1)
 dz(1)=z(1)-z(2)
@@ -35,6 +36,7 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 
 #if machine == 4
 if(isnan(gradpx).eq.1) lcomax=7.0d0
