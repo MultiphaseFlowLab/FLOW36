@@ -21,6 +21,7 @@ integer :: i,j,k
 
 
 ! assemble diagonals
+!$acc kernels
 do j=1,spy
   do k=3,nz
     do i=1,spx
@@ -29,7 +30,9 @@ do j=1,spy
     enddo
   enddo
 enddo
+!$acc end kernels
 
+!$acc kernels
 do j=1,spy
   do k=3,nz-2
     do i=1,spx
@@ -37,9 +40,10 @@ do j=1,spy
     enddo
   enddo
 enddo
-
+!$acc end kernels
 
 ! assemble 1st row
+!$acc kernels
 t0=1.0d0
 dt0=0.0d0
 d(:,1,:)=0.5d0*(p(1)*t0+q(1)*dt0)
@@ -49,9 +53,10 @@ do k=2,nz
   dert=dble((z_p(1))**(k)*(k-1)**2)
   d(:,k,:)=p(1)*t+q(1)*dert
 enddo
+!$acc end kernels
 
-
-! assemble 2nd row
+! assemble 2nd ro
+!$acc kernels
 t0=1.0d0
 dt0=0.0d0
 e(:,1,:)=0.5d0*(p(2)*t0+q(2)*dt0)
@@ -61,9 +66,10 @@ do k=2,nz
   dert=dble((z_p(2))**(k)*(k-1)**2)
   e(:,k,:)=p(2)*t+q(2)*dert
 enddo
-
+!$acc end kernels
 
 ! assemble RHS of equation
+!$acc kernels
 h(:,1,:,:)=r(1)
 h(:,2,:,:)=r(2)
 
@@ -72,11 +78,13 @@ do k=3,nz-2
 enddo
 h(:,nz-1,:,:)=dble(nz-1)*f(:,nz-3,:,:)-dble(2*(nz-2))*f(:,nz-1,:,:)
 h(:,nz,:,:)=dble(nz)*f(:,nz-2,:,:)-dble(2*(nz-1))*f(:,nz,:,:)
-
+!$acc end kernels
 
 call gauss_solver(a,b,c,d,e,h)
 
+!$acc kernels
 f=h
+!$acc end kernels
 
 return
 end
@@ -109,7 +117,7 @@ double precision :: rc,rd,re
 
 integer :: i,j,k
 
-
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     do k=nz,5,-1
