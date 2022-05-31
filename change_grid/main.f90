@@ -125,6 +125,7 @@ call destroy_plan
 
 ! porting to output grid
 allocate(ou(onx/2+1,onz,ony,2))
+ou=0.0d0
 tinx=inx
 tiny=iny
 tinz=inz
@@ -132,7 +133,6 @@ tinz=inz
 if(inx.gt.onx) tinx=onx
 if(iny.gt.ony) tiny=ony
 if(inz.gt.onz) tinz=onz
-
 
 ou(1:tinx/2+1,1:tinz,1:tiny/2+1,1:2)=iu(1:tinx/2+1,1:tinz,1:tiny/2+1,1:2)
 ou(1:tinx/2+1,1:tinz,ony-(tiny/2-1)+1:ony,1:2)=iu(1:tinx/2+1,1:tinz,tiny/2+2:tiny,1:2)

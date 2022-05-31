@@ -99,10 +99,13 @@ if(rank.lt.flow_comm_lim)then
    call adams_bashforth(s1,s2,s3,h1,h2,h3)
  endif
 
- !GPU kernels lead to performance derating (GPU version)
- s1_o=s1
- s2_o=s2
- s3_o=s3
+!openACC: adding the useless +0.0d0, Memory movement on GPUs and there is performance gain 
+!Ignore the +0.0d0 if you are reading the code, it is only a computationl trick
+!$acc kernels
+ s1_o=s1 + 0.d0
+ s2_o=s2 + 0.d0
+ s3_o=s3 + 0.d0
+!$acc end kernels
 
  deallocate(s1)
  deallocate(s2)
@@ -141,12 +144,12 @@ if(rank.lt.flow_comm_lim)then
  call spectral_to_phys(uc,u,1)
  call spectral_to_phys(vc,v,1)
  call spectral_to_phys(wc,w,1)
- uc_fg=uc
- vc_fg=vc
- wc_fg=wc
- u_fg=u
- v_fg=v
- w_fg=w
+ uc_fg=uc 
+ vc_fg=vc 
+ wc_fg=wc 
+ u_fg=u 
+ v_fg=v 
+ w_fg=w 
 #endif
 
  ! Cahn-Hilliard equation solution

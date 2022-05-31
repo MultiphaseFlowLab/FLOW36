@@ -17,8 +17,11 @@ double precision :: det
 
 integer :: i,j,k
 
+!$acc kernels
 h=h/gamma
+!$acc end kernels
 
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     beta2(i,j)=(1.0d0+gamma*k2(i+cstart(1),j+cstart(3)))/gamma
@@ -70,6 +73,7 @@ allocate(ddw3(spx,nz,spy))
 ! lower boundary: z=-1
 #if bc_down==0
 ! no-slip at z=-1
+!$acc kernels
 a11(:,:)=0.5d0*dw2(:,1,:)
 a12(:,:)=0.5d0*dw3(:,1,:)
 fr1(:,:)=0.5d0*dw1(:,1,:,1)
@@ -81,11 +85,13 @@ do k=2,nz
   fr1(:,:)=fr1(:,:)+(zp(1))**(k-1)*dw1(:,k,:,1)
   fc1(:,:)=fc1(:,:)+(zp(1))**(k-1)*dw1(:,k,:,2)
 enddo
+!$acc end kernels
 #else
 ! free-slip at z=-1
 call dz(dw1,ddw1)
 call dz_red(dw2,ddw2)
 call dz_red(dw3,ddw3)
+!$acc kernels
 a11(:,:)=0.5d0*ddw2(:,1,:)
 a12(:,:)=0.5d0*ddw3(:,1,:)
 fr1(:,:)=0.5d0*ddw1(:,1,:,1)
@@ -96,12 +102,14 @@ do k=2,nz
   fr1(:,:)=fr1(:,:)+(zp(1))**(k-1)*ddw1(:,k,:,1)
   fc1(:,:)=fc1(:,:)+(zp(1))**(k-1)*ddw1(:,k,:,2)
 enddo
+!$acc end kernels
 #endif
 
 
 ! upper boundary: z=+1
 #if bc_up==0
 ! no-slip at z=+1
+!$acc kernels
 a21(:,:)=0.5d0*dw2(:,1,:)
 a22(:,:)=0.5d0*dw3(:,1,:)
 fr2(:,:)=0.5d0*dw1(:,1,:,1)
@@ -112,11 +120,13 @@ do k=2,nz
   fr2(:,:)=fr2(:,:)+dw1(:,k,:,1)
   fc2(:,:)=fc2(:,:)+dw1(:,k,:,2)
 enddo
+!$acc end kernels
 #else
 ! free-slip at z=+1
 call dz(dw1,ddw1)
 call dz_red(dw2,ddw2)
 call dz_red(dw3,ddw3)
+!$acc kernels
 a21(:,:)=0.5d0*ddw2(:,1,:)
 a22(:,:)=0.5d0*ddw3(:,1,:)
 fr2(:,:)=0.5d0*ddw1(:,1,:,1)
@@ -127,6 +137,7 @@ do k=2,nz
   fr2(:,:)=fr2(:,:)+ddw1(:,k,:,1)
   fc2(:,:)=fc2(:,:)+ddw1(:,k,:,2)
 enddo
+!$acc end kernels
 #endif
 
 
@@ -141,6 +152,7 @@ deallocate(ddw3)
 allocate(A(spx,spy,2))
 allocate(B(spx,spy,2))
 
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     det=(a11(i,j)*a22(i,j)-a21(i,j)*a12(i,j))
@@ -163,6 +175,7 @@ deallocate(fc2)
 
 
 ! calculate w
+!$acc parallel loop collapse(3)
 do k=1,nz
   do j=1,spy
     do i=1,spx
@@ -206,6 +219,7 @@ integer :: i,j,k
 
 call dz(wc,dw)
 
+!$acc parallel loop collapse(3)
 do j=1,spy
   do k=1,nz
     do i=1,spx
@@ -222,23 +236,29 @@ enddo
 if(rank.eq.0)then
   allocate(tempu(nz))
   allocate(tempv(nz))
-
+ 
+  !$acc kernels
   tempu(:)=-h1(1,:,1,1)/gamma
   tempv(:)=-h2(1,:,1,1)/gamma
   beta=1.0d0/gamma
-
+  !$acc end kernels
+ 
   call helmholtz_rred(tempu,beta,p_u,q_u,r_u,zp)
   call helmholtz_rred(tempv,beta,p_v,q_v,r_v,zp)
 
+  !$acc kernels
   uc(1,:,1,1)=tempu(:)
   vc(1,:,1,1)=tempv(:)
+  !$acc end kernels
 
   deallocate(tempu)
   deallocate(tempv)
 
   ! set imaginary part to 0
+  !$acc kernels
   uc(1,:,1,2) = 0.d0
   vc(1,:,1,2) = 0.d0
+  !$acc end kernels
 endif
 
 return
@@ -260,19 +280,23 @@ integer :: i,j
 
 
 ! set up RHS for Helmholtz equation and store it in omega
+!$acc parallel loop 
 do i=1,spx
   omega(i,:,:,1)=-kx(i+cstart(1))*h2(i,:,:,2)
   omega(i,:,:,2)=kx(i+cstart(1))*h2(i,:,:,1)
 enddo
+!$acc parallel loop 
 do j=1,spy
   omega(:,:,j,1)=omega(:,:,j,1)+ky(j+cstart(3))*h1(:,:,j,2)
   omega(:,:,j,2)=omega(:,:,j,2)-ky(j+cstart(3))*h1(:,:,j,1)
 enddo
 
+!$acc kernels
 omega=-omega/gamma
-
+!$acc end kernels
 
 ! set coefficient for LHS omega_z
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     beta2(i,j)=(1.0d0+gamma*k2(i+cstart(1),j+cstart(3)))/gamma
