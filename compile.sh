@@ -16,6 +16,7 @@
 #14 : G100 (CINECA)
 #15 : Tersicore o Zonker (Uniud)
 #16 : M100 (CINECA) - GPU
+#17 : Discoverer (Sofiatech)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -239,6 +240,23 @@ cp ./Marconi_100_gpu/makefile ./makefile
 cp ./Marconi_100_gpu/go.sh ./go.sh
 savespectral="0"
 openacc_flag="1"
+
+elif [ "$machine" == "17" ]; then
+echo "=                        Discoverer (Sofiatech)                              ="
+echo "=                                                                            ="
+module purge
+# load modules
+# At the moment, compiled with nVidia + FFTW (CPU)
+module load nvidia
+module load nvhpc-nompi/latest
+module load gcc/11/latest
+module load openmpi/4/nvidia/latest
+module load fftw/3/latest-nvidia-openmpi
+module list
+cp ./Discoverer/makefile ./makefile
+cp ./Discoverer/go.sh ./go.sh
+savespectral="0"
+openacc_flag="0"
 
 fi
 echo "=============================================================================="
@@ -1219,7 +1237,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" || "$machine" == "16" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1262,7 +1280,7 @@ echo "==========================================================================
 echo "                NYCPU=$NYCPU      NZCPU=$NZCPU    NX=$NX     NY=$NY     NZ=$NZ"
 echo ""
 
-if [ "$machine" == "16" ]; then
+if [[ "$machine" == "16" || "$machine" == "17" ]]; then
 rm *.o
 fi
 
