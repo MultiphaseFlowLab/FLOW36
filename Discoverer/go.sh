@@ -9,6 +9,9 @@
 #SBATCH --error=test.err
 #SBATCH --partition=cn  # You should use this partition name of Discoverer
 
+#Use Infiniband for node-2-node
+export UCX_NET_DEVICES=mlx5_0:1
+
 # load modules
 module purge
 module load nvidia
