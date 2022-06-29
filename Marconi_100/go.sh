@@ -1,19 +1,16 @@
 #!/bin/bash
 
-#SBATCH --account="IscrB_LUPIN"
-#SBATCH --job-name="surf36test"
+#SBATCH --account="......."
+#SBATCH --job-name="test"
 #SBATCH --time=00:05:00
-#SBATCH --nodes=1                       ###modify according to necessity
+#SBATCH --nodes=1
 #SBATCH --ntasks-per-core=1
-#SBATCH --ntasks-per-node=32            ###modify according to necessity
+#SBATCH --ntasks-per-node=64
 #SBATCH --cpus-per-task=1
 #SBATCH --output=test.out
 #SBATCH --error=test.err
 #SBATCH --partition=m100_usr_prod
 
-# to avoid perl warning
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
 # load modules
 module purge
 module load profile/advanced

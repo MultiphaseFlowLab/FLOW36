@@ -1,26 +1,20 @@
 #!/bin/bash
-#SBATCH --account="Ppp4x_D069"
-#SBATCH --job-name="flo36gpu_test"
+#####SBATCH --account="    "
+#SBATCH --job-name="flo36_test"
 #SBATCH --time=00:05:00
 #SBATCH --nodes=1      ##adjust
-#SBATCH --ntasks-per-node=4
-#SBATCH --gres=gpu:4   ###4 GPUs per node on 4 MPI tasks
+#SBATCH --ntasks-per-node=128
+#SBATCH --ntasks-per-core=1 # That guarantees every MPI taks will be bind to one CPU core which is very effective
 #SBATCH --output=test.out
 #SBATCH --error=test.err
-#SBATCH --partition=m100_usr_prod
+#SBATCH --partition=cn  # You should use this partition name of Discoverer
 
-# to avoid perl warning
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
 # load modules
 module purge
-module load profile/global
-module load hpc-sdk/2022--binary
-#module load spectrum_mpi/10.4.0--binary
+module load nvidia
+module load nvhpc-nompi/latest
+module load gcc/11/latest
+module load openmpi/4/nvidia/latest
+module load fftw/3/latest-nvidia-openmpi
 
-#if using MPI SPECTRUM use:
-#mpirun -n NUMTASK -gpu ./sc_compiled/flow36
-#if using HPC-SDK (OPENPMPI) use (gpu aware and RDMA already enabled):
-mpirun -n NUMTASKS --map-by socket ./sc_compiled/flow36
-
-# submit script with sbatch
+mpirun  ./sc_compiled/flow36 #not necessary to specify task on Discoverer
