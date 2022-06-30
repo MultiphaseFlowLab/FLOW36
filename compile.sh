@@ -17,6 +17,7 @@
 #15 : Tersicore o Zonker (Uniud)
 #16 : M100 (CINECA) - GPU
 #17 : Discoverer (Sofiatech)
+#18 : LUMI-C (CSC)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -255,6 +256,21 @@ module load fftw/3/latest-nvidia-openmpi
 module list
 cp ./Discoverer/makefile ./makefile
 cp ./Discoverer/go.sh ./go.sh
+savespectral="0"
+openacc_flag="0"
+
+elif [ "$machine" == "18" ]; then
+echo "=                             LUMI-C (CSC)                                   ="
+echo "=                                                                            ="
+module purge
+# load modules
+# first try with Cray Compilers
+module load PrgEnv-cray
+module load craype-x86-milan
+module load cray-fftw
+module list
+cp ./Lumic/makefile ./makefile
+cp ./Lumic/go.sh ./go.sh
 savespectral="0"
 openacc_flag="0"
 
