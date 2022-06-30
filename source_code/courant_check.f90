@@ -46,6 +46,8 @@ if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 #elif machine == 16
 if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
+#elif machine == 17
+if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 #else
 if(isnan(gradpx).eqv..true.) lcomax=7.0d0
 #endif
