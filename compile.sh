@@ -247,12 +247,10 @@ echo "=                        Discoverer (Sofiatech)                           
 echo "=                                                                            ="
 module purge
 # load modules
-# At the moment, compiled with nVidia + FFTW (CPU)
-module load nvidia
-module load nvhpc-nompi/latest
+module load nvidia nvhpc/latest
 module load gcc/11/latest
 module load openmpi/4/nvidia/latest
-module load fftw/3/latest-nvidia-openmpi
+module load fftw/3/3.3.10-nvidia-openmpi
 module list
 cp ./Discoverer/makefile ./makefile
 cp ./Discoverer/go.sh ./go.sh

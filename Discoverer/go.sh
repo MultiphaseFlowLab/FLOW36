@@ -14,8 +14,7 @@ export UCX_NET_DEVICES=mlx5_0:1
 
 # load modules
 module purge
-module load nvidia
-module load nvhpc-nompi/latest
+module load nvhpc/latest
 module load gcc/11/latest
 module load openmpi/4/nvidia/latest
 module load fftw/3/latest-nvidia-openmpi
