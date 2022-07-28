@@ -229,10 +229,8 @@ openacc_flag="1"
 
 elif [ "$machine" == "16" ]; then
 echo "=                              Marconi-100 (GPU)                             ="
-echo "=                                                                            ="
 echo "=                               Reminder (2022)                              ="
-echo "=      Do not compile on login nodes with hpc-sdk (kernel panic)             ="
-echo "= salloc -N1 --exclusive -A <acc> -p <part> --time=<t> to use compute nodes  ="
+echo "=                Kernel Panic (HPC-SDK) is not an issue anymore              ="
 module purge
 # load modules
 module load profile/global

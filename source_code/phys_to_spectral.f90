@@ -89,10 +89,13 @@ npx=nsx
 !if(nycpu.gt.1)then ! substituted with conditional compilation
 
  allocate(wa(nx/2+1,npz,npy,2))
+ !$acc data copyin(uc) copyout(wa)
+ !$acc kernels
  wa=uc
+ !$acc end kernels
+ !$acc end data
  deallocate(uc)
  allocate(uc(nsx,npz,ny,2))
-
 
  call yz2xz(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
 
@@ -132,7 +135,11 @@ rz=mod(nz,nzcpu)
 !if(nzcpu.gt.1)then ! substituted with conditional compilation
 
  allocate(wa(nsx,npz,ny,2))
+ !$acc data copyin(uc) copyout(wa)
+ !$acc kernels
  wa=uc
+ !$acc end kernels
+ !$acc end data
  deallocate(uc)
  allocate(uc(nsx,nz,npy,2))
 
@@ -253,7 +260,11 @@ npx=nsx
 #if nycpu>1
 
  allocate(wa(npsix/2+1,npz,npy,2))
+ !$acc data copyin(uc) copyout(wa)
+ !$acc kernels
  wa=uc
+ !$acc end kernels
+ !$acc end data
  deallocate(uc)
  allocate(uc(nsx,npz,npsiy,2))
 
@@ -294,7 +305,11 @@ rz=mod(npsiz,nzcpu)
 #define nzcpu nnzcpu
 #if nzcpu>1
  allocate(wa(nsx,npz,npsiy,2))
+ !$acc data copyin(uc) copyout(wa)
+ !$acc kernels
  wa=uc
+ !$acc end kernels
+ !$acc end data
  deallocate(uc)
  allocate(uc(nsx,npsiz,npy,2))
 
