@@ -229,12 +229,10 @@ openacc_flag="1"
 
 elif [ "$machine" == "16" ]; then
 echo "=                              Marconi-100 (GPU)                             ="
-echo "=                               Reminder (2022)                              ="
 echo "=                Kernel Panic (HPC-SDK) is not an issue anymore              ="
 module purge
 # load modules
-module load profile/global
-module load hpc-sdk/2022--binary
+module load hpc-sdk
 cp ./Marconi_100_gpu/makefile ./makefile
 cp ./Marconi_100_gpu/go.sh ./go.sh
 savespectral="0"

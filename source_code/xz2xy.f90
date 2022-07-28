@@ -31,7 +31,11 @@ do disp=1,dims(direction+1)-1
  call mpi_cart_shift(cart_comm,direction,disp,source,dest,ierr)
 
  numel=ngxx*ngyy*ngzz*2
+ !$acc data copy(bufs)
+ !$acc kernels
  bufs=0.0d0*bufs
+ !$acc end kernels
+ !$acc end data
 
  if((floor(real(dest)/real(nycpu)).lt.ry).or.ry.eq.0)then
   indy=floor(real(dest)/real(nycpu))*ngyy
@@ -40,8 +44,11 @@ do disp=1,dims(direction+1)-1
   indy=(floor(real(dest)/real(nycpu))-ry)*(ngyy-1)+ry*ngyy
   sendy=ngyy-1
  endif
-
+ !$acc data copyin(wa) copyout(bufs)
+ !$acc kernels
  bufs(1:nsxx,1:npzz,1:sendy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+sendy,1:2)
+ !$acc end kernels
+ !$acc end data
 
 ! isend + recv  (blocking recv needs no wait)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,16,cart_comm,req,ierr)
@@ -63,7 +70,11 @@ do disp=1,dims(direction+1)-1
 
 
 ! write(*,*) 'rank',rank,'to',dest,indy+1,indy+sendy,'from',source,indz+1,indz+recvz
+!$acc data copyin(bufr) copyout(uc)
+!$acc kernels
  uc(1:nsxx,indz+1:indz+recvz,1:npyy,1:2)=bufr(1:nsxx,1:recvz,1:npyy,1:2)
+ !$acc end kernels
+ !$acc end data
 enddo
 
 ! copy data in place (avoid communication rank n to rank n)
@@ -78,7 +89,11 @@ else
  indz=(floor(real(rank)/real(nycpu))-rz)*(ngzz-1)+rz*ngzz
 endif
 !write(*,*) 'rank',rank,'to',rank,indy+1,indy+npyy,'from',rank,indz+1,indz+npzz
+!$acc data copyin(wa) copyout(uc)
+!$acc kernels
 uc(1:nsxx,indz+1:indz+npzz,1:npyy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)
+!$acc end kernels
+!$acc end data
 
 deallocate(bufs)
 deallocate(bufr)
@@ -124,7 +139,11 @@ do disp=1,dims(direction+1)-1
  call mpi_cart_shift(cart_comm,direction,disp,source,dest,ierr)
 
  numel=ngxx*ngyy*ngzz*2
+ !$acc data copy(bufs)
+ !$acc kernels
  bufs=0.0d0*bufs
+ !$acc end kernels
+ !$acc end data
 
  if((floor(real(dest)/real(nycpu)).lt.ry).or.ry.eq.0)then
   indy=floor(real(dest)/real(nycpu))*ngyy
@@ -134,7 +153,11 @@ do disp=1,dims(direction+1)-1
   sendy=ngyy-1
  endif
 
+ !$acc data copyin(wa) copyout(bufs)
+ !$acc kernels
  bufs(1:nsxx,1:npzz,1:sendy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+sendy,1:2)
+ !$acc end kernels
+ !$acc end data
 
 ! isend + recv  (blocking recv needs no wait)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,16,cart_comm,req,ierr)
@@ -156,7 +179,11 @@ do disp=1,dims(direction+1)-1
 
 
 ! write(*,*) 'rank',rank,'to',dest,indy+1,indy+sendy,'from',source,indz+1,indz+recvz
+!$acc data copyin(bufr) copyout(uc)
+!$acc kernels
  uc(1:nsxx,indz+1:indz+recvz,1:npyy,1:2)=bufr(1:nsxx,1:recvz,1:npyy,1:2)
+ !$acc end kernels
+ !$acc end data
 enddo
 
 ! copy data in place (avoid communication rank n to rank n)
@@ -171,7 +198,11 @@ else
  indz=(floor(real(rank)/real(nycpu))-rz)*(ngzz-1)+rz*ngzz
 endif
 !write(*,*) 'rank',rank,'to',rank,indy+1,indy+npyy,'from',rank,indz+1,indz+npzz
+!$acc data copyin(wa) copyout(uc)
+!$acc kernels
 uc(1:nsxx,indz+1:indz+npzz,1:npyy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)
+!$acc end kernels
+!$acc end data
 
 deallocate(bufs)
 deallocate(bufr)
