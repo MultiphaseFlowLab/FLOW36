@@ -6,6 +6,7 @@ use mpi
 use fftx_fwd_module
 use ffty_fwd_module
 use dctz_fwd_module
+!use nvtx
 
 integer :: dims(2) !,coord(2)
 integer :: rx,ry,rz,nsx,ngsx
@@ -54,9 +55,10 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(uc(npx,npz,npy,2))
+!call nvtxStartRange("FFTX-FWD",1)
 call fftx_fwd(u,uc,aliasing)
 !call fftx_fwd(u,uc,nx,npz,npy,0)
-
+!call nvtxEndRange
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2)    change parallelization y-z to x-z
@@ -97,8 +99,9 @@ npx=nsx
  deallocate(uc)
  allocate(uc(nsx,npz,ny,2))
 
+ !call nvtxStartRange("YZ2XZ",2)
  call yz2xz(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
-
+ !call nvtxEndRange
  deallocate(wa)
 
 !endif
@@ -111,8 +114,9 @@ npx=nsx
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !call ffty_fwd(uc,uc,nsx,npz,ny,aliasing)
+!call nvtxStartRange("FFTY-FWD",1)
 call ffty_fwd(uc,uc,aliasing)
-
+!call nvtxEndRange
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to x-y
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -143,8 +147,9 @@ rz=mod(nz,nzcpu)
  deallocate(uc)
  allocate(uc(nsx,nz,npy,2))
 
+ !call nvtxStartRange("XZ2XY",2)
  call xz2xy(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
-
+ !call nvtxEndRange
  deallocate(wa)
 
 !endif
@@ -157,7 +162,9 @@ rz=mod(nz,nzcpu)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !call dctz_fwd(uc,uout,nsx,nz,npy,aliasing)
+!call nvtxStartRange("DCTZ-FWD",1)
 call dctz_fwd(uc,uout,aliasing)
+!call nvtxEndRange
 !uout=uc
 
 

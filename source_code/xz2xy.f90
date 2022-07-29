@@ -50,10 +50,12 @@ do disp=1,dims(direction+1)-1
  !$acc end kernels
  !$acc end data
 
-! isend + recv  (blocking recv needs no wait)
+ ! isend + recv (blocking recv needs no wait)
+ !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+ !$acc host_data use_device(bufs,bufr)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,16,cart_comm,req,ierr)
  call mpi_recv(bufr,numel,mpi_double_precision,source,16,cart_comm,mpi_status_ignore,ierr)
-
+ !$acc end host_data
 
  if((floor(real(source)/real(nycpu)).lt.rz).or.rz.eq.0)then
   indz=floor(real(source)/real(nycpu))*ngzz
@@ -159,9 +161,12 @@ do disp=1,dims(direction+1)-1
  !$acc end kernels
  !$acc end data
 
-! isend + recv  (blocking recv needs no wait)
+ ! isend + recv (blocking recv needs no wait)
+ !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+ !$acc host_data use_device(bufs,bufr)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,16,cart_comm,req,ierr)
  call mpi_recv(bufr,numel,mpi_double_precision,source,16,cart_comm,mpi_status_ignore,ierr)
+ !$acc end host_data
 
 
  if((floor(real(source)/real(nycpu)).lt.rz).or.rz.eq.0)then

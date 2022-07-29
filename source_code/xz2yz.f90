@@ -53,10 +53,12 @@ do disp=1,dims(direction+1)-1
  !$acc end kernels
  !$acc end data
 
-! isend + recv
+ ! isend + recv
+ !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+ !$acc host_data use_device(bufs,bufr)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,17,cart_comm,req,ierr)
  call mpi_recv(bufr,numel,mpi_double_precision,source,17,cart_comm,mpi_status_ignore,ierr)
-
+ !$acc end host_data
 
  if((mod(source,nycpu).lt.rx).or.rx.eq.0)then
   indx=mod(source,nycpu)*ngxx
@@ -160,10 +162,12 @@ do disp=1,dims(direction+1)-1
  !$acc end kernels
  !$acc end data
 
-! isend + recv
+ ! isend + recv
+ !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+ !$acc host_data use_device(bufs,bufr)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,17,cart_comm,req,ierr)
  call mpi_recv(bufr,numel,mpi_double_precision,source,17,cart_comm,mpi_status_ignore,ierr)
-
+ !$acc end host_data
 
  if((mod(source,nycpu).lt.rx).or.rx.eq.0)then
   indx=mod(source,nycpu)*ngxx

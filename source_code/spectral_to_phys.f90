@@ -6,6 +6,7 @@ use mpi
 use fftx_bwd_module
 use ffty_bwd_module
 use dctz_bwd_module
+!use nvtx
 
 integer :: dims(2)
 integer :: rx,ry,rz
@@ -25,8 +26,9 @@ dims(2)=nycpu
 allocate(u(spx,nz,spy,2))
 u=uc
 !call dctz_bwd(u,u,spx,nz,spy,aliasing)
+!call nvtxStartRange("DCTZ-BWD",1)
 call dctz_bwd(u,u,aliasing)
-
+!call nvtxEndRange
 !write(*,*) "After bwd"
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -84,8 +86,9 @@ endif
  deallocate(u)
  allocate(u(spx,npz,ny,2))
 
+! call nvtxStartRange("XY2XZ",2)
  call xy2xz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
-
+ !call nvtxEndRange
  deallocate(wa)
 
 !endif
@@ -98,8 +101,9 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !call ffty_bwd_fg(u,u,spxpsi,npz,npsiy,aliasing)
+!call nvtxStartRange("FFTY-BWD",1)
 call ffty_bwd(u,u,aliasing)
-
+!call nvtxEndRange
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 4)    change parallelization x-z to y-z
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -132,8 +136,9 @@ endif
  deallocate(u)
  allocate(u(nx/2+1,npz,npy,2))
 
+ !call nvtxStartRange("XZ2YZ",2)
  call xz2yz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
-
+ !call nvtxEndRange
  deallocate(wa)
 
 !endif
@@ -145,9 +150,9 @@ endif
 ! 5)    ifft x direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+!call nvtxStartRange("FFTX-BWD",1)
 call fftx_bwd(u,uout,aliasing)
-
+!call nvtxEndRange
 
 deallocate(u)
 
@@ -186,7 +191,11 @@ dims(2)=nycpu
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(u(spxpsi,npsiz,spypsi,2))
+!$acc data copyin(uc) copyout(u)
+!$acc kernels
 u=uc
+!$acc end kernels
+!$acc end data
 !call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
 call dctz_bwd_fg(u,u,aliasing)
 

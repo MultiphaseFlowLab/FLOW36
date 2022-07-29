@@ -59,9 +59,12 @@ do disp=1,dims(direction+1)-1
 
 ! MPI communication among neighbours found, possible communications routines
 
-! isend + recv
+ ! isend + recv! isend + recv
+ !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+ !$acc host_data use_device(bufs,bufr)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,15,cart_comm,req,ierr)
  call mpi_recv(bufr,numel,mpi_double_precision,source,15,cart_comm,mpi_status_ignore,ierr)
+ !$acc end host_data
 
 !! isend + irecv + waitall
 ! call mpi_isend(bufs,numel,mpi_double_precision,dest,15,cart_comm,reqs(1),ierr)
@@ -190,9 +193,13 @@ do disp=1,dims(direction+1)-1
 
 ! MPI communication among neighbours found, possible communications routines
 
-! isend + recv
+ ! isend + recv
+ ! isend + recv (blocking recv needs no wait)
+ !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+ !$acc host_data use_device(bufs,bufr)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,15,cart_comm,req,ierr)
  call mpi_recv(bufr,numel,mpi_double_precision,source,15,cart_comm,mpi_status_ignore,ierr)
+ !$acc end host_data
 
  if((mod(source,nycpu).lt.ry).or.ry.eq.0)then
   indy=mod(source,nycpu)*ngyy

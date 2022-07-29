@@ -1061,6 +1061,7 @@ sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
@@ -1163,6 +1164,7 @@ sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
+sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/solver.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
