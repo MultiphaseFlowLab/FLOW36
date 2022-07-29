@@ -14,8 +14,7 @@ export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 # load modules
 module purge
-module load profile/global
-module load hpc-sdk/2022--binary
+module load hpc-sdk
 #module load spectrum_mpi/10.4.0--binary
 
 #if using MPI SPECTRUM use:

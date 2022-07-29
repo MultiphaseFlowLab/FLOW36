@@ -215,8 +215,8 @@ elif [ "$machine" == "15" ]; then
 echo "=                                Local (GPU)                             ="
 echo "=               Run on tersicore (2 GPUs) or zonker (1 GPU)              ="
 #must compile with nvfortran a
-cp ./Local_gpu/makefile ./makefile
-cp ./Local_gpu/go.sh ./go.sh
+cp ./Tersicore_gpu/makefile ./makefile
+cp ./Tersicore_gpu/go.sh ./go.sh
 #Setup the environment (otherwise gfortran is used)
 NVARCH=Linux_x86_64; export NVARCH
 NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
@@ -282,9 +282,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="7" # integer
-iy="7" # integer
-iz="7" # integer
+ix="8" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -292,7 +292,7 @@ exp_y="1" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
-NYCPU="4" # integer
+NYCPU="1" # integer
 NZCPU="4" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer

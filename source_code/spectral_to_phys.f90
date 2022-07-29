@@ -24,7 +24,11 @@ dims(2)=nycpu
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(u(spx,nz,spy,2))
+!$acc data copyin(uc) copyout(u)
+!$acc kernels
 u=uc
+!$acc end kernels
+!$acc end data
 !call dctz_bwd(u,u,spx,nz,spy,aliasing)
 !call nvtxStartRange("DCTZ-BWD",1)
 call dctz_bwd(u,u,aliasing)
