@@ -2,13 +2,13 @@
 # 0 : local (Mac)
 # 1 : local
 # 2 : Marconi A1
-# 3 : VSC3
+# 3 : VSC3 (VSC)
 # 4 : Vesta (ANL)
 # 5 : Marconi A2 KNL
 # 6 : Theta (ANL)
 # 7 : Bridges (PSC)
 # 8 : Adelaide
-# 9 : VSC4
+# 9 : VSC4 (VSC)
 #10 : Joliot Curie - Irene (KNL)
 #11 : Davide (CINECA)
 #12 : HAWK (HLRS - AMD Epyc Rome)
@@ -18,6 +18,8 @@
 #16 : M100 (CINECA) - GPU
 #17 : Discoverer (Sofiatech)
 #18 : LUMI-C (CSC)
+#19 : VSC-5 (VSC) - CPU Partition
+#20 : VSC-5 (VSC) - GPU Partition
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -267,6 +269,26 @@ cp ./Lumic/makefile ./makefile
 cp ./Lumic/go.sh ./go.sh
 savespectral="0"
 openacc_flag="0"
+
+elif [ "$machine" == "19" ]; then
+echo "=                             VSC-5 (VSC)                                   ="
+echo "=                           Using only CPUs                                 ="
+# load modules (SPACK)
+# WIP
+cp ./VSC-5/makefile_cpu ./makefile
+cp ./VSC-5/go_cpu.sh    ./go.sh
+savespectral="0"
+openacc_flag="0"
+
+elif [ "$machine" == "20" ]; then
+echo "=                             VSC-5 (VSC)                                   ="
+echo "=                         Using GPUs (OpenACC)                               ="
+# load modules (SPACK)
+# WIP
+cp ./VSC-5/makefile_gpu ./makefile
+cp ./VSC-5/go_gpu.sh    ./go.sh
+savespectral="0"
+openacc_flag="1"
 
 fi
 echo "=============================================================================="
