@@ -271,20 +271,24 @@ savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "19" ]; then
-echo "=                             VSC-5 (VSC)                                   ="
-echo "=                           Using only CPUs                                 ="
+echo "=                       VSC-5 (VSC) - CPU Partition                          ="
+echo "=                                                                            ="
 # load modules (SPACK)
-# WIP
+spack unload --all
+spack load gcc@11.2
+spack load fftw@3.3.10%gcc@11.2.0
+spack load /btrp7nc
 cp ./VSC-5/makefile_cpu ./makefile
 cp ./VSC-5/go_cpu.sh    ./go.sh
 savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "20" ]; then
-echo "=                             VSC-5 (VSC)                                   ="
-echo "=                         Using GPUs (OpenACC)                               ="
+echo "=                     VSC-5 (VSC) - GPU Partition                            ="
+echo "=                                                                            ="
 # load modules (SPACK)
-# WIP
+spack unload --all
+spack load nvhpc
 cp ./VSC-5/makefile_gpu ./makefile
 cp ./VSC-5/go_gpu.sh    ./go.sh
 savespectral="0"
@@ -1271,7 +1275,7 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "20" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1314,7 +1318,7 @@ echo "==========================================================================
 echo "                NYCPU=$NYCPU      NZCPU=$NZCPU    NX=$NX     NY=$NY     NZ=$NZ"
 echo ""
 
-if [[ "$machine" == "16" || "$machine" == "17" ]]; then
+if [[ "$machine" == "16" || "$machine" == "17" || "$machine" == "20" ]]; then
 rm *.o
 fi
 
