@@ -4,5 +4,6 @@
 #SBATCH --partition=gpu_a100_dual
 #SBATCH --qos goodluck
 #SBATCH --gres=gpu:2
-spack load nvhpc
+#SBATCH --time=00-00:03:00
+spack load nvhpc@22.5
 mpirun -n NUMTASKS ./sc_compiled/flow36

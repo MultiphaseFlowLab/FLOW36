@@ -48,6 +48,8 @@ if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 #elif machine == 17
 if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
+#elif machine == 19
+if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 #elif machine == 20
 if(ieee_is_nan(gradpx).eqv..true.) lcomax=7.0d0
 #else
@@ -65,6 +67,8 @@ if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #elif machine == 17
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+#elif machine == 19
+if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #elif machine == 20
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #else
@@ -81,6 +85,8 @@ if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #elif machine == 16
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #elif machine == 17
+if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+#elif machine == 19
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
 #elif machine == 20
 if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
@@ -116,6 +122,11 @@ if((gcomax.gt.co).or.(ieee_is_nan(gcomax).eq.1))then
 endif
 #elif machine == 17
 if((gcomax.gt.co).or.(ieee_is_nan(gcomax).eq.1))then
+  if(rank.eq.0) write(*,'(1x,a,es8.2,a,f8.3)') 'Courant number exceeds maximum value : ',gcomax,'>',co
+  call exit(0)
+endif
+#elif machine == 19
+if((gcomax.gt.co).or.(ieee_is_nan(gcomax).eqv..true.))then
   if(rank.eq.0) write(*,'(1x,a,es8.2,a,f8.3)') 'Courant number exceeds maximum value : ',gcomax,'>',co
   call exit(0)
 endif
