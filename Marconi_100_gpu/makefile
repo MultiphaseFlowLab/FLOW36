@@ -1,9 +1,11 @@
-#FC	= mpipgifort #if using mpi spectrum
+#FC     = mpifort    #if using mpi spectrum
 FC	= mpif90     #if using hpc-sdk
 LD	= $(FC)
 RM	= /bin/rm -f
-FOPTS   = -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess  -module=./set_run/sc_compiled
-FFLAGS	= $(FOPTS)
+#MPI_PATH= /cineca/prod/opt/compilers/spectrum_mpi/10.4.0/binary/
+FOPTS   = -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess  -module=./set_run/sc_compiled -lnvToolsExt
+FFLAGS  = $(FOPTS)
+#LIBS    = -I$(MPI_PATH) -cudalib=cufft #MPI path if using spectrum
 LIBS    = -cudalib=cufft
 
 LDFLAGS	= $(FOPTS)
