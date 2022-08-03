@@ -17,6 +17,7 @@ double precision, dimension(spx,nz,spy,2) :: h1,h2,h3,h,omega
 
 integer :: ntime
 
+#define openaccflag openacccompflag
 #define phiflag phicompflag
 #define psiflag psicompflag
 #define tempflag tempcompflag

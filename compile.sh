@@ -12,10 +12,10 @@
 #10 : Joliot Curie - Irene (KNL)
 #11 : Davide (CINECA)
 #12 : HAWK (HLRS - AMD Epyc Rome)
-#13 : M100 (CINECA) - no GPU
-#14 : G100 (CINECA)
-#15 : Tersicore o Zonker (Uniud)
-#16 : M100 (CINECA) - GPU
+#13 : G100 (CINECA)
+#14 : Tersicore o Zonker (Uniud)
+#15 : M100 (CINECA) - no GPU
+#16 : M100 (CINECA) - GPU (openACC)
 #17 : Discoverer (Sofiatech)
 #18 : LUMI-C (CSC)
 #19 : VSC-5 (VSC) - CPU Partition
