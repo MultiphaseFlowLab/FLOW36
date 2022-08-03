@@ -134,8 +134,7 @@ openacc_flag="0"
 
 elif [ "$machine" == "9" ]; then
 echo "=                                   VSC-4                                    ="
-echo "=                                                                            ="
-echo "=   13/12/2019: HT gives problems (no scalability), please do not use it     ="
+#13/12/2019: HT gives problems (no scalability), please do not use it     ="
 cp ./VSC-4/makefile ./makefile
 cp ./VSC-4/go.sh ./go.sh
 module purge
@@ -182,23 +181,6 @@ savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "13" ]; then
-echo "=                              Marconi-100 (no GPU)                          ="
-module purge
-# load modules
-module load profile/advanced
-module load gnu
-module load cuda/10.1
-#module load openmpi/4.0.3--gnu--8.4.0
-#module load fftw/3.3.8--gnu--8.4.0
-# MPI spectrum implementation (please swap also go.sh and makefile)
-module load spectrum_mpi/10.3.1--binary
-module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
-cp ./Marconi_100/makefile ./makefile
-cp ./Marconi_100/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "14" ]; then
 echo "=                                Galileo-100                                 ="
 module purge
 # load modules
@@ -213,9 +195,8 @@ cp ./Galileo_100/go.sh ./go.sh
 savespectral="0"
 openacc_flag="0"
 
-elif [ "$machine" == "15" ]; then
-echo "=                                Local (GPU)                             ="
-echo "=               Run on tersicore (2 GPUs) or zonker (1 GPU)              ="
+elif [ "$machine" == "14" ]; then
+echo "=                            Tersicore (2 x GPUs)                          ="
 #must compile with nvfortran a
 cp ./Tersicore_gpu/makefile ./makefile
 cp ./Tersicore_gpu/go.sh ./go.sh
@@ -229,20 +210,40 @@ export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.3/comm_libs/mpi/man
 savespectral="0"
 openacc_flag="1"
 
-elif [ "$machine" == "16" ]; then
-echo "=                              Marconi-100 (GPU)                             ="
-echo "=                Kernel Panic (HPC-SDK) is not an issue anymore              ="
+elif [ "$machine" == "15" ]; then
+echo "=                           Marconi-100 (CPU only)                           ="
 module purge
 # load modules
-module load hpc-sdk
-cp ./Marconi_100_gpu/makefile ./makefile
-cp ./Marconi_100_gpu/go.sh ./go.sh
+module load profile/advanced
+module load gnu
+module load cuda/10.1
+#module load openmpi/4.0.3--gnu--8.4.0
+#module load fftw/3.3.8--gnu--8.4.0
+# MPI spectrum implementation (please swap also go.sh and makefile)
+module load spectrum_mpi/10.3.1--binary
+module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
+cp ./Marconi_100/makefile_cpu_spectrum ./makefile
+cp ./Marconi_100/go_cpu_spectrum.sh ./go.sh
+savespectral="0"
+openacc_flag="0"
+
+elif [ "$machine" == "16" ]; then
+echo "=                              Marconi-100 (GPU)                             ="
+module purge
+# HPC-SDK + OPENMPI (slower)
+# module load hpc-sdk/2021--binary
+# HPC-SDK + MPI SPECTRUM (faster, M100 optimized)
+module load hpc-sdk/2021--binary
+module load spectrum_mpi/10.4.0--binary
+#cp ./Marconi_100/makefile_gpu_openmpi ./makefile
+#cp ./Marconi_100/go_gpu_openmpi.sh ./go.sh
+cp ./Marconi_100/makefile_gpu_spectrum ./makefile
+cp ./Marconi_100/go_gpu_spectrum.sh ./go.sh
 savespectral="0"
 openacc_flag="1"
 
 elif [ "$machine" == "17" ]; then
 echo "=                        Discoverer (Sofiatech)                              ="
-echo "=                                                                            ="
 module purge
 # load modules
 module load nvidia nvhpc/latest
@@ -257,7 +258,6 @@ openacc_flag="0"
 
 elif [ "$machine" == "18" ]; then
 echo "=                             LUMI-C (CSC)                                   ="
-echo "=                                                                            ="
 module purge
 # load modules
 # first try with Cray Compilers
@@ -271,8 +271,7 @@ savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "19" ]; then
-echo "=                                 VSC-5 (VSC)                                ="
-echo "=                                  Using CPUs                                ="
+echo "=                              VSC-5 (CPU)                                  ="
 # load modules (SPACK)
 spack unload --all
 spack load gcc@11.2
@@ -284,8 +283,7 @@ savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "20" ]; then
-echo "=                                 VSC-5 (VSC)                                ="
-echo "=                              Using GPUs (OpenACC)                          ="
+echo "=                              VSC-5 (GPU)                                ="
 # load modules (SPACK)
 spack unload --all
 spack load nvhpc
@@ -1280,7 +1278,7 @@ if [ "$machine" == "20" ]; then
 sed -i "s/include 'fftw3.f03'/!include 'fftw3.f03'/g" ./set_run/sc_compiled/module.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "13" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" ]]; then
+if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1328,7 +1326,7 @@ if [[ "$machine" == "16" || "$machine" == "17" || "$machine" == "20" ]]; then
 rm *.o
 fi
 
-if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) || ( "$machine" == "15" )  ]]; then
+if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) || ( "$machine" == "14" )  ]]; then
 rm *.o
 cd ./set_run
 ./go.sh
