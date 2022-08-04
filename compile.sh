@@ -257,21 +257,24 @@ savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "18" ]; then
-echo "=                             LUMI-C (CSC)                                   ="
-module purge
-# load modules
-# first try with Cray Compilers
-module load PrgEnv-cray
+echo "=                                 LUMI-C (CSC)                               ="
+module --force purge
+# Cray version (problem with more than 1 node)
+# module load PrgEnv-cray
+# module load craype-x86-milan
+# module load cray-fftw
+# GNU version
+module load PrgEnv-gnu
 module load craype-x86-milan
 module load cray-fftw
 module list
-cp ./Lumic/makefile ./makefile
-cp ./Lumic/go.sh ./go.sh
+cp ./Lumic/makefile_gnu ./makefile
+cp ./Lumic/go_gnu.sh ./go.sh
 savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "19" ]; then
-echo "=                              VSC-5 (CPU)                                  ="
+echo "=                                  VSC-5 (CPU)                               ="
 # load modules (SPACK)
 spack unload --all
 spack load gcc@11.2
@@ -283,7 +286,7 @@ savespectral="0"
 openacc_flag="0"
 
 elif [ "$machine" == "20" ]; then
-echo "=                              VSC-5 (GPU)                                ="
+echo "=                                  VSC-5 (GPU)                               ="
 # load modules (SPACK)
 spack unload --all
 spack load nvhpc
@@ -324,7 +327,7 @@ multinode="0" # integer
 nodesize="68" # integer
 
 # REMARKS on GPUs and Acceleration strategy
-# On Machines 15 and 16, GPUs are used by default (openacc_flag=1).
+# On Machines 14, 16 and 20 GPUs are used by default (openacc_flag=1).
 # OpenACC directives are used to accelerate the code w/ GPUs
 ################################################################################
 # restart flag: 1 restart, 0 new simulation
@@ -1324,6 +1327,11 @@ echo ""
 # if compiled with Nvidia HPC-SDK, object files should be manually removed
 if [[ "$machine" == "16" || "$machine" == "17" || "$machine" == "20" ]]; then
 rm *.o
+fi
+
+# if compiling with Cray, inf files should be manually removed
+if [[ "$machine" == "18" ]]; then
+rm *.i
 fi
 
 if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) || ( "$machine" == "14" )  ]]; then

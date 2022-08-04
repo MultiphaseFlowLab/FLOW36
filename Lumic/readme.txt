@@ -17,3 +17,10 @@ https://my.lumi-supercomputer.eu/
 Login using RSA pub key.
 Upload key at:
 https://mms.myaccessid.org/fed-apps/profile/#personal
+
+
+So far, no problems with Cray (compiling, linking and running is fine).
+
+To run:
+-Specify the memory (if not enough)
+-Use srun (no mpirun or mpiexec), no need to specify the number of MPI task (automatically recognised by the SLURM)

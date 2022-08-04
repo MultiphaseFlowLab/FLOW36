@@ -71,8 +71,8 @@ do disp=1,dims(direction+1)-1
  if(.not.mpi_async_protects_nonblocking) call mpi_get_address(bufs,iadd,ierr)
 
 ! write(*,*) 'rank',rank,'to',dest,indz+1,indz+sendz,'from',source,indy+1,indy+recvy
-!$acc data copyin(bufr) copyout(uc)
-!$acc kernels
+ !$acc data copyin(bufr) copyout(uc)
+ !$acc kernels
  uc(1:nsxx,1:npzz,indy+1:indy+recvy,1:2)=bufr(1:nsxx,1:npzz,1:recvy,1:2)
  !$acc end kernels
  !$acc end data

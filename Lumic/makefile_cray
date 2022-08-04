@@ -1,13 +1,11 @@
-#F90	= $(FC)
-
-FC	= ftn
-LD	= $(FC)
-SWP	=
-RM	= /bin/rm -f
-MP	=
-OLEVEL	= -O3 -hfp3
-FOPTS   = -align none -dynamic -mcmodel=medium -shared-intel -axMIC-AVX512 -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
-FFLAGS	= $(FOPTS) $(OLEVEL)
+FC      = ftn
+LD      = $(FC)
+SWP     =
+RM      = /bin/rm -f
+MP      =
+OLEVEL  = -O3 -hfp3
+FOPTS   = -eZ -J./set_run/sc_compiled/ -I./set_run/sc_compiled/
+FFLAGS  = $(FOPTS) $(OLEVEL)
 LIBS    =  -lfftw3 -lm -ldl
 
 LDFLAGS	= $(FOPTS) $(OLEVEL)

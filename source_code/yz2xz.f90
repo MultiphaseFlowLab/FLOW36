@@ -51,7 +51,7 @@ do disp=1,dims(direction+1)-1
   sendx=ngxx-1
  endif
 
- !$acc data copyin(wa) copyout(wa)
+ !$acc data copyin(wa) copyout(bufs)
  !$acc kernels
  bufs(1:sendx,1:npzz,1:npyy,1:2)=wa(indx+1:indx+sendx,1:npzz,1:npyy,1:2)
  !$acc end kernels
@@ -115,7 +115,7 @@ else
  indy=(mod(rank,nycpu)-ry)*(ngyy-1)+ry*ngyy
 endif
 !write(*,*) 'rank',rank,'to',rank,indx+1,indx+nsxx,'from',rank,indy+1,indy+npyy
-!$acc data copyin(wa) copyout(wa)
+!$acc data copyin(wa) copyout(uc)
 !$acc kernels
 uc(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)=wa(indx+1:indx+nsxx,1:npzz,1:npyy,1:2)
 !$acc end kernels
