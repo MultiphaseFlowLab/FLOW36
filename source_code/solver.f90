@@ -146,14 +146,14 @@ if(rank.lt.flow_comm_lim)then
  call spectral_to_phys(vc,v,1)
  call spectral_to_phys(wc,w,1)
  !This is only a backup copy not used with ex* = 1, gpu code skip this part (strong slod down)
- #if openaccflag == 0
+#if openaccflag == 0
   uc_fg=uc
   vc_fg=vc
   wc_fg=wc
   u_fg=u
   v_fg=v
   w_fg=w
- #endif
+#endif
 #endif
 
  ! Cahn-Hilliard equation solution

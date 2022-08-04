@@ -5,7 +5,7 @@ RM      = /bin/rm -f
 MP      =
 OLEVEL  = -O3
 LIBS    = -lfftw3 -lm -ldl
-FOPTS   = -mcmodel=medium -ffixed-line-length-140 -fno-align-commons -fbounds-check -Wall -cpp -J ./set_run/sc_compil>
+FOPTS   = -mcmodel=medium -ffixed-line-length-140 -fno-align-commons -fbounds-check -Wall -cpp -J ./set_run/sc_compiled
 FFLAGS  = $(FOPTS) $(OLEVEL)
 
 
@@ -19,12 +19,12 @@ OBJS    = $(FLWOBJS)
 EXEC    =  ./set_run/sc_compiled/flow36
 
 $(EXEC):        $(OBJS)
-        $(LD) $(FFLAGS) $(OBJS) $(LIBS) -o $@
+	$(LD) $(FFLAGS) $(OBJS) $(LIBS) -o $@
 
 clean:
-        $(RM) $(OBJS) $(EXEC)
+	$(RM) $(OBJS) $(EXEC)
 
 .SUFFIXES: .o
 
 .f90.o:
-        $(FC)  -c $(FFLAGS) $
+	$(FC)  -c $(FFLAGS) $
