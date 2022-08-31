@@ -214,7 +214,7 @@ do j=1,spypsi
 enddo
 
 do j=1,spypsi
-  do k=3,nz-2
+  do k=3,npsiz-2
     do i=1,spxpsi
       c(i,k-2,j)=-beta2(i,j)*dble(k-2)
     enddo
