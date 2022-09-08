@@ -8,7 +8,7 @@ module commondata
  integer :: ierr
 ! for use mpi_f08
 !type(mpi_comm) :: cart_comm
- integer :: cart_comm,flow_comm,part_comm,comm_comm
+ integer :: cart_comm,flow_comm,part_comm,comm_comm,lacc_rank
  double precision :: xl,yl
  character(len=50) :: folder='./results'
 end module commondata

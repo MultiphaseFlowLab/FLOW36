@@ -17,7 +17,9 @@ module purge
 module load hpc-sdk/2021--binary
 module load spectrum_mpi/10.4.0--binary
 
-#MPI SPECTRUM (-gpu flag required to enable CUDA-aware, GPU Direct, UCX)
-mpirun -gpu -n NUMTASKS  ./sc_compiled/flow36
+# MPI SPECTRUM
+# Problem with -gpu flag, avoid it
+# Still fatser than OpenMPI 
+mpirun -n NUMTASKS  ./sc_compiled/flow36
 
 # submit script with sbatch

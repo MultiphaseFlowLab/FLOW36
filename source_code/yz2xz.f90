@@ -59,27 +59,28 @@ do disp=1,dims(direction+1)-1
 
 ! MPI communication among neighbours found, possible communications routines
 
- ! isend + recv! isend + recv
- !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+ ! isend + recv!
+ ! CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
  !$acc host_data use_device(bufs,bufr)
  call mpi_isend(bufs,numel,mpi_double_precision,dest,15,cart_comm,req,ierr)
  call mpi_recv(bufr,numel,mpi_double_precision,source,15,cart_comm,mpi_status_ignore,ierr)
  !$acc end host_data
 
-!! isend + irecv + waitall
+! isend + irecv + waitall ()
+! Tested for GPUs, everyhtign non-blocking should perform a bit better
+! If used, comment the last mpi_wait if you use this
+!!!$acc host_data use_device(bufs,bufr)
 ! call mpi_isend(bufs,numel,mpi_double_precision,dest,15,cart_comm,reqs(1),ierr)
 ! call mpi_irecv(bufr,numel,mpi_double_precision,source,15,cart_comm,reqs(2),ierr)
 ! call mpi_waitall(2,reqs,mpi_statuses_ignore,ierr)
-! IF (.NOT.MPI_ASYNC_PROTECTS_NONBLOCKING) CALL MPI_F_sync_reg(snd_buf)
-!!call mpi_wait(req,mpi_status_ignore,ierr) ! mettere riga ... e buffer asincrono?
+! if(.not.mpi_async_protects_nonblocking) call mpi_get_address(bufs,iadd,ierr)
+!!!$acc end host_data
 
 !! irecv + send
 ! call mpi_irecv(bufr,numel,mpi_double_precision,source,15,cart_comm,req,ierr)
 ! call mpi_send(bufs,numel,mpi_double_precision,dest,15,cart_comm,ierr)
 ! IF (.NOT.MPI_ASYNC_PROTECTS_NONBLOCKING) CALL MPI_F_sync_reg(snd_buf)
 ! call mpi_wait(req,mpi_status_ignore,ierr) ! mettere riga ... e buffer asincrono?
-
-
 
  if((mod(source,nycpu).lt.ry).or.ry.eq.0)then
   indy=mod(source,nycpu)*ngyy

@@ -131,11 +131,14 @@ if(rank.lt.flow_comm_lim)then
 
 ! assign GPU to rank
 #if openaccflag == 1
-  numdevices=acc_get_num_devices(acc_device_nvidia)
-  devicenum=mod(rank,numdevices)
   call acc_set_device_num(devicenum,acc_device_nvidia)
-! debug only (to be removed)
-!  write(*,*) "MPI Rank, GPU number", rank, devicenum
+  call mpi_comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,local_comm,ierr)
+  call mpi_comm_rank(local_comm,lacc_rank,ierr)
+  numdevices=acc_get_num_devices(acc_device_nvidia)
+  devicenum=mod(lacc_rank,numdevices)
+  call acc_set_device_num(devicenum,acc_device_nvidia)
+  ! debug only (to be removed)
+  ! print *, "Num_devices", numdevices, "MPI rank", rank, "Device number", devicenum
 #endif
 endif
 
