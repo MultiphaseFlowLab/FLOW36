@@ -116,9 +116,9 @@ if(aliasing.eq.1)then
 endif
 wt(1:nx/2+1,1:npz,1:npy)=dcmplx(uc(1:nx/2+1,1:npz,1:npy,1),uc(1:nx/2+1,1:npz,1:npy,2))
 !$acc end kernels
-!$acc data copyin(uc) copyout(ur)
-!$acc host_data use_device(uc,ur)
-gerr=gerr+cufftExecZ2D(cudaplan_x_bwd_fg,uc,ur)
+!$acc data copyin(wt) copyout(ur)
+!$acc host_data use_device(wt,ur)
+gerr=gerr+cufftExecZ2D(cudaplan_x_bwd_fg,wt,ur)
 !$acc end host_data
 !$acc end data
 !$acc kernels
