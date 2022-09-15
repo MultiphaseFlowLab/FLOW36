@@ -158,6 +158,7 @@ call spectral_to_phys(s3,ww,1)
 call spectral_to_phys(phic,phi,1)
 
 #if match_dens == 2
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -170,6 +171,7 @@ do j=1,fpy
   enddo
 enddo
 #else
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx

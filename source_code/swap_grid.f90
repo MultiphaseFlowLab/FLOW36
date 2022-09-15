@@ -21,12 +21,15 @@ integer :: ii,jj
 
 ! if(rank.eq.0) write(*,*)
 ! if(rank.eq.0) write(*,*) 'Coarse to fine'
-
+!$acc kernels
 varf=0.0d0
+!$acc end kernels
 
 #if expx == 1 && expy == 1 && expz == 1
   ! if no grid expansion
+  !$acc kernels
   varf=varc
+  !$acc end kernels
 #elif expx == 1 && expy == 1
   ! if grid expanded in z only no need for MPI communications
   varf(:,1:nz,:,:)=varc(:,1:nz,:,:)
@@ -109,7 +112,9 @@ varf=0.0d0
 
 
 ! renormalize
+!$acc kernels
 varf=varf*dble(exp_x*exp_y)
+!$acc end kernels
 
 return
 end
@@ -140,10 +145,14 @@ integer :: ii,jj
 ! if(rank.eq.0) write(*,*)
 ! if(rank.eq.0) write(*,*) 'Fine to coarse'
 
+!$acc kernels
 varc=0.0d0
+!$acc end kernels
 
 #if expx == 1 && expy == 1 && expz == 1
+  !$acc kernels
   varc=varf
+  !$acc end kernels
 #elif expx == 1 && expy == 1
   ! if grid expanded in z only no need for MPI communications
   varc(:,1:nz,:,:)=varf(:,1:nz,:,:)
@@ -228,7 +237,9 @@ varc=0.0d0
 
 
 ! renormalize
+!$acc kernels
 varc=varc/dble(exp_x*exp_y)
+!$acc end kernels
 
 return
 end

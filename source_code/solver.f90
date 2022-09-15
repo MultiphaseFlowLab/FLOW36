@@ -169,12 +169,16 @@ if(rank.lt.flow_comm_lim)then
    call adams_bashforth_phi(sphi,hphi)
  endif
 
+ !$acc kernels
  sphi_o=sphi
+ !$acc end kernels
 
  deallocate(sphi)
 
  ! history term
+ !$acc kernels
  hphi=hphi+phic
+ !$acc end kernels
 
  call calculate_phi(hphi)
 

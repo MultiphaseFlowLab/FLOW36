@@ -236,13 +236,13 @@ enddo
 if(rank.eq.0)then
   allocate(tempu(nz))
   allocate(tempv(nz))
- 
+
   !$acc kernels
   tempu(:)=-h1(1,:,1,1)/gamma
   tempv(:)=-h2(1,:,1,1)/gamma
   beta=1.0d0/gamma
   !$acc end kernels
- 
+
   call helmholtz_rred(tempu,beta,p_u,q_u,r_u,zp)
   call helmholtz_rred(tempv,beta,p_v,q_v,r_v,zp)
 
@@ -280,12 +280,12 @@ integer :: i,j
 
 
 ! set up RHS for Helmholtz equation and store it in omega
-!$acc parallel loop 
+!$acc parallel loop
 do i=1,spx
   omega(i,:,:,1)=-kx(i+cstart(1))*h2(i,:,:,2)
   omega(i,:,:,2)=kx(i+cstart(1))*h2(i,:,:,1)
 enddo
-!$acc parallel loop 
+!$acc parallel loop
 do j=1,spy
   omega(:,:,j,1)=omega(:,:,j,1)+ky(j+cstart(3))*h1(:,:,j,2)
   omega(:,:,j,2)=omega(:,:,j,2)-ky(j+cstart(3))*h1(:,:,j,1)
@@ -326,8 +326,11 @@ double precision :: hphi(spx,nz,spy,2),beta2(spx,spy)
 
 integer :: i,j
 
+!$acc kernels
 hphi=hphi*pe/(dt*ch**2)
+!$acc end kernels
 
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     beta2(i,j)=k2(i+cstart(1),j+cstart(3))+s_coeff/(2.0d0*ch**2)
@@ -338,11 +341,12 @@ enddo
 call helmholtz(hphi,beta2,[0.0d0,0.0d0],[1.0d0,1.0d0],[0.0d0,0.0d0],zp)
 
 
-
 ! solve for phi
 call helmholtz(hphi,beta2,[0.0d0,0.0d0],[1.0d0,1.0d0],[0.0d0,0.0d0],zp)
 
+!$acc kernels
 phic=hphi
+!$acc end kernels
 
 return
 end

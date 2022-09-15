@@ -37,11 +37,9 @@ do disp=1,dims(direction+1)-1
 
 ! numel may be optimized, but now bufs and bufr are allocated just once
  numel=ngxx*ngyy*ngzz*2
- !$acc data copy(bufs)
  !$acc kernels
  bufs=0.0d0*bufs
  !$acc end kernels
- !$acc end data
 
  if((mod(dest,nycpu).lt.rx).or.rx.eq.0)then
   indx=mod(dest,nycpu)*ngxx
@@ -51,11 +49,9 @@ do disp=1,dims(direction+1)-1
   sendx=ngxx-1
  endif
 
- !$acc data copyin(wa) copyout(bufs)
  !$acc kernels
  bufs(1:sendx,1:npzz,1:npyy,1:2)=wa(indx+1:indx+sendx,1:npzz,1:npyy,1:2)
  !$acc end kernels
- !$acc end data
 
 ! MPI communication among neighbours found, possible communications routines
 
@@ -96,11 +92,9 @@ do disp=1,dims(direction+1)-1
  if(.not.mpi_async_protects_nonblocking) call mpi_get_address(bufs,iadd,ierr)
 
 ! write(*,*) 'rank',rank,'to',dest,indx+1,indx+sendx,'from',source,indy+1,indy+recvy
-!$acc data copyin(bufr) copyout(uc)
 !$acc kernels
  uc(1:nsxx,1:npzz,indy+1:indy+recvy,1:2)=bufr(1:nsxx,1:npzz,1:recvy,1:2)
  !$acc end kernels
- !$acc end data
 enddo
 
 
@@ -116,11 +110,9 @@ else
  indy=(mod(rank,nycpu)-ry)*(ngyy-1)+ry*ngyy
 endif
 !write(*,*) 'rank',rank,'to',rank,indx+1,indx+nsxx,'from',rank,indy+1,indy+npyy
-!$acc data copyin(wa) copyout(uc)
 !$acc kernels
 uc(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)=wa(indx+1:indx+nsxx,1:npzz,1:npyy,1:2)
 !$acc end kernels
-!$acc end data
 
 deallocate(bufs)
 deallocate(bufr)
@@ -172,11 +164,9 @@ do disp=1,dims(direction+1)-1
 
 ! numel may be optimized, but now bufs and bufr are allocated just once
  numel=ngxx*ngyy*ngzz*2
- !$acc data copy(bufs)
  !$acc kernels
  bufs=0.0d0*bufs
  !$acc end kernels
- !$acc end data
 
  if((mod(dest,nycpu).lt.rx).or.rx.eq.0)then
   indx=mod(dest,nycpu)*ngxx
@@ -186,11 +176,9 @@ do disp=1,dims(direction+1)-1
   sendx=ngxx-1
  endif
 
- !$acc data copyin(wa) copyout(bufs)
  !$acc kernels
  bufs(1:sendx,1:npzz,1:npyy,1:2)=wa(indx+1:indx+sendx,1:npzz,1:npyy,1:2)
  !$acc end kernels
- !$acc end data
 
 ! MPI communication among neighbours found, possible communications routines
 
@@ -216,11 +204,9 @@ do disp=1,dims(direction+1)-1
  if(.not.mpi_async_protects_nonblocking) call mpi_get_address(bufs,iadd,ierr)
 
 ! write(*,*) 'rank',rank,'to',dest,indx+1,indx+sendx,'from',source,indy+1,indy+recvy
- !$acc data copyin(bufr) copyout(uc)
  !$acc kernels
  uc(1:nsxx,1:npzz,indy+1:indy+recvy,1:2)=bufr(1:nsxx,1:npzz,1:recvy,1:2)
  !$acc end kernels
- !$acc end data
 enddo
 
 ! copy data in place (avoid communication rank n to rank n)
@@ -235,11 +221,9 @@ else
  indy=(mod(rank,nycpu)-ry)*(ngyy-1)+ry*ngyy
 endif
 !write(*,*) 'rank',rank,'to',rank,indx+1,indx+nsxx,'from',rank,indy+1,indy+npyy
-!$acc data copyin(wa) copyout(uc)
 !$acc kernels
 uc(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)=wa(indx+1:indx+nsxx,1:npzz,1:npyy,1:2)
 !$acc end kernels
-!$acc end data
 
 deallocate(bufs)
 deallocate(bufr)

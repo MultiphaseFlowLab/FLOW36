@@ -34,6 +34,7 @@ allocate(a1(spx,nz,spy,2))
 call dz(phic,a1)
 call dz(a1,sphi)
 
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     sphi(i,:,j,1)=sphi(i,:,j,1)-k2(i+cstart(1),j+cstart(3))*phic(i,:,j,1)
@@ -41,12 +42,15 @@ do j=1,spy
   enddo
 enddo
 
+!$acc kernels
 sphi=-(1.0d0+s_coeff)/pe*sphi
+!$acc end kernels
 
 !Calculate convective term
 allocate(a1f(nx,fpz,fpy))
 
 ! u*(d phi /dx)
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     a1(i,:,j,1)=-kx(i+cstart(1))*phic(i,:,j,2)
@@ -59,6 +63,7 @@ call spectral_to_phys(a1,a1f,1)
 
 allocate(convf(nx,fpz,fpy))
 
+!$acc parallel loop collapse(2)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -68,6 +73,7 @@ do j=1,fpy
 enddo
 
 ! v*(d phi /dy)
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     a1(i,:,j,1)=-ky(j+cstart(3))*phic(i,:,j,2)
@@ -78,6 +84,7 @@ enddo
 call spectral_to_phys(vc,v,1)
 call spectral_to_phys(a1,a1f,1)
 
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -92,6 +99,7 @@ call dz(phic,a1)
 call spectral_to_phys(wc,w,1)
 call spectral_to_phys(a1,a1f,1)
 
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -104,10 +112,12 @@ call phys_to_spectral(convf,a1,1)
 
 deallocate(convf)
 ! sum all the convective terms to sphi
+!$acc kernels
 sphi=sphi-a1
 
 !Calculate nabla^2 \phi^3
 a1f=phi**(3.0d0)
+!$acc end kernels
 
 call phys_to_spectral(a1f,a1,1)
 
@@ -119,6 +129,7 @@ call dz(a2,a3)
 
 deallocate(a2)
 
+!$acc parallel loop collapse(3)
 do j=1,spy
   do k=1,nz
     do i=1,spx

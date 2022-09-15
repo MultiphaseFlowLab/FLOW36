@@ -150,6 +150,7 @@ double precision :: top(nx,fpz,fpy)
 
 integer :: k
 
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -162,13 +163,15 @@ do j=1,fpy
   enddo
 enddo
 
+!$acc kernels
 sum_xy=sum(sum(top,3),1)
-
 sglob=0.0d0
 sglob(fstart(2)+1:fstart(2)+fpz)=sum_xy
+!$acc end kernels
 
 call mpi_reduce(sglob,column,nz,mpi_double_precision,mpi_sum,0,flow_comm,ierr)
 
+!$acc kernels
 int_1=0.0d0
 ! integrate column and save in int_1
 do k=1,nz-1
@@ -177,6 +180,7 @@ enddo
 
 ! int_1 *dx*dy
 int_1=int_1*xl*yl/dble((nx-1)*(ny-1))
+!$acc end kernels
 
 return
 end
