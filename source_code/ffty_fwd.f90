@@ -46,14 +46,13 @@ endif
 
 
 #if openaccflag == 1
+!$acc data copyin(ui) create(wt,wot) copyout(uo)
 !$acc kernels
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 !$acc end kernels
-!$acc data copyin(wt), copyout(wot)
 !$acc host_data use_device(wt,wot)
 gerr=gerr+cufftExecZ2Z(cudaplan_y_fwd,wt,wot,CUFFT_FORWARD)
 !$acc end host_data
-!$acc end data
 !$acc kernels
 uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
 uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
@@ -62,6 +61,7 @@ if(aliasing.eq.1)then
  uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
 endif
 !$acc end kernels
+!$acc end data
 #endif
 
 deallocate(wt,wot)
@@ -113,14 +113,13 @@ endif
 
 
 #if openaccflag == 1
+!$acc data copyin(ui) create(wt,wot) copyout(uo)
 !$acc kernels
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 !$acc end kernels
-!$acc data copyin(wt), copyout(wot)
 !$acc host_data use_device(wt,wot)
 gerr=gerr+cufftExecZ2Z(cudaplan_y_fwd_fg,wt,wot,CUFFT_FORWARD)
 !$acc end host_data
-!$acc end data
 !$acc kernels
 uo(1:nsx,1:npz,1:ny,1)=dble(wot(1:nsx,1:npz,1:ny))
 uo(1:nsx,1:npz,1:ny,2)=aimag(wot(1:nsx,1:npz,1:ny))
@@ -129,6 +128,7 @@ if(aliasing.eq.1)then
  uo(1:nsx,1:npz,floor(2.0/3.0*real(ny/2+1)):ny-floor(2.0/3.0*real(ny/2)),2)=0.0d0
 endif
 !$acc end kernels
+!$acc end data
 #endif
 
 deallocate(wt,wot)

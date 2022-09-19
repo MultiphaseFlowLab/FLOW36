@@ -63,6 +63,7 @@ allocate(a(2*(nz-1),nsx,npy))
 allocate(b(2*(nz-1),nsx,npy))
 allocate(ac(nz,nsx,npy))
 allocate(bc(nz,nsx,npy))
+!$acc data copyin(uin) create(a,b,ac,bc) copyout(uout)
 !$acc kernels
 ! dealiasing
 if(aliasing.eq.1)then
@@ -102,6 +103,7 @@ gerr=gerr+cufftExecD2Z(cudaplan_z_bwd,b,bc)
   enddo
 enddo
 !$acc end kernels
+!$acc end data
 deallocate(a,b,ac,bc)
 #endif
 
@@ -165,6 +167,7 @@ allocate(a(2*(nz-1),nsx,npy))
 allocate(b(2*(nz-1),nsx,npy))
 allocate(ac(nz,nsx,npy))
 allocate(bc(nz,nsx,npy))
+!$acc data copyin(uin) create(a,b,ac,bc) copyout(uout)
 !$acc kernels
 ! dealiasing
 if(aliasing.eq.1)then
@@ -204,6 +207,7 @@ gerr=gerr+cufftExecD2Z(cudaplan_z_bwd_fg,b,bc)
   enddo
 enddo
 !$acc end kernels
+!$acc end data
 deallocate(a,b,ac,bc)
 #endif
 

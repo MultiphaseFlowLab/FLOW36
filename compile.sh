@@ -20,7 +20,7 @@
 #18 : LUMI-C (CSC)
 #19 : VSC-5 (VSC) - CPU Partition
 #20 : VSC-5 (VSC) - GPU Partition
-machine="20"
+machine="0"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -309,9 +309,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="8" # integer
-iy="8" # integer
-iz="8" # integer
+ix="7" # integer
+iy="7" # integer
+iz="7" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -346,7 +346,7 @@ nt_restart="0" # integer
 incond="0" # integer
 
 # Reynolds number
-Re="220.0" # real (double)
+Re="150.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -367,7 +367,7 @@ ly="2.0" # real (double)
 nstart="0" # integer
 
 # final time step
-nend="15" #integer (up to 8 digits)
+nend="2" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
 dump="100" # integer

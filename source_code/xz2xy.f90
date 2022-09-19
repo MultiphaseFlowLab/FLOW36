@@ -67,7 +67,7 @@ do disp=1,dims(direction+1)-1
  if(.not.mpi_async_protects_nonblocking) call mpi_get_address(bufs,iadd,ierr)
 
 ! write(*,*) 'rank',rank,'to',dest,indy+1,indy+sendy,'from',source,indz+1,indz+recvz
-!$acc kernels
+ !$acc kernels
  uc(1:nsxx,indz+1:indz+recvz,1:npyy,1:2)=bufr(1:nsxx,1:recvz,1:npyy,1:2)
  !$acc end kernels
 enddo
@@ -84,11 +84,9 @@ else
  indz=(floor(real(rank)/real(nycpu))-rz)*(ngzz-1)+rz*ngzz
 endif
 !write(*,*) 'rank',rank,'to',rank,indy+1,indy+npyy,'from',rank,indz+1,indz+npzz
-!$acc data copyin(wa) copyout(uc)
 !$acc kernels
 uc(1:nsxx,indz+1:indz+npzz,1:npyy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)
 !$acc end kernels
-!$acc end data
 
 deallocate(bufs)
 deallocate(bufr)

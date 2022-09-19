@@ -96,7 +96,6 @@ do j=1,npy
   enddo
 enddo
 !$acc end kernels
-!$acc end data
 !$acc kernels
 uout(:,nz,:,1)=0.5d0*uout(:,nz,:,1)
 uout(:,nz,:,2)=0.5d0*uout(:,nz,:,2)
@@ -106,6 +105,7 @@ if(aliasing.eq.1)then
  uout(1:nsx,floor(2.0*real(nz)/3.0)+1:nz,1:npy,2)=0.0d0
 endif
 !$acc end kernels
+!$acc end data
 deallocate(a,b,ac,bc)
 #endif
 
