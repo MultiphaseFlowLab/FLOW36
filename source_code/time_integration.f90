@@ -115,7 +115,9 @@ use par_size
 
 double precision :: stheta(spx,nz,spy,2), htheta(spx,nz,spy,2)
 
+!$acc kernels
 htheta=dt*stheta
+!$acc end kernels
 
 return
 end
@@ -131,7 +133,9 @@ use sterms
 
 double precision :: stheta(spx,nz,spy,2), htheta(spx,nz,spy,2)
 
+!$acc kernels
 htheta=0.5d0*dt*(3.0d0*stheta-stheta_o)
+!$acc end kernels
 
 return
 end

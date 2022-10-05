@@ -85,9 +85,11 @@ if(rank.lt.flow_comm_lim)then
 #if tempflag == 1
 #if boussinnesq == 1
  ! write(*,*) grav*Ra/(16.0d0*Pr*Re**2)
+ !$acc kernels
  s1=s1-grav(1)*Ra/(16.0d0*Pr*Re**2)*thetac
  s2=s2-grav(3)*Ra/(16.0d0*Pr*Re**2)*thetac
  s3=s3-grav(2)*Ra/(16.0d0*Pr*Re**2)*thetac
+ !$acc end kernels
 #endif
 #endif
 
@@ -231,7 +233,9 @@ if(rank.lt.flow_comm_lim)then
    call adams_bashforth_theta(stheta,htheta)
  endif
 
+ !$acc kernels
  stheta_o=stheta
+ !$acc end kernels
 
  deallocate(stheta)
 
