@@ -402,21 +402,28 @@ integer :: i,j
 
 gammatheta=Re*Pr/dt
 
+!$acc parallel loop collapse(2)
 do j=1,spy
   do i=1,spx
     beta2(i,j)=k2(i+cstart(1),j+cstart(3))+gammatheta
   enddo
 enddo
 
+!$acc kernels
 tmp=htheta(1,:,1,1)
+!$acc end kernels
 
 call helmholtz(htheta,beta2,p_theta,q_theta,[0.0d0,0.0d0],zp)
 
+!$acc kernels
 thetac=htheta
+!$acc end kernels
 
 if(rank.eq.0)then
  call helmholtz_rred(tmp,beta2(1,1),p_theta,q_theta,r_theta,zp)
+ !$acc kernels
  thetac(1,:,1,1)=tmp
+ !$acc end kernels
 endif
 
 

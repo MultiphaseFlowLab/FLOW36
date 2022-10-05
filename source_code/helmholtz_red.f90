@@ -184,17 +184,21 @@ integer :: k
 
 
 ! assemble diagonals
+!$acc kernels
 do k=3,nz
   a(k-2)=-beta2*dble(k)
   b(k-2)=4.0d0*dble(k*(k-1)*(k-2))+dble(2*(k-1))*beta2
 enddo
+!$acc end kernels
 
+!$acc kernels
 do k=3,nz-2
   c(k-2)=-beta2*dble(k-2)
 enddo
+!$acc end kernels
 
-
-! assemble 1st row
+! assemble 1st ro
+!$acc kernels
 t0=1.0d0
 dt0=0.0d0
 d(1)=0.5d0*(p(1)*t0+q(1)*dt0)
@@ -204,9 +208,11 @@ do k=2,nz
   dert=dble((z_p(1))**(k)*(k-1)**2)
   d(k)=p(1)*t+q(1)*dert
 enddo
+!$acc end kernels
 
 
-! assemble 2nd row
+! assemble 2nd ro
+!$acc kernels
 t0=1.0d0
 dt0=0.0d0
 e(1)=0.5d0*(p(2)*t0+q(2)*dt0)
@@ -216,21 +222,26 @@ do k=2,nz
   dert=dble((z_p(2))**(k)*(k-1)**2)
   e(k)=p(2)*t+q(2)*dert
 enddo
+!$acc end kernels
 
 
 ! assemble RHS of equation
 h(1)=r(1)
 h(2)=r(2)
 
+!$acc kernels
 do k=3,nz-2
   h(k)=dble(k)*f(k-2)-dble(2*(k-1))*f(k)+dble(k-2)*f(k+2)
 enddo
 h(nz-1)=dble(nz-1)*f(nz-3)-dble(2*(nz-2))*f(nz-1)
 h(nz)=dble(nz)*f(nz-2)-dble(2*(nz-1))*f(nz)
+!$acc end kernels
 
 call gauss_solver_rred(a,b,c,d,e,h)
 
+!$acc kernels
 f=h
+!$acc end kernels
 
 return
 end
@@ -263,7 +274,7 @@ double precision :: rc,rd,re
 
 integer :: k
 
-
+!$acc kernels
 do k=nz,5,-1
   ! cancel upper diagonal c
   rc=c(k-4)/b(k-2)
@@ -278,7 +289,9 @@ do k=nz,5,-1
   e(k-2)=e(k-2)-re*a(k-2)
   f(2)=f(2)-re*f(k)
 enddo
+!$acc end kernels
 ! same as before for arrays d,e,f, but here no more upper diagonal
+!$acc kernels
 do k=4,3,-1
   ! cancel part of row d
   rd=d(k)/b(k-2)
@@ -289,6 +302,9 @@ do k=4,3,-1
   e(k-2)=e(k-2)-re*a(k-2)
   f(2)=f(2)-re*f(k)
 enddo
+!$acc end kernels
+
+  !$acc kernels
   ! remains only 2x2 array, diagonal and lower diagonal
   !  |d(1), d(2)|  |f(1)|
   !  |e(1), e(2)|  |f(2)|
@@ -296,13 +312,15 @@ enddo
   f(1)=(f(1)-f(2)*d(2)/e(2))/(d(1)-e(1)*d(2)/e(2))
   ! variable stored in f(2)
   f(2)=(f(2)-f(1)*e(1))/(e(2))
+  !$acc end kernels
 
   ! forward-substitute variable from k=2,Nz
   ! solution stored in f
+!$acc kernels
 do k=3,nz
   f(k)=(f(k)-a(k-2)*f(k-2))/b(k-2)
 enddo
-
+!$acc end kernels
 
 
 return

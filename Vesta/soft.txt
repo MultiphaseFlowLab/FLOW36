@@ -1,3 +1,0 @@
-@default
-+mpiwrapper-xl
-@default

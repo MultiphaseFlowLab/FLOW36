@@ -201,25 +201,32 @@ double precision :: tau_wm1,tau_wp1,nu_wm1,nu_wp1
 
 call dz(uc+vc,tau)
 
+!$acc kernels
 tau_c=0.0d0
 tau_c=tau(1,:,1,1)
+!$acc end kernels
 !call dctz_bwd(tau_c,tau_c,1,nz,1,0)
 call dctz_bwd_1d(tau_c,tau_c)
 
+!$acc kernels
 tau_wm1=tau_c(nz)/dble(nx*ny)
 tau_wp1=tau_c(1)/dble(nx*ny)
-
+!$acc end kernels
 
 call dz(thetac,nu)
 
+!$acc kernels
 nu_c=0.0d0
 nu_c(:)=nu(1,:,1,1)
+!$acc end kernels
 
 !call dctz_bwd(nu_c,nu_c,1,nz,1,0)
 call dctz_bwd_1d(nu_c,nu_c)
 
+!$acc kernels
 nu_wm1=nu_c(nz)/dble(nx*ny)
 nu_wp1=nu_c(1)/dble(nx*ny)
+!$acc end kernels
 
 return
 end

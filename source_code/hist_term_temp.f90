@@ -14,6 +14,7 @@ integer :: i,j
 call dz(thetac,theta_z)
 call dz(theta_z,theta_2z)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     ! Crank-Nicolson
@@ -24,6 +25,7 @@ do j=1,spy
     htheta(i,:,j,2)=-Re*Pr/dt*htheta(i,:,j,2)-Re*Pr/dt*thetac(i,:,j,2)
   enddo
 enddo
+!$acc end kernels
 
 return
 end
