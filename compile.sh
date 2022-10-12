@@ -250,14 +250,21 @@ openacc_flag="1"
 elif [ "$machine" == "17" ]; then
 echo "=                        Discoverer (Sofiatech)                              ="
 module purge
-# load modules
+# Nvidia HPC-SDK
 module load nvidia nvhpc/latest
 module load gcc/11/latest
 module load openmpi/4/nvidia/latest
 module load fftw/3/3.3.10-nvidia-openmpi
-module list
-cp ./Discoverer/makefile ./makefile
-cp ./Discoverer/go.sh ./go.sh
+cp ./Discoverer/makefile_nv ./makefile
+cp ./Discoverer/go_nv.sh ./go.sh
+# Intel (problems with MPI_Open)
+#module load intel compiler-rt/latest
+#module load compiler/latest
+#module load mpi/latest
+#module load mkl/latest
+#module load fftw/3/latest-intelmpi
+#cp ./Discoverer/makefile_intel ./makefile
+#cp ./Discoverer/go_intel.sh ./go.sh
 savespectral="0"
 openacc_flag="0"
 
