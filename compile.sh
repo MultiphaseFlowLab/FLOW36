@@ -134,14 +134,19 @@ openacc_flag="0"
 
 elif [ "$machine" == "9" ]; then
 echo "=                                   VSC-4                                    ="
-#13/12/2019: HT gives problems (no scalability), please do not use it     ="
-cp ./VSC-4/makefile ./makefile
-cp ./VSC-4/go.sh ./go.sh
+#GCC version (openMPI is used, check MPI_GET_ADDRESS LINES)
+cp ./VSC-4/makefile_gcc ./makefile
+cp ./VSC-4/go_gcc.sh ./go.sh
 module purge
-# load modules
-module load intel/19.0.5
-module load intel-mpi/2019.7.pre
-module load fftw/3.3.8-intel-19.0.5.281-un2sutg
+module load gcc
+module load fftw
+#Intel version (MKL), very slow (INTEL MPI based)
+#cp ./VSC-4/makefile_intel ./makefile
+#cp ./VSC-4/go_intel.sh ./go.sh
+#module purge
+#module load intel
+#module load intel-mpi
+#module load mkl
 savespectral="0"
 openacc_flag="0"
 
@@ -1281,7 +1286,7 @@ if [ "$machine" == "20" ]; then
 sed -i "s/include 'fftw3.f03'/!include 'fftw3.f03'/g" ./set_run/sc_compiled/module.f90
 fi
 
-if [[ "$machine" == "7" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" ]]; then
+if [[ "$machine" == "7" || "$machine" == "9" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90

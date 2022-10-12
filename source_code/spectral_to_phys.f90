@@ -24,12 +24,9 @@ dims(2)=nycpu
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(u(spx,nz,spy,2))
-!$acc data copyin(uc) copyout(u)
 !$acc kernels
 u=uc
 !$acc end kernels
-!$acc end data
-!call dctz_bwd(u,u,spx,nz,spy,aliasing)
 !call nvtxStartRange("DCTZ-BWD",1)
 call dctz_bwd(u,u,aliasing)
 !call nvtxEndRange
@@ -82,11 +79,9 @@ endif
 !if(nzcpu.gt.1)then ! substituted with conditional compilation
 
  allocate(wa(spx,nz,spy,2))
- !$acc data copyin(u) copyout(wa)
  !$acc kernels
  wa=u
  !$acc end kernels
- !$acc end data
  deallocate(u)
  allocate(u(spx,npz,ny,2))
 
@@ -132,11 +127,9 @@ endif
 !if(nycpu.gt.1)then ! substituted with conditional compilation
 
  allocate(wa(spx,npz,ny,2))
- !$acc data copyin(u) copyout(wa)
  !$acc kernels
  wa=u
  !$acc end kernels
- !$acc end data
  deallocate(u)
  allocate(u(nx/2+1,npz,npy,2))
 
@@ -195,11 +188,9 @@ dims(2)=nycpu
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 allocate(u(spxpsi,npsiz,spypsi,2))
-!$acc data copyin(uc) copyout(u)
 !$acc kernels
 u=uc
 !$acc end kernels
-!$acc end data
 !call dctz_bwd_fg(u,u,spxpsi,npsiz,spypsi,aliasing)
 call dctz_bwd_fg(u,u,aliasing)
 
@@ -250,11 +241,9 @@ endif
 #if nzcpu>1
 
  allocate(wa(spxpsi,npsiz,spypsi,2))
- !$acc data copyin(u) copyout(wa)
  !$acc kernels
  wa=u
  !$acc end kernels
- !$acc end data
  deallocate(u)
  allocate(u(spxpsi,npz,npsiy,2))
 
@@ -295,11 +284,9 @@ endif
 #if nycpu>1
 
  allocate(wa(spxpsi,npz,npsiy,2))
- !$acc data copyin(u) copyout(wa)
  !$acc kernels
  wa=u
  !$acc end kernels
- !$acc end data
  deallocate(u)
  allocate(u(npsix/2+1,npz,npy,2))
 
