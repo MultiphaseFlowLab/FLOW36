@@ -249,9 +249,11 @@ openacc_flag="1"
 
 elif [ "$machine" == "17" ]; then
 echo "=                        Discoverer (Sofiatech)                              ="
+echo "=                         Do not run in home !                               ="
 module purge
 # Nvidia HPC-SDK
-module load nvidia nvhpc/latest
+module load nvidia
+module load nvhpc-nompi/latest
 module load gcc/11/latest
 module load openmpi/4/nvidia/latest
 module load fftw/3/3.3.10-nvidia-openmpi

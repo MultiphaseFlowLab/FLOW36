@@ -3,7 +3,7 @@
 #SBATCH --job-name="intel_test"
 #SBATCH --time=00:05:00
 #SBATCH --nodes=1      ##adjust
-#SBATCH --ntasks-per-node=64
+#SBATCH --ntasks-per-node=128
 #SBATCH --ntasks-per-core=1 # That guarantees every MPI taks will be bind to one CPU core which is very effective
 #SBATCH --output=test.out
 #SBATCH --error=test.err
