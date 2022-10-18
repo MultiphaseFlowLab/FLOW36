@@ -250,8 +250,13 @@ openacc_flag="1"
 elif [ "$machine" == "17" ]; then
 echo "=                        Discoverer (Sofiatech)                              ="
 echo "=                         Do not run in home !                               ="
-module purge
-# Nvidia HPC-SDK
+# ---- Gcc + mpich + FFTW (CPU) ----
+#module load gcc/11/latest
+#module load mpich/3/gcc/latest
+#module load fftw/3/latest-gcc-mpich
+#cp ./Discoverer/makefile_gcc ./makefile
+#cp ./Discoverer/go_gcc.sh ./go.sh
+# ---- Nvidia HPC-SDK ----
 module load nvidia
 module load nvhpc-nompi/latest
 module load gcc/11/latest
@@ -259,7 +264,14 @@ module load openmpi/4/nvidia/latest
 module load fftw/3/3.3.10-nvidia-openmpi
 cp ./Discoverer/makefile_nv ./makefile
 cp ./Discoverer/go_nv.sh ./go.sh
-# Intel (problems with MPI_Open)
+# ---- AMD AOCC                                                                           ="
+#module purge
+#module load amd/aocc/3/latest
+#module load openmpi/4/aocc/latest
+#module load fftw/3/3.3.10-aocc-openmpi
+#cp ./Discoverer/makefile_amd ./makefile
+#cp ./Discoverer/go_amd.sh ./go.sh
+# ---- Intel (problems with MPI_Open) ----
 #module load intel compiler-rt/latest
 #module load compiler/latest
 #module load mpi/latest
