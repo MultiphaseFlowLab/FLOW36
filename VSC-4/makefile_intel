@@ -6,9 +6,9 @@ SWP	=
 RM	= /bin/rm -f
 MP	=
 OLEVEL	= -O3
-FOPTS	= -align none -mcmodel medium -qmkl -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
+FOPTS	= -align none -mcmodel medium -cpp -module ./set_run/sc_compiled/ -I./set_run/sc_compiled/
 FFLAGS	= $(FOPTS) $(OLEVEL)
-LIBS    = -I/gpfs/opt/sw/vsc4/VSC/x86_64/glibc-2.17/skylake/intel/oneapi/mkl/2022.0.1/include -L/gpfs/opt/sw/vsc4/VSC/x86_64/glibc-2.17/skylake/intel/oneapi/mkl/2022.0.1//lib/intel64  -I/gpfs/opt/sw/vsc4/VSC/x86_64/glibc-2.17/skylake/intel/oneapi/mkl/2022.0.1/include/fftw  -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm
+LIBS    = -L/gpfs/opt/sw/spack-0.19.0/opt/spack/linux-almalinux8-x86_64/intel-2021.5.0/fftw-3.3.10-36gvfjuaswzqqtkdxjnogblb5awexcfy/lib -I/gpfs/opt/sw/spack-0.19.0/opt/spack/linux-almalinux8-x86_64/intel-2021.5.0/fftw-3.3.10-36gvfjuaswzqqtkdxjnogblb5awexcfy/include -lfftw3 -lm -ldl 
 LDFLAGS	= $(FOPTS) $(OLEVEL)
 PROF	=
 

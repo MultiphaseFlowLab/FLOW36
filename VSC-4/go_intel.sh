@@ -8,8 +8,10 @@
 #SBATCH --qos=skylake_0096
 
 # load modules
-module load intel
-module load intel-mpi
-module load mkl
+module purge
+module load intel/19.1.3
+module load intel-mpi/2019.10.317-intel-19.1.3.304-x276qb5
+module load fftw
+
 
 mpirun -n NUMTASKS ./sc_compiled/flow36

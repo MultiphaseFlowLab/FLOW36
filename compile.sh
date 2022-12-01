@@ -135,18 +135,19 @@ openacc_flag="0"
 elif [ "$machine" == "9" ]; then
 echo "=                                   VSC-4                                    ="
 #GCC version (openMPI is used, check MPI_GET_ADDRESS LINES)
-cp ./VSC-4/makefile_gcc ./makefile
-cp ./VSC-4/go_gcc.sh ./go.sh
-module purge
-module load gcc
-module load fftw
-#Intel version (MKL), very slow (INTEL MPI based)
-#cp ./VSC-4/makefile_intel ./makefile
-#cp ./VSC-4/go_intel.sh ./go.sh
+#cp ./VSC-4/makefile_gcc ./makefile
+#cp ./VSC-4/go_gcc.sh ./go.sh
 #module purge
-#module load intel
-#module load intel-mpi
-#module load mkl
+#module load gcc
+#module load fftw
+#Intel version (FFTW)
+cp ./VSC-4/makefile_intel ./makefile
+cp ./VSC-4/go_intel.sh ./go.sh
+module purge
+module load intel/19.1.3
+module load intel-mpi/2019.10.317-intel-19.1.3.304-x276qb5
+module load fftw
+module list
 savespectral="0"
 openacc_flag="0"
 
