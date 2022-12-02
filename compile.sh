@@ -448,7 +448,7 @@ phi_flag="0" # integer
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 phicor_flag="0" # integer
 
-# Value of the parameter lambda used to correct the phi profile (only for phicor_flag 1 or 2)
+# Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
 # Lam=0.3/Ch
 lamcorphi="2.5" # real (double)
 
