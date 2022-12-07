@@ -446,8 +446,8 @@ phi_flag="1" # integer
 # 3: profile-corrected turned off at the walls
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
-# 6: Kwakkel model (A redefined energy functional to prevent mass loss in phase-field methods) Work in progess, for debug only
-phicor_flag="6" # integer
+# 6: Kwakkel model (A redefined energy functional to prevent mass loss in phase-field methods) Work in progess, do not use in production
+phicor_flag="4" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
 # Lam=0.3/Ch
