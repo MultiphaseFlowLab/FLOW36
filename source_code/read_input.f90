@@ -167,7 +167,7 @@ double precision :: Lx,Ly
 
 
 
- if((phicor_flag.lt.0).or.(phicor_flag.gt.5)) then
+ if((phicor_flag.lt.0).or.(phicor_flag.gt.6)) then
    if(rank.eq.0) write(*,*) 'Error in PFM formulation choice (non-existing option)'
    stop
  endif

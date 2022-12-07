@@ -335,9 +335,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="7" # integer
-iy="7" # integer
-iz="7" # integer
+ix="2" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -372,13 +372,13 @@ nt_restart="0" # integer
 incond="0" # integer
 
 # Reynolds number
-Re="150.0" # real (double)
+Re="1.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
 
 # mean pressure gradient (x and y), defined ad (p_out-p_in)/L
-gradpx="-1.0" # real (double)
+gradpx="0.0" # real (double)
 gradpy="0.0" # real (double)
 
 # Constant power input approach (adaptive gradpx)
@@ -386,17 +386,17 @@ cpi_flag="0" #if activated, gradpx should be set to -1.
 repow="100.0" #B*Re_pi - re used to control the pressure gradient
 
 # domain size, divided by pi (z size is always 2, between -1 and 1)
-lx="4.0" # real (double)
-ly="2.0" # real (double)
+lx="0.005" # real (double)
+ly="1.0" # real (double)
 
 # initial time step
 nstart="0" # integer
 
 # final time step
-nend="2" #integer (up to 8 digits)
+nend="100" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="100" # integer
+dump="1" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
@@ -437,7 +437,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="0" # integer
+phi_flag="1" # integer
 
 # correction on phi to improve mass conservation
 # 0: OFF
@@ -446,7 +446,8 @@ phi_flag="0" # integer
 # 3: profile-corrected turned off at the walls
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
-phicor_flag="0" # integer
+# 6: Kwakkel model (A redefined energy functional to prevent mass loss in phase-field methods) Work in progess, for debug only
+phicor_flag="6" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
 # Lam=0.3/Ch
@@ -477,7 +478,7 @@ exp_non_new="0.9"
 We="1.0" # real (double)
 
 # Cahn number
-Ch="0.08" # real (double)
+Ch="0.02" # real (double)
 
 # Peclet number
 Pe="150.0" # real (double)

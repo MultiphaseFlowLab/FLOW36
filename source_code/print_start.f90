@@ -148,6 +148,8 @@ elseif(in_cond_phi.eq.8)then
  elseif (phicor_flag.eq.5) then
    write(*,'(1x,a60)') 'Flux-corrected Phase Field Model, kill the gradients'
    write(*,'(1x,a40,f8.5)') 'Lambda : ',lamphi
+ elseif (phicor_flag.eq.6) then
+   write(*,'(1x,a60)') 'Kwakkel model - Redefined energy functional'
  endif
 
 
