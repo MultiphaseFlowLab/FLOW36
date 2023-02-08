@@ -356,6 +356,7 @@ end
 
 subroutine calculate_phi_ac(hphi)
 ! Solver for 2nd order phase-field method based on Allen-Cahn, 2nd order equation
+! Reference: https://doi.org/10.1016/j.jcp.2020.109918
 
 use commondata
 use par_size

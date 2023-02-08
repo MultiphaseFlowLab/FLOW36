@@ -150,6 +150,8 @@ elseif(in_cond_phi.eq.8)then
    write(*,'(1x,a40,f8.5)') 'Lambda : ',lamphi
  elseif (phicor_flag.eq.6) then
    write(*,'(1x,a60)') 'Kwakkel model - Redefined energy functional'
+ elseif (phicor_flag.eq.6) then
+   write(*,'(1x,a60)') 'Second order phase-field model - Allen Cahn-based, Mirjalili et al. 2020'
  endif
 
 
