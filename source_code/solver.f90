@@ -183,14 +183,14 @@ if(rank.lt.flow_comm_lim)then
  hphi=hphi+phic
  !$acc end kernels
 
- ! Solving Cahn-Hilliard equation, 4th order
- #if phicorflag != 7
+ ! Solving Cahn-Hilliard equation, 4th order (phicor 0 to 6)
+#if phicorflag != 7
  call calculate_phi(hphi)
- #endif 
-! Solving Allen-Cahn equation, 2nd order
- #if phicorflag == 7
+#endif 
+! Solving Allen-Cahn equation, 2nd order (phicor 7)
+#if phicorflag == 7
   call calculate_phi_ac(hphi)
- #endif 
+#endif 
 
  deallocate(hphi)
 

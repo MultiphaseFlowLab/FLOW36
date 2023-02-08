@@ -335,9 +335,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="8" # integer
-iy="8" # integer
-iz="8" # integer
+ix="2" # integer
+iy="9" # integer
+iz="9" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -437,7 +437,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="0" # integer
+phi_flag="1" # integer
 
 # Models selection for phi, different formulations used to improve mass conservation
 # Models 0-6 Cahn-Hilliard is solved (4th order), Model 7 Allen-Cahn is solved (2nd order)
@@ -450,7 +450,7 @@ phi_flag="0" # integer
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 6: Kwakkel model (A redefined energy functional to prevent mass loss in phase-field methods) Work in progess, do not use in production
 # 7: Conservative Allen-Cahn, Second-order phase-field model (Mirjalili), read the respective user before using it, pe and ch have very different meanings.!!
-phicor_flag="6" # integer
+phicor_flag="7" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
 # Lam=0.3/Ch
