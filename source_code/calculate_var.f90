@@ -315,6 +315,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 subroutine calculate_phi(hphi)
+! Standard solver for CH, 4th order equation
 
 use commondata
 use par_size
@@ -351,6 +352,44 @@ phic=hphi
 return
 end
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine calculate_phi_ac(hphi)
+! Solver for 2nd order phase-field method based on Allen-Cahn, 2nd order equation
+
+use commondata
+use par_size
+use phase_field
+use sim_par
+use wavenumber
+  
+double precision :: hphi(spx,nz,spy,2),beta2(spx,spy),gammaphi
+  
+integer :: i,j
+  
+gammaphi=dt*dsqrt(2.0d0)*ch/Pe
+
+!$acc kernels
+hphi=-hphi/gammaphi
+!$acc end kernels
+  
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    beta2(i,j)=1.0d0/gammaphi+k2(i+cstart(1),j+cstart(3))
+  enddo
+enddo
+  
+! solve for phi
+call helmholtz(hphi,beta2,[0.0d0,0.0d0],[1.0d0,1.0d0],[0.0d0,0.0d0],zp)
+  
+!$acc kernels
+phic=hphi
+!$acc end kernels
+  
+return
+end
+  
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 subroutine calculate_psi(hpsi)

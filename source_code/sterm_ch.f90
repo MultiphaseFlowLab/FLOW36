@@ -9,6 +9,7 @@ use grid
 
 double precision :: sphi(spx,nz,spy,2),epsnum,mask,epsnum6
 double precision :: modnabphi,normflux,funflux(nz)
+double precision :: mink,maxk
 double precision, allocatable, dimension(:,:,:,:) :: a1,a2,a3
 double precision, allocatable, dimension(:,:,:) :: a1f,convf
 !use only when phicor_flag !=0 
@@ -25,8 +26,10 @@ integer :: i,j,k
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+sphi=0.0d0
+
 #if phicorflag == 0
-! STANDARD MODEL
+! Standard MODEL
 
 ! calculate -(1+s)/Pe*nabla^2 phi
 allocate(a1(spx,nz,spy,2))
@@ -1388,16 +1391,26 @@ allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
 ! avoid NaN on 1/phinmod
-! epsnum=0.001d0 
+epsnum=0.1d0 
 
 !$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
+      if (phinx(i,k,j) .le. epsnum) phinx(i,k,j)=0.0d0
+      if (phiny(i,k,j) .le. epsnum) phiny(i,k,j)=0.0d0
+      if (phinz(i,k,j) .le. epsnum) phinz(i,k,j)=0.0d0
       phinmod(i,k,j)=sqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
+      if (phinmod(i,k,j) .ge. epsnum) then
       a4f(i,k,j)=phinx(i,k,j)/(phinmod(i,k,j))
       a5f(i,k,j)=phiny(i,k,j)/(phinmod(i,k,j))
       a6f(i,k,j)=phinz(i,k,j)/(phinmod(i,k,j))
+      else
+        a4f(i,k,j)=0.0d0
+        a5f(i,k,j)=0.0d0
+        a6f(i,k,j)=0.0d0
+      endif
+      write(*,*) "phinx", a4f(i,k,j)
     enddo
   enddo
 enddo
@@ -1438,6 +1451,32 @@ a1=a1+a2+a4
 ! curvature in physical
 call spectral_to_phys(a1,a1f,1)
 
+!! Check min and max of curvature
+maxk=0.0d0
+mink=0.0d0
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      if (abs(a1f(i,k,j)) .ge. 400.d0) a1f(i,k,j)=0.0d0
+    enddo
+  enddo
+enddo
+
+!! Check min and max of curvature
+maxk=0.0d0
+mink=0.0d0
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      maxk=max(a1f(i,k,j),maxk)
+      mink=min(a1f(i,k,j),mink)
+    enddo
+  enddo
+enddo
+
+write(*,*) "max k + rank", maxk, rank
+write(*,*) "min k + rank", mink, rank
+
 !do k=1,fpz
 !  funflux(k)=0.5d0*(tanh((abs(z(fstart(2)+k)) - 0.975d0)/0.01d0)+1d0)
 !   funflux(k)=0d0
@@ -1454,7 +1493,7 @@ do j=1,fpy
 !    if (((fstart(2)+k) .le. 10) .or. (fstart(2)+k .ge. nz-9)) then 
      !mask=1.0d0
      !if (abs(phi(i,k,j)) .ge. 0.97d0) mask=0.0d0
-     a1f(i,k,j)=phi(i,k,j)**(3.0d0) - ch*ch*(1.d0-phi(i,k,j)**(2.0d0))*a1f(i,k,j)*phinmod(i,k,j) 
+     a1f(i,k,j)=phi(i,k,j)**(3.0d0) - ch*ch*a1f(i,k,j)*phinmod(i,k,j) 
     enddo
   enddo
 enddo
@@ -1479,9 +1518,177 @@ enddo
 
 deallocate(a1,a3)
 
+#endif
 
+
+#if phicorflag == 7
+! Allen-Cahn, 2nd order phase-field method, conservatvie version of Mirjalili
+! Used in combination with calculate_phi_ac(hphi), see calculate_var.f90
+
+allocate(a1(spx,nz,spy,2))
+allocate(a1f(nx,fpz,fpy))
+
+! u*(d phi /dx)
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a1(i,:,j,1)=-kx(i+cstart(1))*phic(i,:,j,2)
+    a1(i,:,j,2)=kx(i+cstart(1))*phic(i,:,j,1)
+  enddo
+enddo
+
+call spectral_to_phys(uc,u,1)
+call spectral_to_phys(a1,a1f,1)
+
+allocate(phinx(nx,fpz,fpy))
+!$acc kernels
+phinx=a1f
+!$acc end kernels
+
+allocate(convf(nx,fpz,fpy))
+
+!$acc parallel loop collapse(2)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      convf(i,k,j)=a1f(i,k,j)*u(i,k,j)
+    enddo
+  enddo
+enddo
+
+! v*(d phi /dy)
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a1(i,:,j,1)=-ky(j+cstart(3))*phic(i,:,j,2)
+    a1(i,:,j,2)=ky(j+cstart(3))*phic(i,:,j,1)
+  enddo
+enddo
+
+call spectral_to_phys(vc,v,1)
+call spectral_to_phys(a1,a1f,1)
+
+allocate(phiny(nx,fpz,fpy))
+!$acc kernels
+phiny=a1f
+!$acc end kernels
+
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      convf(i,k,j)=convf(i,k,j)+a1f(i,k,j)*v(i,k,j)
+    enddo
+  enddo
+enddo
+
+! w*(d phi /dz)
+call dz(phic,a1)
+
+call spectral_to_phys(wc,w,1)
+call spectral_to_phys(a1,a1f,1)
+
+allocate(phinz(nx,fpz,fpy))
+!$acc kernels
+phinz=a1f
+!$acc end kernels
+
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      convf(i,k,j)=convf(i,k,j)+a1f(i,k,j)*w(i,k,j)
+    enddo
+  enddo
+enddo
+
+call phys_to_spectral(convf,a1,1)
+
+deallocate(convf)
+
+! sum all the convective terms to sphi
+sphi= -a1
+
+! compute the corrective term
+!$acc kernels
+a1f=1.0d0-phi**(2.0d0)
+!$acc end kernels
+
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      modnabphi=sqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
+      phinx(i,k,j)=phinx(i,k,j)/modnabphi
+      phiny(i,k,j)=phiny(i,k,j)/modnabphi
+      phinz(i,k,j)=phinz(i,k,j)/modnabphi
+    enddo
+  enddo
+enddo
+
+allocate(a4f(nx,fpz,fpy))
+allocate(a5f(nx,fpz,fpy))
+allocate(a6f(nx,fpz,fpy))
+
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      a4f(i,k,j)=a1f(i,k,j)*phinx(i,k,j)
+      a5f(i,k,j)=a1f(i,k,j)*phiny(i,k,j)
+      a6f(i,k,j)=a1f(i,k,j)*phinz(i,k,j)
+    enddo
+  enddo
+enddo
+
+deallocate(phinx,phiny,phinz)
+
+allocate(a2(spx,nz,spy,2))
+allocate(a3(spx,nz,spy,2))
+
+call phys_to_spectral(a4f,a1,1)
+call phys_to_spectral(a5f,a2,1)
+call phys_to_spectral(a6f,a3,1)
+
+deallocate(a4f,a5f,a6f)
+
+allocate(a4(spx,nz,spy,2))
+allocate(a5(spx,nz,spy,2))
+allocate(a6(spx,nz,spy,2))
+
+!x derivative of correction
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a4(i,:,j,1)=-kx(i+cstart(1))*a1(i,:,j,2)
+    a4(i,:,j,2)=kx(i+cstart(1))*a1(i,:,j,1)
+  enddo
+enddo
+!y derivative of correction
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a5(i,:,j,1)=-ky(j+cstart(3))*a2(i,:,j,2)
+    a5(i,:,j,2)=ky(j+cstart(3))*a2(i,:,j,1)
+  enddo
+enddo
+!z derivative of correction
+call dz(a3,a6)
+
+deallocate(a1,a1f,a3)
+
+!SUM EVEYTHING TO SPHI
+!$acc kernels
+sphi=sphi! - 1.0d0/pe*(a4+a5+a6)
+!$acc end kernels
+
+deallocate(a4,a5,a6)
 
 #endif
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 return
 end
