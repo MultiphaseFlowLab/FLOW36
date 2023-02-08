@@ -1677,9 +1677,9 @@ call dz(a3,a6)
 
 deallocate(a1,a1f,a3)
 
-!SUM EVEYTHING TO SPHI
+!sum everything to sphi 
 !$acc kernels
-sphi=sphi! - 1.0d0/pe*(a4+a5+a6)
+sphi=sphi - 1.0d0/pe*(a4+a5+a6)
 !$acc end kernels
 
 deallocate(a4,a5,a6)

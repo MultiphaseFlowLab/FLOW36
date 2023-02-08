@@ -19,6 +19,7 @@ integer :: ntime
 
 #define openaccflag openacccompflag
 #define phiflag phicompflag
+#define phicorflag phicorcompflag
 #define psiflag psicompflag
 #define tempflag tempcompflag
 #define partflag particlecompflag
@@ -182,7 +183,14 @@ if(rank.lt.flow_comm_lim)then
  hphi=hphi+phic
  !$acc end kernels
 
+ ! Solving Cahn-Hilliard equation, 4th order
+ #if phicorflag != 7
  call calculate_phi(hphi)
+ #endif 
+! Solving Allen-Cahn equation, 2nd order
+ #if phicorflag == 7
+  call calculate_phi_ac(hphi)
+ #endif 
 
  deallocate(hphi)
 

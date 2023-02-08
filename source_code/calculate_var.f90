@@ -439,6 +439,7 @@ double precision :: gammatheta,beta2(spx,spy)
 
 integer :: i,j
 
+! to fix: to be coehrent with the notation (see psi, phi_ac) this should be defined as the opposite, also htheta is divided by gammatheta in hist_term_temp.f90 and not here
 gammatheta=Re*Pr/dt
 
 !$acc parallel loop collapse(2)

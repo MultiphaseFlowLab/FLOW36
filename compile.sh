@@ -439,7 +439,9 @@ bc_lb="0" # integer
 # phase field flag, 0: phase field deactivated, 1: phase field activated
 phi_flag="0" # integer
 
-# correction on phi to improve mass conservation
+# Models selection for phi, different formulations used to improve mass conservation
+# Models 0-6 Cahn-Hilliard is solved (4th order), Model 7 Allen-Cahn is solved (2nd order)
+# Models Summary
 # 0: OFF
 # 1: profile-corrected
 # 2: flux-corrected
@@ -447,7 +449,7 @@ phi_flag="0" # integer
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 6: Kwakkel model (A redefined energy functional to prevent mass loss in phase-field methods) Work in progess, do not use in production
-# 7: Second-order phase-field model (Mirjalili), read the respective user before using it, pe and ch have very different meanings.!!
+# 7: Conservative Allen-Cahn, Second-order phase-field model (Mirjalili), read the respective user before using it, pe and ch have very different meanings.!!
 phicor_flag="6" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
@@ -1129,6 +1131,7 @@ sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/destroy_plan
 sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/statistics.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/solver.f90     
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
@@ -1231,6 +1234,7 @@ sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/destroy_plan.f90
 sed -i "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/statistics.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
+sed -i "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/solver.f90  
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
 sed -i "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
