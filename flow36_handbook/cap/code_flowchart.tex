@@ -1,7 +1,7 @@
 \chapter{Code flowchart}
 \label{chap: flowchart}
 In this chapter a detailed overview of all the suborutines used in the code will be presented. This chapter is divided in five main sections, the first including all the subroutine of the main part of the code, the second one includes all the solver part subroutines, the third the details about physical to modal space tranforms and backwards,  the fourth the statistic calculation part and the latter describes all the modules included in the code.\\
-All the subroutine from a library (for example FFTW or MPI libraries) will not be included here; for further information and a detailed description, please refer to the library guide.
+All the subroutine from a library (for example FFTW, cuFFT or MPI libraries) will not be included here; for further information and a detailed description, please refer to the library guide.
 
 \section{Main code}
 
@@ -9,20 +9,23 @@ All the subroutine from a library (for example FFTW or MPI libraries) will not b
 \subsection{\texttt{FLOW\_36}}
 This is the main program; it takes care of starting and terminating the MPI execution of the code. As shown in Figure \ref{fig: main_struct}, the first part of this script is the MPI parameter definition part: once the code is run on a determinate number of MPI processes, all the MPI processes are numbered and the total number of MPI processes is defined (the total number of MPI process is already defined when running the code, here its value is assigned to a variable). The number of MPI process in the $y$ and $z$ directions (\texttt{NYCPU} and \texttt{NZCPU}) and the number of grid points in the three directions are already defined in the module \texttt{commondata} as parameters, such that they are known before the input section. After the MPI initialization the code verifies that the number of MPI processes in the two directions and the grid are compatible, which means that each MPI process must always have at least one point in each direction. Due to the domain transposition and the Fourier transform the code must verify that \texttt{NYCPU} is smaller than \texttt{NX}/2 and \texttt{NY} and that \texttt{NZCPU} is smaller than \texttt{NZ} and \texttt{NY}. If this check is passed the code goes on with the execution, otherwise it will stop prompting an error message.\\
 The input part is performed with the call to the \texttt{read\_input} subroutine.\\
-Since the domain is divided in a Cartesian-like grid (for further details, refer to Chapter \ref{chap: dom_decomp}), a MPI Cartesian communicator is defined, such that all MPI communications can be strongly simplified (especially when it comes to find to which MPI process data must be sent and from which one must be received). Here are also defined the two MPI derived datatypes used for MPI input/output operation (for further details refer to Section \ref{sec: writeo}).\\
+Since the domain is divided in a Cartesian-like grid (for further details, refer to Chapter \ref{chap: dom_decomp}), a MPI Cartesian communicator is defined, such that all MPI communications can be strongly simplified (especially when it comes to find to which MPI process data must be sent and from which one must be received). Here are also defined the two MPI derived datatypes used for MPI input/output operation (for further details refer to Section \ref{sec: writeo}).
+When only Eulerian variables are solved (e.g. flow, phase-field, surfactant, temperature), the MPI communicator is unique and no splitting occurs. 
+By opposite, when particles are tracked (Lagrangian points), two MPI communicators are created, one for the Eulerian variables (i.e. the MPI tasks taking care of solving the Eulerian variables) and one for the particles (i.e. the MPI tasks taking care of tracking the particles).
+\\
 \def\arraystretch{0.4}
 \begin{figure}[h!]
 \centering
-\caption{Scheme of main program \texttt{FLOW\_36}}
+\caption{Scheme of main program \texttt{FLOW\_36}. xxx stands for a generic field (e.g. phase-field, surfactant field, temperature)}
 \label{fig: main_struct}
 \[
 \begin{tikzcd}
 {\begin{array}{c}\textnormal{\textbf{program \texttt{FLOW\_36}}}  \\ \textnormal{module declaration} \end{array}}\arrow[d] \\
 {\begin{array}{c}\textnormal{\textbf{MPI initialization}} \\ \textnormal{define total number of MPI processes} \\ \textnormal{define MPI process numbering} \\ \textnormal{check whether the domain is compatible with the desired parallelization} \end{array}}\arrow[d]\\
-{\begin{array}{c} \textnormal{\textbf{Code initialization}} \\ \texttt{call read\_input}\\ \texttt{call define\_sizes} \\ \textnormal{create Cartesian communicator} \\ \textnormal{create derived datatype \texttt{ftype} and \texttt{stype} for MPI input/output} \\ \textnormal{create \texttt{FFTW} plans} \\ \textnormal{define grid}\\ \texttt{call dump\_grid} \\ \texttt{call wave\_numbers} \\  \texttt{call initialize} \\ \texttt{call initialize\_phi} \textnormal{ (if phase field is activated)} \\ \texttt{call initialize\_stats} \textnormal{ (if run time statistics are set to be calculated)} \\ \textnormal{save initial fields both in physical and modal space} \\ \texttt{call integral\_phi} \textnormal{ (if phase field is activated)} \\ \texttt{call initialize\_check} \textnormal{ (if not a restart)} \end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{\textbf{Code initialization}} \\ \texttt{call read\_input}\\ \texttt{call define\_sizes} \\ \textnormal{create Cartesian communicator} \\ \textnormal{create derived datatype \texttt{ftype} and \texttt{stype} for MPI input/output} \\ \textnormal{create \texttt{FFTW} plans} \\ \textnormal{define grid}\\ \texttt{call dump\_grid} \\ \texttt{call wave\_numbers} \\  \texttt{call initialize} \\ \texttt{call initialize\_xxx} \textnormal{ (if xxx is activated)} \\ \texttt{call initialize\_stats} \textnormal{ (if run time statistics are set to be calculated)} \\ \textnormal{save initial fields both in physical and modal space} \\ \texttt{call integral\_xxx} \textnormal{ (if xxx is activated)} \\ \texttt{call initialize\_check} \textnormal{ (if not a restart)} \end{array}}\arrow[d]\\
 {\begin{array}{c} \textnormal{\textbf{Time advancement}} \\ \texttt{do} \textnormal{ loop over time} \end{array}}\arrow[d]\\
 {\begin{array}{c} \texttt{call solver} \end{array}}\arrow[d]\\
-{\begin{array}{c} \textnormal{save fields in physical and/or in modal space (at set saving frequency)} \\ \textnormal{calculate statistics (at set saving frequency)} \\ \texttt{call integral\_phi} \textnormal{ (if phase field is activated)} \\ \texttt{call sim\_check}\\ \textnormal{save recovery files}\end{array}}\arrow[d]\\
+{\begin{array}{c} \textnormal{save fields in physical and/or in modal space (at set saving frequency)} \\ \textnormal{calculate statistics (at set saving frequency)} \\ \texttt{call integral\_xxx} \textnormal{ (if xxx field is activated)} \\ \texttt{call sim\_check}\\ \textnormal{save recovery files}\end{array}}\arrow[d]\\
 {\begin{array}{c} \textnormal{\textbf{End of time advancement}} \end{array}}\arrow[d] \arrow[LL]{uuu}{\text{time+$\Delta t$}}\\
 {\begin{array}{c} \textnormal{save final fields both in physical and modal space} \\ \textnormal{deallocation of all allocated variables} \end{array}}\arrow[d]\\
 {\begin{array}{c} \textnormal{\textbf{MPI finalization}} \end{array}}\arrow[d]\\
@@ -206,11 +209,25 @@ The first term calculated is the surface force, then the non-linear part of the 
 The non linear-part of the viscous term is non-zero only for the non-matched viscosities case, while the gravity and buoyancy term and the non-linear part of the time derivative are non-zero only for the non-matched densities case.\\
 At the end of the subroutine these non-linear contributions are added to the non-linear terms \texttt{s1}, \texttt{s2} and \texttt{s3}.
 
-\subsection{\texttt{euler}, \texttt{adams\_bashforth}, \texttt{euler\_phi} and \texttt{adams\_bashforth\_phi}}
-This subroutine performs the explicit time integration of the non-linear terms, using an explicit Euler algorithm at the first time step and an Adams--Bashforth one from the second time step on. \texttt{euler} and \texttt{adams\_bashforth} are used for the Navier--Stokes non-linear term, while \texttt{euler\_phi} and \texttt{adams\_bashforth\_phi} for the Cahn--Hilliard non-linear term.
+\subsection{\texttt{euler}, \texttt{adams\_bashforth}}
+This subroutine performs the explicit time integration of the non-linear terms, using an explicit Euler algorithm at the first time step and an Adams--Bashforth one from the second time step on. 
+\texttt{euler} and \texttt{adams\_bashforth} are used for the Navier--Stokes non-linear terms.
+
+\subsection{\texttt{euler\_phi} and \texttt{adams\_bashforth\_phi}}
+This subroutine performs the explicit time integration of the non-linear terms of the Cahn-Hilliard equation, using an explicit Euler algorithm at the first time step and an Adams--Bashforth one from the second.
+
+\subsection{\texttt{euler\_psi} and \texttt{adams\_bashforth\_psi}}
+This subroutine performs the explicit time integration of the non-linear terms of the CH-like equation for the surfactant, using an explicit Euler algorithm at the first time step and an Adams--Bashforth one from the second.
+
+\subsection{\texttt{euler\_theta} and \texttt{adams\_bashforth\_theta}}
+This subroutine performs the explicit time integration of the non-linear terms of the energy equation equation, using an explicit Euler algorithm at the first time step and an Adams--Bashforth one from the second.
 
 \subsection{\texttt{hist\_term}}
 This subroutine assembles the right hand side of the fourth order equation for the wall-normal velocity and for the second order equation for the wall-normal vorticity.
+
+\subsection{\texttt{hist\_term\_temp}}
+This subroutine assembles the right hand side of the energy equation.
+Note: This procedure can be simplified and made directly in the solver (like for the surfactant, and the second-order phase-field method).
 
 \subsection{\texttt{calculate\_w}}
 This subroutine solves the equation for the wall-normal component of the velocity. The fourth order equation is split in two second order Helmholtz like equations; due to the lack of boundary conditions on one of the two equations, the influence matrix method is used here.\\
@@ -231,9 +248,41 @@ The $s$ coefficient allows for the inclusion of part of the diffusive-like term 
 \[
 s=\sqrt{\frac{4\Pe\Ch^2}{\Delta t}}
 \]
+The term mentioned above is the standard term computed using the standard phase-field method equation (CH), i.e. using \texttt{phicor\_flag}=0.
+If \texttt{phicor\_flag} is not equal 0, the computed non-linear terms are different and depend on the formulation considered.
+Also the splitting coefficient might be different (recomputed), as some terms (diffusive) are included in the linear part for stability reasons.
+For sake of brevity (otherwise this becomes the bible and not an handbook), the formulation of these terms is not reported but can be easily obtained from the subroutine. 
+
+\subsection{\texttt{sterm\_psi}}
+This subroutine calculates the non-linear term of the CH-like for the surfactant.
+This term is computed in a non-intuitive way for performance.
+In particular, each term is not computed directly, but instead the term is first decomposed in three different pieces using vectorial identity.
+Finally, the advection term is then added.
+
+\subsection{\texttt{sterm\_temp}}
+This subroutine calculates the non-linear term of the energy equation for the temperature.
+As the energy equation is only a simple advection diffusion equation, this terms is basically:
+\[
+S_\theta=-\mathbf{u}\cdot\nabla\theta
+\]
+
 
 \subsection{\texttt{calculate\_phi}}
 This subroutine first splits the fourth order equation for the phase variable in two second order Helmholtz equations and then solves these Helmholtz equations. Here there is no need for the influence matrix method, as enough boundary conditions are provided for both Helmholtz equations.
+This subroutine is used when the Cahn-Hilliard equation is used (\texttt{phicor\_flag}=1 to 6).
+
+\subsection{\texttt{calculate\_phi\_ac}}
+This subroutine solves the second order equation for the phase variable when the conservative Allen-Cahn equation is employed (\texttt{phicor\_flag}=7) . 
+Here there is no need for the influence matrix method, as enough boundary conditions are provided for the Helmholtz equation.
+
+\subsection{\texttt{calculate\_psi}}
+This subroutine solves the second order equation for the CH-like equation for the surfactant.
+Here there is no need for the influence matrix method, as enough boundary conditions are provided for the Helmholtz equation.
+
+\subsection{\texttt{calculate\_theta}}
+This subroutine solves the second order equation for the energy transport equation.
+This is basically the advection-diffusion equation of a scalar. 
+Here there is no need for the influence matrix method, as enough boundary conditions are provided for the Helmholtz equation.
 
 \subsection{\texttt{courant\_check}}
 This subroutine calculates the maximum Courant number on the whole domain; if the calculated Courant exceeds the Courant limit, the simulation is stopped.
@@ -242,9 +291,15 @@ This subroutine calculates the maximum Courant number on the whole domain; if th
 These subroutines calculate the wall-normal derivative in the modal space. The only difference between the two subroutines resides in the passed array dimensions.\\
 Since there are dependencies between the input and output arrays, the arrays passed to the subroutine must not be the same, otherwise the output array will be wrongly calculated.
 
+\subsection{\texttt{dz\_fg}}
+This subroutine computes the wall-normal derivative in the modal space of a variable defined in the fine grid space. 
+
 \subsection{\texttt{helmholtz}, \texttt{helmholtz\_red} and \texttt{helmholtz\_rred}}
 All these subroutines solve the given Helmholtz problem; they differ only for the passed array dimensions. The input of the subroutine is the right hand side of the equation and, at the end of the subroutine, is replaced by the solution of the Helmholtz problem.\\
 The subroutine asssembles the matrices that will be passed to the Gauss solver. The coefficient matrix holds in the first two lines the boundary conditions at the upper and lower wall, then the rest of the matrix is a tridiagonal-like matrix that allows for a fast and efficient Gauss solver.
+
+\subsection{\texttt{helmholtz\_fg}}
+This subroutine solves the Helmholtz problem for a variable defined in the fine grid space.
 
 \subsection{\texttt{gauss\_solver}, \texttt{gauss\_solver\_red} and \texttt{gauss\_solver\_rred}}
 These subroutines perform the Gauss back-substitution algorithm on the passed set of equations (matrix form) and return the solution. They only differ for the size of the arrays passed.
@@ -256,41 +311,100 @@ The two most important subroutine used to shuttle data from physical to modal sp
 At the beginning of this subroutine each MPI process holds an array containing all the data in the $x$ direction and only part of the data in the $y$ and $z$ directions; the array is in physical space. At first the subroutine \texttt{fftx\_fwd} performs a 1D Fourier transform in the $x$ direction. Since all data in a certain direction are needed when performing a transform, the subroutine \texttt{yz2z} takes care of exchanging data among the various MPI processes, such that, after this subroutine each MPI process holds all the data in the $y$ direction and only part of the data in the $x$ and $z$ directions. Now, the subroutine \texttt{ffty\_fwd} performs a 1D transform in the $y$ direction. At this point another subroutine \texttt{xz2xy} exchange data among the various MPI processes, such that each MPI process holds all the data in the $z$ direction. Finally the subroutine \texttt{dctz\_fwd} performs a discrete Chebyshev transform in the $z$ direction.\\
 At the end of the subroutine, the array is in modal space.
 
-
+\subsection{\texttt{phys\_to\_spectral\_fg}}
+Same as \texttt{phys\_to\_spectral} but for a variable defined in the fine grid space.
 
 \subsection{\texttt{fftx\_fwd}}
 \label{sec: fftx}
-This subroutine performs a discrete Fourier transforms in the $x$ direction on the input array. It is a real-to-complex transform: the input is a real array, while the output is a complex array. The output array is defined as a real in the code but the last index of the array determines whether it is the real or the imaginary part (1 corresponds to the real part, 2 to the imaginary part). According to the dealiasing flag, this subroutine can perform dealiasing in the $x$ direction.
+This subroutine performs a discrete Fourier transforms in the $x$ direction on the input array. It is a real-to-complex transform: the input is a real array, while the output is a complex array. 
+The output array is defined as a real in the code but the last index of the array determines whether it is the real or the imaginary part (1 corresponds to the real part, 2 to the imaginary part). 
+According to the dealiasing flag, this subroutine can perform dealiasing in the $x$ direction.
+Depending on the value of the \texttt{openacc\_flag}, FFTW (CPU) or cuFFT (GPU) libraries are used to perform the transform.
+All transform subroutines are inside modules (since May 2022) for visibility and compatibility with Nvidia Fortran compiler.
+
+\subsection{\texttt{fftx\_fwd\_fg}}
+\label{sec: fftx}
+Fine grid version.
 
 \subsection{\texttt{yz2xz}}
 This subroutine exchange data among MPI processes such that at the beginning of the subroutine each MPI process holds all data in the $x$ direction and only part in the $y$ and $z$ directions and at the end of the subroutine each MPI process holds all data in the $y$ direction and only part in the $x$ and $z$ directions. The MPI communications among the various MPI processes are easily handled by exploiting the Cartesian topology defined for the MPI processes.
 
+\subsection{\texttt{yz2xz\_fg}}
+Fine grid version.
+
 \subsection{\texttt{ffty\_fwd}}
-This subroutine performs a discrete Fourier transfoms in the $y$ direction. Both input and output arrays are complex, the last index of the array determines the real (1) and imaginary (2) part. According to the dealiasing flag, this subroutine can perform dealiasing in the $y$ direction.
+This subroutine performs a discrete Fourier transforms in the $y$ direction. Both input and output arrays are complex, the last index of the array determines the real (1) and imaginary (2) part. According to the dealiasing flag, this subroutine can perform dealiasing in the $y$ direction.
+Depending on the value of the \texttt{openacc\_flag}, FFTW (CPU) or cuFFT (GPU) libraries are used to perform the transform.
+All transform subroutines are inside modules (since May 2022) for visibility and compatibility with Nvidia Fortran compiler.
+
 
 \subsection{\texttt{xz2xy}}
 This subroutine takes care of exchanging data among MPI processes, such that at the beginning of the subroutine each MPI process hold all data in the $y$ direction and only part in the $x$ and $z$ direction, while at the end of the subroutine each MPI process holds all data in the $z$ direction and part of them in the $x$ and $y$ directions. As before, a Cartesian topology is exploited during MPI communications.
 
+\subsection{\texttt{xz2xy\_fg}}
+Fine grid version.
+
 \subsection{\texttt{dctz\_fwd}}
-This subroutine performs a discrete Chebyshev tranforms in the wall-normal direction; it work on complex valued arrays and their storage in memory is the same as stated in Section \ref{sec: fftx}. According to the dealiasing flag, this subroutine can perform dealiasing in the $z$ direction.
+This subroutine performs a discrete Chebyshev tranforms in the wall-normal direction; it work on complex valued arrays and their storage in memory is the same as stated in Section \ref{sec: fftx}. 
+According to the dealiasing flag, this subroutine can perform dealiasing in the $z$ direction.
+Depending on the value of the \texttt{openacc\_flag}, FFTW (CPU) or cuFFT (GPU) libraries are used to perform the transform.
+All transform subroutines are inside modules (since May 2022) for visibility and compatibility with Nvidia Fortran compiler.
+
+A few notes for the GPU version only: this is a real-to-real transform that is not directly supported by cuFFT. 
+However, it it possible to use FFT routines to perform DCT: first the array is made even symmetric and then the real and complex part of the array undergo a classic FFT transform, only the real part of the output is kept (fun fact, using this trick, DCT forward and backward can be done with the very same code).
+In addition, as transforms on the GPUs are very fast, contrary to the CPU implementation where DCT is performed row by row, here DCT is performed in a batched mode. 
+This however requires transposition of the input array so that the input satisfies the advanced data layout of FFTW.
+Even with transposition (back and forth), DCT performed in this way is faster than row by row (or slice by slice). 
+
+\subsection{\texttt{dctz\_fwd\_fg}}
+Fine grid version.
+
 
 \subsection{\texttt{spectral\_to\_phys}}
-This subroutine shuttle the data array from modal space to physical space. At the beginning of the subroutine each rank holds all the data in the $z$ direction and only a part in the $x$ and $y$ directions. The subroutine \texttt{dctz\_bwd} perform an inverse Chebyshev transform in the $z$ direction; then the subroutine \texttt{xy2xz} exchange data among MPI processes, such that, after the subroutine execution, each MPI process holds all the data in the $y$ direction and only a part in the other two dimensions. Then the subroutine \texttt{ffty\_bwd} performs a 1D inverse Fourier transform on the data and the subroutine \texttt{xz2yz} exchange data among MPI processes in such a way that each MPI process holds all data in the $x$ direction. After the call to \texttt{fftx\_bwd}, which performs an inverse Fourier transform on the data, each MPI process holds the data in physical space.
+This subroutine shuttle the data array from modal space to physical space. At the beginning of the subroutine each rank holds all the data in the $z$ direction and only a part in the $x$ and $y$ directions. The subroutine \texttt{dctz\_bwd} perform an inverse Chebyshev transform in the $z$ direction; then the subroutine \texttt{xy2xz} exchange data among MPI processes, such that, after the subroutine execution, each MPI process holds all the data in the $y$ direction and only a part in the other two dimensions. 
+Then the subroutine \texttt{ffty\_bwd} performs a 1D inverse Fourier transform on the data and the subroutine \texttt{xz2yz} exchange data among MPI processes in such a way that each MPI process holds all data in the $x$ direction. After the call to \texttt{fftx\_bwd}, which performs an inverse Fourier transform on the data, each MPI process holds the data in physical space.
+
+\subsection{\texttt{spectral\_to\_phys\_fg}}
+Fine grid version.
 
 \subsection{\texttt{dctz\_bwd}}
-This subroutine performs an inverse discrete Chebyshev tranforms in the wall-normal directions; it works on complex valued arrays and their storage in memory is the same as stated in Section \ref{sec: fftx}. According to the dealiasing flag, this subroutine can perform dealiasing in the $x$ direction.
+This subroutine performs an inverse discrete Chebyshev transforms in the wall-normal directions; it works on complex valued arrays and their storage in memory is the same as stated in Section \ref{sec: fftx}. According to the dealiasing flag, this subroutine can perform dealiasing in the $x$ direction.
+Depending on the value of the \texttt{openacc\_flag}, FFTW (CPU) or cuFFT (GPU) libraries are used to perform the transform.
+All transform subroutines are inside modules (since May 2022) for visibility and compatibility with Nvidia Fortran compiler.
+As for the \texttt{dctz\_fwd}, the GPU implementation of the DCT transform is slightly different as the real-to-real transform is not directly supported by cuFFT (see above for details).
+
+\subsection{\texttt{dctz\_bwd\_fg}}
+Fine grid version.
+
 
 \subsection{\texttt{xy2xz}}
 This subroutine exchange data among the MPI processes, such that in input each MPI process holds all data in the $z$ direction and only part in the $x$ and $y$ directions and in output each MPI process holds all data in the $y$ directions and only part in the $x$ and $z$ directions. The MPI communications are easily handled by using a Cartesian topology.
 
+\subsection{\texttt{xy2xz\_fg}}
+Fine grid version.
+
 \subsection{\texttt{ffty\_bwd}}
 This subroutine performs an inverse discrete Fourier transfoms in the $y$ direction. According to the dealiasing flag, this subroutine can perform dealiasing in the $y$ direction.
+Depending on the value of the \texttt{openacc\_flag}, FFTW (CPU) or cuFFT (GPU) libraries are used to perform the transform.
+All transform subroutines are inside modules (since May 2022) for visibility and compatibility with Nvidia Fortran compiler.
+
+\subsection{\texttt{ffty\_bwd\_fg}}
+Fine grid version.
 
 \subsection{\texttt{xz2yz}}
 This subroutine exchange data among the MPI processes, such that in input each MPI process holds all data in the $y$ direction and only part in the $x$ and $z$ directions while in output each MPI process holds all data in the $x$ directions and only part in the $y$ and $z$ directions. The MPI communication are easily handled by using a Cartesian topology.
 
+\subsection{\texttt{xz2yz\_fg}}
+Fine grid version.
+
 \subsection{\texttt{fftx\_bwd}}
 This subroutine performs an inverse discrete Fourier transforms in the $x$ direction on the input array. It is a complex-to-real transform: the input is a complex array, while the output is a real array. According to the dealiasing flag, this subroutine can perform dealiasing in the $z$ direction.
+Depending on the value of the \texttt{openacc\_flag}, FFTW (CPU) or cuFFT (GPU) libraries are used to perform the trasnform.
+All transform subroutines are inside modules (since May 2022) for visibility and compatibility with Nvidia Fortran compiler.
+
+\subsection{\texttt{fftx\_bwd\_fg}}
+Fine grid version.
+
 
 
 

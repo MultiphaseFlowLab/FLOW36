@@ -1,6 +1,14 @@
-\chapter{Domain decomposition}
+\chapter{Parallelization, domain decomposition and acceleration}
 \label{chap: dom_decomp}
-In this chapter two possible domain decomposition algorithms will be presented: the slab decomposition and the pencil decomposition. Sections \ref{sec: slab} and \ref{sec: pencil} will be dedicated to the detailed explanation of these parallelization strategies, focusing also on their strengths and limitations. Section \ref{sec: benchmark} will present a benchmark between these strategies, together with some scalability results.
+In this chapter, the parallelization, two possible domain decomposition algorithms and the acceleration strategy will be presented: the slab decomposition and the pencil decomposition. Section \ref{sec: parallelization} presents the general parallelization strategy. 
+Sections \ref{sec: slab} and \ref{sec: pencil} will be dedicated to the detailed explanation of these parallelization strategies, focusing also on their strengths and limitations. 
+Section \ref{sec: benchmark} will present a benchmark between these strategies, together with some scalability results.
+Finally, section~\ref{sec: acceleration} will discuss the acceleration strategy for GPU-use and section~\ref{sec: profiling} will discuss possible performance improvement and profiling techniques.
+
+
+\section{Parallelization}
+\label{sec: parallelization}
+\textcolor{red}{WIP: Add here details on Eulerian variables, fine grid, Lagrangian particles}
 
 \section{Slab decomposition}
 \label{sec: slab}
@@ -122,8 +130,14 @@ $N_{y,cpu}$ & $N_{z,cpu}$& load/core & grid & $t/t_{\textnormal{step}}$ [s] &$t/
 
 
 
+\section{Acceleration}
+\label{sec: acceleration}
+\textcolor{red}{WIP: Add here details on acceleration and porting}
 
 
+\section{Profiling}
+\label{sec: profiling}
+\textcolor{red}{WIP: Add here details on acceleration and profiling of the code}
 
 
 

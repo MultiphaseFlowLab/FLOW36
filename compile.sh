@@ -453,7 +453,7 @@ phi_flag="1" # integer
 phicor_flag="7" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
-# Lam=0.3/Ch
+# Lam=0.3/Ch (check for spotting at the wall when using refined grids, otherwise relax lambda)
 lamcorphi="2.5" # real (double)
 
 # matched densities: 1 for matched densities, 0 for rhor < 1, 2 for rhor > 1
@@ -581,13 +581,13 @@ PI="1.35" # real (double)
 El="0.5" # real (double)
 
 # Initial conditions on the surfactant
-# 0: initialize constant value (psi_mean)
-# 1: read input from file (parallel read)
-# 2: initialize equilibrium profile (psi_bulk)
-# 3: equilibrium profile multiplied with Y gradient
-# 4: equilibrium profile multiplied with Z gradient
-# 5: Diffusion Test, angular distribuction
-# 6: read input from file (parallel read, fine grid)
+# 0: Initialize constant value (psi_mean)
+# 1: Read input from file (parallel read)
+# 2: Initialize equilibrium profile (psi_bulk)
+# 3: Equilibrium profile multiplied with Y gradient
+# 4: Equilibrium profile multiplied with Z gradient
+# 5: Diffusion Test, angular distribution
+# 6: Read input from file (parallel read, fine grid)
 in_condpsi="2"
 psi_mean="0.01" # real (double)
 psi_bulk="0.01" # real (double)

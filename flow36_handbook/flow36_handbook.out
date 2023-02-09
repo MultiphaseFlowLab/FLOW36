@@ -25,64 +25,89 @@
 \BOOKMARK [1][-]{section.2.2}{Solver}{chapter.2}% 25
 \BOOKMARK [2][-]{subsection.2.2.1}{convective\137ns}{section.2.2}% 26
 \BOOKMARK [2][-]{subsection.2.2.2}{phi\137non\137linear}{section.2.2}% 27
-\BOOKMARK [2][-]{subsection.2.2.3}{euler, adams\137bashforth, euler\137phi and adams\137bashforth\137phi}{section.2.2}% 28
-\BOOKMARK [2][-]{subsection.2.2.4}{hist\137term}{section.2.2}% 29
-\BOOKMARK [2][-]{subsection.2.2.5}{calculate\137w}{section.2.2}% 30
-\BOOKMARK [2][-]{subsection.2.2.6}{calculate\137omega}{section.2.2}% 31
-\BOOKMARK [2][-]{subsection.2.2.7}{calculate\137uv}{section.2.2}% 32
-\BOOKMARK [2][-]{subsection.2.2.8}{sterm\137ch}{section.2.2}% 33
-\BOOKMARK [2][-]{subsection.2.2.9}{calculate\137phi}{section.2.2}% 34
-\BOOKMARK [2][-]{subsection.2.2.10}{courant\137check}{section.2.2}% 35
-\BOOKMARK [2][-]{subsection.2.2.11}{dz and dz\137red}{section.2.2}% 36
-\BOOKMARK [2][-]{subsection.2.2.12}{helmholtz, helmholtz\137red and helmholtz\137rred}{section.2.2}% 37
-\BOOKMARK [2][-]{subsection.2.2.13}{gauss\137solver, gauss\137solver\137red and gauss\137solver\137rred}{section.2.2}% 38
-\BOOKMARK [1][-]{section.2.3}{Transforms}{chapter.2}% 39
-\BOOKMARK [2][-]{subsection.2.3.1}{phys\137to\137spectral}{section.2.3}% 40
-\BOOKMARK [2][-]{subsection.2.3.2}{fftx\137fwd}{section.2.3}% 41
-\BOOKMARK [2][-]{subsection.2.3.3}{yz2xz}{section.2.3}% 42
-\BOOKMARK [2][-]{subsection.2.3.4}{ffty\137fwd}{section.2.3}% 43
-\BOOKMARK [2][-]{subsection.2.3.5}{xz2xy}{section.2.3}% 44
-\BOOKMARK [2][-]{subsection.2.3.6}{dctz\137fwd}{section.2.3}% 45
-\BOOKMARK [2][-]{subsection.2.3.7}{spectral\137to\137phys}{section.2.3}% 46
-\BOOKMARK [2][-]{subsection.2.3.8}{dctz\137bwd}{section.2.3}% 47
-\BOOKMARK [2][-]{subsection.2.3.9}{xy2xz}{section.2.3}% 48
-\BOOKMARK [2][-]{subsection.2.3.10}{ffty\137bwd}{section.2.3}% 49
-\BOOKMARK [2][-]{subsection.2.3.11}{xz2yz}{section.2.3}% 50
-\BOOKMARK [2][-]{subsection.2.3.12}{fftx\137bwd}{section.2.3}% 51
-\BOOKMARK [1][-]{section.2.4}{Statistic calculation}{chapter.2}% 52
-\BOOKMARK [2][-]{subsection.2.4.1}{initialize\137stats}{section.2.4}% 53
-\BOOKMARK [2][-]{subsection.2.4.2}{del\137old\137stats}{section.2.4}% 54
-\BOOKMARK [2][-]{subsection.2.4.3}{statistics}{section.2.4}% 55
-\BOOKMARK [2][-]{subsection.2.4.4}{mean\137calc}{section.2.4}% 56
-\BOOKMARK [2][-]{subsection.2.4.5}{budget\137calc}{section.2.4}% 57
-\BOOKMARK [2][-]{subsection.2.4.6}{sterm\137pressure}{section.2.4}% 58
-\BOOKMARK [2][-]{subsection.2.4.7}{power\137spectra}{section.2.4}% 59
-\BOOKMARK [1][-]{section.2.5}{Modules}{chapter.2}% 60
-\BOOKMARK [0][-]{chapter.3}{Numerical method}{}% 61
-\BOOKMARK [1][-]{section.3.1}{Problem description}{chapter.3}% 62
-\BOOKMARK [1][-]{section.3.2}{Single phase flow}{chapter.3}% 63
-\BOOKMARK [1][-]{section.3.3}{Phase Field Model}{chapter.3}% 64
-\BOOKMARK [2][-]{subsection.3.3.1}{Cahn\205Hilliard equation}{section.3.3}% 65
-\BOOKMARK [1][-]{section.3.4}{Boundary conditions}{chapter.3}% 66
-\BOOKMARK [2][-]{subsection.3.4.1}{No\205slip condition}{section.3.4}% 67
-\BOOKMARK [2][-]{subsection.3.4.2}{Free\205slip condition}{section.3.4}% 68
-\BOOKMARK [2][-]{subsection.3.4.3}{Recap of the boundary conditions for the Navier\205Stokes equation}{section.3.4}% 69
-\BOOKMARK [2][-]{subsection.3.4.4}{Closed channel and open channel}{section.3.4}% 70
-\BOOKMARK [1][-]{section.3.5}{Pseudospectral spatial discretization}{chapter.3}% 71
-\BOOKMARK [1][-]{section.3.6}{Time discretization}{chapter.3}% 72
-\BOOKMARK [2][-]{subsection.3.6.1}{Dealiasing}{section.3.6}% 73
-\BOOKMARK [1][-]{section.3.7}{Chebyshev\205Tau method}{chapter.3}% 74
-\BOOKMARK [2][-]{subsection.3.7.1}{General method}{section.3.7}% 75
-\BOOKMARK [2][-]{subsection.3.7.2}{Application to the 2nd order equation for vorticity}{section.3.7}% 76
-\BOOKMARK [2][-]{subsection.3.7.3}{Application to the 4th order equation for velocity}{section.3.7}% 77
-\BOOKMARK [1][-]{section.3.8}{Influence matrix}{chapter.3}% 78
-\BOOKMARK [2][-]{subsection.3.8.1}{General method}{section.3.8}% 79
-\BOOKMARK [2][-]{subsection.3.8.2}{Application to the 4th order equation for }{section.3.8}% 80
-\BOOKMARK [1][-]{section.3.9}{Wall units and outer units}{chapter.3}% 81
-\BOOKMARK [0][-]{chapter.4}{Domain decomposition}{}% 82
-\BOOKMARK [1][-]{section.4.1}{Slab decomposition}{chapter.4}% 83
-\BOOKMARK [1][-]{section.4.2}{Pencil decomposition}{chapter.4}% 84
-\BOOKMARK [1][-]{section.4.3}{Domain decomposition strategies benchmark}{chapter.4}% 85
-\BOOKMARK [0][-]{chapter.5}{Code validation}{}% 86
-\BOOKMARK [1][-]{section.5.1}{Single phase validation}{chapter.5}% 87
-\BOOKMARK [1][-]{section.5.2}{Phase field validation}{chapter.5}% 88
+\BOOKMARK [2][-]{subsection.2.2.3}{euler, adams\137bashforth}{section.2.2}% 28
+\BOOKMARK [2][-]{subsection.2.2.4}{euler\137phi and adams\137bashforth\137phi}{section.2.2}% 29
+\BOOKMARK [2][-]{subsection.2.2.5}{euler\137psi and adams\137bashforth\137psi}{section.2.2}% 30
+\BOOKMARK [2][-]{subsection.2.2.6}{euler\137theta and adams\137bashforth\137theta}{section.2.2}% 31
+\BOOKMARK [2][-]{subsection.2.2.7}{hist\137term}{section.2.2}% 32
+\BOOKMARK [2][-]{subsection.2.2.8}{hist\137term\137temp}{section.2.2}% 33
+\BOOKMARK [2][-]{subsection.2.2.9}{calculate\137w}{section.2.2}% 34
+\BOOKMARK [2][-]{subsection.2.2.10}{calculate\137omega}{section.2.2}% 35
+\BOOKMARK [2][-]{subsection.2.2.11}{calculate\137uv}{section.2.2}% 36
+\BOOKMARK [2][-]{subsection.2.2.12}{sterm\137ch}{section.2.2}% 37
+\BOOKMARK [2][-]{subsection.2.2.13}{sterm\137psi}{section.2.2}% 38
+\BOOKMARK [2][-]{subsection.2.2.14}{sterm\137temp}{section.2.2}% 39
+\BOOKMARK [2][-]{subsection.2.2.15}{calculate\137phi}{section.2.2}% 40
+\BOOKMARK [2][-]{subsection.2.2.16}{calculate\137phi\137ac}{section.2.2}% 41
+\BOOKMARK [2][-]{subsection.2.2.17}{calculate\137psi}{section.2.2}% 42
+\BOOKMARK [2][-]{subsection.2.2.18}{calculate\137theta}{section.2.2}% 43
+\BOOKMARK [2][-]{subsection.2.2.19}{courant\137check}{section.2.2}% 44
+\BOOKMARK [2][-]{subsection.2.2.20}{dz and dz\137red}{section.2.2}% 45
+\BOOKMARK [2][-]{subsection.2.2.21}{dz\137fg}{section.2.2}% 46
+\BOOKMARK [2][-]{subsection.2.2.22}{helmholtz, helmholtz\137red and helmholtz\137rred}{section.2.2}% 47
+\BOOKMARK [2][-]{subsection.2.2.23}{helmholtz\137fg}{section.2.2}% 48
+\BOOKMARK [2][-]{subsection.2.2.24}{gauss\137solver, gauss\137solver\137red and gauss\137solver\137rred}{section.2.2}% 49
+\BOOKMARK [1][-]{section.2.3}{Transforms}{chapter.2}% 50
+\BOOKMARK [2][-]{subsection.2.3.1}{phys\137to\137spectral}{section.2.3}% 51
+\BOOKMARK [2][-]{subsection.2.3.2}{phys\137to\137spectral\137fg}{section.2.3}% 52
+\BOOKMARK [2][-]{subsection.2.3.3}{fftx\137fwd}{section.2.3}% 53
+\BOOKMARK [2][-]{subsection.2.3.4}{fftx\137fwd\137fg}{section.2.3}% 54
+\BOOKMARK [2][-]{subsection.2.3.5}{yz2xz}{section.2.3}% 55
+\BOOKMARK [2][-]{subsection.2.3.6}{yz2xz\137fg}{section.2.3}% 56
+\BOOKMARK [2][-]{subsection.2.3.7}{ffty\137fwd}{section.2.3}% 57
+\BOOKMARK [2][-]{subsection.2.3.8}{xz2xy}{section.2.3}% 58
+\BOOKMARK [2][-]{subsection.2.3.9}{xz2xy\137fg}{section.2.3}% 59
+\BOOKMARK [2][-]{subsection.2.3.10}{dctz\137fwd}{section.2.3}% 60
+\BOOKMARK [2][-]{subsection.2.3.11}{dctz\137fwd\137fg}{section.2.3}% 61
+\BOOKMARK [2][-]{subsection.2.3.12}{spectral\137to\137phys}{section.2.3}% 62
+\BOOKMARK [2][-]{subsection.2.3.13}{spectral\137to\137phys\137fg}{section.2.3}% 63
+\BOOKMARK [2][-]{subsection.2.3.14}{dctz\137bwd}{section.2.3}% 64
+\BOOKMARK [2][-]{subsection.2.3.15}{dctz\137bwd\137fg}{section.2.3}% 65
+\BOOKMARK [2][-]{subsection.2.3.16}{xy2xz}{section.2.3}% 66
+\BOOKMARK [2][-]{subsection.2.3.17}{xy2xz\137fg}{section.2.3}% 67
+\BOOKMARK [2][-]{subsection.2.3.18}{ffty\137bwd}{section.2.3}% 68
+\BOOKMARK [2][-]{subsection.2.3.19}{ffty\137bwd\137fg}{section.2.3}% 69
+\BOOKMARK [2][-]{subsection.2.3.20}{xz2yz}{section.2.3}% 70
+\BOOKMARK [2][-]{subsection.2.3.21}{xz2yz\137fg}{section.2.3}% 71
+\BOOKMARK [2][-]{subsection.2.3.22}{fftx\137bwd}{section.2.3}% 72
+\BOOKMARK [2][-]{subsection.2.3.23}{fftx\137bwd\137fg}{section.2.3}% 73
+\BOOKMARK [1][-]{section.2.4}{Statistic calculation}{chapter.2}% 74
+\BOOKMARK [2][-]{subsection.2.4.1}{initialize\137stats}{section.2.4}% 75
+\BOOKMARK [2][-]{subsection.2.4.2}{del\137old\137stats}{section.2.4}% 76
+\BOOKMARK [2][-]{subsection.2.4.3}{statistics}{section.2.4}% 77
+\BOOKMARK [2][-]{subsection.2.4.4}{mean\137calc}{section.2.4}% 78
+\BOOKMARK [2][-]{subsection.2.4.5}{budget\137calc}{section.2.4}% 79
+\BOOKMARK [2][-]{subsection.2.4.6}{sterm\137pressure}{section.2.4}% 80
+\BOOKMARK [2][-]{subsection.2.4.7}{power\137spectra}{section.2.4}% 81
+\BOOKMARK [1][-]{section.2.5}{Modules}{chapter.2}% 82
+\BOOKMARK [0][-]{chapter.3}{Numerical method}{}% 83
+\BOOKMARK [1][-]{section.3.1}{Problem description}{chapter.3}% 84
+\BOOKMARK [1][-]{section.3.2}{Single phase flow}{chapter.3}% 85
+\BOOKMARK [1][-]{section.3.3}{Phase Field Model}{chapter.3}% 86
+\BOOKMARK [2][-]{subsection.3.3.1}{Cahn\205Hilliard equation}{section.3.3}% 87
+\BOOKMARK [1][-]{section.3.4}{Boundary conditions}{chapter.3}% 88
+\BOOKMARK [2][-]{subsection.3.4.1}{No\205slip condition}{section.3.4}% 89
+\BOOKMARK [2][-]{subsection.3.4.2}{Free\205slip condition}{section.3.4}% 90
+\BOOKMARK [2][-]{subsection.3.4.3}{Recap of the boundary conditions for the Navier\205Stokes equation}{section.3.4}% 91
+\BOOKMARK [2][-]{subsection.3.4.4}{Closed channel and open channel}{section.3.4}% 92
+\BOOKMARK [1][-]{section.3.5}{Pseudospectral spatial discretization}{chapter.3}% 93
+\BOOKMARK [1][-]{section.3.6}{Time discretization}{chapter.3}% 94
+\BOOKMARK [2][-]{subsection.3.6.1}{Dealiasing}{section.3.6}% 95
+\BOOKMARK [1][-]{section.3.7}{Chebyshev\205Tau method}{chapter.3}% 96
+\BOOKMARK [2][-]{subsection.3.7.1}{General method}{section.3.7}% 97
+\BOOKMARK [2][-]{subsection.3.7.2}{Application to the 2nd order equation for vorticity}{section.3.7}% 98
+\BOOKMARK [2][-]{subsection.3.7.3}{Application to the 4th order equation for velocity}{section.3.7}% 99
+\BOOKMARK [1][-]{section.3.8}{Influence matrix}{chapter.3}% 100
+\BOOKMARK [2][-]{subsection.3.8.1}{General method}{section.3.8}% 101
+\BOOKMARK [2][-]{subsection.3.8.2}{Application to the 4th order equation for }{section.3.8}% 102
+\BOOKMARK [1][-]{section.3.9}{Wall units and outer units}{chapter.3}% 103
+\BOOKMARK [0][-]{chapter.4}{Parallelization, domain decomposition and acceleration}{}% 104
+\BOOKMARK [1][-]{section.4.1}{Parallelization}{chapter.4}% 105
+\BOOKMARK [1][-]{section.4.2}{Slab decomposition}{chapter.4}% 106
+\BOOKMARK [1][-]{section.4.3}{Pencil decomposition}{chapter.4}% 107
+\BOOKMARK [1][-]{section.4.4}{Domain decomposition strategies benchmark}{chapter.4}% 108
+\BOOKMARK [1][-]{section.4.5}{Acceleration}{chapter.4}% 109
+\BOOKMARK [1][-]{section.4.6}{Profiling}{chapter.4}% 110
+\BOOKMARK [0][-]{chapter.5}{Code validation}{}% 111
+\BOOKMARK [1][-]{section.5.1}{Single phase validation}{chapter.5}% 112
+\BOOKMARK [1][-]{section.5.2}{Phase field validation}{chapter.5}% 113

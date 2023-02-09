@@ -1,24 +1,24 @@
-\select@language {english}
+\babel@toc {english}{}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Scheme of main program \texttt {FLOW\_36}\relax }}{10}{figure.caption.2}
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Scheme of subroutine \texttt {solver}\relax }}{16}{figure.caption.3}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Scheme of main program \texttt {FLOW\_36}. xxx stands for a generic field (e.g. phase-field, surfactant field, temperature)\relax }}{30}{figure.caption.2}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Scheme of subroutine \texttt {solver}\relax }}{31}{figure.caption.3}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Sketch of the domain\relax }}{27}{figure.caption.4}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Sketch of the domain\relax }}{33}{figure.caption.4}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Slab decomposition, MPI processes numbering\relax }}{47}{figure.caption.6}
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{48}{figure.caption.7}
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Strong scalability\relax }}{49}{figure.caption.8}
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Weak scalability\relax }}{50}{figure.caption.10}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Slab decomposition, MPI processes numbering\relax }}{54}{figure.caption.6}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{54}{figure.caption.7}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Strong scalability\relax }}{55}{figure.caption.8}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Weak scalability\relax }}{57}{figure.caption.10}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Mean velocity\relax }}{53}{figure.caption.12}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Velocity root mean square\relax }}{54}{figure.caption.13}
-\contentsline {figure}{\numberline {5.3}{\ignorespaces Velocity skewness\relax }}{54}{figure.caption.14}
-\contentsline {figure}{\numberline {5.4}{\ignorespaces Velocity flatness\relax }}{55}{figure.caption.15}
-\contentsline {figure}{\numberline {5.5}{\ignorespaces Mean pressure\relax }}{55}{figure.caption.16}
-\contentsline {figure}{\numberline {5.6}{\ignorespaces Pressure root mean square\relax }}{56}{figure.caption.17}
-\contentsline {figure}{\numberline {5.7}{\ignorespaces Energy budget\relax }}{57}{figure.caption.18}
-\contentsline {figure}{\numberline {5.8}{\ignorespaces $u'$ power spectra\relax }}{58}{figure.caption.19}
-\contentsline {figure}{\numberline {5.9}{\ignorespaces $v'$ power spectra\relax }}{59}{figure.caption.20}
-\contentsline {figure}{\numberline {5.10}{\ignorespaces $w'$ power spectra\relax }}{60}{figure.caption.21}
-\contentsline {figure}{\numberline {5.11}{\ignorespaces Capillary waves, comparison of numerical solution (damped) with Prosperetti analytic solution (undamped). \textbf {Case A} : $\rho _R=0.9$, $\textnormal {Fr}=0.1$, $k_y=1$. \textbf {Case B} : $\rho _R=0.5$, $\textnormal {Fr}=0.1$, $k_y=1$. \textbf {Case C} : $\rho _R=0.5$, $\textnormal {Fr}=0.05$, $k_y=1$. \textbf {Case D} : $\rho _R=0.5$, $\textnormal {Fr}=0.1$, $k_y=2$.\relax }}{61}{figure.caption.22}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Mean velocity\relax }}{59}{figure.caption.12}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Velocity root mean square\relax }}{60}{figure.caption.13}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Velocity skewness\relax }}{60}{figure.caption.14}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Velocity flatness\relax }}{61}{figure.caption.15}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Mean pressure\relax }}{61}{figure.caption.16}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Pressure root mean square\relax }}{62}{figure.caption.17}%
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Energy budget\relax }}{63}{figure.caption.18}%
+\contentsline {figure}{\numberline {5.8}{\ignorespaces $u'$ power spectra\relax }}{64}{figure.caption.19}%
+\contentsline {figure}{\numberline {5.9}{\ignorespaces $v'$ power spectra\relax }}{65}{figure.caption.20}%
+\contentsline {figure}{\numberline {5.10}{\ignorespaces $w'$ power spectra\relax }}{66}{figure.caption.21}%
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Capillary waves, comparison of numerical solution (damped) with Prosperetti analytic solution (undamped). \textbf {Case A} : $\rho _R=0.9$, $\textnormal {Fr}=0.1$, $k_y=1$. \textbf {Case B} : $\rho _R=0.5$, $\textnormal {Fr}=0.1$, $k_y=1$. \textbf {Case C} : $\rho _R=0.5$, $\textnormal {Fr}=0.05$, $k_y=1$. \textbf {Case D} : $\rho _R=0.5$, $\textnormal {Fr}=0.1$, $k_y=2$.\relax }}{67}{figure.caption.22}%
