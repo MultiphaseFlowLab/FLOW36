@@ -265,7 +265,7 @@ a1f=1.0d0-phi**(2.0d0)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      modnabphi=sqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
+      modnabphi=dsqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
       phinx(i,k,j)=phinx(i,k,j)/modnabphi
       phiny(i,k,j)=phiny(i,k,j)/modnabphi
       phinz(i,k,j)=phinz(i,k,j)/modnabphi
@@ -324,7 +324,7 @@ call dz(a3,a6)
 
 !SUM EVEYTHING TO SPHI
 !$acc kernels
-sphi=sphi-(lamphi/(sqrt(2.0d0)*ch*pe))*(a4+a5+a6)
+sphi=sphi-(lamphi/(dsqrt(2.0d0)*ch*pe))*(a4+a5+a6)
 !$acc end kernels
 
 deallocate(a4,a5,a6)
@@ -534,7 +534,7 @@ a1f=1d0-phi**(2d0)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      modnabphi=sqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
+      modnabphi=dsqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
       phinx(i,k,j)=phinx(i,k,j)/modnabphi
       phiny(i,k,j)=phiny(i,k,j)/modnabphi
       phinz(i,k,j)=phinz(i,k,j)/modnabphi
@@ -547,9 +547,9 @@ do j=1,fpy
   do k=1,fpz
     do i=1,nx
       normflux=a4f(i,k,j)*phinx(i,k,j)+a5f(i,k,j)*phiny(i,k,j)+a6f(i,k,j)*phinz(i,k,j)
-      a4f(i,k,j)=-lamphi/(sqrt(2d0)*ch)*a1f(i,k,j)*phinx(i,k,j) + normflux*phinx(i,k,j)
-      a5f(i,k,j)=-lamphi/(sqrt(2d0)*ch)*a1f(i,k,j)*phiny(i,k,j) + normflux*phiny(i,k,j)
-      a6f(i,k,j)=-lamphi/(sqrt(2d0)*ch)*a1f(i,k,j)*phinz(i,k,j) + normflux*phinz(i,k,j)
+      a4f(i,k,j)=-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)*phinx(i,k,j) + normflux*phinx(i,k,j)
+      a5f(i,k,j)=-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)*phiny(i,k,j) + normflux*phiny(i,k,j)
+      a6f(i,k,j)=-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)*phinz(i,k,j) + normflux*phinz(i,k,j)
     enddo
   enddo
 enddo
@@ -713,7 +713,7 @@ a1f=1.0d0-phi**(2.0d0)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      modnabphi=sqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
+      modnabphi=dsqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
       phinx(i,k,j)=phinx(i,k,j)/modnabphi
       phiny(i,k,j)=phiny(i,k,j)/modnabphi
       phinz(i,k,j)=phinz(i,k,j)/modnabphi
@@ -782,7 +782,7 @@ do k=1,fpz
 enddo
 !!!
 !$acc kernels
-nabc=(lamphi/pe)*nabc-(lamphi/(sqrt(2d0)*ch*pe))*(a4+a5+a6)
+nabc=(lamphi/pe)*nabc-(lamphi/(dsqrt(2d0)*ch*pe))*(a4+a5+a6)
 !$acc end kernels
 deallocate(a4,a5,a6)
 allocate(nabcf(nx,fpz,fpy))
@@ -986,11 +986,11 @@ allocate(a6f(nx,fpz,fpy))
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      modnabphi=sqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
+      modnabphi=dsqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
       mask=max(modnabphi-epsnum,0d0)/(modnabphi-epsnum)
-      a4f(i,k,j)=-1.0d0/(sqrt(2.0d0)*Ch)*a1f(i,k,j)*phinx(i,k,j)/modnabphi
-      a5f(i,k,j)=-1.0d0/(sqrt(2.0d0)*Ch)*a1f(i,k,j)*phiny(i,k,j)/modnabphi
-      a6f(i,k,j)=-1.0d0/(sqrt(2.0d0)*Ch)*a1f(i,k,j)*phinz(i,k,j)/modnabphi
+      a4f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phinx(i,k,j)/modnabphi
+      a5f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phiny(i,k,j)/modnabphi
+      a6f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phinz(i,k,j)/modnabphi
       a4f(i,k,j)=a4f(i,k,j)*mask
       a5f(i,k,j)=a5f(i,k,j)*mask
       a6f(i,k,j)=a6f(i,k,j)*mask
@@ -1221,12 +1221,12 @@ epsnum=1.0d0/(50.0d0*Ch)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      modnabphi=sqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
+      modnabphi=dsqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
       mask=max(modnabphi-epsnum,0d0)/(modnabphi-epsnum)
       normflux=(a4f(i,k,j)*phinx(i,k,j)+a5f(i,k,j)*phiny(i,k,j)+a6f(i,k,j)*phinz(i,k,j))/modnabphi
-      a4f(i,k,j)=+(-lamphi/(sqrt(2d0)*ch)*a1f(i,k,j)+normflux)*phinx(i,k,j)/modnabphi
-      a5f(i,k,j)=+(-lamphi/(sqrt(2d0)*ch)*a1f(i,k,j)+normflux)*phiny(i,k,j)/modnabphi
-      a6f(i,k,j)=+(-lamphi/(sqrt(2d0)*ch)*a1f(i,k,j)+normflux)*phinz(i,k,j)/modnabphi
+      a4f(i,k,j)=+(-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)+normflux)*phinx(i,k,j)/modnabphi
+      a5f(i,k,j)=+(-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)+normflux)*phiny(i,k,j)/modnabphi
+      a6f(i,k,j)=+(-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)+normflux)*phinz(i,k,j)/modnabphi
       a4f(i,k,j)=a4f(i,k,j)*mask
       a5f(i,k,j)=a5f(i,k,j)*mask
       a6f(i,k,j)=a6f(i,k,j)*mask
@@ -1400,7 +1400,7 @@ do j=1,fpy
       if (phinx(i,k,j) .le. epsnum) phinx(i,k,j)=0.0d0
       if (phiny(i,k,j) .le. epsnum) phiny(i,k,j)=0.0d0
       if (phinz(i,k,j) .le. epsnum) phinz(i,k,j)=0.0d0
-      phinmod(i,k,j)=sqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
+      phinmod(i,k,j)=dsqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
       if (phinmod(i,k,j) .ge. epsnum) then
       a4f(i,k,j)=phinx(i,k,j)/(phinmod(i,k,j))
       a5f(i,k,j)=phiny(i,k,j)/(phinmod(i,k,j))
@@ -1618,7 +1618,7 @@ a1f=1.0d0-phi**(2.0d0)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      modnabphi=sqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
+      modnabphi=dsqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
       phinx(i,k,j)=phinx(i,k,j)/modnabphi
       phiny(i,k,j)=phiny(i,k,j)/modnabphi
       phinz(i,k,j)=phinz(i,k,j)/modnabphi
@@ -1685,6 +1685,13 @@ sphi=sphi - 1.0d0/pe*(a4+a5+a6)
 deallocate(a4,a5,a6)
 
 #endif
+
+#if phicorflag == 8
+
+! Set-up for ACDI revised by Jain, WIP
+
+#endif
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

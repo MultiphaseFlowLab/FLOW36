@@ -218,15 +218,15 @@ deallocate(a6)
 #if match_dens == 2
 ! rescale NS equation if rhor > 1 for improved stability
 !$acc kernels
-s1=s1+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*gradphix
-s2=s2+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*gradphiy
-s3=s3+3.0d0/sqrt(8.0d0)*Ch/(we*rhor)*gradphiz
+s1=s1+3.0d0/dsqrt(8.0d0)*Ch/(we*rhor)*gradphix
+s2=s2+3.0d0/dsqrt(8.0d0)*Ch/(we*rhor)*gradphiy
+s3=s3+3.0d0/dsqrt(8.0d0)*Ch/(we*rhor)*gradphiz
 !$acc end kernels
 #else
 !$acc kernels
-s1=s1+3.0d0/sqrt(8.0d0)*Ch/(we)*gradphix
-s2=s2+3.0d0/sqrt(8.0d0)*Ch/(we)*gradphiy
-s3=s3+3.0d0/sqrt(8.0d0)*Ch/(we)*gradphiz
+s1=s1+3.0d0/dsqrt(8.0d0)*Ch/(we)*gradphix
+s2=s2+3.0d0/dsqrt(8.0d0)*Ch/(we)*gradphiy
+s3=s3+3.0d0/dsqrt(8.0d0)*Ch/(we)*gradphiz
 !$acc end kernels
 #endif
 

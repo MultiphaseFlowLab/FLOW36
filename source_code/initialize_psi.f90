@@ -138,7 +138,7 @@ call spectral_to_phys_fg(phic_fg,phi_fg,0)
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
-       psi_c=exp(-(1.0d0-(phi_fg(i,k,j))**2)**2/(4.0d0*P_i)-(1.0d0-(phi_fg(i,k,j))**2)/(2.0d0*Ex*P_i))
+       psi_c=exp(-(1.0d0-(phi_fg(i,k,j))**2)**2/(2.0d0*P_i)-(1.0d0-(phi_fg(i,k,j))**2)/(2.0d0*Ex*P_i))
        psi_fg(i,k,j)=psi_k/(psi_k+psi_c*(1.0d0-psi_k))
     enddo
   enddo
@@ -170,7 +170,7 @@ do j=1,fpy
     do i=1,nx
       jg=fstart(3)+j
       kg=fstart(2)+k
-      psi_c=exp(-(1.0d0-(phi(i,k,j))**2)**2/(4.0d0*P_i)-(1.0d0-(phi(i,k,j))**2)/(2.0d0*Ex*P_i))
+      psi_c=exp(-(1.0d0-(phi(i,k,j))**2)**2/(2.0d0*P_i)-(1.0d0-(phi(i,k,j))**2)/(2.0d0*Ex*P_i))
       psi(i,k,j)=psi_k/(psi_k+psi_c*(1.0d0-psi_k))-psi_k
       psi(i,k,j)=psi(i,k,j)*(-dtanh(y(jg)-0.48d0*yl)+1.0d0)
       psi(i,k,j)=psi_k+psi(i,k,j)
@@ -205,7 +205,7 @@ do j=1,fpy
     do i=1,nx
       jg=fstart(3)+j
       kg=fstart(2)+k
-      psi_c=exp(-(1.0d0-(phi(i,k,j))**2)**2/(4.0d0*P_i)-(1.0d0-(phi(i,k,j))**2)/(2.0d0*Ex*P_i))
+      psi_c=exp(-(1.0d0-(phi(i,k,j))**2)**2/(2.0d0*P_i)-(1.0d0-(phi(i,k,j))**2)/(2.0d0*Ex*P_i))
       psi(i,k,j)=psi_k/(psi_k+psi_c*(1.0d0-psi_k))-psi_k
       psi(i,k,j)=-0.5d0*(-1.0d0+z(kg))*psi(i,k,j)
       psi(i,k,j)=psi_k+psi(i,k,j)
