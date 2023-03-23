@@ -2,7 +2,7 @@
 #SBATCH -J "F36GPU"
 #SBATCH -N 1
 #SBATCH --partition=gpu_a100_dual
-#SBATCH --qos goodluck
+#SBATCH --qos zen3_0512_a100x2
 #SBATCH --gres=gpu:2
 #SBATCH --time=00-00:03:00
 spack load nvhpc@22.5
