@@ -305,7 +305,7 @@ echo "=                                  VSC-5 (CPU)                            
 # load modules (SPACK)
 spack unload --all
 module load openmpi/4.1.4-gcc-11.2.0-6aolzu3
-module laod fftw/3.3.10-gcc-11.2.0-cxllihw
+module load fftw/3.3.10-gcc-11.2.0-cxllihw
 cp ./VSC-5/makefile_cpu ./makefile
 cp ./VSC-5/go_cpu.sh    ./go.sh
 savespectral="0"
