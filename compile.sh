@@ -209,10 +209,10 @@ cp ./Tersicore_gpu/go.sh ./go.sh
 #Setup the environment (otherwise gfortran is used)
 NVARCH=Linux_x86_64; export NVARCH
 NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
-MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.3/compilers/man; export MANPATH
-PATH=$NVCOMPILERS/$NVARCH/22.3/compilers/bin:$PATH; export PATH
-export PATH=$NVCOMPILERS/$NVARCH/22.3/comm_libs/mpi/bin:$PATH
-export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/22.3/comm_libs/mpi/man
+MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/23.1/compilers/man; export MANPATH
+PATH=$NVCOMPILERS/$NVARCH/23.1/compilers/bin:$PATH; export PATH
+export PATH=$NVCOMPILERS/$NVARCH/23.1/comm_libs/mpi/bin:$PATH
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/23.1/comm_libs/mpi/man
 savespectral="0"
 openacc_flag="1"
 

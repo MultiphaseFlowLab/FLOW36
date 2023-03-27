@@ -1688,7 +1688,78 @@ deallocate(a4,a5,a6)
 
 #if phicorflag == 8
 
-! Set-up for ACDI revised by Jain, WIP
+! Set-up for ACDI revised by Jain
+
+allocate(a1(spx,nz,spy,2))
+allocate(a1f(nx,fpz,fpy))
+
+! u*(d phi /dx)
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a1(i,:,j,1)=-kx(i+cstart(1))*phic(i,:,j,2)
+    a1(i,:,j,2)=kx(i+cstart(1))*phic(i,:,j,1)
+  enddo
+enddo
+
+call spectral_to_phys(uc,u,1)
+call spectral_to_phys(a1,a1f,1)
+
+allocate(convf(nx,fpz,fpy))
+
+!$acc parallel loop collapse(2)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      convf(i,k,j)=a1f(i,k,j)*u(i,k,j)
+    enddo
+  enddo
+enddo
+
+! v*(d phi /dy)
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a1(i,:,j,1)=-ky(j+cstart(3))*phic(i,:,j,2)
+    a1(i,:,j,2)=ky(j+cstart(3))*phic(i,:,j,1)
+  enddo
+enddo
+
+call spectral_to_phys(vc,v,1)
+call spectral_to_phys(a1,a1f,1)
+
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      convf(i,k,j)=convf(i,k,j)+a1f(i,k,j)*v(i,k,j)
+    enddo
+  enddo
+enddo
+
+! w*(d phi /dz)
+call dz(phic,a1)
+
+call spectral_to_phys(wc,w,1)
+call spectral_to_phys(a1,a1f,1)
+
+
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      convf(i,k,j)=convf(i,k,j)+a1f(i,k,j)*w(i,k,j)
+    enddo
+  enddo
+enddo
+
+call phys_to_spectral(convf,a1,1)
+
+deallocate(convf)
+
+! sum all the convective terms to sphi
+sphi= -a1
+
 
 #endif
 
