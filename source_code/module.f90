@@ -233,47 +233,6 @@ end module comm_pattern
 !   end subroutine
 ! end interface
 !
-! contains
-!
-! subroutine nvtxStartRange(name,id)
-!   character(kind=c_char,len=*) :: name
-!   integer, optional:: id
-!   type(nvtxEventAttributes):: event
-!   character(kind=c_char,len=256) :: trimmed_name
-!   integer:: i
-!
-!   trimmed_name=trim(name)//c_null_char
-!
-!   ! move scalar trimmed_name into character array tempName
-!   do i=1,LEN(trim(name)) + 1
-!      tempName(i) = trimmed_name(i:i)
-!   enddo
-!
-!   if ( .not. present(id)) then
-!      call nvtxRangePush(tempName)
-!    else
-!      event%color=col(mod(id,7)+1)
-!      event%message=c_loc(tempName)
-!      call nvtxRangePushEx(event)
-!    end if
-!  end subroutine
-!
-!  subroutine nvtxEndRange
-!    call nvtxRangePop
-!  end subroutine
-!
-!  ! push range with custom label and custom color
-!  subroutine nvtxRangePushEx(event) bind(C, name='nvtxRangePushEx')
-!  use iso_c_binding
-!  import:: nvtxEventAttributes
-!  type(nvtxEventAttributes):: event
-!  end subroutine
-! end interface
-!
-! interface nvtxRangePop
-!  subroutine nvtxRangePop() bind(C, name='nvtxRangePop')
-!  end subroutine
-! end interface
 !
 ! contains
 !
