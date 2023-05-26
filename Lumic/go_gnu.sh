@@ -7,7 +7,7 @@
 #SBATCH --ntasks-per-core=1
 #SBATCH --output=test.out
 #SBATCH --error=test.err
-#SBATCH --partition=small
+#SBATCH --partition=standard
 #SBATCH --mem=40G
 
 # load modules
