@@ -106,13 +106,13 @@
 \contentsline {subsection}{\numberline {3.8.1}General method}{47}{subsection.3.8.1}%
 \contentsline {subsection}{\numberline {3.8.2}Application to the 4$^{th}$ order equation for $\hat w$}{49}{subsection.3.8.2}%
 \contentsline {section}{\numberline {3.9}Wall units and outer units}{51}{section.3.9}%
-\contentsline {chapter}{\numberline {4}Parallelization, domain decomposition and acceleration}{53}{chapter.4}%
+\contentsline {chapter}{\numberline {4}MPI Parallelization and GPUs}{53}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Parallelization}{53}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Slab decomposition}{53}{section.4.2}%
 \contentsline {section}{\numberline {4.3}Pencil decomposition}{54}{section.4.3}%
 \contentsline {section}{\numberline {4.4}Domain decomposition strategies benchmark}{55}{section.4.4}%
 \contentsline {section}{\numberline {4.5}Acceleration}{57}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Profiling}{57}{section.4.6}%
+\contentsline {section}{\numberline {4.6}Profiling}{58}{section.4.6}%
 \contentsline {chapter}{\numberline {5}Code validation}{59}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Single phase validation}{59}{section.5.1}%
 \contentsline {section}{\numberline {5.2}Phase field validation}{67}{section.5.2}%

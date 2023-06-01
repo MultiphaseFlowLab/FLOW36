@@ -8,7 +8,7 @@
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {4.1}{\ignorespaces Slab decomposition, MPI processes numbering\relax }}{54}{figure.caption.6}%
 \contentsline {figure}{\numberline {4.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{54}{figure.caption.7}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Strong scalability\relax }}{55}{figure.caption.8}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Strong scalability\relax }}{56}{figure.caption.8}%
 \contentsline {figure}{\numberline {4.4}{\ignorespaces Weak scalability\relax }}{57}{figure.caption.10}%
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {5.1}{\ignorespaces Mean velocity\relax }}{59}{figure.caption.12}%

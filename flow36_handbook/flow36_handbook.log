@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.3.1)  9 FEB 2023 12:42
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.3.1)  31 MAY 2023 15:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1612,7 +1612,7 @@ LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 45.
  [3] [4] [5] [6] [7]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 183.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 184.
  [8]) (./cap/code_flowchart.tex [9] [10
 
 ]
@@ -1764,14 +1764,14 @@ Chapter 4.
 \openout2 = `source/slab_ph.aux'.
 
 (./source/slab_ph.tex)
-Overfull \hbox (9.68202pt too wide) in paragraph at lines 41--20
+Overfull \hbox (9.68202pt too wide) in paragraph at lines 41--25
 [][] 
  []
 
 \openout2 = `source/slab_sp.aux'.
 
 (./source/slab_sp.tex)
-Overfull \hbox (9.68202pt too wide) in paragraph at lines 41--25
+Overfull \hbox (9.68202pt too wide) in paragraph at lines 41--30
 [][] 
  []
 
@@ -1782,21 +1782,15 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 \openout2 = `source/pencil_ph.aux'.
 
  (./source/pencil_ph.tex)
-Overfull \hbox (9.68202pt too wide) in paragraph at lines 45--42
+Overfull \hbox (9.68202pt too wide) in paragraph at lines 45--47
 [][] 
  []
 
 \openout2 = `source/pencil_sp.aux'.
 
 (./source/pencil_sp.tex)
-Overfull \hbox (9.68202pt too wide) in paragraph at lines 46--47
+Overfull \hbox (9.68202pt too wide) in paragraph at lines 46--52
 [][] 
- []
-
-
-Overfull \hbox (46.12007pt too wide) has occurred while \output is active
-\T1/lmr/m/n/10.95 54 \T1/lmr/m/sl/10.95 CHAPTER 4.  PARALLELIZATION, DOMAIN DEC
-OMPOSITION AND ACCELERATION
  []
 
 [54
@@ -1812,63 +1806,52 @@ OMPOSITION AND ACCELERATION
 <./immagini/strong_s_64.pdf, id=998, 685.56125pt x 419.5675pt>
 File: ./immagini/strong_s_64.pdf Graphic file (type pdf)
 <use ./immagini/strong_s_64.pdf>
-Package pdftex.def Info: ./immagini/strong_s_64.pdf  used on input line 64.
+Package pdftex.def Info: ./immagini/strong_s_64.pdf  used on input line 69.
 (pdftex.def)             Requested size: 371.30595pt x 227.2481pt.
 
-Overfull \hbox (25.25719pt too wide) in paragraph at lines 72--102
+Overfull \hbox (25.25719pt too wide) in paragraph at lines 77--107
  [][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 60--102
+Underfull \hbox (badness 10000) in paragraph at lines 65--107
 
  []
-
-[55 <./immagini/strong_s_64.pdf>]
-<./immagini/weak_s_64.pdf, id=1015, 713.66624pt x 418.56375pt>
-File: ./immagini/weak_s_64.pdf Graphic file (type pdf)
-<use ./immagini/weak_s_64.pdf>
-Package pdftex.def Info: ./immagini/weak_s_64.pdf  used on input line 105.
-(pdftex.def)             Requested size: 371.30595pt x 217.76935pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-
-Overfull \hbox (10.46361pt too wide) in paragraph at lines 112--129
- [][] 
- []
-
+<./immagini/weak_s_64.pdf, id=1000, 713.66624pt x 418.56375pt>
+File: ./immagini/weak_s_64.pdf Graphic file (type pdf)
+<use ./immagini/weak_s_64.pdf>
+Package pdftex.def Info: ./immagini/weak_s_64.pdf  used on input line 110.
+(pdftex.def)             Requested size: 371.30595pt x 217.76935pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [55]
 
-Overfull \hbox (46.12007pt too wide) has occurred while \output is active
-\T1/lmr/m/n/10.95 56 \T1/lmr/m/sl/10.95 CHAPTER 4.  PARALLELIZATION, DOMAIN DEC
-OMPOSITION AND ACCELERATION
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Overfull \hbox (10.46361pt too wide) in paragraph at lines 117--134
+ [][] 
  []
 
-[56]) (./cap/validation.tex [57 <./immagini/weak_s_64.pdf>]
-Overfull \hbox (46.12007pt too wide) has occurred while \output is active
-\T1/lmr/m/n/10.95 58 \T1/lmr/m/sl/10.95 CHAPTER 4.  PARALLELIZATION, DOMAIN DEC
-OMPOSITION AND ACCELERATION
- []
-
-[58
-
-]
+[56 <./immagini/strong_s_64.pdf>] [57 <./immagini/weak_s_64.pdf>])
+(./cap/validation.tex [58]
 Chapter 5.
-<./immagini/mean.pdf, id=1044, 498.86375pt x 329.23pt>
+<./immagini/mean.pdf, id=1045, 498.86375pt x 329.23pt>
 File: ./immagini/mean.pdf Graphic file (type pdf)
 <use ./immagini/mean.pdf>
 Package pdftex.def Info: ./immagini/mean.pdf  used on input line 7.
 (pdftex.def)             Requested size: 412.56497pt x 272.28624pt.
-<./immagini/rms.pdf, id=1045, 502.87875pt x 329.23pt>
+<./immagini/rms.pdf, id=1046, 502.87875pt x 329.23pt>
 File: ./immagini/rms.pdf Graphic file (type pdf)
 <use ./immagini/rms.pdf>
 Package pdftex.def Info: ./immagini/rms.pdf  used on input line 12.
 (pdftex.def)             Requested size: 412.56497pt x 270.10095pt.
-<./immagini/skw.pdf, id=1046, 506.89375pt x 329.23pt>
+<./immagini/skw.pdf, id=1047, 506.89375pt x 329.23pt>
 File: ./immagini/skw.pdf Graphic file (type pdf)
 <use ./immagini/skw.pdf>
 Package pdftex.def Info: ./immagini/skw.pdf  used on input line 17.
@@ -1876,13 +1859,15 @@ Package pdftex.def Info: ./immagini/skw.pdf  used on input line 17.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [59 <./immagini/mean.pdf>]
-<./immagini/flt.pdf, id=1068, 498.86375pt x 329.23pt>
+ [59
+
+ <./immagini/mean.pdf>]
+<./immagini/flt.pdf, id=1070, 498.86375pt x 329.23pt>
 File: ./immagini/flt.pdf Graphic file (type pdf)
 <use ./immagini/flt.pdf>
 Package pdftex.def Info: ./immagini/flt.pdf  used on input line 22.
 (pdftex.def)             Requested size: 412.56497pt x 272.28624pt.
-<./immagini/pmean.pdf, id=1069, 518.93875pt x 329.23pt>
+<./immagini/pmean.pdf, id=1071, 518.93875pt x 329.23pt>
 File: ./immagini/pmean.pdf Graphic file (type pdf)
 <use ./immagini/pmean.pdf>
 Package pdftex.def Info: ./immagini/pmean.pdf  used on input line 27.
@@ -1891,12 +1876,12 @@ Package pdftex.def Info: ./immagini/pmean.pdf  used on input line 27.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [60 <./immagini/rms.pdf> <./immagini/skw.pdf>]
-<./immagini/prms.pdf, id=1097, 551.05875pt x 329.23pt>
+<./immagini/prms.pdf, id=1098, 551.05875pt x 329.23pt>
 File: ./immagini/prms.pdf Graphic file (type pdf)
 <use ./immagini/prms.pdf>
 Package pdftex.def Info: ./immagini/prms.pdf  used on input line 32.
 (pdftex.def)             Requested size: 412.56497pt x 246.49487pt.
-<./immagini/budget.pdf, id=1098, 1004.75375pt x 643.40375pt>
+<./immagini/budget.pdf, id=1099, 1004.75375pt x 643.40375pt>
 File: ./immagini/budget.pdf Graphic file (type pdf)
 <use ./immagini/budget.pdf>
 Package pdftex.def Info: ./immagini/budget.pdf  used on input line 37.
@@ -1905,24 +1890,24 @@ Package pdftex.def Info: ./immagini/budget.pdf  used on input line 37.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [61 <./immagini/flt.pdf> <./immagini/pmean.pdf>]
-<./immagini/u_spectra.pdf, id=1129, 1028.84375pt x 631.35875pt>
+<./immagini/u_spectra.pdf, id=1130, 1028.84375pt x 631.35875pt>
 File: ./immagini/u_spectra.pdf Graphic file (type pdf)
 <use ./immagini/u_spectra.pdf>
 Package pdftex.def Info: ./immagini/u_spectra.pdf  used on input line 42.
 (pdftex.def)             Requested size: 674.33032pt x 413.81757pt.
-<./immagini/v_spectra.pdf, id=1130, 1028.84375pt x 631.35875pt>
+<./immagini/v_spectra.pdf, id=1131, 1028.84375pt x 631.35875pt>
 File: ./immagini/v_spectra.pdf Graphic file (type pdf)
 <use ./immagini/v_spectra.pdf>
 Package pdftex.def Info: ./immagini/v_spectra.pdf  used on input line 47.
 (pdftex.def)             Requested size: 674.33032pt x 413.81757pt.
-<./immagini/w_spectra.pdf, id=1131, 1028.84375pt x 631.35875pt>
+<./immagini/w_spectra.pdf, id=1132, 1028.84375pt x 631.35875pt>
 File: ./immagini/w_spectra.pdf Graphic file (type pdf)
 <use ./immagini/w_spectra.pdf>
 Package pdftex.def Info: ./immagini/w_spectra.pdf  used on input line 52.
 (pdftex.def)             Requested size: 674.33032pt x 413.81757pt.
  [62 <./immagini/prms.pdf>] [63 <./immagini/budget.pdf>] [64 <./immagini/u_spec
 tra.pdf>] [65 <./immagini/v_spectra.pdf>] [66 <./immagini/w_spectra.pdf>]
-<./immagini/cap_waves.pdf, id=1227, 643.40375pt x 629.35126pt>
+<./immagini/cap_waves.pdf, id=1228, 643.40375pt x 629.35126pt>
 File: ./immagini/cap_waves.pdf Graphic file (type pdf)
 <use ./immagini/cap_waves.pdf>
 Package pdftex.def Info: ./immagini/cap_waves.pdf  used on input line 62.
@@ -1959,7 +1944,7 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 213.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 213.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 213.
 Package rerunfilecheck Info: File `flow36_handbook.out' has not changed.
-(rerunfilecheck)             Checksum: 46FF22F8A592912927FAA5641D2E57CC;8124.
+(rerunfilecheck)             Checksum: 33518A03193E632AF6E11C126428480A;8098.
 
 
 LaTeX Warning: There were multiply-defined labels.
@@ -1967,11 +1952,11 @@ LaTeX Warning: There were multiply-defined labels.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 213.
  ) 
 Here is how much of TeX's memory you used:
- 41051 strings out of 480608
- 944685 string characters out of 5903631
- 1377352 words of memory out of 5000000
+ 41053 strings out of 480608
+ 944707 string characters out of 5903631
+ 1377326 words of memory out of 5000000
  55582 multiletter control sequences out of 15000+600000
- 674102 words of font info for 225 fonts, out of 8000000 for 9000
+ 674185 words of font info for 226 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  68i,25n,98p,1364b,1301s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
@@ -1998,10 +1983,10 @@ l/texlive/2020/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/
 2020/texmf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local/texlive/2020/texmf-
 dist/fonts/type1/public/lm/lmtto10.pfb></usr/local/texlive/2020/texmf-dist/font
 s/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on flow36_handbook.pdf (81 pages, 1386251 bytes).
+Output written on flow36_handbook.pdf (81 pages, 1389280 bytes).
 PDF statistics:
- 1446 PDF objects out of 1728 (max. 8388607)
- 1263 compressed objects within 13 object streams
+ 1447 PDF objects out of 1728 (max. 8388607)
+ 1264 compressed objects within 13 object streams
  281 named destinations out of 1000 (max. 500000)
  42058 words of extra memory for PDF output out of 42996 (max. 10000000)
 

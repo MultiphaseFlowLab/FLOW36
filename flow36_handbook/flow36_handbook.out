@@ -101,7 +101,7 @@
 \BOOKMARK [2][-]{subsection.3.8.1}{General method}{section.3.8}% 101
 \BOOKMARK [2][-]{subsection.3.8.2}{Application to the 4th order equation for }{section.3.8}% 102
 \BOOKMARK [1][-]{section.3.9}{Wall units and outer units}{chapter.3}% 103
-\BOOKMARK [0][-]{chapter.4}{Parallelization, domain decomposition and acceleration}{}% 104
+\BOOKMARK [0][-]{chapter.4}{MPI Parallelization and GPUs}{}% 104
 \BOOKMARK [1][-]{section.4.1}{Parallelization}{chapter.4}% 105
 \BOOKMARK [1][-]{section.4.2}{Slab decomposition}{chapter.4}% 106
 \BOOKMARK [1][-]{section.4.3}{Pencil decomposition}{chapter.4}% 107

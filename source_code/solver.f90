@@ -187,8 +187,8 @@ if(rank.lt.flow_comm_lim)then
 #if phicorflag != 7
  call calculate_phi(hphi)
 #endif 
-! Solving Allen-Cahn equation, 2nd order (phicor 7)
-#if phicorflag == 7
+! Solving Allen-Cahn equation, 2nd order (phicor 7 or 8)
+#if (phicorflag == 7 || phicorflag == 8)
   call calculate_phi_ac(hphi)
 #endif 
 

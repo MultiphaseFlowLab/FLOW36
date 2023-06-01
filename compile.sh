@@ -440,7 +440,7 @@ bc_lb="0" # integer
 phi_flag="1" # integer
 
 # Models selection for phi, different formulations used to improve mass conservation
-# Models 0-6 Cahn-Hilliard is solved (4th order), Model 7 Allen-Cahn is solved (2nd order)
+# Models 0-6 Cahn-Hilliard is solved (4th order), Model 7-8 Allen-Cahn is solved (2nd order)
 # Models Summary
 # 0: OFF
 # 1: profile-corrected
@@ -449,7 +449,8 @@ phi_flag="1" # integer
 # 4: profile-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 5: flux-corrected kill the gradients (filter on gradients lower than threshold 1/(50*Ch)
 # 6: Kwakkel model (A redefined energy functional to prevent mass loss in phase-field methods) Work in progess, do not use in production
-# 7: Conservative Allen-Cahn, Second-order phase-field model (Mirjalili), read the respective user before using it, pe and ch have very different meanings.!!
+# 7: Conservative Allen-Cahn, Second-order phase-field model (Mirjalili), read the respective article before using it, pe and ch have very different meanings.!!
+# 8: Conservative Allen-Cahn, Second-order phase-field model (Jain), read the respective article before using it, pe and ch have very different meanings.!!
 phicor_flag="7" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
@@ -1314,6 +1315,7 @@ if [ "$machine" == "20" ]; then
 sed -i "s/include 'fftw3.f03'/!include 'fftw3.f03'/g" ./set_run/sc_compiled/module.f90
 fi
 
+
 if [[ "$machine" == "7" || "$machine" == "9" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
@@ -1321,7 +1323,7 @@ sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2yz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/yz2xz.f90
 sed -i "s/integer :: number/integer(kind=mpi_address_kind) :: number/g" ./set_run/sc_compiled/initialize_particle.f90
-# PGI compiler does not have isnan
+# Nvfortran (ex-PGI) compiler does not have isnan
 sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
 fi
 

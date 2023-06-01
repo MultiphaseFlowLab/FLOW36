@@ -105,6 +105,7 @@ Always pay attention to the parameter type (integer, real, double, \dots) when e
 \item 5:~Flux-corrected kill the gradients (filter on gradients lower than threshold $0.02*Ch$).
 \item 6:~Curvature-subtracted PFM (A redefined energy functional to prevent mass loss in phase-field methods).
 \item 7:~Conservative Allen-Cahn, Second-order phase-field model (A conservative diffuse interface method for two-phase flows with provable boundedness properties).
+\item 8:~Conservative Allen-Cahn, Second-order phase-field model (Accurate conservative phase-field method for simulation of two-phase flows).
 \end{itemize}
 \item \texttt{lamcorphi}: Coefficient used to tune the profile-correction, to be set only when \texttt{phicor\_flag}=1,2,3,4,5.
 \item \texttt{matchedrho} : if equal to zero the two phases have different densities; if equal to 1 their densities are equal. Warning: this value and the following one must be coherent, otherwise the code will stop (if \texttt{matchedrho}=0, \texttt{rhor} must be different from 1).

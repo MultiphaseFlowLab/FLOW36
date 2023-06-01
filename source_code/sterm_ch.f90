@@ -11,11 +11,12 @@ double precision :: sphi(spx,nz,spy,2),epsnum,mask,epsnum6
 double precision :: modnabphi,normflux,funflux(nz)
 double precision :: mink,maxk
 double precision, allocatable, dimension(:,:,:,:) :: a1,a2,a3
-double precision, allocatable, dimension(:,:,:) :: a1f,convf
+double precision, allocatable, dimension(:,:,:) :: a1f,a2f,a3f,convf
 !use only when phicor_flag !=0 
 double precision, allocatable, dimension(:,:,:) :: phinx,phiny,phinz,phinmod
 double precision, allocatable, dimension(:,:,:) :: a4f,a5f,a6f,nabcf
 double precision, allocatable, dimension(:,:,:,:) :: nabc,a4,a5,a6
+
 
 
 integer :: i,j,k
@@ -1686,9 +1687,13 @@ deallocate(a4,a5,a6)
 
 #endif
 
-#if phicorflag == 8
 
-! Set-up for ACDI revised by Jain
+
+
+#if phicorflag == 8
+! Allen-Cahn, 2nd order phase-field method, conservatvie version of Jain, improved versio of MIrjalili.
+! Used in combination with calculate_phi_ac(hphi), see calculate_var.f90
+! Article: Accurate conservative phase-field method for simulation of two-phase flows
 
 allocate(a1(spx,nz,spy,2))
 allocate(a1f(nx,fpz,fpy))
@@ -1704,6 +1709,7 @@ enddo
 
 call spectral_to_phys(uc,u,1)
 call spectral_to_phys(a1,a1f,1)
+
 
 allocate(convf(nx,fpz,fpy))
 
@@ -1727,6 +1733,7 @@ enddo
 
 call spectral_to_phys(vc,v,1)
 call spectral_to_phys(a1,a1f,1)
+
 
 !$acc parallel loop collapse(3)
 do j=1,fpy
@@ -1760,9 +1767,124 @@ deallocate(convf)
 ! sum all the convective terms to sphi
 sphi= -a1
 
+!Compute the sharpening term
+epsnum=1.e-4
+
+! a1/a1f is the auxiliary function (psi in Jain paper)
+!$acc kernels
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      a1f(i,k,j)=ch*log((phi(i,k,j)+epsnum)/(1.0d0-phi(i,k,j)+epsnum))
+    enddo
+  enddo
+enddo
+!$acc end kernels
+
+call phys_to_spectral(a1f,a1,1)
+
+! to save the gradient of a1f (psi in the paper of Jain)
+allocate(a2(spx,nz,spy,2))
+allocate(a3(spx,nz,spy,2))
+allocate(a4(spx,nz,spy,2))
+
+! X-derivative in spectral of the auxiliary function
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a2(i,:,j,1)=-kx(i+cstart(1))*a1(i,:,j,2)
+    a2(i,:,j,2)= kx(i+cstart(1))*a1(i,:,j,1)
+  enddo
+enddo
+
+! Y-derivative in spectral of the auxiliary function
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a3(i,:,j,1)=-ky(j+cstart(3))*a1(i,:,j,2)
+    a3(i,:,j,2)= ky(j+cstart(3))*a1(i,:,j,1)
+  enddo
+enddo
+
+!Z-derivative in spectral of the auxiliary function
+call dz(a1,a4)
+
+!X,Y,Z-derivative in physical of the auxiliar function
+allocate(a2f(nx,fpz,fpy))
+allocate(a3f(nx,fpz,fpy))
+allocate(a4f(nx,fpz,fpy))
+
+!X,Y,Z-derivative in spectral of the auxiliar function
+call spectral_to_phys(a2,a2f,1)
+call spectral_to_phys(a3,a3f,1)
+call spectral_to_phys(a4,a4f,1)
+
+
+! Normal in physical space
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      modnabphi=max(epsnum,dsqrt(a2f(i,k,j)**2+a3f(i,k,j)**2+a4f(i,k,j)**2))
+      a2f(i,k,j)=a2f(i,k,j)/modnabphi
+      a3f(i,k,j)=a3f(i,k,j)/modnabphi
+      a4f(i,k,j)=a4f(i,k,j)/modnabphi
+    enddo
+  enddo
+enddo
+
+
+
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      a2f(i,k,j)= -0.25d0*(1.0d0 - dtanh(a1f(i,k,j)/2/ch)**2)*a2f(i,k,j)
+      a3f(i,k,j)= -0.25d0*(1.0d0 - dtanh(a1f(i,k,j)/2/ch)**2)*a3f(i,k,j)
+      a4f(i,k,j)= -0.25d0*(1.0d0 - dtanh(a1f(i,k,j)/2/ch)**2)*a4f(i,k,j)
+    enddo
+  enddo
+enddo
+
+call phys_to_spectral(a2f,a2,1)
+call phys_to_spectral(a3f,a3,1)
+call phys_to_spectral(a4f,a4,1)
+
+deallocate(a2f,a3f,a4f)
+allocate(a5(spx,nz,spy,2))
+allocate(a6(spx,nz,spy,2))
+
+!x derivative of correction
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a1(i,:,j,1)=-kx(i+cstart(1))*a2(i,:,j,2)
+    a1(i,:,j,2)=kx(i+cstart(1))*a2(i,:,j,1)
+  enddo
+enddo
+!y derivative of correction
+!$acc parallel loop collapse(2)
+do j=1,spy
+  do i=1,spx
+    a5(i,:,j,1)=-ky(j+cstart(3))*a3(i,:,j,2)
+    a5(i,:,j,2)=ky(j+cstart(3))*a3(i,:,j,1)
+  enddo
+enddo
+!z derivative of correction
+call dz(a4,a6)
+
+deallocate(a2,a4,a1f,a3)
+
+!sum everything to sphi 
+!$acc kernels
+sphi=sphi + 1.0d0/pe*(a1+a5+a6)
+!$acc end kernels
+
+deallocate(a1,a5,a6)
+
+
 
 #endif
-
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

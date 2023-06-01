@@ -1,4 +1,4 @@
-\chapter{Parallelization, domain decomposition and acceleration}
+\chapter{MPI Parallelization and GPUs}
 \label{chap: dom_decomp}
 In this chapter, the parallelization, two possible domain decomposition algorithms and the acceleration strategy will be presented: the slab decomposition and the pencil decomposition. Section \ref{sec: parallelization} presents the general parallelization strategy. 
 Sections \ref{sec: slab} and \ref{sec: pencil} will be dedicated to the detailed explanation of these parallelization strategies, focusing also on their strengths and limitations. 
@@ -8,7 +8,12 @@ Finally, section~\ref{sec: acceleration} will discuss the acceleration strategy 
 
 \section{Parallelization}
 \label{sec: parallelization}
-\textcolor{red}{WIP: Add here details on Eulerian variables, fine grid, Lagrangian particles}
+For the solution of Eulerian fields (flow field, phase-field, surfactant concentration temperature fields), the computational domain is splitted into pencil.
+Each MPI is assigned to a chunk of nodes (see details in the two sections below). MPI transpositions are required every time non-linear terms are computed (i.e. full forward or backward transforms).
+When also the Lagrangian particles is enabled (particles, fibers), the situation is different and depends on the number of nodes considered.
+If running on a single-node, all MPI tasks perform the computations of the Eulerian fields as well as the tracking of the Lagrangian points/entities.
+If running multi-node with $M$ nodes, $M-1$ nodes solve the Eulerian fields while the node$M$ take care of the Lagrangian tracking using the MPI-shared memory feature.
+
 
 \section{Slab decomposition}
 \label{sec: slab}
@@ -132,12 +137,29 @@ $N_{y,cpu}$ & $N_{z,cpu}$& load/core & grid & $t/t_{\textnormal{step}}$ [s] &$t/
 
 \section{Acceleration}
 \label{sec: acceleration}
-\textcolor{red}{WIP: Add here details on acceleration and porting}
 
+When using a GPU-accelerated cluster, the parallelization backbone of the code still relies on a MPI approach; the overall workload is divided among the different MPI tasks using a 2D domain decomposition. 
+On top of the MPI parallelization scheme, CUDA Fortran instructions and OpenACC directives are used to accelerate the code execution. 
+Each MPI task is assigned to a specific GPU and thus to a specific pencil of the domain. 
+All the computationally intensive operations are performed on the GPUs. 
+Specifically, the Nvidia cuFFT libraries are used to perform all the transforms (Fourier and Chebyshev) and the entire solver can be efficiently executed on the GPU thanks to the fine-grain parallelism offered by the numerical scheme (series of 1D independent problems along the wall-normal direction). 
+To limit as much as possible Device to Host (D2H) and Host to Device (H2D) communications, which may hamper code performance, the required MPI communications are performed exploiting the CUDA-awareness capabilities of the MPI libraries when available (e.g., when using MPI Spectrum, OpenMPI, MPICH, etc.). 
+In this way, GPUDirect RDMA technologies can be used to avoid costly D2H and H2D synchronizations.
+The only library required by the GPU version of the code FLOW36 is the Nvidia cuFFT library, which is used to perform all the transforms (Fourier and Chebyshev transforms). 
+This library is part of the standard software stack of the targeted machine (present inside the Nvidia hpc-sdk together with the CUDA-aware version of the MPI libraries).
+Additional details on the bottlenecks of the GPU version and further possible optimizations can found in the git repository of the code.
 
 \section{Profiling}
 \label{sec: profiling}
-\textcolor{red}{WIP: Add here details on acceleration and profiling of the code}
+
+The CPU version of the code can be profiled with any of the tools available (TAU-C, Intel vTune, AMDuProf, etc.).
+AMDuProf is required when using AMD architectures (AMD Rome, Milan, Epic).
+The GPU version of the code can be profiled using the tools provided by Nvidia.
+For better tracking of the different activities, you can enable the NVXT module available at the end of module.f90.
+This module should be decommented (as it is not supported in other compilers).
+Naturally, NVTX is supported only by the Nvfortran (ex-PGI compiler) and results can be visualized using Nvidia Nsight system.
+Support to the NVTX instructions should be enabled via specific compiler options.
+For details on NVTX module see: \url{https://github.com/maxcuda/NVTX_example}.
 
 
 
