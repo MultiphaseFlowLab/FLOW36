@@ -237,9 +237,9 @@ elif [ "$machine" == "16" ]; then
 echo "=                              Marconi-100 (GPU)                             ="
 module purge
 # HPC-SDK + OPENMPI (slower)
-# module load hpc-sdk/2021--binary
+# module load hpc-sdk/2023--binary
 # HPC-SDK + MPI SPECTRUM (faster, M100 optimized)
-module load hpc-sdk/2021--binary
+module load hpc-sdk/2023--binary
 module load spectrum_mpi/10.4.0--binary
 #cp ./Marconi_100/makefile_gpu_openmpi ./makefile
 #cp ./Marconi_100/go_gpu_openmpi.sh ./go.sh
