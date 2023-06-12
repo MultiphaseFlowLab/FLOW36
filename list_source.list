@@ -6,7 +6,6 @@
 ./set_run/sc_compiled/create_plan.f90
 ./set_run/sc_compiled/destroy_plan.f90
 ./set_run/sc_compiled/initialize.f90
-./set_run/sc_compiled/initialize_particle.f90
 ./set_run/sc_compiled/dump_grid.f90
 ./set_run/sc_compiled/write_output.f90
 ./set_run/sc_compiled/write_time.f90
