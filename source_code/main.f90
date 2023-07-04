@@ -36,7 +36,7 @@ integer :: dims(2)
 integer :: g_size(3),s_size(3)
 integer :: fysize(nycpu),fzsize(nzcpu)
 integer :: cysize(nzcpu),cxsize(nycpu)
-integer :: l_comm
+integer :: local_comm
 integer :: numdevices, devicenum
 
 double precision :: stime,etime,dtime,mtime,gstime,getime,time
@@ -131,14 +131,13 @@ if(rank.lt.flow_comm_lim)then
 
 ! assign GPU to rank
 #if openaccflag == 1
-  call acc_set_device_num(devicenum,acc_device_nvidia)
   call mpi_comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,local_comm,ierr)
   call mpi_comm_rank(local_comm,lacc_rank,ierr)
   numdevices=acc_get_num_devices(acc_device_nvidia)
   devicenum=mod(lacc_rank,numdevices)
   call acc_set_device_num(devicenum,acc_device_nvidia)
   ! debug only (to be removed)
-  ! print *, "Num_devices", numdevices, "MPI rank", rank, "Device number", devicenum
+  print *, "Num_devices", numdevices, "MPI rank", rank, "Device number", devicenum
 #endif
 endif
 

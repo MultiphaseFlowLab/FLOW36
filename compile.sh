@@ -304,8 +304,8 @@ elif [ "$machine" == "19" ]; then
 echo "=                                  VSC-5 (CPU)                               ="
 # load modules (SPACK)
 spack unload --all
-module load openmpi/4.1.4-gcc-11.2.0-6aolzu3
-module load fftw/3.3.10-gcc-11.2.0-cxllihw
+module load openmpi/4.1.4-gcc-12.2.0-sugs3ze
+module load fftw/3.3.10-gcc-12.2.0-42q2cmu
 cp ./VSC-5/makefile_cpu ./makefile
 cp ./VSC-5/go_cpu.sh    ./go.sh
 savespectral="0"
@@ -437,7 +437,7 @@ bc_lb="0" # integer
 ################################################################################
 # Phase field only
 # phase field flag, 0: phase field deactivated, 1: phase field activated
-phi_flag="1" # integer
+phi_flag="0" # integer
 
 # Models selection for phi, different formulations used to improve mass conservation
 # Models 0-6 Cahn-Hilliard is solved (4th order), Model 7-8 Allen-Cahn is solved (2nd order)

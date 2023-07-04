@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.3.1)  31 MAY 2023 15:11
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.3.1)  15 JUN 2023 19:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1612,7 +1612,7 @@ LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 45.
  [3] [4] [5] [6] [7]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 184.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 185.
  [8]) (./cap/code_flowchart.tex [9] [10
 
 ]
@@ -1983,7 +1983,7 @@ l/texlive/2020/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/
 2020/texmf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local/texlive/2020/texmf-
 dist/fonts/type1/public/lm/lmtto10.pfb></usr/local/texlive/2020/texmf-dist/font
 s/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on flow36_handbook.pdf (81 pages, 1389280 bytes).
+Output written on flow36_handbook.pdf (81 pages, 1389338 bytes).
 PDF statistics:
  1447 PDF objects out of 1728 (max. 8388607)
  1264 compressed objects within 13 object streams

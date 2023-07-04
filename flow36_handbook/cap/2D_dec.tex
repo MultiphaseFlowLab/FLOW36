@@ -155,9 +155,9 @@ Additional details on the bottlenecks of the GPU version and further possible op
 The CPU version of the code can be profiled with any of the tools available (TAU-C, Intel vTune, AMDuProf, etc.).
 AMDuProf is required when using AMD architectures (AMD Rome, Milan, Epic).
 The GPU version of the code can be profiled using the tools provided by Nvidia.
-For better tracking of the different activities, you can enable the NVXT module available at the end of module.f90.
+For better tracking of the different activities, you can enable the NVTX module available at the end of module.f90.
 This module should be decommented (as it is not supported in other compilers).
-Naturally, NVTX is supported only by the Nvfortran (ex-PGI compiler) and results can be visualized using Nvidia Nsight system.
+Naturally, NVTX is supported only by the nvfortran (ex-PGI compiler) and results can be visualized using Nvidia Nsight system.
 Support to the NVTX instructions should be enabled via specific compiler options.
 For details on NVTX module see: \url{https://github.com/maxcuda/NVTX_example}.
 
