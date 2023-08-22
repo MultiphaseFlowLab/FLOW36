@@ -20,6 +20,8 @@
 #18 : LUMI-C (CSC)
 #19 : VSC-5 (VSC) - CPU Partition
 #20 : VSC-5 (VSC) - GPU Partition
+#21 : Leonardo - CPU Partition
+#22 : Leoanrdo - GPU (Booster)
 machine="0"
 echo ""
 echo "=============================================================================="
@@ -1334,7 +1336,7 @@ sed -i "s/include 'fftw3.f03'/!include 'fftw3.f03'/g" ./set_run/sc_compiled/modu
 fi
 
 
-if [[ "$machine" == "7" || "$machine" == "9" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" ]]; then
+if [[ "$machine" == "7" || "$machine" == "9" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" || "$machine" == "22" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1378,7 +1380,7 @@ echo "                NYCPU=$NYCPU      NZCPU=$NZCPU    NX=$NX     NY=$NY     NZ
 echo ""
 
 # if compiled with Nvidia HPC-SDK, object files should be manually removed
-if [[ "$machine" == "16" || "$machine" == "17" || "$machine" == "20" ]]; then
+if [[ "$machine" == "16" || "$machine" == "17" || "$machine" == "20" || "$machine" == "22" ]]; then
 rm *.o
 fi
 

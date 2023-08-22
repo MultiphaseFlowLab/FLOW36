@@ -1,6 +1,6 @@
-FC    	= mpif90
-LD	    = $(FC)
-RM	    = /bin/rm -f
+FC    	= pgf90
+LD	= $(FC)
+RM	= /bin/rm -f
 FOPTS   = -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess  -module=./set_run/sc_compiled -lnvToolsExt
 FFLAGS  = $(FOPTS)
 #LIBS   = -I$(MPI_PATH) -cudalib=cufft #MPI path if using spectrum
