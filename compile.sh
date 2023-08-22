@@ -321,6 +321,24 @@ cp ./VSC-5/go_gpu.sh    ./go.sh
 savespectral="0"
 openacc_flag="1"
 
+elif [ "$machine" == "21" ]; then
+echo "=                              Leonardo (CPU)                             ="
+module purge
+#module load nvhpc/23.1
+cp ./Leonardo/makefile_cpu ./makefile
+cp ./Leonardo/go_cpu.sh ./go.sh
+savespectral="0"
+openacc_flag="0"
+
+elif [ "$machine" == "22" ]; then
+echo "=                              Leonardo (GPU)                             ="
+module purge
+module load nvhpc/23.1
+cp ./Leonardo/makefile_gpu ./makefile
+cp ./Leonardo/go_gpu.sh ./go.sh
+savespectral="0"
+openacc_flag="1"
+
 fi
 echo "=============================================================================="
 echo ""
