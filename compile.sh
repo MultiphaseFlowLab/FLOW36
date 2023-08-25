@@ -336,6 +336,8 @@ elif [ "$machine" == "22" ]; then
 echo "=                              Leonardo (GPU)                             ="
 module purge
 module load nvhpc/23.1
+module load openmpi/4.1.4--nvhpc--23.1-cuda-11.8
+module list
 cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
 savespectral="0"
@@ -1330,8 +1332,8 @@ sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/s
 sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
 fi
 
-if [ "$machine" == "20" ]; then
-# Using NVHPC on VSC-5, fftw03 is not found.
+if [[ "$machine" == "20" || "$machine" == "22" ]]; then
+# Using NVHPC on VSC-5 and Leonardo, fftw03 is not found (only NVHPC loaded)
 sed -i "s/include 'fftw3.f03'/!include 'fftw3.f03'/g" ./set_run/sc_compiled/module.f90
 fi
 
