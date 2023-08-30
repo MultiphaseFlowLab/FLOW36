@@ -357,9 +357,9 @@ fftw_flag="0"
 # PAY ATTENTION TO VARIABLE TIPE #
 
 # number of grid points (edit only exponent)
-ix="2" # integer
-iy="9" # integer
-iz="9" # integer
+ix="8" # integer
+iy="8" # integer
+iz="8" # integer
 
 # dual grid for surfactant, expansion factors:
 exp_x="1" # integer, (2**ix)*exp_x
@@ -473,7 +473,7 @@ phi_flag="0" # integer
 # 6: Kwakkel model (A redefined energy functional to prevent mass loss in phase-field methods) Work in progess, do not use in production
 # 7: Conservative Allen-Cahn, Second-order phase-field model (Mirjalili), read the respective article before using it, pe and ch have very different meanings.!!
 # 8: Conservative Allen-Cahn, Second-order phase-field model (Jain), read the respective article before using it, pe and ch have very different meanings.!!
-phicor_flag="7" # integer
+phicor_flag="0" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
 # Lam=0.3/Ch (check for spotting at the wall when using refined grids, otherwise relax lambda)
@@ -639,7 +639,6 @@ F="-1.0" # real (double)
 # initial conditons for the temperature
 # 0 : initialize constant temperature (mean_t)
 # 1 : read from data file (parallel read)
-# 2 : phase phi=+1 (hot) and phi=-1 (cold) 
 in_cond_temp="0" # integer
 temp_mean="0.0" # real (double)
 
