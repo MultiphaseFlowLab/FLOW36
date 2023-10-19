@@ -1,0 +1,7 @@
+0              ! start n step, leave -1 to use the first time step
+100000              ! end n step, leave -1 to use the last time step
+2000                ! interval between
+
+1                   ! exp_x
+1                   ! exp_y
+1                   ! exp_z

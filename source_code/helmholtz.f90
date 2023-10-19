@@ -204,7 +204,7 @@ integer :: i,j,k
 
 
 ! assemble diagonals
-!$acc parallel loop collapse(3)
+!$acc parallel loop collapse(2)
 do j=1,spypsi
   do k=3,npsiz
     do i=1,spxpsi
