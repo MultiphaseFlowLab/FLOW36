@@ -135,7 +135,7 @@ $N_{y,cpu}$ & $N_{z,cpu}$& load/core & grid & $t/t_{\textnormal{step}}$ [s] &$t/
 
 
 
-\section{Acceleration}
+\section{GPU-Acceleration}
 \label{sec: acceleration}
 
 When using a GPU-accelerated cluster, the parallelization backbone of the code still relies on a MPI approach; the overall workload is divided among the different MPI tasks using a 2D domain decomposition. 
@@ -148,6 +148,11 @@ In this way, GPUDirect RDMA technologies can be used to avoid costly D2H and H2D
 The only library required by the GPU version of the code FLOW36 is the Nvidia cuFFT library, which is used to perform all the transforms (Fourier and Chebyshev transforms). 
 This library is part of the standard software stack of the targeted machine (present inside the Nvidia hpc-sdk together with the CUDA-aware version of the MPI libraries).
 Additional details on the bottlenecks of the GPU version and further possible optimizations can found in the git repository of the code.
+
+Please refer to github for a detailed report on the GPU-acceleration and its details (see the ISSUES section).
+Ask AR for details on the GPU version, bottlenecks and details of what can and cannot be done.
+The git version is a vanilla implementation using openACC (to mantain the code portable and keep the same structure).
+More performance can be achieved with simple modifications (not implemented at the moment to not break the portability).
 
 \section{Profiling}
 \label{sec: profiling}

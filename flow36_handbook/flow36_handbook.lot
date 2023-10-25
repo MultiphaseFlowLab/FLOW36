@@ -2,9 +2,9 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Boundary conditions\relax }}{40}{table.caption.5}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Boundary conditions\relax }}{42}{table.caption.5}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Strong scaling speed-up calculated with respect to 64 MPI processes case\relax }}{56}{table.caption.9}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Weak scaling time per time step normalized with respect to 64 MPI processes case\relax }}{57}{table.caption.11}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Strong scaling speed-up calculated with respect to 64 MPI processes case\relax }}{58}{table.caption.9}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Weak scaling time per time step normalized with respect to 64 MPI processes case\relax }}{59}{table.caption.11}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Case run for phase field validation\relax }}{67}{table.caption.23}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Case run for phase field validation\relax }}{69}{table.caption.23}%

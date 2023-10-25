@@ -193,3 +193,74 @@ At this point all the source files of the code are copied from the folder \textt
 If the phase field is activated, an input file for the phase field initial condition is created (\texttt{input\_phase\_field.f90}); this input file is different for the differents initial condition that can be chosen.\\
 Lastly all the flags for the conditional compilation are replaced in the copied source files of the code; this way, depending on the parameters choice, the code will be compiled in different ways including or omitting some parts. This is done to avoid unneeded \texttt{if} clauses in the execution of the code as they will reduce performance (especially in \texttt{do} loops). After this step the code will be compiled and all the mdule files will be created in the folder \texttt{set\_run/sc\_compiled}, together with the executable.\\
 If you are running on a local machine, you can leave uncommented the last three lines of the script, such that the \texttt{compile.sh} script will switch to the \texttt{set\_run} folder, run the \texttt{go.sh} file and then switch back to the main folder.
+
+
+
+\section{Compiling the code}
+
+\subsection{Compiling for CPUs}
+To compile and run on CPU-based architectures a complete MPI+FFTW setup is required (i.e. MPI and FFTW libraries installed, along with a Fortran compiler).
+The invoked command for the compilation will be \texttt{mpif90} (deprecated) or \texttt{mpifort} (or similar), this is a call to the MPI compiler wrapper.
+MPI compiler wrappers combine the base compilers (gfortran, ifort, ftn (HPE Cray Compilers), nvfortran (Nvidia), and aocc (AMD)) with MPI and various other libraries to enable the streamlined compilation of scientific applications.
+A MPI parallel code CANNOT be compiled with gfortran (or other compilers) but should be compiled with the respective MPI wrapper.
+The invoked libraries (e.g. MPI or FFTW) should be also included among the list of the modules loaded in the header of the source code. 
+For instance, for MPI, using \texttt{include mpif.h} (deprecated) or \texttt{use mpi} (deprecated) or \texttt{use mpi f08}.
+
+Regarding the MPI libraries, a library complying with the MPI standard 3.0 is required (particles require shared memory capabilities, introduced in 3.0). 
+Remember that in general, the library version indicated by the MPI library vendor (e.g. \texttt{openMPI 5.0}) does not correspond to the MPI library standard (indeed the MPI standard 5.0 does not exist at the moment).
+The code has been tested with MPI libraries from different vendors: openMPI, mpich, IBM-Spectrum (based on openMPI), Intel, Cray.
+Remember that openMPI and openMP are two totally different things (please do not confuse them).
+
+Regarding the FFTW libraries, the path of the \texttt{/include} and \texttt{/lib} folders should be specified in the makefile (unless alias are created).
+Also for this library, the specific module should be specified in the header of the source code.
+The code supports the latest version of FFTW (3.x).
+When using Intel-based machines, the MKL library can be used instead of the FFTW library to perform the FFTs.
+This is automatically done once the respective modules have been loaded (intel-one-api).
+
+
+\subsection{Compiling for GPUs}
+To compile and run on GPU-based architectures (Nvidia only), the Nvidia \texttt{hpc-sdk} toolkit is required.
+The toolkit includes a version of the MPI libraries (openMPI), the Nvidia compiler with support for the openACC directives (nvfortran, ex pgifort) and GPU libraries (cuFFT and many others).
+In some clusters, the compiler and the MPI libraries are located in two different modules and both should be loaded.
+This is because sometimes different MPI libraries are used in combination with the compiler). 
+The GPU-version of the code has been tested using MPI Spectrum and openMPI.
+Also, the only supported compiler is \texttt{nvfortran}.
+
+
+\section{Running the code}
+
+Regardless of the version compiled, to run the code the procedure is slightly different depending if one is using a cluster or a local server/machine.
+
+On HPC clusters, once the code is compiled, a \texttt{go.sh} file is present in the set run folder (the code CANNOT be run directly).
+This file should be double checked (number of nodes, tasks, partitions, time) and then can be submitted to the load manager (usually SLURM) using the \texttt{sbatch} command.
+The modules you have used to compile the code should be also loaded in the \texttt{go.sh} before the call to \texttt{mpirun} or \texttt{srun}.
+The load manager will decide when the job will start an on which nodes.
+The job status can be checked with \texttt{squeue} (see SLURM documentation for options and additional commands).
+The time, number of nodes and partition requested will of course influence the queue time.
+Please check also the machine documentation for information on the specific rules and on which storage space you should run the simulations (home, scratch, work, etc.).
+
+On a local machine/server, the code is automatically executed by the \texttt{compile.sh} (see the last lines where the \texttt{go.sh} file is launched).
+On most local machines, no load manager is present and before executing the code, ONE SHOULD CHECK the machine configuration (number of cores, threads and GPUs) and the actual load.
+This latter aspect can be checked via the \texttt{top} or \texttt{htop} commands.
+Do not load the machine more than 90\%, all the jobs will slow-down drastically (yours as well other people jobs).
+Job status can be checked via the above mentioned commands and can be canceled just killing one of the MPI process with \texttt{kill PID} (where PID is the process ID that can be found executing \texttt{top}).
+Remember to also check the storage available, most machines are based on SSD devices and intensive use can damage them.
+
+
+
+
+\section{Troubleshotting}
+
+A list of common issues along sides with possible solutions is reported in the following list.
+\begin{itemize}
+\item \texttt{mpif90 or mpifort: command not fuound}. The invoked MPI wrapper does not exist, the MPI library has not been installed or linked (or modules not loaded). Try reinstalling the library or load the correct modules. 
+\item \texttt{undefined reference to MPI ****}. The MPI module (header) has not been included or you are trying to use a serial compiler (gfortran, etc.) on a code that use MPI.
+\item \texttt{undefined reference to fft ***}. The FFTW library has not been installed (or the module loaded). Try reinstalling FFTW or loading the correct module.
+\item \texttt{invalid options}. The specified compiling options are not coherent with the invoked compiler (each compiler has its own set of options).
+\item \texttt{error on mpi get address in subroutine **2**.f90}. Known issue with openMPI (all versions) and last version of MPICH. This issue can be readily solved including the machine you are using on the last lines modified in the \texttt{compile.sh} (just before compiling).
+\item \texttt{code crashes at the first time step}. Check the reading of the fields and the endianness of the initial fields. With some MPI libraries (openMPI and latest release of mpich), the MPI data type should be changed from \texttt{internal} to \texttt{native}. This change should be done in \texttt{read fields.f90} and \texttt{write output.f90}.
+\item \texttt{compilation error in initialize particle.f90 related to baseprt}. Known problem, please remove the subroutine from the list of the source code files (file list suource.list).
+\end{itemize}
+
+
+

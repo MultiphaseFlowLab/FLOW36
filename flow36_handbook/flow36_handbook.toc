@@ -6,113 +6,118 @@
 \contentsline {subsection}{\numberline {1.3.1}Parameters declaration}{3}{subsection.1.3.1}%
 \contentsline {subsection}{\numberline {1.3.2}Cleaning of \texttt {set\_run} folder}{9}{subsection.1.3.2}%
 \contentsline {subsection}{\numberline {1.3.3}Copying and editing}{9}{subsection.1.3.3}%
-\contentsline {chapter}{\numberline {2}Code flowchart}{11}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Main code}{11}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}\texttt {FLOW\_36}}{11}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}\texttt {read\_input}}{12}{subsection.2.1.2}%
-\contentsline {subsection}{\numberline {2.1.3}\texttt {define\_sizes}}{12}{subsection.2.1.3}%
-\contentsline {subsection}{\numberline {2.1.4}\texttt {create\_plan}}{13}{subsection.2.1.4}%
-\contentsline {subsection}{\numberline {2.1.5}\texttt {dump\_grid}}{13}{subsection.2.1.5}%
-\contentsline {subsection}{\numberline {2.1.6}\texttt {wave\_numbers}}{13}{subsection.2.1.6}%
-\contentsline {subsection}{\numberline {2.1.7}\texttt {initialize}}{13}{subsection.2.1.7}%
-\contentsline {subsection}{\numberline {2.1.8}\texttt {initialize\_phi}}{14}{subsection.2.1.8}%
-\contentsline {subsubsection}{\numberline {2.1.8.1}\texttt {drop\_2d}}{14}{subsubsection.2.1.8.1}%
-\contentsline {subsubsection}{\numberline {2.1.8.2}\texttt {drop\_3d}}{15}{subsubsection.2.1.8.2}%
-\contentsline {subsubsection}{\numberline {2.1.8.3}\texttt {stratified}}{15}{subsubsection.2.1.8.3}%
-\contentsline {subsubsection}{\numberline {2.1.8.4}\texttt {drop\_array}}{15}{subsubsection.2.1.8.4}%
-\contentsline {subsection}{\numberline {2.1.9}\texttt {write\_failure}}{15}{subsection.2.1.9}%
-\contentsline {subsection}{\numberline {2.1.10}\texttt {write\_output}, \texttt {write\_output\_spectral} and \texttt {write\_output\_recovery}}{15}{subsection.2.1.10}%
-\contentsline {subsection}{\numberline {2.1.11}\texttt {integral\_phi}}{16}{subsection.2.1.11}%
-\contentsline {subsection}{\numberline {2.1.12}\texttt {initialize\_check}}{16}{subsection.2.1.12}%
-\contentsline {subsection}{\numberline {2.1.13}\texttt {sim\_check}}{16}{subsection.2.1.13}%
-\contentsline {subsection}{\numberline {2.1.14}\texttt {destroy} and \texttt {destroy\_phi}}{16}{subsection.2.1.14}%
-\contentsline {subsection}{\numberline {2.1.15}\texttt {destroy\_plan}}{16}{subsection.2.1.15}%
-\contentsline {section}{\numberline {2.2}Solver}{16}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}\texttt {convective\_ns}}{17}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}\texttt {phi\_non\_linear}}{17}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}\texttt {euler}, \texttt {adams\_bashforth}}{17}{subsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.2.4}\texttt {euler\_phi} and \texttt {adams\_bashforth\_phi}}{17}{subsection.2.2.4}%
-\contentsline {subsection}{\numberline {2.2.5}\texttt {euler\_psi} and \texttt {adams\_bashforth\_psi}}{18}{subsection.2.2.5}%
-\contentsline {subsection}{\numberline {2.2.6}\texttt {euler\_theta} and \texttt {adams\_bashforth\_theta}}{18}{subsection.2.2.6}%
-\contentsline {subsection}{\numberline {2.2.7}\texttt {hist\_term}}{18}{subsection.2.2.7}%
-\contentsline {subsection}{\numberline {2.2.8}\texttt {hist\_term\_temp}}{18}{subsection.2.2.8}%
-\contentsline {subsection}{\numberline {2.2.9}\texttt {calculate\_w}}{18}{subsection.2.2.9}%
-\contentsline {subsection}{\numberline {2.2.10}\texttt {calculate\_omega}}{18}{subsection.2.2.10}%
-\contentsline {subsection}{\numberline {2.2.11}\texttt {calculate\_uv}}{18}{subsection.2.2.11}%
-\contentsline {subsection}{\numberline {2.2.12}\texttt {sterm\_ch}}{18}{subsection.2.2.12}%
-\contentsline {subsection}{\numberline {2.2.13}\texttt {sterm\_psi}}{19}{subsection.2.2.13}%
-\contentsline {subsection}{\numberline {2.2.14}\texttt {sterm\_temp}}{19}{subsection.2.2.14}%
-\contentsline {subsection}{\numberline {2.2.15}\texttt {calculate\_phi}}{19}{subsection.2.2.15}%
-\contentsline {subsection}{\numberline {2.2.16}\texttt {calculate\_phi\_ac}}{19}{subsection.2.2.16}%
-\contentsline {subsection}{\numberline {2.2.17}\texttt {calculate\_psi}}{19}{subsection.2.2.17}%
-\contentsline {subsection}{\numberline {2.2.18}\texttt {calculate\_theta}}{20}{subsection.2.2.18}%
-\contentsline {subsection}{\numberline {2.2.19}\texttt {courant\_check}}{20}{subsection.2.2.19}%
-\contentsline {subsection}{\numberline {2.2.20}\texttt {dz} and \texttt {dz\_red}}{20}{subsection.2.2.20}%
-\contentsline {subsection}{\numberline {2.2.21}\texttt {dz\_fg}}{20}{subsection.2.2.21}%
-\contentsline {subsection}{\numberline {2.2.22}\texttt {helmholtz}, \texttt {helmholtz\_red} and \texttt {helmholtz\_rred}}{20}{subsection.2.2.22}%
-\contentsline {subsection}{\numberline {2.2.23}\texttt {helmholtz\_fg}}{20}{subsection.2.2.23}%
-\contentsline {subsection}{\numberline {2.2.24}\texttt {gauss\_solver}, \texttt {gauss\_solver\_red} and \texttt {gauss\_solver\_rred}}{20}{subsection.2.2.24}%
-\contentsline {section}{\numberline {2.3}Transforms}{20}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}\texttt {phys\_to\_spectral}}{21}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}\texttt {phys\_to\_spectral\_fg}}{21}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}\texttt {fftx\_fwd}}{21}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}\texttt {fftx\_fwd\_fg}}{21}{subsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.3.5}\texttt {yz2xz}}{21}{subsection.2.3.5}%
-\contentsline {subsection}{\numberline {2.3.6}\texttt {yz2xz\_fg}}{21}{subsection.2.3.6}%
-\contentsline {subsection}{\numberline {2.3.7}\texttt {ffty\_fwd}}{22}{subsection.2.3.7}%
-\contentsline {subsection}{\numberline {2.3.8}\texttt {xz2xy}}{22}{subsection.2.3.8}%
-\contentsline {subsection}{\numberline {2.3.9}\texttt {xz2xy\_fg}}{22}{subsection.2.3.9}%
-\contentsline {subsection}{\numberline {2.3.10}\texttt {dctz\_fwd}}{22}{subsection.2.3.10}%
-\contentsline {subsection}{\numberline {2.3.11}\texttt {dctz\_fwd\_fg}}{22}{subsection.2.3.11}%
-\contentsline {subsection}{\numberline {2.3.12}\texttt {spectral\_to\_phys}}{22}{subsection.2.3.12}%
-\contentsline {subsection}{\numberline {2.3.13}\texttt {spectral\_to\_phys\_fg}}{23}{subsection.2.3.13}%
-\contentsline {subsection}{\numberline {2.3.14}\texttt {dctz\_bwd}}{23}{subsection.2.3.14}%
-\contentsline {subsection}{\numberline {2.3.15}\texttt {dctz\_bwd\_fg}}{23}{subsection.2.3.15}%
-\contentsline {subsection}{\numberline {2.3.16}\texttt {xy2xz}}{23}{subsection.2.3.16}%
-\contentsline {subsection}{\numberline {2.3.17}\texttt {xy2xz\_fg}}{23}{subsection.2.3.17}%
-\contentsline {subsection}{\numberline {2.3.18}\texttt {ffty\_bwd}}{23}{subsection.2.3.18}%
-\contentsline {subsection}{\numberline {2.3.19}\texttt {ffty\_bwd\_fg}}{23}{subsection.2.3.19}%
-\contentsline {subsection}{\numberline {2.3.20}\texttt {xz2yz}}{24}{subsection.2.3.20}%
-\contentsline {subsection}{\numberline {2.3.21}\texttt {xz2yz\_fg}}{24}{subsection.2.3.21}%
-\contentsline {subsection}{\numberline {2.3.22}\texttt {fftx\_bwd}}{24}{subsection.2.3.22}%
-\contentsline {subsection}{\numberline {2.3.23}\texttt {fftx\_bwd\_fg}}{24}{subsection.2.3.23}%
-\contentsline {section}{\numberline {2.4}Statistic calculation}{24}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}\texttt {initialize\_stats}}{24}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}\texttt {del\_old\_stats}}{24}{subsection.2.4.2}%
-\contentsline {subsection}{\numberline {2.4.3}\texttt {statistics}}{25}{subsection.2.4.3}%
-\contentsline {subsection}{\numberline {2.4.4}\texttt {mean\_calc}}{25}{subsection.2.4.4}%
-\contentsline {subsection}{\numberline {2.4.5}\texttt {budget\_calc}}{25}{subsection.2.4.5}%
-\contentsline {subsection}{\numberline {2.4.6}\texttt {sterm\_pressure}}{25}{subsection.2.4.6}%
-\contentsline {subsection}{\numberline {2.4.7}\texttt {power\_spectra}}{25}{subsection.2.4.7}%
-\contentsline {section}{\numberline {2.5}Modules}{25}{section.2.5}%
-\contentsline {chapter}{\numberline {3}Numerical method}{33}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Problem description}{33}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Single phase flow}{33}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Phase Field Model}{36}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Cahn--Hilliard equation}{37}{subsection.3.3.1}%
-\contentsline {section}{\numberline {3.4}Boundary conditions}{39}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}No--slip condition}{39}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Free--slip condition}{39}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}Recap of the boundary conditions for the Navier--Stokes equation}{40}{subsection.3.4.3}%
-\contentsline {subsection}{\numberline {3.4.4}Closed channel and open channel}{40}{subsection.3.4.4}%
-\contentsline {section}{\numberline {3.5}Pseudospectral spatial discretization}{41}{section.3.5}%
-\contentsline {section}{\numberline {3.6}Time discretization}{42}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Dealiasing}{43}{subsection.3.6.1}%
-\contentsline {section}{\numberline {3.7}Chebyshev--Tau method}{44}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}General method}{44}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Application to the 2$^{nd}$ order equation for vorticity}{45}{subsection.3.7.2}%
-\contentsline {subsection}{\numberline {3.7.3}Application to the 4$^{th}$ order equation for velocity}{47}{subsection.3.7.3}%
-\contentsline {section}{\numberline {3.8}Influence matrix}{47}{section.3.8}%
-\contentsline {subsection}{\numberline {3.8.1}General method}{47}{subsection.3.8.1}%
-\contentsline {subsection}{\numberline {3.8.2}Application to the 4$^{th}$ order equation for $\hat w$}{49}{subsection.3.8.2}%
-\contentsline {section}{\numberline {3.9}Wall units and outer units}{51}{section.3.9}%
-\contentsline {chapter}{\numberline {4}MPI Parallelization and GPUs}{53}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Parallelization}{53}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Slab decomposition}{53}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Pencil decomposition}{54}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Domain decomposition strategies benchmark}{55}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Acceleration}{57}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Profiling}{58}{section.4.6}%
-\contentsline {chapter}{\numberline {5}Code validation}{59}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Single phase validation}{59}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Phase field validation}{67}{section.5.2}%
+\contentsline {section}{\numberline {1.4}Compiling the code}{9}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Compiling for CPUs}{9}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Compiling for GPUs}{10}{subsection.1.4.2}%
+\contentsline {section}{\numberline {1.5}Running the code}{10}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Troubleshotting}{11}{section.1.6}%
+\contentsline {chapter}{\numberline {2}Code flowchart}{13}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Main code}{13}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}\texttt {FLOW\_36}}{13}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}\texttt {read\_input}}{14}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}\texttt {define\_sizes}}{14}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}\texttt {create\_plan}}{15}{subsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.1.5}\texttt {dump\_grid}}{15}{subsection.2.1.5}%
+\contentsline {subsection}{\numberline {2.1.6}\texttt {wave\_numbers}}{15}{subsection.2.1.6}%
+\contentsline {subsection}{\numberline {2.1.7}\texttt {initialize}}{15}{subsection.2.1.7}%
+\contentsline {subsection}{\numberline {2.1.8}\texttt {initialize\_phi}}{16}{subsection.2.1.8}%
+\contentsline {subsubsection}{\numberline {2.1.8.1}\texttt {drop\_2d}}{16}{subsubsection.2.1.8.1}%
+\contentsline {subsubsection}{\numberline {2.1.8.2}\texttt {drop\_3d}}{17}{subsubsection.2.1.8.2}%
+\contentsline {subsubsection}{\numberline {2.1.8.3}\texttt {stratified}}{17}{subsubsection.2.1.8.3}%
+\contentsline {subsubsection}{\numberline {2.1.8.4}\texttt {drop\_array}}{17}{subsubsection.2.1.8.4}%
+\contentsline {subsection}{\numberline {2.1.9}\texttt {write\_failure}}{17}{subsection.2.1.9}%
+\contentsline {subsection}{\numberline {2.1.10}\texttt {write\_output}, \texttt {write\_output\_spectral} and \texttt {write\_output\_recovery}}{17}{subsection.2.1.10}%
+\contentsline {subsection}{\numberline {2.1.11}\texttt {integral\_phi}}{18}{subsection.2.1.11}%
+\contentsline {subsection}{\numberline {2.1.12}\texttt {initialize\_check}}{18}{subsection.2.1.12}%
+\contentsline {subsection}{\numberline {2.1.13}\texttt {sim\_check}}{18}{subsection.2.1.13}%
+\contentsline {subsection}{\numberline {2.1.14}\texttt {destroy} and \texttt {destroy\_phi}}{18}{subsection.2.1.14}%
+\contentsline {subsection}{\numberline {2.1.15}\texttt {destroy\_plan}}{18}{subsection.2.1.15}%
+\contentsline {section}{\numberline {2.2}Solver}{18}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}\texttt {convective\_ns}}{19}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}\texttt {phi\_non\_linear}}{19}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}\texttt {euler}, \texttt {adams\_bashforth}}{19}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}\texttt {euler\_phi} and \texttt {adams\_bashforth\_phi}}{19}{subsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.2.5}\texttt {euler\_psi} and \texttt {adams\_bashforth\_psi}}{20}{subsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.2.6}\texttt {euler\_theta} and \texttt {adams\_bashforth\_theta}}{20}{subsection.2.2.6}%
+\contentsline {subsection}{\numberline {2.2.7}\texttt {hist\_term}}{20}{subsection.2.2.7}%
+\contentsline {subsection}{\numberline {2.2.8}\texttt {hist\_term\_temp}}{20}{subsection.2.2.8}%
+\contentsline {subsection}{\numberline {2.2.9}\texttt {calculate\_w}}{20}{subsection.2.2.9}%
+\contentsline {subsection}{\numberline {2.2.10}\texttt {calculate\_omega}}{20}{subsection.2.2.10}%
+\contentsline {subsection}{\numberline {2.2.11}\texttt {calculate\_uv}}{20}{subsection.2.2.11}%
+\contentsline {subsection}{\numberline {2.2.12}\texttt {sterm\_ch}}{20}{subsection.2.2.12}%
+\contentsline {subsection}{\numberline {2.2.13}\texttt {sterm\_psi}}{21}{subsection.2.2.13}%
+\contentsline {subsection}{\numberline {2.2.14}\texttt {sterm\_temp}}{21}{subsection.2.2.14}%
+\contentsline {subsection}{\numberline {2.2.15}\texttt {calculate\_phi}}{21}{subsection.2.2.15}%
+\contentsline {subsection}{\numberline {2.2.16}\texttt {calculate\_phi\_ac}}{21}{subsection.2.2.16}%
+\contentsline {subsection}{\numberline {2.2.17}\texttt {calculate\_psi}}{21}{subsection.2.2.17}%
+\contentsline {subsection}{\numberline {2.2.18}\texttt {calculate\_theta}}{22}{subsection.2.2.18}%
+\contentsline {subsection}{\numberline {2.2.19}\texttt {courant\_check}}{22}{subsection.2.2.19}%
+\contentsline {subsection}{\numberline {2.2.20}\texttt {dz} and \texttt {dz\_red}}{22}{subsection.2.2.20}%
+\contentsline {subsection}{\numberline {2.2.21}\texttt {dz\_fg}}{22}{subsection.2.2.21}%
+\contentsline {subsection}{\numberline {2.2.22}\texttt {helmholtz}, \texttt {helmholtz\_red} and \texttt {helmholtz\_rred}}{22}{subsection.2.2.22}%
+\contentsline {subsection}{\numberline {2.2.23}\texttt {helmholtz\_fg}}{22}{subsection.2.2.23}%
+\contentsline {subsection}{\numberline {2.2.24}\texttt {gauss\_solver}, \texttt {gauss\_solver\_red} and \texttt {gauss\_solver\_rred}}{22}{subsection.2.2.24}%
+\contentsline {section}{\numberline {2.3}Transforms}{22}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}\texttt {phys\_to\_spectral}}{23}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}\texttt {phys\_to\_spectral\_fg}}{23}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}\texttt {fftx\_fwd}}{23}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}\texttt {fftx\_fwd\_fg}}{23}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}\texttt {yz2xz}}{23}{subsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.3.6}\texttt {yz2xz\_fg}}{23}{subsection.2.3.6}%
+\contentsline {subsection}{\numberline {2.3.7}\texttt {ffty\_fwd}}{24}{subsection.2.3.7}%
+\contentsline {subsection}{\numberline {2.3.8}\texttt {xz2xy}}{24}{subsection.2.3.8}%
+\contentsline {subsection}{\numberline {2.3.9}\texttt {xz2xy\_fg}}{24}{subsection.2.3.9}%
+\contentsline {subsection}{\numberline {2.3.10}\texttt {dctz\_fwd}}{24}{subsection.2.3.10}%
+\contentsline {subsection}{\numberline {2.3.11}\texttt {dctz\_fwd\_fg}}{24}{subsection.2.3.11}%
+\contentsline {subsection}{\numberline {2.3.12}\texttt {spectral\_to\_phys}}{24}{subsection.2.3.12}%
+\contentsline {subsection}{\numberline {2.3.13}\texttt {spectral\_to\_phys\_fg}}{25}{subsection.2.3.13}%
+\contentsline {subsection}{\numberline {2.3.14}\texttt {dctz\_bwd}}{25}{subsection.2.3.14}%
+\contentsline {subsection}{\numberline {2.3.15}\texttt {dctz\_bwd\_fg}}{25}{subsection.2.3.15}%
+\contentsline {subsection}{\numberline {2.3.16}\texttt {xy2xz}}{25}{subsection.2.3.16}%
+\contentsline {subsection}{\numberline {2.3.17}\texttt {xy2xz\_fg}}{25}{subsection.2.3.17}%
+\contentsline {subsection}{\numberline {2.3.18}\texttt {ffty\_bwd}}{25}{subsection.2.3.18}%
+\contentsline {subsection}{\numberline {2.3.19}\texttt {ffty\_bwd\_fg}}{25}{subsection.2.3.19}%
+\contentsline {subsection}{\numberline {2.3.20}\texttt {xz2yz}}{26}{subsection.2.3.20}%
+\contentsline {subsection}{\numberline {2.3.21}\texttt {xz2yz\_fg}}{26}{subsection.2.3.21}%
+\contentsline {subsection}{\numberline {2.3.22}\texttt {fftx\_bwd}}{26}{subsection.2.3.22}%
+\contentsline {subsection}{\numberline {2.3.23}\texttt {fftx\_bwd\_fg}}{26}{subsection.2.3.23}%
+\contentsline {section}{\numberline {2.4}Statistic calculation}{26}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}\texttt {initialize\_stats}}{26}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}\texttt {del\_old\_stats}}{26}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}\texttt {statistics}}{27}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}\texttt {mean\_calc}}{27}{subsection.2.4.4}%
+\contentsline {subsection}{\numberline {2.4.5}\texttt {budget\_calc}}{27}{subsection.2.4.5}%
+\contentsline {subsection}{\numberline {2.4.6}\texttt {sterm\_pressure}}{27}{subsection.2.4.6}%
+\contentsline {subsection}{\numberline {2.4.7}\texttt {power\_spectra}}{27}{subsection.2.4.7}%
+\contentsline {section}{\numberline {2.5}Modules}{27}{section.2.5}%
+\contentsline {chapter}{\numberline {3}Numerical method}{35}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Problem description}{35}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Single phase flow}{35}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Phase Field Model}{38}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Cahn--Hilliard equation}{39}{subsection.3.3.1}%
+\contentsline {section}{\numberline {3.4}Boundary conditions}{41}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}No--slip condition}{41}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Free--slip condition}{41}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Recap of the boundary conditions for the Navier--Stokes equation}{42}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Closed channel and open channel}{42}{subsection.3.4.4}%
+\contentsline {section}{\numberline {3.5}Pseudospectral spatial discretization}{43}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Time discretization}{44}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Dealiasing}{45}{subsection.3.6.1}%
+\contentsline {section}{\numberline {3.7}Chebyshev--Tau method}{46}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}General method}{46}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Application to the 2$^{nd}$ order equation for vorticity}{47}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Application to the 4$^{th}$ order equation for velocity}{49}{subsection.3.7.3}%
+\contentsline {section}{\numberline {3.8}Influence matrix}{49}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}General method}{49}{subsection.3.8.1}%
+\contentsline {subsection}{\numberline {3.8.2}Application to the 4$^{th}$ order equation for $\hat w$}{51}{subsection.3.8.2}%
+\contentsline {section}{\numberline {3.9}Wall units and outer units}{53}{section.3.9}%
+\contentsline {chapter}{\numberline {4}MPI Parallelization and GPUs}{55}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Parallelization}{55}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Slab decomposition}{55}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Pencil decomposition}{56}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Domain decomposition strategies benchmark}{57}{section.4.4}%
+\contentsline {section}{\numberline {4.5}GPU-Acceleration}{59}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Profiling}{60}{section.4.6}%
+\contentsline {chapter}{\numberline {5}Code validation}{61}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Single phase validation}{61}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Phase field validation}{69}{section.5.2}%
