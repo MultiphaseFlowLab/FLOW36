@@ -6,7 +6,8 @@ MP      =
 OLEVEL  = -O3
 FOPTS   = -mcmodel=medium -ffixed-line-length-140 -fno-align-commons -fbounds-check -Wall -cpp -J ./set_run/sc_compiled
 FFLAGS  = $(FOPTS) $(OLEVEL)
-LIBS    =  -I/gpfs/opt/sw/spack-0.17.1/opt/spack/linux-almalinux8-zen3/gcc-11.2.0/fftw-3.3.10-v3g4khag335uaretk3liam4rwzzyexuo/include -L/gpfs/opt/sw/spack-0.17.1/opt/spack/linux-almalinux8-zen3/gcc-11.2.0/fftw-3.3.10-v3g4khag335uaretk3liam4rwzzyexuo/lib  -lfftw3 -lm -ldl
+LIBS    = -I/gpfs/opt/sw/zen/spack-0.19.0/opt/spack/linux-almalinux8-zen3/gcc-12.2.0/fftw-3.3.10-xgvooarr6j74cfhghxyyvvk7z4jxuboz/include -L//gpfs/opt/sw/zen/spack-0.19.0/opt/spack/linux-almalinux8-zen3/gcc-12.2.0/fftw-3.3.10-xgvooarr6j74cfhghxyyvvk7z4jxuboz/lib   -lfftw3 -lm -ldl
+
 
 LDFLAGS = $(FOPTS) $(OLEVEL)
 PROF    =

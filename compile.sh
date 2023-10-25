@@ -306,8 +306,10 @@ elif [ "$machine" == "19" ]; then
 echo "=                                  VSC-5 (CPU)                               ="
 # load modules (SPACK)
 spack unload --all
-module load openmpi/4.1.4-gcc-12.2.0-sugs3ze
-module load fftw/3.3.10-gcc-12.2.0-42q2cmu
+spack unload --all
+spack load gcc@12.2.0
+spack load mpich@4.1.1
+spack load /xgvooar
 cp ./VSC-5/makefile_cpu ./makefile
 cp ./VSC-5/go_cpu.sh    ./go.sh
 savespectral="0"
