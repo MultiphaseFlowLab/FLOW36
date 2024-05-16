@@ -337,8 +337,8 @@ openacc_flag="0"
 elif [ "$machine" == "22" ]; then
 echo "=                              Leonardo (GPU)                             ="
 module purge
-module load nvhpc/23.1
-module load openmpi/4.1.4--nvhpc--23.1-cuda-11.8
+module load nvhpc/23.11
+module load openmpi/4.1.6--nvhpc--23.11
 module list
 cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
