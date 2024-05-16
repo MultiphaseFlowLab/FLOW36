@@ -14,8 +14,8 @@ export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 # load modules
 module purge
-module load nvhpc/23.1
-module load openmpi/4.1.4--nvhpc--23.1-cuda-11.8
+module load nvhpc/23.11
+module load module load nvhpc/23.11
 
 #if using HPC-SDK, CUDA-aware already enabled):
 mpirun -n NUMTASKS --map-by socket ./sc_compiled/flow36
