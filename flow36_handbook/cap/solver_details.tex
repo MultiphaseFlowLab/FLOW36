@@ -140,28 +140,28 @@ $\kappa$ is the chemical potential and is defined as $\kappa=\phi^3-\phi-\Ch^2\n
 $\widetilde{\sigma}$ is the dimensional surface tension, $\varepsilon$ is a measure of the interface thickness and $h$ is the channel half height.\\
 Density and viscosity are made dimensionless using the values of the phase with $\phi=-1$.
 \[
-\rho=1+\frac{\alpha-1}{2}(\phi+1)
+\rho=1+\frac{\rho_r-1}{2}(\phi+1)
 \]
 \[
-\mu=1+\frac{\beta-1}{2}(\phi+1)
+\mu=1+\frac{\mu_r-1}{2}(\phi+1)
 \]
 $\alpha$ and $\beta$ are the density and the viscosity ratio, respectively.
 \[
-\alpha=\frac{\rho_{\phi=+1}}{\rho_{\phi=-1}}=\frac{\rho_+}{\rho_-}
+\rho_r=\frac{\rho_{\phi=+1}}{\rho_{\phi=-1}}=\frac{\rho_2}{\rho_1}
 \]
 \[
-\beta=\frac{\mu_{\phi=+1}}{\mu_{\phi=-1}}=\frac{\mu_+}{\mu_-}
+\mu_r=\frac{\mu_{\phi=+1}}{\mu_{\phi=-1}}=\frac{\mu_2}{\mu_1}
 \]
 It can be seen that $\rho$ and $\mu$ can be split easily in a constant part and in a $\phi$ dependent part.\\
 With the introduction of phase field and this definition for the density and the viscosity, the Navier--Stokes solving procedure is unchanged: the only change is in the non-linear term, to which other parts are added. The new Navier--Stokes non-linear term thus results in:
 \[
 \begin{split}
-\mathbf{S}=&-\frac{\alpha-1}{2}(\phi+1)\frac{\de\mathbf{u}}{\de t}-\left(1+\frac{\alpha-1}{2}(\phi+1)\right)\mathbf{u}\cdot\nabla\mathbf{u}-\Pi+ \\
-& +\frac{1}{\Re_\tau}\nabla\cdot\left(\frac{\beta-1}{2}(\phi+1)(\nabla\mathbf{u}+\nabla\mathbf{u}^T)\right)+\\
-&+\frac{1}{\Fr^2}\left(1+\frac{\alpha-1}{2}(\phi+1)\right)\mathbf{g}+\dfrac{3}{\sqrt{8}}\dfrac{1}{\We\Ch}\kappa\nabla\phi
+\mathbf{S}=&-\frac{\rho_r-1}{2}(\phi+1)\frac{\de\mathbf{u}}{\de t}-\left(1+\frac{\rho_r-1}{2}(\phi+1)\right)\mathbf{u}\cdot\nabla\mathbf{u}-\Pi+ \\
+& +\frac{1}{\Re_\tau}\nabla\cdot\left(\frac{\mu_r-1}{2}(\phi+1)(\nabla\mathbf{u}+\nabla\mathbf{u}^T)\right)+\\
+&+\frac{1}{\Fr^2}\left(1+\frac{\rho_r-1}{2}(\phi+1)\right)\mathbf{g}+\frac{3}{\sqrt{8}}\frac{Ch}{We}\nabla\cdot\left( \overline{\tau}_c f_\sigma (\psi) \right) \, ;
 \end{split}
 \]
-For the the matched densities case $\alpha$ is equal to 1, so the time derivative term, the gravity and buoyancy terms and part of the convective terms vanish; for the matched viscosities case $\beta$ is equal to 1 and the viscous term in $\mathbf{S}$ vanishes.\\
+For the the matched densities case $\rho_r$ is equal to 1, so the time derivative term, the gravity and buoyancy terms and part of the convective terms vanish; for the matched viscosities case $\mu_r$ is equal to 1 and the viscous term in $\mathbf{S}$ vanishes.\\
 Thus, for the case of two phases with matched densities and viscosities the only added term to the original Navier--Stokes non-linear term is the surface force term.\\
 Once intrduced these new terms in the non-linear part of the equation, the solution algorithm is the same for the single phase case.
 

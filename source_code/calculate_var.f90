@@ -408,18 +408,22 @@ integer :: i,j
 
 gammapsi=dt*P_i/pe_psi
 
+!$acc kernels
 hpsi=-hpsi/gammapsi
+!$acc end kernels
 
+!$acc kernels
 do j=1,spypsi
   do i=1,spxpsi
     beta2(i,j)=1.0d0/gammapsi+k2psi(i+cstartpsi(1),j+cstartpsi(3))
   enddo
 enddo
 
-
 call helmholtz_fg(hpsi,beta2,[0.0d0,0.0d0],[1.0d0,1.0d0],[0.0d0,0.0d0],zp)
 
+!$acc kernels
 psic_fg=hpsi
+!$acc end kernels
 
 
 return

@@ -1,4 +1,4 @@
-\babel@toc {english}{}
+\babel@toc {english}{}\relax 
 \contentsline {chapter}{\numberline {1}Getting started}{1}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Output of a simulation}{2}{section.1.1}%
 \contentsline {section}{\numberline {1.2}Post-processing}{3}{section.1.2}%

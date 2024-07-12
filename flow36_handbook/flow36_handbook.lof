@@ -1,4 +1,4 @@
-\babel@toc {english}{}
+\babel@toc {english}{}\relax 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {2.1}{\ignorespaces Scheme of main program \texttt {FLOW\_36}. xxx stands for a generic field (e.g. phase-field, surfactant field, temperature)\relax }}{32}{figure.caption.2}%
@@ -7,7 +7,7 @@
 \contentsline {figure}{\numberline {3.1}{\ignorespaces Sketch of the domain\relax }}{35}{figure.caption.4}%
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {4.1}{\ignorespaces Slab decomposition, MPI processes numbering\relax }}{56}{figure.caption.6}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{56}{figure.caption.7}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{57}{figure.caption.7}%
 \contentsline {figure}{\numberline {4.3}{\ignorespaces Strong scalability\relax }}{58}{figure.caption.8}%
 \contentsline {figure}{\numberline {4.4}{\ignorespaces Weak scalability\relax }}{59}{figure.caption.10}%
 \addvspace {10\p@ }
