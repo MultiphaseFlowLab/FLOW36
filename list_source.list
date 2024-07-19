@@ -1,5 +1,5 @@
-./set_run/sc_compiled/main.f90
 ./set_run/sc_compiled/module.f90
+./set_run/sc_compiled/main.f90
 ./set_run/sc_compiled/read_input.f90
 ./set_run/sc_compiled/print_start.f90
 ./set_run/sc_compiled/define_sizes.f90
