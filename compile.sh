@@ -337,8 +337,8 @@ openacc_flag="0"
 elif [ "$machine" == "22" ]; then
 echo "=                              Leonardo (GPU)                             ="
 module purge
-module load nvhpc/23.11
-module load openmpi/4.1.6--nvhpc--23.11
+module load nvhpc/24.3
+module load openmpi/4.1.6--nvhpc--24.3
 module list
 cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
@@ -396,7 +396,7 @@ nt_restart="0" # integer
 incond="0" # integer
 
 # Reynolds number
-Re="220.0" # real (double)
+Re="150.0" # real (double)
 
 # Courant number
 Co="0.2" # real (double)
@@ -420,7 +420,7 @@ nstart="0" # integer
 nend="10" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="1" # integer
+dump="10" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer

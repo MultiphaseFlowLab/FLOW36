@@ -4,7 +4,7 @@ RM	= /bin/rm -f
 FOPTS   = -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess  -module=./set_run/sc_compiled -lnvToolsExt
 FFLAGS  = $(FOPTS) -Wl,--no-relax
 #LIBS   = -I$(MPI_PATH) -cudalib=cufft #MPI path if using spectrum
-LIBS    = -L${NVHPC_HOME}/Linux_x86_64/23.11/math_libs/lib64 -lcufft
+LIBS    = -L${NVHPC_HOME}/Linux_x86_64/24.3/math_libs/lib64 -lcufft
 LDFLAGS	= $(FOPTS)
 
 FLWOBJS =  $(shell cat list_source.list)

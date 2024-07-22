@@ -418,6 +418,7 @@ do j=1,spypsi
     beta2(i,j)=1.0d0/gammapsi+k2psi(i+cstartpsi(1),j+cstartpsi(3))
   enddo
 enddo
+!$acc end kernels
 
 call helmholtz_fg(hpsi,beta2,[0.0d0,0.0d0],[1.0d0,1.0d0],[0.0d0,0.0d0],zp)
 
