@@ -79,9 +79,9 @@ If GPU-acceleration is used, cuFFT does not have this option and the default alg
 \item \texttt{restart} : if equal to 0 the simulation is a new simulation, otherwise a previous simulation is restarted. When restarting a new simulation the code will automatically set the proper initial conditions for the flow field and for the phase field (if active). All the other parameters can be modified freely. The \texttt{restart} flag determines also which files will be kept and which deleted (please refer to Section \ref{sec: restart} for a complete description).
 \item \texttt{nt\_restart} : time step from which restarting the simulation; the code will thus read the corresponding flow (and phase) fields.
 \end{itemize}
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
 {\bf Navier-Stokes parameters}\\
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 \begin{itemize}[label={$\circ$}]
 \item \texttt{incond} : defines which is the initial condition of the simulation. The complete list of initial condition are reported in the \texttt{compile.sh} script. Some examples are:
 \begin{itemize}
@@ -115,9 +115,9 @@ If GPU-acceleration is used, cuFFT does not have this option and the default alg
 \item \texttt{bc\_upb} : boundary conditions on the upper wall, if 0 applies no-slip condition, if 1 applies free-slip condition.
 \item \texttt{bc\_lb} : boundary conditions on the lower wall, if 0 applies no-slip condition, if 1 applies free-slip condition.
 \end{itemize}
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
 {\bf Phase field parameters}\\
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 \begin{itemize}[label={$\circ$}]
 \item \texttt{phi\_flag} : if equal to 0 the phase field part is deactivated and the Cahn--Hilliard equation will not be solved; if equal to 1 the phase field part is activated and the Cahn--Hilliard equation is solved. 
 All the following parameters are used only when the phase field is activated.
@@ -177,9 +177,9 @@ All the following parameters are used only when the phase field is activated.
 \item 2 : only buoyancy effects
 \end{itemize}
 \end{itemize}
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
 {\bf Surfactant parameters}\\
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 \begin{itemize}[label={$\circ$}]
 \item \texttt{psi\_flag} : Enables solution of the CH-like equation for the surfactant (second order)
 \item \texttt{Pe\_psi}: Surfactant Peclet number.
@@ -198,9 +198,9 @@ All the following parameters are used only when the phase field is activated.
 \item \texttt{psi\_mean}: Average surfactant concentration.
 \item \texttt{psi\_bulk}: Bulk surfactant concentration.
 \end{itemize}
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
 {\bf Energy equation parameters}\\
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 \begin{itemize}[label={$\circ$}]
 \item \texttt{temp\_flag} : Enables solution of the energy equation (temperature).
 \item \texttt{Ra}: Rayleigh number; for Rayleigh-Benard chose $Re=\sqrt{Ra*Pr}/4$.
@@ -215,9 +215,9 @@ All the following parameters are used only when the phase field is activated.
 \item \texttt{boussinesq}: Activate buoyancy term in N-S.
 \end{itemize}
 \end{itemize}
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
 {\bf LPT parameters}\\
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 \begin{itemize}[label={$\circ$}]
 \item \texttt{part\_flag}: Enables Lagrangian particle Tracking.
 \item \texttt{part\_number}:  Number of particle for each set.
@@ -228,8 +228,21 @@ All the following parameters are used only when the phase field is activated.
 \item \texttt{part\_gravity}: Add the gravity term to the particle.
 \item \texttt{twoway}: One- or two-way coupled LPT, two-way is at the moment not implemented but subroutines are already present. 
 \item \texttt{part\_dump}: Frequency of the position, velocity, fluid velocity (at particle position) outputs for the particles.
-\item \texttt{subiterations}: Number of sub-iterations performed, must be greater than one  whe for $St <<1$.
-% \textcolor{red}{This part is to be continued with particles parameters.}
+\item \texttt{subiterations}: Number of sub-iterations performed, must be greater than one when for $St <<1$.
+\item \texttt{in\_cond\_part\_pos}:
+\begin{itemize}[label={$\circ$}]
+\item 0 : Random position.
+\item 1 : Read input from file (parallel read).
+\item 2 : initialize random position on a $x-y$ plane at height \texttt{par\_plane}
+\item 3 : initialize random position on N $x-y$ planes.
+\end{itemize}
+\item \texttt{in\_cond\_part\_vel}:
+\begin{itemize}[label={$\circ$}]
+\item 0 : zero velocity.
+\item 1 : read input from file (parallel read).
+\item 2 : fluid velocity at particle position.
+\item 3 : read input from file (parallel read).
+\end{itemize}
 \end{itemize}
 
 \subsection{Cleaning of \texttt{set\_run} folder}
@@ -238,10 +251,14 @@ This part of the script delete old simulation files in the \texttt{set\_run} fol
 The restarted case will read the initial fields from the \texttt{results} folder at the beginning of the simulation.
 
 \subsection{Copying and editing}
-First of all the script \texttt{go.sh} is copied in the \texttt{set\_run} folder and the correct value of MPI process to be used for the run \texttt{NNT} is replaced in the copied version. Then, the input file \texttt{input.f90} is copied in the \texttt{set\_run/sc\_compiled} folder and all the parameter are replaced in the file with the correct vaue.\\
-At this point all the source files of the code are copied from the folder \texttt{source\_code} to the folder \texttt{set\_run/sc\_compiled}. Also the two folders \texttt{paraview\_output} and \texttt{stats\_calc} are copied into the folder \texttt{set\_run}.\\
-If the phase field is activated, an input file for the phase field initial condition is created (\texttt{input\_phase\_field.f90}); this input file is different for the differents initial condition that can be chosen.\\
-Lastly all the flags for the conditional compilation are replaced in the copied source files of the code; this way, depending on the parameters choice, the code will be compiled in different ways including or omitting some parts. This is done to avoid unneeded \texttt{if} clauses in the execution of the code as they will reduce performance (especially in \texttt{do} loops). After this step the code will be compiled and all the mdule files will be created in the folder \texttt{set\_run/sc\_compiled}, together with the executable.\\
+First, the script \texttt{go.sh} is copied in the \texttt{set\_run} folder and the correct value of MPI process to be used for the run \texttt{NNT=NYCPU*NZCPU} is replaced in the copied version. 
+Then, the input file \texttt{input.f90} is copied in the \texttt{set\_run/sc\_compiled} folder and all the parameter are replaced in the file with the correct vaue.\\
+At this point all the source files of the code are copied from the folder \texttt{source\_code} to the folder \texttt{set\_run/sc\_compiled}. Also the two folders \texttt{paraview\_output\_fg} and \texttt{stats\_calc} are copied into the folder \texttt{set\_run}.\\
+If the phase field is activated, an input file for the phase field initial condition is created (\texttt{input\_phase\_field.f90}); this input file is different for the different initial condition that can be chosen.
+Likewise, for the surfactant, temperature and Lagrangian particles (if activated), files called \texttt{input\_surfactant.f90}, \texttt{input\_temperature.f90} and \texttt{input\_particle.f90} are created.
+
+Lastly, all the flags for the conditional compilation are replaced in the copied source files of the code; this way, depending on the parameters choice, the code will be compiled in different ways including or omitting some parts. This is done to avoid unneeded \texttt{if} clauses in the execution of the code as they will reduce performance (especially in \texttt{do} loops). 
+After this step the code will be compiled and all the module files will be created in the folder \texttt{set\_run/sc\_compiled}, together with the executable.\\
 If you are running on a local machine, you can leave uncommented the last three lines of the script, such that the \texttt{compile.sh} script will switch to the \texttt{set\_run} folder, run the \texttt{go.sh} file and then switch back to the main folder.
 
 
@@ -254,7 +271,10 @@ The invoked command for the compilation will be \texttt{mpif90} (deprecated) or 
 MPI compiler wrappers combine the base compilers (gfortran, ifort, ftn (HPE Cray Compilers), nvfortran (Nvidia), and aocc (AMD)) with MPI and various other libraries to enable the streamlined compilation of scientific applications.
 A MPI parallel code CANNOT be compiled with gfortran (or other compilers) but should be compiled with the respective MPI wrapper.
 The invoked libraries (e.g. MPI or FFTW) should be also included among the list of the modules loaded in the header of the source code. 
-For instance, for MPI, using \texttt{include mpif.h} (deprecated) or \texttt{use mpi} (deprecated) or \texttt{use mpi f08}.
+For instance, for MPI, use \texttt{include mpif.h} (deprecated) or \texttt{use mpi} (deprecated) or \texttt{use mpi\_f08}.
+This latter option is in theory the recommended one; however, support to this module is still partial for some compilers.
+For this reason,  \texttt{use mpi} is employed.
+
 
 Regarding the MPI libraries, a library complying with the MPI standard 3.0 is required (particles require shared memory capabilities, introduced in 3.0). 
 Remember that in general, the library version indicated by the MPI library vendor (e.g. \texttt{openMPI 5.0}) does not correspond to the MPI library standard (indeed the MPI standard 5.0 does not exist at the moment).
@@ -264,24 +284,26 @@ Remember that openMPI and openMP are two totally different things (please do not
 Regarding the FFTW libraries, the path of the \texttt{/include} and \texttt{/lib} folders should be specified in the makefile (unless alias are created).
 Also for this library, the specific module should be specified in the header of the source code.
 The code supports the latest version of FFTW (3.x).
-When using Intel-based machines, the MKL library can be used instead of the FFTW library to perform the FFTs.
+When using Intel-based machines, the Math Kernel Library (MKL) library can be used instead of the FFTW library to perform the FFTs.
 This is automatically done once the respective modules have been loaded (intel-one-api).
+Specifically, the MKL library automatically recognizes the call to \texttt{FFTW} subroutines and replace them with call to the corresponding \texttt{MKL} library functions.
 
 
 \subsection{Compiling for GPUs}
-To compile and run on GPU-based architectures (Nvidia only), the Nvidia \texttt{hpc-sdk} toolkit is required.
+To compile and run the code on GPU-based architectures (Nvidia only), the Nvidia \texttt{hpc-sdk} toolkit is required.
 The toolkit includes a version of the MPI libraries (openMPI), the Nvidia compiler with support for the openACC directives (nvfortran, ex pgifort) and GPU libraries (cuFFT and many others).
 In some clusters, the compiler and the MPI libraries are located in two different modules and both should be loaded.
 This is because sometimes different MPI libraries are used in combination with the compiler). 
-The GPU-version of the code has been tested using MPI Spectrum and openMPI.
-Also, the only supported compiler is \texttt{nvfortran}.
+The GPU-version of the code has been tested using MPI Spectrum (Marconi-100) and openMPI (Marconi-100 and Leonardo).
+Also, the GPU version of the code must be compiled using \texttt{nvfortran}.
+This is the only compiler that supports the managed memory feature (CUDA unified memory).
 
 
 \section{Running the code}
 
-Regardless of the version compiled, to run the code the procedure is slightly different depending if one is using a cluster or a local server/machine.
+Regardless of the version compiled, the procedure to run the code is slightly different depending if one is using a cluster or a local server/machine.
 
-On HPC clusters, once the code is compiled, a \texttt{go.sh} file is present in the set run folder (the code CANNOT be run directly).
+On HPC clusters, once the code is compiled, a \texttt{go.sh} file is present in the set run folder (the code cannot be run directly).
 This file should be double checked (number of nodes, tasks, partitions, time) and then can be submitted to the load manager (usually SLURM) using the \texttt{sbatch} command.
 The modules you have used to compile the code should be also loaded in the \texttt{go.sh} before the call to \texttt{mpirun} or \texttt{srun}.
 The load manager will decide when the job will start an on which nodes.
@@ -290,7 +312,7 @@ The time, number of nodes and partition requested will of course influence the q
 Please check also the machine documentation for information on the specific rules and on which storage space you should run the simulations (home, scratch, work, etc.).
 
 On a local machine/server, the code is automatically executed by the \texttt{compile.sh} (see the last lines where the \texttt{go.sh} file is launched).
-On most local machines, no load manager is present and before executing the code, ONE SHOULD CHECK the machine configuration (number of cores, threads and GPUs) and the actual load.
+On most local machines, no load manager is present and before executing the code, one should check the machine configuration (number of cores, threads and GPUs) and the actual load.
 This latter aspect can be checked via the \texttt{top} or \texttt{htop} commands.
 Do not load the machine more than 90\%, all the jobs will slow-down drastically (yours as well other people jobs).
 Job status can be checked via the above mentioned commands and can be canceled just killing one of the MPI process with \texttt{kill PID} (where PID is the process ID that can be found executing \texttt{top}).
@@ -299,7 +321,7 @@ Remember to also check the storage available, most machines are based on SSD dev
 
 
 
-\section{Troubleshotting}
+\section{Troubleshooting}
 
 A list of common issues along sides with possible solutions is reported in the following list.
 \begin{itemize}

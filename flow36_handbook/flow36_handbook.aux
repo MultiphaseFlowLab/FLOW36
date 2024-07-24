@@ -32,7 +32,7 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.4.1}Compiling for CPUs}{10}{subsection.1.4.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.4.2}Compiling for GPUs}{11}{subsection.1.4.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {1.5}Running the code}{11}{section.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {1.6}Troubleshotting}{12}{section.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.6}Troubleshooting}{12}{section.1.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{\numberline {2}Code flowchart}{13}{chapter.2}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -43,183 +43,125 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}\texttt  {define\_sizes}}{14}{subsection.2.1.3}\protected@file@percent }
 \citation{fftw}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}\texttt  {create\_plan}}{15}{subsection.2.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.5}\texttt  {dump\_grid}}{15}{subsection.2.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.6}\texttt  {wave\_numbers}}{15}{subsection.2.1.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.7}\texttt  {initialize}}{15}{subsection.2.1.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.8}\texttt  {initialize\_phi}}{16}{subsection.2.1.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.8.1}\texttt  {drop\_2d}}{16}{subsubsection.2.1.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.8.2}\texttt  {drop\_3d}}{17}{subsubsection.2.1.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.8.3}\texttt  {stratified}}{17}{subsubsection.2.1.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.8.4}\texttt  {drop\_array}}{17}{subsubsection.2.1.8.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.9}\texttt  {write\_failure}}{17}{subsection.2.1.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.10}\texttt  {write\_output}, \texttt  {write\_output\_spectral} and \texttt  {write\_output\_recovery}}{17}{subsection.2.1.10}\protected@file@percent }
-\newlabel{sec: writeo}{{2.1.10}{17}{\texttt {write\_output}, \texttt {write\_output\_spectral} and \texttt {write\_output\_recovery}}{subsection.2.1.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.11}\texttt  {integral\_phi}}{18}{subsection.2.1.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.12}\texttt  {initialize\_check}}{18}{subsection.2.1.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.13}\texttt  {sim\_check}}{18}{subsection.2.1.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.14}\texttt  {destroy} and \texttt  {destroy\_phi}}{18}{subsection.2.1.14}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.15}\texttt  {destroy\_plan}}{18}{subsection.2.1.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.2}Solver}{18}{section.2.2}\protected@file@percent }
-\newlabel{sec: solver}{{2.2}{18}{Solver}{section.2.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}\texttt  {convective\_ns}}{19}{subsection.2.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}\texttt  {phi\_non\_linear}}{19}{subsection.2.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}\texttt  {euler}, \texttt  {adams\_bashforth}}{19}{subsection.2.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.4}\texttt  {euler\_phi} and \texttt  {adams\_bashforth\_phi}}{19}{subsection.2.2.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.5}\texttt  {euler\_psi} and \texttt  {adams\_bashforth\_psi}}{20}{subsection.2.2.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.6}\texttt  {euler\_theta} and \texttt  {adams\_bashforth\_theta}}{20}{subsection.2.2.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.7}\texttt  {hist\_term}}{20}{subsection.2.2.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.8}\texttt  {hist\_term\_temp}}{20}{subsection.2.2.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.9}\texttt  {calculate\_w}}{20}{subsection.2.2.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.10}\texttt  {calculate\_omega}}{20}{subsection.2.2.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.11}\texttt  {calculate\_uv}}{20}{subsection.2.2.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.12}\texttt  {sterm\_ch}}{20}{subsection.2.2.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.13}\texttt  {sterm\_psi}}{21}{subsection.2.2.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.14}\texttt  {sterm\_temp}}{21}{subsection.2.2.14}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.15}\texttt  {calculate\_phi}}{21}{subsection.2.2.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.16}\texttt  {calculate\_phi\_ac}}{21}{subsection.2.2.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.17}\texttt  {calculate\_psi}}{21}{subsection.2.2.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.18}\texttt  {calculate\_theta}}{22}{subsection.2.2.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.19}\texttt  {courant\_check}}{22}{subsection.2.2.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.20}\texttt  {dz} and \texttt  {dz\_red}}{22}{subsection.2.2.20}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.21}\texttt  {dz\_fg}}{22}{subsection.2.2.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.22}\texttt  {helmholtz}, \texttt  {helmholtz\_red} and \texttt  {helmholtz\_rred}}{22}{subsection.2.2.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.23}\texttt  {helmholtz\_fg}}{22}{subsection.2.2.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.24}\texttt  {gauss\_solver}, \texttt  {gauss\_solver\_red} and \texttt  {gauss\_solver\_rred}}{22}{subsection.2.2.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}Transforms}{22}{section.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}\texttt  {phys\_to\_spectral}}{23}{subsection.2.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}\texttt  {phys\_to\_spectral\_fg}}{23}{subsection.2.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}\texttt  {fftx\_fwd}}{23}{subsection.2.3.3}\protected@file@percent }
-\newlabel{sec: fftx}{{2.3.3}{23}{\texttt {fftx\_fwd}}{subsection.2.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.4}\texttt  {fftx\_fwd\_fg}}{23}{subsection.2.3.4}\protected@file@percent }
-\newlabel{sec: fftx}{{2.3.4}{23}{\texttt {fftx\_fwd\_fg}}{subsection.2.3.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.5}\texttt  {yz2xz}}{23}{subsection.2.3.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.6}\texttt  {yz2xz\_fg}}{23}{subsection.2.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.5}\texttt  {create\_plan\_fg}}{15}{subsection.2.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.6}\texttt  {dump\_grid}}{15}{subsection.2.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.7}\texttt  {wave\_numbers}}{15}{subsection.2.1.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.8}\texttt  {initialize}}{16}{subsection.2.1.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.9}\texttt  {initialize\_phi}}{16}{subsection.2.1.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.9.1}\texttt  {drop\_2d}}{17}{subsubsection.2.1.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.9.2}\texttt  {drop\_3d}}{17}{subsubsection.2.1.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.9.3}\texttt  {stratified}}{17}{subsubsection.2.1.9.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.9.4}\texttt  {drop\_array}}{17}{subsubsection.2.1.9.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.10}\texttt  {initialize\_psi}}{17}{subsection.2.1.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.11}\texttt  {initialize\_theta}}{18}{subsection.2.1.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.12}\texttt  {initialize\_particle}}{18}{subsection.2.1.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.13}\texttt  {write\_failure}}{18}{subsection.2.1.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.14}\texttt  {write\_output}, \texttt  {write\_output\_spectral} and \texttt  {write\_output\_recovery}}{18}{subsection.2.1.14}\protected@file@percent }
+\newlabel{sec: writeo}{{2.1.14}{18}{\texttt {write\_output}, \texttt {write\_output\_spectral} and \texttt {write\_output\_recovery}}{subsection.2.1.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.15}\texttt  {integral\_phi}}{18}{subsection.2.1.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.16}\texttt  {integral\_psi}}{18}{subsection.2.1.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.17}\texttt  {initialize\_check}}{18}{subsection.2.1.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.18}\texttt  {sim\_check}}{19}{subsection.2.1.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.19}\texttt  {destroy}}{19}{subsection.2.1.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.20}\texttt  {destroy\_plan}}{19}{subsection.2.1.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}Solver subroutines}{19}{section.2.2}\protected@file@percent }
+\newlabel{sec: solver}{{2.2}{19}{Solver subroutines}{section.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}\texttt  {phi\_non\_linear}}{20}{subsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}\texttt  {euler}, \texttt  {adams\_bashforth}}{20}{subsection.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}\texttt  {euler\_phi} and \texttt  {adams\_bashforth\_phi}}{20}{subsection.2.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.4}\texttt  {euler\_psi} and \texttt  {adams\_bashforth\_psi}}{20}{subsection.2.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.5}\texttt  {euler\_theta} and \texttt  {adams\_bashforth\_theta}}{20}{subsection.2.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.6}\texttt  {hist\_term}}{21}{subsection.2.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.7}\texttt  {hist\_term\_temp}}{21}{subsection.2.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.8}\texttt  {calculate\_w}}{21}{subsection.2.2.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.9}\texttt  {calculate\_omega}}{21}{subsection.2.2.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.10}\texttt  {calculate\_uv}}{21}{subsection.2.2.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.11}\texttt  {sterm\_ch}}{21}{subsection.2.2.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.12}\texttt  {sterm\_psi}}{22}{subsection.2.2.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.13}\texttt  {sterm\_temp}}{22}{subsection.2.2.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.14}\texttt  {calculate\_phi}}{22}{subsection.2.2.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.15}\texttt  {calculate\_phi\_ac}}{22}{subsection.2.2.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.16}\texttt  {calculate\_psi}}{22}{subsection.2.2.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.17}\texttt  {calculate\_theta}}{22}{subsection.2.2.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.18}\texttt  {courant\_check}}{22}{subsection.2.2.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.19}\texttt  {dz} and \texttt  {dz\_red}}{22}{subsection.2.2.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.20}\texttt  {dz\_fg}}{23}{subsection.2.2.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.21}\texttt  {helmholtz}, \texttt  {helmholtz\_red} and \texttt  {helmholtz\_rred}}{23}{subsection.2.2.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.22}\texttt  {helmholtz\_fg}}{23}{subsection.2.2.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.23}\texttt  {gauss\_solver}, \texttt  {gauss\_solver\_red} and \texttt  {gauss\_solver\_rred}}{23}{subsection.2.2.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.24}\texttt  {lagrangian\_tracker}}{23}{subsection.2.2.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.25}\texttt  {lagran4}}{23}{subsection.2.2.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.26}\texttt  {calculate\_forces}}{23}{subsection.2.2.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Transforms}{23}{section.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}\texttt  {phys\_to\_spectral}}{24}{subsection.2.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}\texttt  {phys\_to\_spectral\_fg}}{24}{subsection.2.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}\texttt  {fftx\_fwd}}{24}{subsection.2.3.3}\protected@file@percent }
+\newlabel{sec: fftx}{{2.3.3}{24}{\texttt {fftx\_fwd}}{subsection.2.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.4}\texttt  {fftx\_fwd\_fg}}{24}{subsection.2.3.4}\protected@file@percent }
+\newlabel{sec: fftx}{{2.3.4}{24}{\texttt {fftx\_fwd\_fg}}{subsection.2.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.5}\texttt  {yz2xz}}{24}{subsection.2.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.6}\texttt  {yz2xz\_fg}}{24}{subsection.2.3.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3.7}\texttt  {ffty\_fwd}}{24}{subsection.2.3.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.8}\texttt  {xz2xy}}{24}{subsection.2.3.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.9}\texttt  {xz2xy\_fg}}{24}{subsection.2.3.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.10}\texttt  {dctz\_fwd}}{24}{subsection.2.3.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.11}\texttt  {dctz\_fwd\_fg}}{24}{subsection.2.3.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.12}\texttt  {spectral\_to\_phys}}{24}{subsection.2.3.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.13}\texttt  {spectral\_to\_phys\_fg}}{25}{subsection.2.3.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.14}\texttt  {dctz\_bwd}}{25}{subsection.2.3.14}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.15}\texttt  {dctz\_bwd\_fg}}{25}{subsection.2.3.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.16}\texttt  {xy2xz}}{25}{subsection.2.3.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.17}\texttt  {xy2xz\_fg}}{25}{subsection.2.3.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.18}\texttt  {ffty\_bwd}}{25}{subsection.2.3.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.19}\texttt  {ffty\_bwd\_fg}}{25}{subsection.2.3.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.8}\texttt  {xz2xy}}{25}{subsection.2.3.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.9}\texttt  {xz2xy\_fg}}{25}{subsection.2.3.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.10}\texttt  {dctz\_fwd}}{25}{subsection.2.3.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.11}\texttt  {dctz\_fwd\_fg}}{25}{subsection.2.3.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.12}\texttt  {spectral\_to\_phys}}{25}{subsection.2.3.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.13}\texttt  {spectral\_to\_phys\_fg}}{26}{subsection.2.3.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.14}\texttt  {dctz\_bwd}}{26}{subsection.2.3.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.15}\texttt  {dctz\_bwd\_fg}}{26}{subsection.2.3.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.16}\texttt  {xy2xz}}{26}{subsection.2.3.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.17}\texttt  {xy2xz\_fg}}{26}{subsection.2.3.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.18}\texttt  {ffty\_bwd}}{26}{subsection.2.3.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.19}\texttt  {ffty\_bwd\_fg}}{26}{subsection.2.3.19}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3.20}\texttt  {xz2yz}}{26}{subsection.2.3.20}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.21}\texttt  {xz2yz\_fg}}{26}{subsection.2.3.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.22}\texttt  {fftx\_bwd}}{26}{subsection.2.3.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.23}\texttt  {fftx\_bwd\_fg}}{26}{subsection.2.3.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.4}Statistic calculation}{26}{section.2.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}\texttt  {initialize\_stats}}{26}{subsection.2.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}\texttt  {del\_old\_stats}}{26}{subsection.2.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.21}\texttt  {xz2yz\_fg}}{27}{subsection.2.3.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.22}\texttt  {fftx\_bwd}}{27}{subsection.2.3.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.23}\texttt  {fftx\_bwd\_fg}}{27}{subsection.2.3.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Statistic calculation}{27}{section.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}\texttt  {initialize\_stats}}{27}{subsection.2.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}\texttt  {del\_old\_stats}}{27}{subsection.2.4.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4.3}\texttt  {statistics}}{27}{subsection.2.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.4}\texttt  {mean\_calc}}{27}{subsection.2.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.5}\texttt  {budget\_calc}}{27}{subsection.2.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.6}\texttt  {sterm\_pressure}}{27}{subsection.2.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.7}\texttt  {power\_spectra}}{27}{subsection.2.4.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.5}Modules}{27}{section.2.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces Scheme of main program \texttt  {FLOW\_36}. xxx stands for a generic field (e.g. phase-field, surfactant field, temperature)\relax }}{32}{figure.caption.2}\protected@file@percent }
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig: main_struct}{{2.1}{32}{Scheme of main program \texttt {FLOW\_36}. xxx stands for a generic field (e.g. phase-field, surfactant field, temperature)\relax }{figure.caption.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Scheme of subroutine \texttt  {solver}\relax }}{33}{figure.caption.3}\protected@file@percent }
-\newlabel{fig: solver_struct}{{2.2}{33}{Scheme of subroutine \texttt {solver}\relax }{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {3}Numerical method}{35}{chapter.3}\protected@file@percent }
-\@writefile{lof}{\addvspace {10\p@ }}
-\@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chap: num_met}{{3}{35}{Numerical method}{chapter.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}Problem description}{35}{section.3.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Sketch of the domain\relax }}{35}{figure.caption.4}\protected@file@percent }
-\newlabel{fig: domain_sketch}{{3.1}{35}{Sketch of the domain\relax }{figure.caption.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}Single phase flow}{35}{section.3.2}\protected@file@percent }
-\newlabel{eq: phys_ns}{{3.2}{36}{Single phase flow}{equation.3.2.2}{}}
-\newlabel{eq: spec_ns}{{3.3}{37}{Single phase flow}{equation.3.2.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}Phase Field Model}{38}{section.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Cahn--Hilliard equation}{39}{subsection.3.3.1}\protected@file@percent }
-\newlabel{eq: mod_ch}{{3.8}{40}{Cahn--Hilliard equation}{equation.3.3.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.4}Boundary conditions}{41}{section.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}No--slip condition}{41}{subsection.3.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Free--slip condition}{41}{subsection.3.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.3}Recap of the boundary conditions for the Navier--Stokes equation}{42}{subsection.3.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Boundary conditions\relax }}{42}{table.caption.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.4}Closed channel and open channel}{42}{subsection.3.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.5}Pseudospectral spatial discretization}{43}{section.3.5}\protected@file@percent }
-\newlabel{sec: pseudosp}{{3.5}{43}{Pseudospectral spatial discretization}{section.3.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Time discretization}{44}{section.3.6}\protected@file@percent }
-\newlabel{sec: time_disc}{{3.6}{44}{Time discretization}{section.3.6}{}}
-\citation{CanutoHQZ06}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Dealiasing}{45}{subsection.3.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.7}Chebyshev--Tau method}{46}{section.3.7}\protected@file@percent }
-\newlabel{sec: chebtau}{{3.7}{46}{Chebyshev--Tau method}{section.3.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.1}General method}{46}{subsection.3.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.2}Application to the 2$^{nd}$ order equation for vorticity}{47}{subsection.3.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.3}Application to the 4$^{th}$ order equation for velocity}{49}{subsection.3.7.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.8}Influence matrix}{49}{section.3.8}\protected@file@percent }
-\newlabel{sec: infl_matrix}{{3.8}{49}{Influence matrix}{section.3.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.1}General method}{49}{subsection.3.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.2}Application to the 4$^{th}$ order equation for $\hat  w$}{51}{subsection.3.8.2}\protected@file@percent }
-\newlabel{sec: inf_mat_w}{{3.8.2}{51}{Application to the 4$^{th}$ order equation for $\hat w$}{subsection.3.8.2}{}}
-\newlabel{eq: 4thw}{{3.20}{51}{Application to the 4$^{th}$ order equation for $\hat w$}{equation.3.8.20}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.9}Wall units and outer units}{53}{section.3.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.4}\texttt  {mean\_calc}}{28}{subsection.2.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.5}\texttt  {budget\_calc}}{28}{subsection.2.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.6}\texttt  {sterm\_pressure}}{28}{subsection.2.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.7}\texttt  {power\_spectra}}{28}{subsection.2.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.5}Modules}{28}{section.2.5}\protected@file@percent }
 \@input{source/slab_ph.aux}
 \@input{source/slab_sp.aux}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}MPI Parallelization and GPUs}{55}{chapter.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}MPI Parallelization and GPUs}{35}{chapter.3}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chap: dom_decomp}{{4}{55}{MPI Parallelization and GPUs}{chapter.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Parallelization}{55}{section.4.1}\protected@file@percent }
-\newlabel{sec: parallelization}{{4.1}{55}{Parallelization}{section.4.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Slab decomposition}{55}{section.4.2}\protected@file@percent }
-\newlabel{sec: slab}{{4.2}{55}{Slab decomposition}{section.4.2}{}}
+\newlabel{chap: dom_decomp}{{3}{35}{MPI Parallelization and GPUs}{chapter.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}Parallelization}{35}{section.3.1}\protected@file@percent }
+\newlabel{sec: parallelization}{{3.1}{35}{Parallelization}{section.3.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Slab decomposition}{35}{section.3.2}\protected@file@percent }
+\newlabel{sec: slab}{{3.2}{35}{Slab decomposition}{section.3.2}{}}
 \@input{source/pencil_ph.aux}
 \@input{source/pencil_sp.aux}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Slab decomposition, MPI processes numbering\relax }}{56}{figure.caption.6}\protected@file@percent }
-\newlabel{fig: slab}{{4.1}{56}{Slab decomposition, MPI processes numbering\relax }{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Pencil decomposition}{56}{section.4.3}\protected@file@percent }
-\newlabel{sec: pencil}{{4.3}{56}{Pencil decomposition}{section.4.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{57}{figure.caption.7}\protected@file@percent }
-\newlabel{fig: pencil}{{4.2}{57}{Pencil decomposition, MPI processes numbering\relax }{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Domain decomposition strategies benchmark}{57}{section.4.4}\protected@file@percent }
-\newlabel{sec: benchmark}{{4.4}{57}{Domain decomposition strategies benchmark}{section.4.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Strong scalability\relax }}{58}{figure.caption.8}\protected@file@percent }
-\newlabel{fig: strong_s}{{4.3}{58}{Strong scalability\relax }{figure.caption.8}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Strong scaling speed-up calculated with respect to 64 MPI processes case\relax }}{58}{table.caption.9}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Weak scalability\relax }}{59}{figure.caption.10}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Weak scaling time per time step normalized with respect to 64 MPI processes case\relax }}{59}{table.caption.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}GPU-Acceleration}{59}{section.4.5}\protected@file@percent }
-\newlabel{sec: acceleration}{{4.5}{59}{GPU-Acceleration}{section.4.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Profiling}{60}{section.4.6}\protected@file@percent }
-\newlabel{sec: profiling}{{4.6}{60}{Profiling}{section.4.6}{}}
-\citation{thtlab}
-\citation{thtlab}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Code validation}{61}{chapter.5}\protected@file@percent }
-\@writefile{lof}{\addvspace {10\p@ }}
-\@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Single phase validation}{61}{section.5.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces Mean velocity\relax }}{61}{figure.caption.12}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces Velocity root mean square\relax }}{62}{figure.caption.13}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces Velocity skewness\relax }}{62}{figure.caption.14}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces Velocity flatness\relax }}{63}{figure.caption.15}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.5}{\ignorespaces Mean pressure\relax }}{63}{figure.caption.16}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.6}{\ignorespaces Pressure root mean square\relax }}{64}{figure.caption.17}\protected@file@percent }
-\newlabel{RF1}{65}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.7}{\ignorespaces Energy budget\relax }}{65}{figure.caption.18}\protected@file@percent }
-\newlabel{RF2}{66}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.8}{\ignorespaces $u'$ power spectra\relax }}{66}{figure.caption.19}\protected@file@percent }
-\newlabel{RF3}{67}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.9}{\ignorespaces $v'$ power spectra\relax }}{67}{figure.caption.20}\protected@file@percent }
-\newlabel{RF4}{68}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.10}{\ignorespaces $w'$ power spectra\relax }}{68}{figure.caption.21}\protected@file@percent }
-\citation{Prosperetti81}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Slab decomposition, MPI processes numbering\relax }}{36}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig: slab}{{3.1}{36}{Slab decomposition, MPI processes numbering\relax }{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Pencil decomposition}{36}{section.3.3}\protected@file@percent }
+\newlabel{sec: pencil}{{3.3}{36}{Pencil decomposition}{section.3.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{37}{figure.caption.3}\protected@file@percent }
+\newlabel{fig: pencil}{{3.2}{37}{Pencil decomposition, MPI processes numbering\relax }{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Domain decomposition strategies benchmark}{37}{section.3.4}\protected@file@percent }
+\newlabel{sec: benchmark}{{3.4}{37}{Domain decomposition strategies benchmark}{section.3.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Strong scalability\relax }}{38}{figure.caption.4}\protected@file@percent }
+\newlabel{fig: strong_s}{{3.3}{38}{Strong scalability\relax }{figure.caption.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Strong scaling speed-up calculated with respect to 64 MPI processes case\relax }}{38}{table.caption.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces Weak scalability\relax }}{39}{figure.caption.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces Weak scaling time per time step normalized with respect to 64 MPI processes case\relax }}{39}{table.caption.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}GPU-Acceleration}{39}{section.3.5}\protected@file@percent }
+\newlabel{sec: acceleration}{{3.5}{39}{GPU-Acceleration}{section.3.5}{}}
 \citation{*}
 \bibstyle{plainnat}
 \bibdata{cap/biblio}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Phase field validation}{69}{section.5.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.11}{\ignorespaces Capillary waves, comparison of numerical solution (damped) with Prosperetti analytic solution (undamped). \textbf  {Case A} : $\rho _R=0.9$, $\textnormal  {Fr}=0.1$, $k_y=1$. \textbf  {Case B} : $\rho _R=0.5$, $\textnormal  {Fr}=0.1$, $k_y=1$. \textbf  {Case C} : $\rho _R=0.5$, $\textnormal  {Fr}=0.05$, $k_y=1$. \textbf  {Case D} : $\rho _R=0.5$, $\textnormal  {Fr}=0.1$, $k_y=2$.\relax }}{69}{figure.caption.22}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5.1}{\ignorespaces Case run for phase field validation\relax }}{69}{table.caption.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Profiling}{40}{section.3.6}\protected@file@percent }
+\newlabel{sec: profiling}{{3.6}{40}{Profiling}{section.3.6}{}}
 \bibcite{CanutoHQZ06}{{1}{2006}{{Canuto et~al.}}{{Canuto, Hussaini, Quarteroni, and Zang}}}
 \bibcite{fftw}{{2}{2017}{{M. Frigo and S. G. Johnson}}{{}}}
 \bibcite{thtlab}{{3}{2017}{{N. Kasagi}}{{}}}
 \bibcite{Prosperetti81}{{4}{1981}{{Prosperetti}}{{}}}
-\gdef \@abspage@last{83}
+\gdef \@abspage@last{53}

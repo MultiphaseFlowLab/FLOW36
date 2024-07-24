@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.14)  24 JUL 2024 12:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.14)  24 JUL 2024 16:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1486,7 +1486,7 @@ Package: ragged2e 2023/02/25 v3.4 ragged2e Package
 \JustifyingParindent=\skip90
 )
 (./cap/frontespizio.tex
-<./Frontespizio//bubble2.png, id=481, 2107.875pt x 2983.145pt>
+<./Frontespizio//bubble2.png, id=413, 2107.875pt x 2983.145pt>
 File: ./Frontespizio//bubble2.png Graphic file (type png)
 <use ./Frontespizio//bubble2.png>
 Package pdftex.def Info: ./Frontespizio//bubble2.png  used on input line 3.
@@ -1594,7 +1594,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 3.
 
-Overfull \hbox (18.77116pt too wide) in paragraph at lines 29--29
+Overfull \hbox (18.77116pt too wide) in paragraph at lines 33--33
  [][] [][][]\T1/lmtt/m/n/10.95 write_output\T1/lmr/m/n/10.95 (-20) , \T1/lmtt/m
 /n/10.95 write_output_spectral \T1/lmr/m/n/10.95 (-20) and \T1/lmtt/m/n/10.95 w
 rite_output_recovery[][] [][]  
@@ -1604,11 +1604,9 @@ rite_output_recovery[][] [][]
 \tf@toc=\write5
 \openout5 = `flow36_handbook.toc'.
 
- [5{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/l
-ocal/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}] [6
+ [5] [6
 
-]
-(./cap/gettingstarted.tex
+] (./cap/gettingstarted.tex
 Chapter 1.
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 8
 .
@@ -1635,46 +1633,46 @@ been already used, duplicate ignored
                    \relax 
 l.40 \item S
             treamwise and spanwise power spectra for $u'$, $v'$ and $w'$ at ...
-[2]
+[2{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/lo
+cal/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 52.
- [3{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
-[4] [5] [6] [7] [8]
+ [3{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}] [4] [
+5] [6] [7] [8]
+[9]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 235.
- [9] [10]
-Underfull \vbox (badness 2181) has occurred while \output is active []
-
- [11]
-Overfull \hbox (3.69807pt too wide) in paragraph at lines 310--311
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 248.
+ [10] [11]
+Overfull \hbox (3.69807pt too wide) in paragraph at lines 332--333
 []\T1/lmtt/m/n/10.95 error on mpi get address in subroutine **2**.f90\T1/lmr/m/
 n/10.95 (-20) . Known is-sue with open-
  []
 
 
-Overfull \hbox (15.47542pt too wide) in paragraph at lines 312--313
+Overfull \hbox (15.47542pt too wide) in paragraph at lines 334--335
 []\T1/lmtt/m/n/10.95 compilation error in initialize particle.f90 related to ba
 seprt\T1/lmr/m/n/10.95 (-20) . Known
  []
 
 ) (./cap/code_flowchart.tex [12]
 Chapter 2.
-LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 23.
 
-Overfull \hbox (12.32495pt too wide) detected at line 34
-[]
- []
+LaTeX Warning: Reference `fig: main_struct' on page 13 undefined on input line 
+11.
 
 [13
 
+] [14] [15{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}
 ]
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+LaTeX Warning: Reference `sec: infl_matrix' on page 16 undefined on input line 
+110.
 
-[14] [15{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
 [16]
-Overfull \hbox (10.911pt too wide) in paragraph at lines 123--125
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 130.
+
+Overfull \hbox (10.911pt too wide) in paragraph at lines 143--145
 \T1/lmr/m/n/10.95 (-20) The in-put pa-ram-e-ters $\OML/lmm/m/it/10.95 h \OT1/lm
 r/m/n/10.95 (-20) =$\T1/lmtt/m/n/10.95 height\T1/lmr/m/n/10.95 (-20) , $\OML/lm
 m/m/it/10.95 A[] \OT1/lmr/m/n/10.95 (-20) =$\T1/lmtt/m/n/10.95 wave_amp_x\T1/lm
@@ -1683,129 +1681,15 @@ t/m/n/10.95 wave_freq_x\T1/lmr/m/n/10.95 (-20) , $\OML/lmm/m/it/10.95 A[] \OT1/
 lmr/m/n/10.95 (-20) =$\T1/lmtt/m/n/10.95 wave_amp_y\T1/lmr/m/n/10.95 (-20) ,
  []
 
-
-Overfull \hbox (9.12563pt too wide) in paragraph at lines 133--133
+[17]
+Overfull \hbox (9.12563pt too wide) in paragraph at lines 167--167
 []\T1/lmtt/b/n/12 write_output\T1/lmr/bx/n/12 (-20) , \T1/lmtt/b/n/12 write_out
 put_spectral \T1/lmr/bx/n/12 (-20) and \T1/lmtt/b/n/12 write_output_recovery 
  []
 
-[17] [18]
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[19] [20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30])
-(./cap/solver_details.tex [31] [32] [33] [34
-
-]
+[18] [19] [20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32]
+[33]) (./cap/2D_dec.tex [34]
 Chapter 3.
-(./immagini/domain_sketch.pdf_tex
-<./immagini//domain_sketch.pdf, id=848, page=1, 1198.50494pt x 564.48721pt>
-File: ./immagini//domain_sketch.pdf Graphic file (type pdf)
-<use ./immagini//domain_sketch.pdf, page 1>
-Package pdftex.def Info: ./immagini//domain_sketch.pdf , page1 used on input li
-ne 52.
-(pdftex.def)             Requested size: 330.05322pt x 155.44548pt.
-<./immagini//domain_sketch.pdf, id=849, page=2, 1198.50494pt x 564.48721pt>
-File: ./immagini//domain_sketch.pdf Graphic file (type pdf)
-<use ./immagini//domain_sketch.pdf, page 2>
-Package pdftex.def Info: ./immagini//domain_sketch.pdf , page2 used on input li
-ne 56.
-(pdftex.def)             Requested size: 330.05322pt x 155.44548pt.
-<./immagini//domain_sketch.pdf, id=850, page=3, 1198.50494pt x 564.48721pt>
-File: ./immagini//domain_sketch.pdf Graphic file (type pdf)
-<use ./immagini//domain_sketch.pdf, page 3>
-Package pdftex.def Info: ./immagini//domain_sketch.pdf , page3 used on input li
-ne 63.
-(pdftex.def)             Requested size: 330.05322pt x 155.44548pt.
-) [35 <./immagini//domain_sketch.pdf> <./immagini//domain_sketch.pdf
-
-pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./immagini//domain_sketch.pd
-f): PDF inclusion: multiple pdfs with page group included in a single page
-> <./immagini//domain_sketch.pdf
-
-pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./immagini//domain_sketch.pd
-f): PDF inclusion: multiple pdfs with page group included in a single page
->] [36] [37] [38] [39] [40] [41]
-Overfull \hbox (70.94318pt too wide) in paragraph at lines 268--272
- [][] 
- []
-
-[42] [43]
-Underfull \hbox (badness 10000) in paragraph at lines 377--378
-
- []
-
-[44]
-Overfull \hbox (9.70432pt too wide) in paragraph at lines 403--405
-\T1/lmr/m/n/10.95 (-20) num-ber of points in the $\OML/lmm/m/it/10.95 y$ \T1/lm
-r/m/n/10.95 (-20) di-rec-tion, the modes are stored as: $\OT1/lmr/m/n/10.95 (-2
-0) 0\OML/lmm/m/it/10.95 ; \OT1/lmr/m/n/10.95 (-20) 1\OML/lmm/m/it/10.95 ; \OT1/
-lmr/m/n/10.95 (-20) 2\OML/lmm/m/it/10.95 ; [] ; N[]=\OT1/lmr/m/n/10.95 (-20) 2\
-OML/lmm/m/it/10.95 ; \OMS/lmsy/m/n/10.95 ^^@\OML/lmm/m/it/10.95 N[]=\OT1/lmr/m/
-n/10.95 (-20) 2 +
- []
-
-[45]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 455.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `superscript' on input line 455.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 455.
-
-[46] [47]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 574.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `superscript' on input line 574.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 574.
-
-[48] [49] [50]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 695.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `superscript' on input line 695.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 695.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 695.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 695.
-
-[51]
-Overfull \hbox (19.41776pt too wide) detected at line 772
-[]
- []
-
-
-Overfull \hbox (21.01828pt too wide) detected at line 788
-[] [] \OT1/lmr/m/n/10.95 = []
- []
-
-[52]) (./cap/2D_dec.tex [53] [54
-
-]
-Chapter 4.
 \openout2 = `source/slab_ph.aux'.
 
 (./source/slab_ph.tex)
@@ -1823,7 +1707,9 @@ Overfull \hbox (9.68202pt too wide) in paragraph at lines 41--30
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[55]
+[35
+
+]
 \openout2 = `source/pencil_ph.aux'.
 
  (./source/pencil_ph.tex)
@@ -1841,7 +1727,7 @@ Overfull \hbox (9.68202pt too wide) in paragraph at lines 46--52
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[56
+[36
 
 
 
@@ -1849,7 +1735,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 ]
-<./immagini//strong_s_64.pdf, id=1001, 685.56125pt x 419.5675pt>
+<./immagini//strong_s_64.pdf, id=775, 685.56125pt x 419.5675pt>
 File: ./immagini//strong_s_64.pdf Graphic file (type pdf)
 <use ./immagini//strong_s_64.pdf>
 Package pdftex.def Info: ./immagini//strong_s_64.pdf  used on input line 69.
@@ -1867,7 +1753,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 65--107
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<./immagini//weak_s_64.pdf, id=1003, 713.66624pt x 418.56375pt>
+<./immagini//weak_s_64.pdf, id=777, 713.66624pt x 418.56375pt>
 File: ./immagini//weak_s_64.pdf Graphic file (type pdf)
 <use ./immagini//weak_s_64.pdf>
 Package pdftex.def Info: ./immagini//weak_s_64.pdf  used on input line 110.
@@ -1875,7 +1761,7 @@ Package pdftex.def Info: ./immagini//weak_s_64.pdf  used on input line 110.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [57
+ [37
 
 
 
@@ -1891,143 +1777,64 @@ Overfull \hbox (10.46361pt too wide) in paragraph at lines 117--134
  [][] 
  []
 
-[58 <./immagini//strong_s_64.pdf>] [59 <./immagini//weak_s_64.pdf>])
-(./cap/validation.tex [60]
-Chapter 5.
-<./immagini//mean.pdf, id=1049, 498.86375pt x 329.23pt>
-File: ./immagini//mean.pdf Graphic file (type pdf)
-<use ./immagini//mean.pdf>
-Package pdftex.def Info: ./immagini//mean.pdf  used on input line 7.
-(pdftex.def)             Requested size: 412.56497pt x 272.28624pt.
-<./immagini//rms.pdf, id=1050, 502.87875pt x 329.23pt>
-File: ./immagini//rms.pdf Graphic file (type pdf)
-<use ./immagini//rms.pdf>
-Package pdftex.def Info: ./immagini//rms.pdf  used on input line 12.
-(pdftex.def)             Requested size: 412.56497pt x 270.10095pt.
-<./immagini//skw.pdf, id=1051, 506.89375pt x 329.23pt>
-File: ./immagini//skw.pdf Graphic file (type pdf)
-<use ./immagini//skw.pdf>
-Package pdftex.def Info: ./immagini//skw.pdf  used on input line 17.
-(pdftex.def)             Requested size: 412.56497pt x 267.97093pt.
+[38 <./immagini//strong_s_64.pdf>] [39 <./immagini//weak_s_64.pdf>])
+(./flow36_handbook.bbl [40]) [41
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [61
-
- <./immagini//mean.pdf>]
-<./immagini//flt.pdf, id=1073, 498.86375pt x 329.23pt>
-File: ./immagini//flt.pdf Graphic file (type pdf)
-<use ./immagini//flt.pdf>
-Package pdftex.def Info: ./immagini//flt.pdf  used on input line 22.
-(pdftex.def)             Requested size: 412.56497pt x 272.28624pt.
-<./immagini//pmean.pdf, id=1074, 518.93875pt x 329.23pt>
-File: ./immagini//pmean.pdf Graphic file (type pdf)
-<use ./immagini//pmean.pdf>
-Package pdftex.def Info: ./immagini//pmean.pdf  used on input line 27.
-(pdftex.def)             Requested size: 412.56497pt x 261.75668pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [62 <./immagini//rms.pdf> <./immagini//skw.pdf>]
-<./immagini//prms.pdf, id=1101, 551.05875pt x 329.23pt>
-File: ./immagini//prms.pdf Graphic file (type pdf)
-<use ./immagini//prms.pdf>
-Package pdftex.def Info: ./immagini//prms.pdf  used on input line 32.
-(pdftex.def)             Requested size: 412.56497pt x 246.49487pt.
-<./immagini//budget.pdf, id=1102, 1004.75375pt x 643.40375pt>
-File: ./immagini//budget.pdf Graphic file (type pdf)
-<use ./immagini//budget.pdf>
-Package pdftex.def Info: ./immagini//budget.pdf  used on input line 37.
-(pdftex.def)             Requested size: 674.33032pt x 431.80476pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [63 <./immagini//flt.pdf> <./immagini//pmean.pdf>]
-<./immagini//u_spectra.pdf, id=1133, 1028.84375pt x 631.35875pt>
-File: ./immagini//u_spectra.pdf Graphic file (type pdf)
-<use ./immagini//u_spectra.pdf>
-Package pdftex.def Info: ./immagini//u_spectra.pdf  used on input line 42.
-(pdftex.def)             Requested size: 674.33032pt x 413.81757pt.
-<./immagini//v_spectra.pdf, id=1134, 1028.84375pt x 631.35875pt>
-File: ./immagini//v_spectra.pdf Graphic file (type pdf)
-<use ./immagini//v_spectra.pdf>
-Package pdftex.def Info: ./immagini//v_spectra.pdf  used on input line 47.
-(pdftex.def)             Requested size: 674.33032pt x 413.81757pt.
-<./immagini//w_spectra.pdf, id=1135, 1028.84375pt x 631.35875pt>
-File: ./immagini//w_spectra.pdf Graphic file (type pdf)
-<use ./immagini//w_spectra.pdf>
-Package pdftex.def Info: ./immagini//w_spectra.pdf  used on input line 52.
-(pdftex.def)             Requested size: 674.33032pt x 413.81757pt.
- [64 <./immagini//prms.pdf>] [65 <./immagini//budget.pdf>] [66 <./immagini//u_s
-pectra.pdf>] [67 <./immagini//v_spectra.pdf>] [68 <./immagini//w_spectra.pdf>]
-<./immagini//cap_waves.pdf, id=1231, 643.40375pt x 629.35126pt>
-File: ./immagini//cap_waves.pdf Graphic file (type pdf)
-<use ./immagini//cap_waves.pdf>
-Package pdftex.def Info: ./immagini//cap_waves.pdf  used on input line 62.
-(pdftex.def)             Requested size: 412.56497pt x 403.57088pt.
-
-Overfull \hbox (3.94037pt too wide) in paragraph at lines 69--77
- [][] 
- []
-
-) (./flow36_handbook.bbl [69 <./immagini//cap_waves.pdf>] [70
-
-]) [71] [72
+] [42
 
 
-]
-(./flow36_handbook.lof)
+] (./flow36_handbook.lof)
 \tf@lof=\write6
 \openout6 = `flow36_handbook.lof'.
 
- [73
+ [43
 
-] [74
+] [44
 
-] (./flow36_handbook.lot)
+]
+(./flow36_handbook.lot)
 \tf@lot=\write7
 \openout7 = `flow36_handbook.lot'.
 
- [75]
-(./flow36_handbook.aux (./source/slab_ph.aux) (./source/slab_sp.aux)
-(./source/pencil_ph.aux) (./source/pencil_sp.aux))
+ [45] (./flow36_handbook.aux (./source/slab_ph.aux)
+(./source/slab_sp.aux) (./source/pencil_ph.aux) (./source/pencil_sp.aux))
+
+LaTeX Warning: There were undefined references.
+
 
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `flow36_handbook.out' has not changed.
-(rerunfilecheck)             Checksum: 416768438A30E1A11C537A38758205EB;17767.
+(rerunfilecheck)             Checksum: 6B73994E8DCCB8B68F4F9FF03A47C415;14139.
  ) 
 Here is how much of TeX's memory you used:
- 46675 strings out of 476025
- 1058282 string characters out of 5790016
- 1882388 words of memory out of 5000000
- 65618 multiletter control sequences out of 15000+600000
- 660400 words of font info for 303 fonts, out of 8000000 for 9000
+ 46073 strings out of 476025
+ 1045904 string characters out of 5790016
+ 1877388 words of memory out of 5000000
+ 65186 multiletter control sequences out of 15000+600000
+ 640338 words of font info for 259 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,25n,103p,1365b,1330s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,14n,103p,1051b,1069s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/lo
 cal/texlive/2023/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texliv
 e/2023/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2023/te
 xmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2023/texmf-dist/f
 onts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1
-/public/lm/lmmi12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm
-/lmmi6.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmmi8.pfb>
-</usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local
-/texlive/2023/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/20
-23/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2023/texmf-dis
-t/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type
-1/public/lm/lmri10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/l
-m/lmro10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmsy10.p
-fb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/lo
-cal/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></usr/local/texliv
-e/2023/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2023/tex
-mf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local/texlive/2023/texmf-dist/fon
-ts/type1/public/lm/lmtto10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/
-public/amsfonts/symbols/msbm10.pfb>
-Output written on flow36_handbook.pdf (83 pages, 1425416 bytes).
+/public/lm/lmmi8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/
+lmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmr12.pfb><
+/usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/t
+exlive/2023/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2023/
+texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2023/texmf-dist
+/fonts/type1/public/lm/lmro10.pfb></usr/local/texlive/2023/texmf-dist/fonts/typ
+e1/public/lm/lmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/
+lm/lmsy8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtk10.p
+fb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/l
+ocal/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local/texliv
+e/2023/texmf-dist/fonts/type1/public/lm/lmtto10.pfb>
+Output written on flow36_handbook.pdf (53 pages, 1004123 bytes).
 PDF statistics:
- 1477 PDF objects out of 1728 (max. 8388607)
- 1281 compressed objects within 13 object streams
- 282 named destinations out of 1000 (max. 500000)
- 88082 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 992 PDF objects out of 1000 (max. 8388607)
+ 879 compressed objects within 9 object streams
+ 193 named destinations out of 1000 (max. 500000)
+ 76100 words of extra memory for PDF output out of 89155 (max. 10000000)
 
