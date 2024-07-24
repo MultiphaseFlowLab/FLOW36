@@ -8,19 +8,20 @@ G. Soligo, A. Roccon and A. Soldati, FLOW36: A Pseudo-spectral solver for phase-
 G. Soligo (https://github.com/giovannisoligo) \
 A. Roccon (https://github.com/aroccon)
 
+
 ![](flow36_handbook/cop.jpeg)
 
 
 
 ## Modules available in FLOW36:
- - Single-phase flow (NS): Turbulent channel flow, close and open configurations \
- - Phase-field method (NS + CH): Clean intergaces (surfactant-free): Standard CH + Profile and Flux-corrected \
- - Phase-field method (NS + CH1+ CH2): Surfactant-laden interfaces (possible use of the dual grid) \
- - Phase-field method + scalar (NS + CH + EE): Heat/mass transfer in drop- and bubble-laden flows \
- - Phase-field method + particles (NS + CH + LPT): Intreface-particle interactions by deformable interfaces \
- - Single-phase + scalar (NS + EE): Heat/mass transfer in single-phase turbulence\
- - Single-phase + particles (NS + LPT): Particle-laden turbulent flows \
- - Single-phase + temperature + particles (NS + EE + LPT): Particle-laden turbulent flows with temperature \
+ - Single-phase flow (NS): Turbulent channel flow, close and open configurations 
+ - Phase-field method (NS + CH): Clean intergaces (surfactant-free): Standard CH + Profile and Flux-corrected 
+ - Phase-field method (NS + CH1+ CH2): Surfactant-laden interfaces (possible use of the dual grid) 
+ - Phase-field method + scalar (NS + CH + EE): Heat/mass transfer in drop- and bubble-laden flows 
+ - Phase-field method + particles (NS + CH + LPT): Intreface-particle interactions by deformable interfaces 
+ - Single-phase + scalar (NS + EE): Heat/mass transfer in single-phase turbulence
+ - Single-phase + particles (NS + LPT): Particle-laden turbulent flows 
+ - Single-phase + temperature + particles (NS + EE + LPT): Particle-laden turbulent flows with temperature 
 
 
 ## Published works:

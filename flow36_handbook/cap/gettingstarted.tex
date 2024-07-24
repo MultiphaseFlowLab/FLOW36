@@ -1,15 +1,17 @@
 \chapter{Getting started}
-The executable \texttt{compile.sh} includes all the parameters needed to run a simulation. In Section \ref{sec: compile} is reported a detailed guide about this file, its structure and how to modify it.\\
+The bash \texttt{compile.sh} includes all the parameters needed to run a simulation. 
+In Section \ref{sec: compile} is reported a detailed guide about this file, its structure and how to modify it.\\
 When running the \texttt{compile.sh} in its own folder, it sets up all the files and folders needed for the simulation in the \texttt{set\_run} folder.
 Once the \texttt{compile.sh} has finished without error, go to the \texttt{set\_run} folder and launch the executable \texttt{go.sh}; at this point the simulation should start.\\
 The main folder of the code includes the following files and subfolders:
 \begin{itemize}
-\item \texttt{initial\_fields} : contains the initial fields (velocity and phase, if dealing with a multiphase simulation) used if the initial condition is set to read the initial fields (both in its serial or parallel version). These files, during the execution of \texttt{compile.sh}, are copied into the \texttt{set\_run/initial\_fields} folder, so they can be removed or modified even when the simulation is running.
+\item \texttt{initial\_fields} : this folder contains the initial fields (velocity, phase-field, surfactant, temperature, particles position and velocity) used if the initial condition is set to read the initial fields (both in its serial or parallel version). 
+These files, during the execution of \texttt{compile.sh}, are copied into the \texttt{set\_run/initial\_fields} folder, so they can be removed or modified even when the simulation is running.
 \item \texttt{Machine XYZ} : contains the \texttt{makefile} and \textit{go.sh} needed when running on the above mentioned machine. It is copied in the main folder by the \texttt{compile.sh} script when needed.
 For some machines, more than one makefile (i.e. configuration) might be available depending on the compiler/libraries available and architecture (CPU, GPU).
 Depending on the machine, also the \texttt{openacc\_flag} is set. 
 This flag enables the GPU acceleration on the supported machines (e.g. Nvidia GPUs).
-\item \texttt{paraview\_output} : contains the code that can be used to generate Paraview compatible output file (using a rectilinear grid).
+\item \texttt{paraview\_output\_fg} : contains the code that can be used to generate Paraview compatible output file (using a rectilinear grid).
 \item \texttt{set\_run} : contains all the files and subfolders needed for a simulation and its output.
 \item \texttt{source\_code} : contains all the subroutine and the main file used to compile the executable file; each subroutine will be described in detail in Chapter \ref{chap: flowchart}.
 \item \texttt{stats\_calc} : contains the code that can be used to extract velocity statistics from the simulation output files (mean, root mean square, skewness and flatness). These statistics can also be calculated runtime as will be seen in Section \ref{sec: compile}.
@@ -25,22 +27,27 @@ On a local machine the code can be compiled and run just by executing the \textt
 
 \section{Output of a simulation}
 Depending on the parameters choice when compiling the code, the code can give as an output different data, that will be all saved in the subfolder \texttt{results} inside the \texttt{set\_run} folder.\\
-The code will always save the initial and final velocity fields (and the phase field, if it is activated) both in physical and modal space, the $x$, $y$, $z$ axis arrays and a time check file. This latter file will include the simulation current time, the bulk Reynolds number and, for the phase field case only, also the mean value of $\phi$ all over the domain and the integral of the phase $\phi=+1$ (to check the mass losses).\\
+The code will always save the initial and final velocity fields (and the phase field, surfactant, temperature, particles position and velocity if they are activated) both in physical and modal space, the $x$, $y$, $z$ axis arrays and a time check file. 
+This latter file will include the simulation current time, the bulk Reynolds number and, for the phase field case only, also the mean value of $\phi$ all over the domain and the integral of the phase $\phi=+1$ (to check the mass losses).
+Additional parameters can be included in this file depending on the modules activated.\\
 In addition the output of the simulation includes:
 \begin{itemize}
-\item Flow field data (and phase field, if activated) in physical space: \texttt{[variable name]\_[number of time step].dat}
-\item Flow field data (and phase field, if activated) in modal space: \texttt{[variable name]c\_[number of time step].dat}
+\item Flow field data (and other variables, if activated) in physical space: \texttt{[variable name]\_[number of time step].dat}
+\item Flow field data (and other variables, if activated) in modal space: \texttt{[variable name]c\_[number of time step].dat}
 \item Mean, root mean square, skewness and flatness for the flow field ($u$, $v$, $w$) (single array in the wall-normal direction). Single formatted file \texttt{stats.dat}.
 \item Mean pressure and root mean square of pressure fluctuations (single array in the wall-normal direction). The mean pressure value does not include the mean pressure gradient in $x$ and $y$ directions. The pressure solver works for a fully-developed channel flow with a non-zero mean velocity in the $x$ direction and for a single phase flow. Single formatted file \texttt{budget.dat}; the first lines of the file explain its content.
 \item Energy budgets. For the pressure--strain correlation the pressure calculated above is used, so they do not consider the presence of multiple phases (the energy balance may not be zero for a multiphase flow, since some terms are missing/not properly calculated). The energy budgets are saved in the same file as the pressure (\texttt{budget.dat}).
 \item Streamwise and spanwise power spectra for $u'$, $v'$ and $w'$ at $z^+=5$, $z^+=15$ and $z^+=\Re$. Power spectra in $x$ direction are saved in the file \texttt{power\_xspectra.dat}, while those in $y$ direction in the file \texttt{power\_yspectra.dat}.
 \end{itemize}
-Velocity and eventually phase field are saved in a binary file, written with the same endianness and format as the MPI implementation of the machine where the simulation was run.\\
-In future others output may be added to the code.
+Velocity and eventually other variables are saved in a binary file, written with the same endianness and format as the MPI implementation of the machine where the simulation was run.\\
+In future others output can be added to the code.
 
 \section{Post-processing}
-At the present time two codes are available for direct post-processing of the output data; the first one, in the folder \texttt{stats\_calc} evaluate the statistics of the flow field (can be done also at run-time), while the other, \texttt{paraview\_output\_fg}, generates Paraview compatible output file. Both these codes use either data in physical space, either in modal space.\\
-The statistics calculation runs alway on three MPI processes, one handle $u$ data, another $v$ data and the third $w$ data. The Paraview output generation can work independently on several cores: each core takes care of writing the output at a certain time-step. Use the input file to modify some parameters of the program to better handle the output.
+At the present time two codes are available for direct post-processing of the output data; the first one, in the folder \texttt{stats\_calc} evaluate the statistics of the flow field (can be done also at run-time), while the other, \texttt{paraview\_output\_fg}, generates Paraview compatible output file. 
+Both these codes use either data in physical space, either in modal space.\\
+The statistics calculation runs alway on three MPI processes, one handle $u$ data, another $v$ data and the third $w$ data. 
+The Paraview output generation can work independently on several cores: each core takes care of writing the output at a certain time-step. 
+Use the input file to modify some parameters of the program to better handle the output (number of variables, output grid, etc.)
 
 \section{The \texttt{compile.sh} file}
 \label{sec: compile}
@@ -51,8 +58,13 @@ When running a simulation this is the only part that should be modified; unless 
 Always pay attention to the parameter type (integer, real, double, \dots) when editing values.
 \begin{itemize}
 \item \texttt{machine} : declare which machine is used for the simulation (local machine, Discoverer, VSC5, Leonardo \dots). According to the machine chosen, the proper modules are loaded and (on a supercomputer) the proper batch scheduler instructions will be selected in the \texttt{go.sh} script.
-\texttt{openacc\_flag}: This flag is automatically set depending on which machine is used. This flag enables to use of GPUs on supported machines (e.g. Nvidia GPUs). For some machines, there might be two machine numbers, one with and one without GPU accelerationo.
-\item \texttt{fftw\_flag} : can be 0 or 1; if 0 the plans for the Fourier and Chebyshev transforms will be created using the default algorithm. On the other hand, if 1 is selected, the plan creation will take much more time, but it will choose the optimal algorithm to perform the transforms. A value equal to 1 will results in a much higher time for the \texttt{FFTW} plan creation, but it should choose the most performing algorithm according to the size of the transforms and the machine where the simulation are run.
+\texttt{openacc\_flag}: This flag is automatically set depending on which machine is used. 
+This flag enables to use of GPUs on supported machines (e.g. Nvidia GPUs). 
+For some machines, there might be two machine numbers, one with and one without GPU acceleration (e.g. M100 and Leonardo).
+\item \texttt{fftw\_flag} : can be 0 or 1; if 0 the plans for the Fourier and Chebyshev transforms will be created using the default algorithm. 
+On the other hand, if 1 is selected, the plan creation will take much more time, but it will choose the optimal algorithm to perform the transforms. 
+A value equal to 1 will results in a much higher time for the \texttt{FFTW} plan creation, but it should choose the most performing algorithm according to the size of the transforms and the machine where the simulation are run.
+If GPU-acceleration is used, cuFFT does not have this option and the default algorithm for plan creation is employed.
 \item \texttt{ix} : the number of points is always a power of two: the number of points in $x$ direction is $\texttt{NX}=2^\texttt{ix}$.
 \item \texttt{iy} : same as \texttt{ix}, but for the $y$ direction: the number of points in $y$ direction is $\texttt{NY}=2^\texttt{iy}$.
 \item \texttt{iz} : number of points in $z$ direction is expressed as $\texttt{NZ}=2^\texttt{iz}+1$, since Chebyshev transforms are faster on an odd number of points.
@@ -61,23 +73,31 @@ Always pay attention to the parameter type (integer, real, double, \dots) when e
 \item \texttt{exp\_z} : Expansion factor along z for the variables that can be resolved on the finer grid.
 \item \texttt{NYCPU} : number of division of the domain for parallelization ($y$ direction in physical space, $z$ direction in modal space). In physical space each MPI process holds roughly $N_z\times N_y/N_{y,cpu} \times N_z/N_{z,cpu}$ points (for the exact method please refer to Chapter \ref{chap: dom_decomp}). In modal space each MPI process holds roughly $N_x/N_{y,cpu}\times N_y/N_{z,cpu}\times N_z$. When running 2D simulation always run on a $x-y$ plane so the value of \texttt{NYCPU} must be set to 1.
 \item \texttt{NZCPU} : number of division of the domain for parallelization ($z$ direction when in physical space, $y$ direction when in modal space).
-\item \texttt{NNT} : total number of MPI processes used to run the code; equal to \texttt{NYCPU}$\times$\texttt{NZCPU}.
+%\item \texttt{NNT} : total number of MPI processes used to run the code; equal to \texttt{NYCPU}$\times$\texttt{NZCPU}.
+\item \texttt{multinode}: if running on a single node or many nodes, default value is 0, this parameter has an effect only when the LPT is used.
+\item \texttt{nodesize}: size of the node (number of MPI tasks per node), this parameter is important only when the LPT is used. It is used to split among the N nodes that solve the Eulerian fields and the N+1 node that take care of the particles.
 \item \texttt{restart} : if equal to 0 the simulation is a new simulation, otherwise a previous simulation is restarted. When restarting a new simulation the code will automatically set the proper initial conditions for the flow field and for the phase field (if active). All the other parameters can be modified freely. The \texttt{restart} flag determines also which files will be kept and which deleted (please refer to Section \ref{sec: restart} for a complete description).
 \item \texttt{nt\_restart} : time step from which restarting the simulation; the code will thus read the corresponding flow (and phase) fields.
+\end{itemize}
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+{\bf Navier-Stokes parameters}\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\begin{itemize}[label={$\circ$}]
 \item \texttt{incond} : defines which is the initial condition of the simulation. The complete list of initial condition are reported in the \texttt{compile.sh} script. Some examples are:
-\begin{enumerate}
+\begin{itemize}
 \item zero velocity all over the domain
 \item laminar Poiseuille flow in $x$ direction (generated from a unitary pressure gradient)
 \item random velocity value for $u$, $v$, $w$
 \item read input from file (parallel read)
 \item read input from file (serial read, used for retro-compatibility with legacy data files)
+\item shear flow along the $x$ or $y$ directions
 \item \dots
-\end{enumerate}
+\end{itemize}
 \item \texttt{Re} : $\Re$ number used for the simulation.
 \item \texttt{Co} : Courant number threshold value, if the Courant number exceeds this value the simulation is stopped.
 \item \texttt{gradpx} : mean pressure gradient along $x$ direction, defined as $\overline{\frac{\de P}{\de x}}$.
 \item \texttt{gradpy} : mean pressure gradient along $y$ direction, defined as $\overline{\frac{\de P}{\de y}}$.
-\item \texttt{cpi\_flag} : if enabled (1), simulations are performed using the constant power input framework and pressure gradient is adapted to the flow-rate so to keep constant the power injected (supported only along the $x$ direction).
+\item \texttt{cpi\_flag} : if enabled (1), simulations are performed using the constant power input framework and pressure gradient is adapted to the flow-rate so to keep constant the power injected (supported only along the $x$ direction and for 3D domain).
 \item \texttt{repow}: Power Reynolds number used to compute the pressure gradient (computed on the effective viscosity.
 \item \texttt{lx} : size of the domain ($x$ direction) normalized by $\pi$.
 \item \texttt{ly} : size of the domain ($y$ direction) normalized by $\pi$.
@@ -94,7 +114,13 @@ Always pay attention to the parameter type (integer, real, double, \dots) when e
 \item \texttt{dt} : value of the time step used for time advancement.
 \item \texttt{bc\_upb} : boundary conditions on the upper wall, if 0 applies no-slip condition, if 1 applies free-slip condition.
 \item \texttt{bc\_lb} : boundary conditions on the lower wall, if 0 applies no-slip condition, if 1 applies free-slip condition.
-\item \texttt{phi\_flag} : if equal to 0 the phase field part is deactivated and the Cahn--Hilliard equation will not be solved; if equal to 1 the phase field part is activated and the Cahn--Hilliard equation is solved. All the following part is used only when the phase field is activated.
+\end{itemize}
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+{\bf Phase field parameters}\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\begin{itemize}[label={$\circ$}]
+\item \texttt{phi\_flag} : if equal to 0 the phase field part is deactivated and the Cahn--Hilliard equation will not be solved; if equal to 1 the phase field part is activated and the Cahn--Hilliard equation is solved. 
+All the following parameters are used only when the phase field is activated.
 \item \texttt{phicor\_flag} : Enables different phase-field formulations.
 \begin{itemize}[label={$\circ$}]
 \item 0:~Standard CH equation.
@@ -111,12 +137,12 @@ Always pay attention to the parameter type (integer, real, double, \dots) when e
 \item \texttt{matchedrho} : if equal to zero the two phases have different densities; if equal to 1 their densities are equal. Warning: this value and the following one must be coherent, otherwise the code will stop (if \texttt{matchedrho}=0, \texttt{rhor} must be different from 1).
 \item \texttt{rhor} : density ratio of the phase $\phi=+1$ over the phase $\phi=-1$ (density ratio of one phase with respect to the carrier, for example density of the drop over density of the carrier fluid).
 \item \texttt{matchedvis} : if equal to zero the two phases have different viscosities; if equal to 1 their viscosities are equal. Warning: this value and the following one must be coherent, otherwise the code will stop (if \texttt{matchedvis}=0, \texttt{visr} must be different from 1).
-\item \texttt{non\_newtonian}: Enables the non-Newtonian-Carreau model in the phase $\phi=+1$. \texttt{matchedvis} must be also set to zero
-\item \texttt{exp\_non\_new}: Exponent of the non-Newtonian model, \texttt{viscosity ratio} is used to set the infinity viscosity. 
 \item \texttt{visr} : viscosity ratio of the phase $\phi=+1$ over the phase $\phi=-1$ (viscosity ratio of one phase with respect to the carrier, for example viscosity of the drop over viscosity of the carrier fluid).
+\item \texttt{non\_newtonian}: Enables the non-Newtonian Carreau-Yasuda model in the phase $\phi=+1$. \texttt{matchedvis} must be also set to zero
+\item \texttt{exp\_non\_new}: Exponent of the non-Newtonian model, \texttt{viscosity ratio} is used to set the infinity viscosity (see Carreau-Yasuda model)
 \item \texttt{We} : value of Weber number.
-\item \texttt{Ch} : value of Cahn number. Defines the width of the interface; always make sure that the interface contains at least three points.
-\item \texttt{Pe} : value of Peclet number.
+\item \texttt{Ch} : value of Cahn number. Defines the width of the interface; always make sure that the interface contains at least three points (check with the code contained in the folder grid\_check)
+\item \texttt{Pe} : value of Peclet number (for the phase-field variable $\phi$)
 \item \texttt{Fr} : value of Froud number.
 \item \texttt{body\_flag}: Introduce a body force $\propto Bd*(\phi+1)/2$ (see below for detail on $Bd$.
 \item \texttt{Bd}: Coefficient for the body force.
@@ -150,6 +176,11 @@ Always pay attention to the parameter type (integer, real, double, \dots) when e
 \item 1 : buoyancy and weight effects
 \item 2 : only buoyancy effects
 \end{itemize}
+\end{itemize}
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+{\bf Surfactant parameters}\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\begin{itemize}[label={$\circ$}]
 \item \texttt{psi\_flag} : Enables solution of the CH-like equation for the surfactant (second order)
 \item \texttt{Pe\_psi}: Surfactant Peclet number.
 \item \texttt{Ex}: Ex number for the surfactant.
@@ -166,6 +197,11 @@ Always pay attention to the parameter type (integer, real, double, \dots) when e
 \end{itemize}
 \item \texttt{psi\_mean}: Average surfactant concentration.
 \item \texttt{psi\_bulk}: Bulk surfactant concentration.
+\end{itemize}
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+{\bf Energy equation parameters}\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\begin{itemize}[label={$\circ$}]
 \item \texttt{temp\_flag} : Enables solution of the energy equation (temperature).
 \item \texttt{Ra}: Rayleigh number; for Rayleigh-Benard chose $Re=\sqrt{Ra*Pr}/4$.
 \item \texttt{Pr}: Prandtl number.
@@ -177,9 +213,23 @@ Always pay attention to the parameter type (integer, real, double, \dots) when e
 \item 2 : Phase $\phi=+1$ (hot) and $\phi=-1$ (cold), only for heat transfer in multiphase turbulence.
 \item \texttt{temp\_mean}: Mean temperature for initial condition.
 \item \texttt{boussinesq}: Activate buoyancy term in N-S.
-\item \texttt{part\_flag}: Enables Lagrangian particle Tracking.
-% \textcolor{red}{This part is to be continued with particles parameters.}
 \end{itemize}
+\end{itemize}
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\\
+{\bf LPT parameters}\\
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+\begin{itemize}[label={$\circ$}]
+\item \texttt{part\_flag}: Enables Lagrangian particle Tracking.
+\item \texttt{part\_number}:  Number of particle for each set.
+\item \texttt{tracer}: Define if the particle is inertial (0) or is a tracer (1).
+\item \texttt{nset}: Number of sets of particles, multiple sets can be used only in the one-way coupled regime.
+\item \texttt{stokes}: Stokes number for each particle set.
+\item \texttt{stokes\_drag}: Type of drag force for the particle, 0 standard Stokes drag, 1 Corrected via the Schiller-Naumann coefficient.
+\item \texttt{part\_gravity}: Add the gravity term to the particle.
+\item \texttt{twoway}: One- or two-way coupled LPT, two-way is at the moment not implemented but subroutines are already present. 
+\item \texttt{part\_dump}: Frequency of the position, velocity, fluid velocity (at particle position) outputs for the particles.
+\item \texttt{subiterations}: Number of sub-iterations performed, must be greater than one  whe for $St <<1$.
+% \textcolor{red}{This part is to be continued with particles parameters.}
 \end{itemize}
 
 \subsection{Cleaning of \texttt{set\_run} folder}

@@ -1,9 +1,10 @@
-This handbook is intended to give a general, but very detailed description of the code \texttt{FLOW36DUAL}.
+This handbook is intended to give a general, but very detailed description of the code \texttt{FLOW36}.
 The code was initially written in 2017 at TU Wien by \@author, as a replacement for the legacy code \texttt{FLOWSB}, in order to get better overall performance, a more readable and up to date code and improve its scalability.
 The code was then ported to GPU architectures during the summer 2022.
 The code performs Direct Numerical Simulations (DNS) in a channel geometry, using a pseudo-spectral spatial discretization. 
-The flow solver is coupled with a phase variable solver, which solves the Cahn--Hilliard equation (phase-field method).
+The flow solver is coupled with a phase-field method, which relies on the Cahn--Hilliard equation (phase-field method).
 The solver can also accounts for the presence of surfactants (in the phase-field method framework) as well as describe a passive scalar (heat/mass transfer problems).
+In addition, a Lagrangian particle tracking algorithm is implemented to track the motion of inertial spherical sub-Kolmogorov particles.
 %The code was further developed during the MSCA-ITN-EID project COMETE "Next-Generation Computational Methods for Enhanced Multiphase Flow Processes” (No 813948) to simulate turbulent three-phase flows and turbulent bubbly-laden flows.
 
 
