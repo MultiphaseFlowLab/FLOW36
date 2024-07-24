@@ -1,5 +1,5 @@
 subroutine lagran4(ppos,pvel)
-
+!$acc routine seq
 use commondata
 use grid
 use particle
@@ -62,6 +62,7 @@ do while(j4.gt.ny)
  j4=j4-ny
 enddo
 
+
 ! z indexes
 k0=k2-2
 k1=k2-1
@@ -81,6 +82,7 @@ do while(k4.gt.nz)
  k3=k3-1
  k4=k4-1
 enddo
+
 
 iarr=[i0,i1,i2,i3,i4]
 jarr=[j0,j1,j2,j3,j4]
@@ -217,6 +219,7 @@ j2=pos_ind(1)
 pos_ind=minloc(abs((z+1.0d0)*re-ppos(3)))
 k2=pos_ind(1)
 
+
 ! initialize other indexes, check also for periodicity
 ! x indexes (periodic)
 i0=i2-2
@@ -352,7 +355,10 @@ pol(5,3)=(ppos(3)-x0(3))/(x4(3)-x0(3))* &
  &       (ppos(3)-x2(3))/(x4(3)-x2(3))* &
  &       (ppos(3)-x3(3))/(x4(3)-x3(3))
 
+
 ptemp=0.0d0
+
+
 
 #if NX > 4
 ! if there are enough points in x for a 4th order Lagrangian interpolation

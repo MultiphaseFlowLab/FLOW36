@@ -247,6 +247,7 @@ allocate(fgradphix(nx,fpz,fpy))
 allocate(fgradphiy(nx,fpz,fpy))
 allocate(fgradphiz(nx,fpz,fpy))
 
+!$acc kernels
 do i=1,spx
   gradphix(i,:,:,1)=-kx(i+cstart(1))*phic(i,:,:,2)
   gradphix(i,:,:,2)=+kx(i+cstart(1))*phic(i,:,:,1)
@@ -255,12 +256,14 @@ do j=1,spy
   gradphiy(:,:,j,1)=-ky(j+cstart(3))*phic(:,:,j,2)
   gradphiy(:,:,j,2)=+ky(j+cstart(3))*phic(:,:,j,1)
 enddo
+!$acc end kernels
 call dz(phic,gradphiz)
 
 call spectral_to_phys(gradphix,fgradphix,0)
 call spectral_to_phys(gradphiy,fgradphiy,0)
 call spectral_to_phys(gradphiz,fgradphiz,0)
 
+!$acc kernels
 threshold=0.9d0
 ! gthreshold=0.5d0*(1.0d0-threshold**2)/(dsqrt(2.0d0)*ch)
 do j=1,fpy
@@ -280,6 +283,7 @@ do j=1,fpy
   enddo
  enddo
 enddo
+!$acc end kernels
 
 call phys_to_spectral(fgradphix,gradphix,0)
 call phys_to_spectral(fgradphiy,gradphiy,0)
@@ -289,13 +293,17 @@ deallocate(fgradphix,fgradphiy,fgradphiz)
 
 #if match_dens == 2
 ! rescale NS equation if rhor > 1 for improved stability
+!$acc kernels
 s1=s1+stuart/rhor*gradphix
 s2=s2+stuart/rhor*gradphiy
 s3=s3+stuart/rhor*gradphiz
+!$acc end kernels
 #else
+!$acc kernels
 s1=s1+stuart*gradphix
 s2=s2+stuart*gradphiy
 s3=s3+stuart*gradphiz
+!$acc end kernels
 #endif
 
 deallocate(gradphix,gradphiy,gradphiz)
@@ -372,6 +380,7 @@ allocate(a6(spx,nz,spy,2))
 
 call dz(uc,a6)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a4(i,:,j,1)=-kx(i+cstart(1))*uc(i,:,j,2)
@@ -382,6 +391,8 @@ do j=1,spy
     a6(i,:,j,2)=a6(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
@@ -391,6 +402,7 @@ call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
 call spectral_to_phys(a6,a6f,0)
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -401,6 +413,7 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 
 call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
@@ -408,12 +421,14 @@ call phys_to_spectral(a6f,a6,0)
 
 allocate(a7(spx,nz,spy,2))
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
 
 call dz(a6,a4)
 
@@ -442,6 +457,7 @@ allocate(a6(spx,nz,spy,2))
 
 call dz(vc,a6)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a4(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
@@ -452,6 +468,8 @@ do j=1,spy
     a6(i,:,j,2)=a6(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
@@ -461,6 +479,7 @@ call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
 call spectral_to_phys(a6,a6f,0)
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -471,6 +490,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
@@ -478,12 +499,15 @@ call phys_to_spectral(a6f,a6,0)
 
 allocate(a7(spx,nz,spy,2))
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 call dz(a6,a4)
 
@@ -513,6 +537,7 @@ call dz(uc,a4)
 call dz(vc,a5)
 call dz(wc,a6)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a4(i,:,j,1)=a4(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
@@ -521,6 +546,8 @@ do j=1,spy
     a5(i,:,j,2)=a5(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
@@ -530,6 +557,7 @@ call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
 call spectral_to_phys(a6,a6f,0)
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -540,6 +568,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
@@ -547,20 +577,27 @@ call phys_to_spectral(a6f,a6,0)
 
 allocate(a7(spx,nz,spy,2))
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 call dz(a6,a4)
 
 ! add to S term a4+a7
 #if match_dens == 2
+!$acc kernels
 s3=s3+(a4+a7)/(re*rhor)
+!$acc end kernels
 #else
+!$acc kernels
 s3=s3+(a4+a7)/re
+!$acc end kernels
 #endif
 
 deallocate(a4,a5,a6,a7)
@@ -586,6 +623,7 @@ call dz(vc,a8)
 call dz(wc,a9)
 
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a4(i,:,j,1)=-kx(i+cstart(1))*2d0*uc(i,:,j,2)
@@ -602,6 +640,7 @@ do j=1,spy
     a9(i,:,j,2)=2d0*a9(i,:,j,2)
   enddo
 enddo
+!$acc end kernels
 
 
 allocate(a4f(nx,fpz,fpy))
@@ -622,6 +661,7 @@ deallocate(a4,a5,a6,a7,a8,a9)
 allocate(viscnon(nx,fpz,fpy))
 
 !computing the viscosity map
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -635,12 +675,14 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 
 ! computing the first row...
 allocate(a10f(nx,fpz,fpy))
 allocate(a11f(nx,fpz,fpy))
 allocate(a12f(nx,fpz,fpy))
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -651,6 +693,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 deallocate(a4f)
 
@@ -663,25 +707,33 @@ call phys_to_spectral(a10f,a4,0)
 call phys_to_spectral(a11f,a5,0)
 call phys_to_spectral(a12f,a6,0)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 call dz(a6,a4)
 
 ! add to S term a4+a7
 ! rescale NS if rhor > 1 for improved stability
 #if match_dens == 2
+!$acc kernels
 s1=s1+1.0d0/(re*rhor)*(a4+a7)
+!$acc end kernels
 #else
+!$acc kernels
 s1=s1+1.0d0/(re)*(a4+a7)
+!$acc end kernels
 #endif
 
 
 ! second row
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -692,6 +744,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 deallocate(a5f,a6f)
 
@@ -699,24 +753,31 @@ call phys_to_spectral(a10f,a4,0)
 call phys_to_spectral(a11f,a5,0)
 call phys_to_spectral(a12f,a6,0)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
 
 call dz(a6,a4)
 
 ! add to S term a4+a7
 ! rescale NS if rhor > 1 for improved stability
 #if match_dens == 2
+!$acc kernels
 s2=s2+1d0/(re*rhor)*(a4+a7)
+!$acc end kernels
 #else
+!$acc kernels
 s2=s2+1d0/(re)*(a4+a7)
+!$acc end kernels
 #endif
 
 ! third row
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -727,6 +788,7 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 
 deallocate(viscnon,a7f,a8f,a9f)
 
@@ -736,21 +798,27 @@ call phys_to_spectral(a12f,a6,0)
 
 deallocate(a10f,a11f,a12f)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
 
 call dz(a6,a4)
 
 ! add to S term a4+a7
 ! rescale NS if rhor > 1 for improved stability
 #if match_dens == 2
+!$acc kernels
 s3=s3+1d0/(re*rhor)*(a4+a7)
+!$acc end kernels
 #else
+!$acc kernels
 s3=s3+1d0/(re)*(a4+a7)
+!$acc end kernels
 #endif
 
 
@@ -774,6 +842,7 @@ allocate(a6(spx,nz,spy,2))
 
 call dz(uc,a6)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a4(i,:,j,1)=-kx(i+cstart(1))*uc(i,:,j,2)
@@ -784,6 +853,8 @@ do j=1,spy
     a6(i,:,j,2)=a6(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
@@ -793,6 +864,7 @@ call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
 call spectral_to_phys(a6,a6f,0)
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -803,6 +875,7 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 
 call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
@@ -810,21 +883,27 @@ call phys_to_spectral(a6f,a6,0)
 
 allocate(a7(spx,nz,spy,2))
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
 
 call dz(a6,a4)
 
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
+!$acc kernels
 s1=s1+(a4+a7)/(re*rhor)*visr
+!$acc end kernels
 #else
+!$acc kernels
 s1=s1+(a4+a7)/re*visr
+!$acc end kernels
 #endif
 
 deallocate(a4)
@@ -844,6 +923,7 @@ allocate(a6(spx,nz,spy,2))
 
 call dz(vc,a6)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a4(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
@@ -854,6 +934,8 @@ do j=1,spy
     a6(i,:,j,2)=a6(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
@@ -863,6 +945,7 @@ call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
 call spectral_to_phys(a6,a6f,0)
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -873,6 +956,7 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 
 call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
@@ -880,21 +964,27 @@ call phys_to_spectral(a6f,a6,0)
 
 allocate(a7(spx,nz,spy,2))
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
 
 call dz(a6,a4)
 
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
+!$acc kernels
 s2=s2+(a4+a7)/(re*rhor)*visr
+!$acc end kernels
 #else
+!$acc kernels
 s2=s2+(a4+a7)/re*visr
+!$acc end kernels
 #endif
 
 deallocate(a4)
@@ -916,6 +1006,7 @@ call dz(uc,a4)
 call dz(vc,a5)
 call dz(wc,a6)
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a4(i,:,j,1)=a4(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
@@ -924,6 +1015,8 @@ do j=1,spy
     a5(i,:,j,2)=a5(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
@@ -933,6 +1026,7 @@ call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
 call spectral_to_phys(a6,a6f,0)
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -943,6 +1037,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
@@ -950,21 +1046,28 @@ call phys_to_spectral(a6f,a6,0)
 
 allocate(a7(spx,nz,spy,2))
 
+!$acc kernels
 do j=1,spy
   do i=1,spx
     a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
     a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
   enddo
 enddo
+!$acc end kernels
+
 
 call dz(a6,a4)
 
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
+!$acc kernels
 s3=s3+(a4+a7)/(re*rhor)*visr
+!$acc end kernels
 #else
+!$acc kernels
 s3=s3+(a4+a7)/re*visr
+!$acc end kernels
 #endif
 
 deallocate(a4)
@@ -992,6 +1095,7 @@ deallocate(a6f)
 ! S term order is S1:x, S2:y, S3:z
 allocate(a4f(nx,fpz,fpy))
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1001,6 +1105,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4(spx,nz,spy,2))
 
@@ -1008,9 +1114,12 @@ call phys_to_spectral(a4f,a4,0)
 
 deallocate(a4f)
 
+!$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
 s2=s2+1.0d0/fr**2*a4*grav(3)
 s3=s3+1.0d0/fr**2*a4*grav(2)
+!$acc end kernels
+
 
 deallocate(a4)
 
@@ -1020,6 +1129,7 @@ deallocate(a4)
 ! S term order is S1:x, S2:y, S3:z
 allocate(a4f(nx,fpz,fpy))
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1029,6 +1139,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4(spx,nz,spy,2))
 
@@ -1036,9 +1148,12 @@ call phys_to_spectral(a4f,a4,0)
 
 deallocate(a4f)
 
+!$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
 s2=s2+1.0d0/fr**2*a4*grav(3)
 s3=s3+1.0d0/fr**2*a4*grav(2)
+!$acc end kernels
+
 
 deallocate(a4)
 
@@ -1054,6 +1169,7 @@ deallocate(a4)
 ! S term order is S1:x, S2:y, S3:z
 allocate(a4f(nx,fpz,fpy))
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1063,6 +1179,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4(spx,nz,spy,2))
 
@@ -1070,9 +1188,12 @@ call phys_to_spectral(a4f,a4,0)
 
 deallocate(a4f)
 
+!$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
 s2=s2+1.0d0/fr**2*a4*grav(3)
 s3=s3+1.0d0/fr**2*a4*grav(2)
+!$acc end kernels
+
 
 deallocate(a4)
 
@@ -1082,6 +1203,7 @@ deallocate(a4)
 ! S term order is S1:x, S2:y, S3:z
 allocate(a4f(nx,fpz,fpy))
 
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1092,6 +1214,8 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
+
 
 allocate(a4(spx,nz,spy,2))
 
@@ -1120,6 +1244,7 @@ call spectral_to_phys(vc-vcp,a5f,1)
 call spectral_to_phys(wc-wcp,a6f,1)
 
 #if match_dens == 0
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1131,7 +1256,9 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 #elif match_dens == 2
+!$acc kernels
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1143,6 +1270,7 @@ do j=1,fpy
     enddo
   enddo
 enddo
+!$acc end kernels
 #endif
 
 
@@ -1160,13 +1288,17 @@ deallocate(a6f)
 
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
+!$acc kernels
 s1=s1-0.5d0*(1.0d0/rhor-1.0d0)*a4
 s2=s2-0.5d0*(1.0d0/rhor-1.0d0)*a5
 s3=s3-0.5d0*(1.0d0/rhor-1.0d0)*a6
+!$acc end kernels
 #else
+!$acc kernels
 s1=s1-0.5d0*(rhor-1.0d0)*a4
 s2=s2-0.5d0*(rhor-1.0d0)*a5
 s3=s3-0.5d0*(rhor-1.0d0)*a6
+!$acc end kernels
 #endif
 
 deallocate(a4)
@@ -1174,9 +1306,11 @@ deallocate(a5)
 deallocate(a6)
 
 ! update velocity previous value; uc,vc,wc will be updated in the following calculation
+!$acc kernels
 ucp=uc
 vcp=vc
 wcp=wc
+!$acc end kernels
 
 #endif
 
@@ -1187,9 +1321,11 @@ wcp=wc
 #if bodyflag == 1
 allocate(a4(spx,nz,spy,2))
 call phys_to_spectral(phi+1.0d0,a4,0)
+!$acc kernels
 s1=s1+body_d(1)*body_c*0.5d0*a4
 s2=s2+body_d(3)*body_c*0.5d0*a4
 s3=s3+body_d(2)*body_c*0.5d0*a4
+!$acc end kernels
 deallocate(a4)
 #endif
 
@@ -1200,8 +1336,10 @@ deallocate(a4)
 #if sgradpflag == 1
 allocate(a4(spx,nz,spy,2))
 call phys_to_spectral(phi,a4,0)
+!$acc kernels
 s1=s1+sgradp_d(1)*a4
 s2=s2+sgradp_d(3)*a4
+!$acc end kernels
 deallocate(a4)
 #endif
 
