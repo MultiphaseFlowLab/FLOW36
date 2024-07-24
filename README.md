@@ -1,5 +1,8 @@
 # FLOW36
-Github Repository of FLOW36 \
+Github Repository of FLOW36 
+
+If you use this code, please cite the relevant work: \
+G. Soligo, A. Roccon and A. Soldati, FLOW36: A Pseudo-spectral solver for phase-field based multiphase turbulence simulations on heterogeneous computing architectures, Arxiv.
 
 ## Main Developers:
 G. Soligo (https://github.com/giovannisoligo) \
@@ -7,8 +10,6 @@ A. Roccon (https://github.com/aroccon)
 
 ![](flow36_handbook/cop.jpeg)
 
-If you use this code, please cite the relevant work: \
-G. Soligo, A. Roccon and A. Soldati, FLOW36: A Pseudo-spectral solver for phase-field based multiphase turbulence simulations on heterogeneous computing architectures, Arxiv.
 
 
 ## Modules available in FLOW36:
@@ -25,5 +26,5 @@ G. Soligo, A. Roccon and A. Soldati, FLOW36: A Pseudo-spectral solver for phase-
 ## Published works:
 Click [here](http://calliope.dem.uniud.it) for a list of the published works
 
-# Validation data and initial fields:
-Click [here](10.6084/m9.figshare.26232683) for the validation data shown in the manuscript
+## Validation data and initial fields:
+Click [here](https://figshare.com/account/items/26232683/edit) for the validation data shown in the manuscript
