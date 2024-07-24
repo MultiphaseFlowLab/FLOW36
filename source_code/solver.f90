@@ -148,7 +148,7 @@ if(rank.lt.flow_comm_lim)then
  call spectral_to_phys(uc,u,1)
  call spectral_to_phys(vc,v,1)
  call spectral_to_phys(wc,w,1)
- !This is only a backup copy not used with ex* = 1, gpu code skip this part (strong slod down)
+ !This is only a backup copy not used with ex* = 1, gpu code skip this part (strong slow down)
 #if openaccflag == 0
   uc_fg=uc
   vc_fg=vc
@@ -210,11 +210,16 @@ if(rank.lt.flow_comm_lim)then
    call adams_bashforth_psi(spsi,hpsi)
  endif
 
+ !$acc kernels
  spsi_o=spsi
+ !$acc end kernels
 
  deallocate(spsi)
 
+ !$acc kernels
  hpsi=hpsi+psic_fg
+ !$acc end kernels
+
 
  call calculate_psi(hpsi)
 

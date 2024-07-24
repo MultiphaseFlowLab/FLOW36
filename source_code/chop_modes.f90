@@ -48,25 +48,31 @@ double precision :: varc(spxpsi,npsiz,spypsi,2)
 integer :: limx,llimy,ulimy
 
 ! chop high Fourier x modes
+!$acc kernels
 limx=floor(2.0/3.0*real(npsix/2+1))+1
 if(cstartpsi(1)+spxpsi.ge.limx)then
   varc(max(limx-cstartpsi(1),1):spxpsi,1:npsiz,1:spypsi,1)=0.0d0
   varc(max(limx-cstartpsi(1),1):spxpsi,1:npsiz,1:spypsi,2)=0.0d0
 endif
+!$acc end kernels
 
 
 ! chop high Fourier y modes
+!$acc kernels
 llimy=floor(2.0/3.0*real(npsiy/2+1))+1
 ulimy=npsiy-floor(2.0/3.0*real(npsiy/2))
 if((cstartpsi(3)+spypsi.ge.llimy).and.(cstartpsi(3).le.ulimy))then
   varc(1:spxpsi,1:npsiz,max(llimy-cstartpsi(3),1):min(ulimy-cstartpsi(3),spypsi),1)=0.0d0
   varc(1:spxpsi,1:npsiz,max(llimy-cstartpsi(3),1):min(ulimy-cstartpsi(3),spypsi),2)=0.0d0
 endif
+!$acc end kernels
 
 
 ! chop high Chebyshev modes
+!$acc kernels
 varc(1:spxpsi,floor(2.0*real(npsiz)/3.0)+1:npsiz,1:spypsi,1)=0.0d0
 varc(1:spxpsi,floor(2.0*real(npsiz)/3.0)+1:npsiz,1:spypsi,2)=0.0d0
+!$acc end kernels
 
 return
 end

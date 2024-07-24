@@ -18,7 +18,7 @@ call coarse2fine(phic,phic_fg)
 call spectral_to_phys_fg(phic_fg,phi_fg,1)
 call spectral_to_phys_fg(psic_fg,psi_fg,1)
 
-
+!$acc parallel loop collapse(3)
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
@@ -29,14 +29,17 @@ do j=1,fpypsi
   enddo
 enddo
 
+!$acc kernels
 a1=a1/pe_psi
 a2=a2/pe_psi
 a3=a3/pe_psi
+!$acc end kernels
 
 ! laplacian of phi
 call dz_fg(phic_fg,b1s)
 call dz_fg(b1s,spsi)
 
+!$acc parallel loop collapse(3)
 do j=1,spypsi
   do k=1,npsiz
     do i=1,spxpsi
@@ -48,6 +51,7 @@ enddo
 
 call spectral_to_phys_fg(spsi,fspsi,1)
 
+!$acc parallel loop collapse(3)
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
@@ -58,6 +62,7 @@ enddo
 
 
 ! d phi/dx
+!$acc kernels
 b1s=0.0d0
 do j=1,spypsi
   do k=1,npsiz
@@ -67,11 +72,13 @@ do j=1,spypsi
     enddo
   enddo
 enddo
+!$acc end kernels
 
 call spectral_to_phys_fg(b1s,a1,1)   ! d phi/dx
 
 b1s=0.0d0
 a4=0.0d0
+!$acc kernels
 do j=1,spypsi
   do k=1,npsiz
     do i=1,spxpsi
@@ -80,9 +87,11 @@ do j=1,spypsi
     enddo
   enddo
 enddo
+!$acc end kernels
 
 call spectral_to_phys_fg(b1s,a4,1)   ! d psi/dx
 
+!$acc parallel loop collapse(3)
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
@@ -93,6 +102,7 @@ enddo
 
 
 ! d phi/dy
+!$acc kernels
 b1s=0.0d0
 do j=1,spypsi
   do k=1,npsiz
@@ -102,9 +112,11 @@ do j=1,spypsi
     enddo
   enddo
 enddo
+!$acc end kernels
 
 call spectral_to_phys_fg(b1s,a1,1)   ! d phi/dy
 
+!$acc kernels
 b1s=0.0d0
 do j=1,spypsi
   do k=1,npsiz
@@ -114,9 +126,11 @@ do j=1,spypsi
     enddo
   enddo
 enddo
+!$acc end kernels
 
 call spectral_to_phys_fg(b1s,a4,1)   ! d psi/dy
 
+!$acc parallel loop collapse(3)
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
@@ -124,6 +138,7 @@ do j=1,fpypsi
     enddo
   enddo
 enddo
+
 
 
 ! d phi/dz
@@ -135,6 +150,7 @@ call dz_fg(psic_fg,b1s)
 
 call spectral_to_phys_fg(b1s,a4,1)   ! d psi/dz
 
+!$acc parallel loop collapse(3)
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
