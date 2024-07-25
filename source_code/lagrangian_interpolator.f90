@@ -1,5 +1,4 @@
 subroutine lagran4(ppos,pvel)
-!$acc routine seq
 use commondata
 use grid
 use particle

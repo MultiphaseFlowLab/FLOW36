@@ -1,5 +1,7 @@
 # FLOW36
-Github Repository of FLOW36 
+Github Repository of FLOW36. \
+FLOW36 is a pseudo-spectral code for direct numerical simualtion of multiphase turbulence based on a phase-field model approach.
+
 
 If you use this code, please cite the relevant works: \
 G. Soligo, A. Roccon and A. Soldati, FLOW36: A Pseudo-spectral solver for phase-field based multiphase turbulence simulations on heterogeneous computing architectures, Arxiv.
@@ -28,5 +30,19 @@ A. Roccon (https://github.com/aroccon)
 ## Published works:
 Click [here](http://calliope.dem.uniud.it) for a list of the published works
 
+
 ## Validation data and initial fields:
-Click [here](https://figshare.com/account/items/26232683/edit) for the validation data shown in the manuscript
+Click [here](https://doi.org/10.6084/m9.figshare.26232683) for the validation data shown in the manuscript
+
+
+## How to:
+See the handbook in the flow36_handbook folder
+
+
+## Packages/libraries required:
+ - Fortran compiler (tested wtth gfortran, ifort, nvfortran, ftn and xlf)
+ - MPI Library (tested with MPICH, Spectrum, IntelMPI, OpenMPI)
+ - FFTW library (for CPU runs)
+ - cuFFT library (for GPU runs, please install the Nvidia HPC-SDK)
+
+
