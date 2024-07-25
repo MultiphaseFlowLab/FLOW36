@@ -22,7 +22,7 @@
 #20 : VSC-5 (VSC) - GPU Partition
 #21 : Leonardo - CPU Partition
 #22 : Leoanrdo - GPU (Booster)
-machine="0"
+machine="1"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
@@ -35,6 +35,7 @@ savespectral="1"
 openacc_flag="0"
 
 elif [ "$machine" == "1" ]; then
+# assume openMPI is employed
 echo "=                                Local machine                               ="
 cp ./Local/makefile ./makefile
 cp ./Local/go.sh ./go.sh
@@ -1339,7 +1340,7 @@ sed -i "s/include 'fftw3.f03'/!include 'fftw3.f03'/g" ./set_run/sc_compiled/modu
 fi
 
 
-if [[ "$machine" == "7" || "$machine" == "9" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" || "$machine" == "22" ]]; then
+if [[ "machine"=="1" || "$machine" == "7" || "$machine" == "9" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" || "$machine" == "22" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
