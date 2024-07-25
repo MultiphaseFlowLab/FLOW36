@@ -1362,10 +1362,8 @@ echo "=                      BEGINNING OF COMPILATION                           
 echo "=============================================================================="
 echo ""
 
-# double make needed because first one return errors for missing modules, but then creates them,
-# second make makes the code executable with the proper module
-# modules must be removed to update data inside them when changing simulation parameters like
-# nx, ny, nz, nycpu, nzcpu
+#Single make should be fine in all machines
+#If problems with module, restore the double make
 make
 
 #make

@@ -8,7 +8,8 @@ All the subroutine from a library (for example FFTW, cuFFT or MPI libraries) wil
 
 
 \subsection{\texttt{FLOW\_36}}
-This is the main program; it takes care of starting and terminating the MPI execution of the code. As shown in Figure \ref{fig: main_struct}, the first part of this script is the MPI parameter definition part: once the code is run on a determinate number of MPI processes, all the MPI processes are numbered and the total number of MPI processes is defined (the total number of MPI process is already defined when running the code, here its value is assigned to a variable). 
+This is the main program; it takes care of starting and terminating the MPI execution of the code. 
+The first part of this script is the MPI parameter definition part: once the code is run on a determinate number of MPI processes, all the MPI processes are numbered and the total number of MPI processes is defined (the total number of MPI process is already defined when running the code, here its value is assigned to a variable). 
 The number of MPI process in the $y$ and $z$ directions (\texttt{NYCPU} and \texttt{NZCPU}) and the number of grid points in the three directions are already defined in the module \texttt{commondata} as parameters, such that they are known before the input section. 
 After the MPI initialization the code verifies that the number of MPI processes in the two directions and the grid are compatible, which means that each MPI process must always have at least one point in each direction. Due to the domain transposition and the Fourier transform the code must verify that \texttt{NYCPU} is smaller than \texttt{NX}/2 and \texttt{NY} and that \texttt{NZCPU} is smaller than \texttt{NZ} and \texttt{NY}. If this check is passed the code goes on with the execution, otherwise it will stop prompting an error message.\\
 The input part is performed with the call to the \texttt{read\_input} subroutine.\\
@@ -107,7 +108,8 @@ The following step is setting the initial conditions on the velocity; at the pre
 \item Read from an old input file (for retro-compatibility with the previous code).  This read is serial, every MPI process reads the whole flow field and keeps only its own part. May not work on clusters for large grids (not enough available memory in the node).
 \end{enumerate}
 Then, depending on the user choice, the boundary conditions on the velocity and the vorticity at the upper and lower walls are set.\\
-At the end of the subroutine the auxiliary problems for the influence matrix method are solved and included in the module \texttt{velocity}. For the influence matrix method refer to Section \ref{sec: infl_matrix}.
+At the end of the subroutine the auxiliary problems for the influence matrix method are solved and included in the module \texttt{velocity}. 
+%For the influence matrix method refer to Section \ref{sec: infl_matrix}.
 
 \subsection{\texttt{initialize\_phi}}
 This subroutine allocates the phase field arrays in physical and modal space at first; then the paraemter \texttt{s\_coeff} is defined. This parameter is used for the splitting of the Cahn--Hilliard equation.

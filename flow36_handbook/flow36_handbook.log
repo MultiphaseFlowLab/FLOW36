@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.14)  25 JUL 2024 09:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.14)  25 JUL 2024 16:25
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1656,23 +1656,14 @@ seprt\T1/lmr/m/n/10.95 (-20) . Known
 
 ) (./cap/code_flowchart.tex [12]
 Chapter 2.
-
-LaTeX Warning: Reference `fig: main_struct' on page 13 undefined on input line 
-11.
-
 [13
 
 ] [14] [15{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}
-]
-
-LaTeX Warning: Reference `sec: infl_matrix' on page 16 undefined on input line 
-110.
-
-[16]
+] [16]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 130.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 132.
 
-Overfull \hbox (10.911pt too wide) in paragraph at lines 143--145
+Overfull \hbox (10.911pt too wide) in paragraph at lines 145--147
 \T1/lmr/m/n/10.95 (-20) The in-put pa-ram-e-ters $\OML/lmm/m/it/10.95 h \OT1/lm
 r/m/n/10.95 (-20) =$\T1/lmtt/m/n/10.95 height\T1/lmr/m/n/10.95 (-20) , $\OML/lm
 m/m/it/10.95 A[] \OT1/lmr/m/n/10.95 (-20) =$\T1/lmtt/m/n/10.95 wave_amp_x\T1/lm
@@ -1682,7 +1673,7 @@ lmr/m/n/10.95 (-20) =$\T1/lmtt/m/n/10.95 wave_amp_y\T1/lmr/m/n/10.95 (-20) ,
  []
 
 [17]
-Overfull \hbox (9.12563pt too wide) in paragraph at lines 167--167
+Overfull \hbox (9.12563pt too wide) in paragraph at lines 169--169
 []\T1/lmtt/b/n/12 write_output\T1/lmr/bx/n/12 (-20) , \T1/lmtt/b/n/12 write_out
 put_spectral \T1/lmr/bx/n/12 (-20) and \T1/lmtt/b/n/12 write_output_recovery 
  []
@@ -1799,19 +1790,16 @@ Overfull \hbox (10.46361pt too wide) in paragraph at lines 117--134
  [45] (./flow36_handbook.aux (./source/slab_ph.aux)
 (./source/slab_sp.aux) (./source/pencil_ph.aux) (./source/pencil_sp.aux))
 
-LaTeX Warning: There were undefined references.
-
-
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `flow36_handbook.out' has not changed.
 (rerunfilecheck)             Checksum: 6B73994E8DCCB8B68F4F9FF03A47C415;14139.
  ) 
 Here is how much of TeX's memory you used:
- 46073 strings out of 476025
- 1045904 string characters out of 5790016
+ 46071 strings out of 476025
+ 1045868 string characters out of 5790016
  1877388 words of memory out of 5000000
- 65186 multiletter control sequences out of 15000+600000
+ 65184 multiletter control sequences out of 15000+600000
  640338 words of font info for 259 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,14n,103p,1051b,1069s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1831,7 +1819,7 @@ lm/lmsy8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtk10.p
 fb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/l
 ocal/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local/texliv
 e/2023/texmf-dist/fonts/type1/public/lm/lmtto10.pfb>
-Output written on flow36_handbook.pdf (53 pages, 1004462 bytes).
+Output written on flow36_handbook.pdf (53 pages, 1004681 bytes).
 PDF statistics:
  992 PDF objects out of 1000 (max. 8388607)
  879 compressed objects within 9 object streams

@@ -27,14 +27,14 @@
 \contentsline {subsubsection}{\numberline {2.1.9.3}\texttt {stratified}}{17}{subsubsection.2.1.9.3}%
 \contentsline {subsubsection}{\numberline {2.1.9.4}\texttt {drop\_array}}{17}{subsubsection.2.1.9.4}%
 \contentsline {subsection}{\numberline {2.1.10}\texttt {initialize\_psi}}{17}{subsection.2.1.10}%
-\contentsline {subsection}{\numberline {2.1.11}\texttt {initialize\_theta}}{18}{subsection.2.1.11}%
+\contentsline {subsection}{\numberline {2.1.11}\texttt {initialize\_theta}}{17}{subsection.2.1.11}%
 \contentsline {subsection}{\numberline {2.1.12}\texttt {initialize\_particle}}{18}{subsection.2.1.12}%
 \contentsline {subsection}{\numberline {2.1.13}\texttt {write\_failure}}{18}{subsection.2.1.13}%
 \contentsline {subsection}{\numberline {2.1.14}\texttt {write\_output}, \texttt {write\_output\_spectral} and \texttt {write\_output\_recovery}}{18}{subsection.2.1.14}%
 \contentsline {subsection}{\numberline {2.1.15}\texttt {integral\_phi}}{18}{subsection.2.1.15}%
 \contentsline {subsection}{\numberline {2.1.16}\texttt {integral\_psi}}{18}{subsection.2.1.16}%
 \contentsline {subsection}{\numberline {2.1.17}\texttt {initialize\_check}}{18}{subsection.2.1.17}%
-\contentsline {subsection}{\numberline {2.1.18}\texttt {sim\_check}}{19}{subsection.2.1.18}%
+\contentsline {subsection}{\numberline {2.1.18}\texttt {sim\_check}}{18}{subsection.2.1.18}%
 \contentsline {subsection}{\numberline {2.1.19}\texttt {destroy}}{19}{subsection.2.1.19}%
 \contentsline {subsection}{\numberline {2.1.20}\texttt {destroy\_plan}}{19}{subsection.2.1.20}%
 \contentsline {section}{\numberline {2.2}Solver subroutines}{19}{section.2.2}%
@@ -43,13 +43,13 @@
 \contentsline {subsection}{\numberline {2.2.3}\texttt {euler\_phi} and \texttt {adams\_bashforth\_phi}}{20}{subsection.2.2.3}%
 \contentsline {subsection}{\numberline {2.2.4}\texttt {euler\_psi} and \texttt {adams\_bashforth\_psi}}{20}{subsection.2.2.4}%
 \contentsline {subsection}{\numberline {2.2.5}\texttt {euler\_theta} and \texttt {adams\_bashforth\_theta}}{20}{subsection.2.2.5}%
-\contentsline {subsection}{\numberline {2.2.6}\texttt {hist\_term}}{21}{subsection.2.2.6}%
+\contentsline {subsection}{\numberline {2.2.6}\texttt {hist\_term}}{20}{subsection.2.2.6}%
 \contentsline {subsection}{\numberline {2.2.7}\texttt {hist\_term\_temp}}{21}{subsection.2.2.7}%
 \contentsline {subsection}{\numberline {2.2.8}\texttt {calculate\_w}}{21}{subsection.2.2.8}%
 \contentsline {subsection}{\numberline {2.2.9}\texttt {calculate\_omega}}{21}{subsection.2.2.9}%
 \contentsline {subsection}{\numberline {2.2.10}\texttt {calculate\_uv}}{21}{subsection.2.2.10}%
 \contentsline {subsection}{\numberline {2.2.11}\texttt {sterm\_ch}}{21}{subsection.2.2.11}%
-\contentsline {subsection}{\numberline {2.2.12}\texttt {sterm\_psi}}{22}{subsection.2.2.12}%
+\contentsline {subsection}{\numberline {2.2.12}\texttt {sterm\_psi}}{21}{subsection.2.2.12}%
 \contentsline {subsection}{\numberline {2.2.13}\texttt {sterm\_temp}}{22}{subsection.2.2.13}%
 \contentsline {subsection}{\numberline {2.2.14}\texttt {calculate\_phi}}{22}{subsection.2.2.14}%
 \contentsline {subsection}{\numberline {2.2.15}\texttt {calculate\_phi\_ac}}{22}{subsection.2.2.15}%
@@ -57,7 +57,7 @@
 \contentsline {subsection}{\numberline {2.2.17}\texttt {calculate\_theta}}{22}{subsection.2.2.17}%
 \contentsline {subsection}{\numberline {2.2.18}\texttt {courant\_check}}{22}{subsection.2.2.18}%
 \contentsline {subsection}{\numberline {2.2.19}\texttt {dz} and \texttt {dz\_red}}{22}{subsection.2.2.19}%
-\contentsline {subsection}{\numberline {2.2.20}\texttt {dz\_fg}}{23}{subsection.2.2.20}%
+\contentsline {subsection}{\numberline {2.2.20}\texttt {dz\_fg}}{22}{subsection.2.2.20}%
 \contentsline {subsection}{\numberline {2.2.21}\texttt {helmholtz}, \texttt {helmholtz\_red} and \texttt {helmholtz\_rred}}{23}{subsection.2.2.21}%
 \contentsline {subsection}{\numberline {2.2.22}\texttt {helmholtz\_fg}}{23}{subsection.2.2.22}%
 \contentsline {subsection}{\numberline {2.2.23}\texttt {gauss\_solver}, \texttt {gauss\_solver\_red} and \texttt {gauss\_solver\_rred}}{23}{subsection.2.2.23}%
@@ -65,7 +65,7 @@
 \contentsline {subsection}{\numberline {2.2.25}\texttt {lagran4}}{23}{subsection.2.2.25}%
 \contentsline {subsection}{\numberline {2.2.26}\texttt {calculate\_forces}}{23}{subsection.2.2.26}%
 \contentsline {section}{\numberline {2.3}Transforms}{23}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}\texttt {phys\_to\_spectral}}{24}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.1}\texttt {phys\_to\_spectral}}{23}{subsection.2.3.1}%
 \contentsline {subsection}{\numberline {2.3.2}\texttt {phys\_to\_spectral\_fg}}{24}{subsection.2.3.2}%
 \contentsline {subsection}{\numberline {2.3.3}\texttt {fftx\_fwd}}{24}{subsection.2.3.3}%
 \contentsline {subsection}{\numberline {2.3.4}\texttt {fftx\_fwd\_fg}}{24}{subsection.2.3.4}%
@@ -77,7 +77,7 @@
 \contentsline {subsection}{\numberline {2.3.10}\texttt {dctz\_fwd}}{25}{subsection.2.3.10}%
 \contentsline {subsection}{\numberline {2.3.11}\texttt {dctz\_fwd\_fg}}{25}{subsection.2.3.11}%
 \contentsline {subsection}{\numberline {2.3.12}\texttt {spectral\_to\_phys}}{25}{subsection.2.3.12}%
-\contentsline {subsection}{\numberline {2.3.13}\texttt {spectral\_to\_phys\_fg}}{26}{subsection.2.3.13}%
+\contentsline {subsection}{\numberline {2.3.13}\texttt {spectral\_to\_phys\_fg}}{25}{subsection.2.3.13}%
 \contentsline {subsection}{\numberline {2.3.14}\texttt {dctz\_bwd}}{26}{subsection.2.3.14}%
 \contentsline {subsection}{\numberline {2.3.15}\texttt {dctz\_bwd\_fg}}{26}{subsection.2.3.15}%
 \contentsline {subsection}{\numberline {2.3.16}\texttt {xy2xz}}{26}{subsection.2.3.16}%
@@ -85,7 +85,7 @@
 \contentsline {subsection}{\numberline {2.3.18}\texttt {ffty\_bwd}}{26}{subsection.2.3.18}%
 \contentsline {subsection}{\numberline {2.3.19}\texttt {ffty\_bwd\_fg}}{26}{subsection.2.3.19}%
 \contentsline {subsection}{\numberline {2.3.20}\texttt {xz2yz}}{26}{subsection.2.3.20}%
-\contentsline {subsection}{\numberline {2.3.21}\texttt {xz2yz\_fg}}{27}{subsection.2.3.21}%
+\contentsline {subsection}{\numberline {2.3.21}\texttt {xz2yz\_fg}}{26}{subsection.2.3.21}%
 \contentsline {subsection}{\numberline {2.3.22}\texttt {fftx\_bwd}}{27}{subsection.2.3.22}%
 \contentsline {subsection}{\numberline {2.3.23}\texttt {fftx\_bwd\_fg}}{27}{subsection.2.3.23}%
 \contentsline {section}{\numberline {2.4}Statistic calculation}{27}{section.2.4}%
