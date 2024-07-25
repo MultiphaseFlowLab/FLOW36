@@ -329,7 +329,9 @@ openacc_flag="1"
 elif [ "$machine" == "21" ]; then
 echo "=                              Leonardo (CPU)                             ="
 module purge
-#module load nvhpc/23.1
+module load gcc/11.3.0
+module load openmpi/4.1.4--gcc--11.3.0-cuda-11.8
+module load fftw/3.3.10--openmpi--4.1.4--gcc--11.3.0
 cp ./Leonardo/makefile_cpu ./makefile
 cp ./Leonardo/go_cpu.sh ./go.sh
 savespectral="0"
