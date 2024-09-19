@@ -22,6 +22,7 @@
 #20 : VSC-5 (VSC) - GPU Partition
 #21 : Leonardo - CPU Partition
 #22 : Leoanrdo - GPU (Booster)
+#23 : Marenostrum5 - CPU Partition (GPP)
 machine="1"
 echo ""
 echo "=============================================================================="
@@ -347,6 +348,17 @@ cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
 savespectral="0"
 openacc_flag="1"
+
+elif [ "$machine" == "23" ]; then
+echo "=                            Marenostrum5 (CPU)                             ="
+module purge
+module load gcc/13.2.0
+module load openmpi/4.1.5-gcc
+module load fftw/3.3.10-gcc-ompi
+cp ./Marenostrum_5/makefile_cpu ./makefile
+cp ./Marenostrum_5/go_cpu.sh ./go.sh
+savespectral="0"
+openacc_flag="0"
 
 fi
 echo "=============================================================================="
