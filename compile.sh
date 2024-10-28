@@ -493,7 +493,7 @@ phi_flag="0" # integer
 phicor_flag="0" # integer
 
 # Value of the parameter lambda used to correct the phi profile (only for phicor_flag=1,2,3,4,5)
-# Lam=0.3/Ch (check for spotting at the wall when using refined grids, otherwise relax lambda)
+# Lam=0.0625/Ch (check for spotting at the wall when using refined grids, otherwise relax lambda)
 lamcorphi="2.5" # real (double)
 
 # matched densities: 1 for matched densities, 0 for rhor < 1, 2 for rhor > 1
