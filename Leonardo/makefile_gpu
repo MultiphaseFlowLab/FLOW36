@@ -1,7 +1,7 @@
 FC    	= mpif90
 LD	= $(FC)
 RM	= /bin/rm -f
-FOPTS   = -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess  -module=./set_run/sc_compiled -lnvToolsExt
+FOPTS   = -fast -acc -gpu=managed -Minfo=accel -Mfree -Mpreprocess -mcmodel=medium -module=./set_run/sc_compiled -lnvToolsExt
 FFLAGS  = $(FOPTS) -Wl,--no-relax
 #LIBS   = -I$(MPI_PATH) -cudalib=cufft #MPI path if using spectrum
 LIBS    = -L${NVHPC_HOME}/Linux_x86_64/24.3/math_libs/lib64 -lcufft
