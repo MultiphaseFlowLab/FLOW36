@@ -4,8 +4,11 @@ FLOW36 is a pseudo-spectral code for direct numerical simualtion of multiphase t
 
 
 If you use this code, please cite the following work: \
+
 ```shell
-A. Roccon, G. Soligo and A. Soldati, FLOW36: A Spectral solver for phase-field based multiphase turbulence simulations on heterogeneous computing architectures, Computer Physics Communications, 2025.
+A. Roccon, G. Soligo and A. Soldati
+FLOW36: A Spectral solver for phase-field based multiphase turbulence simulations on heterogeneous computing architectures
+Computer Physics Communications, 2025.
 ```
 
 
