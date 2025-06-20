@@ -1,6 +1,6 @@
 # FLOW36
 Github Repository of FLOW36. \
-FLOW36 is a pseudo-spectral code for direct numerical simualtion of multiphase turbulence based on a phase-field model approach.
+FLOW36 is a pseudo-spectral code for direct numerical simulation of multiphase turbulence based on a phase-field model approach.
 
 
 If you use this code, please cite the following work: 
