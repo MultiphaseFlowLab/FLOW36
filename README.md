@@ -51,7 +51,7 @@ See the handbook in the flow36_handbook folder
 
 
 ## Packages/libraries required:
- - Fortran compiler (tested wtth gfortran, ifort, nvfortran, ftn and xlf)
+ - Fortran compiler (tested with gfortran, ifort, nvfortran, ftn and xlf)
  - MPI Library (tested with MPICH, Spectrum, IntelMPI, OpenMPI)
  - FFTW library (for CPU runs)
  - cuFFT library (for GPU runs, please install the Nvidia HPC-SDK)
