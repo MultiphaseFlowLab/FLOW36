@@ -48,11 +48,15 @@ Click [here](http://calliope.dem.uniud.it) for a list of the published works
 Click [here](https://doi.org/10.6084/m9.figshare.26232683) for the validation data shown in the manuscript
 
 ## How to run the code:
- - Clone the repository
- - Edit the compile.sh file; select the configurations you want to run and the modules you want to load (many EUROHPC supercomputer configs are available as well as for different compilers: GNU, Nvidia, AMD, Intel, IBM, etc.). Simulation parameters can be defined after the machine configuration section.
- - Execute the compile.sh file (bash script); this will create the folder the set_run folder. Inside the folder, you will find the results folder and the sc_compiled folder where the source code compiled and the main executable (flow36) are present.
- - Run the code using mpirun or edit/create the SLURM file for the respective machine.
- - The resulting fields will be located in set_run/results and can be visualized using paraview. Paraview files can be generated using the paraview_output_fg post-processing code.
+- **Clone the repository.**
+- **Edit the `compile.sh` file:**  
+  Select the configurations you want to run and the modules to load. Many EUROHPC supercomputer configurations are included, along with options for different compilers such as GNU, NVIDIA, AMD, Intel, IBM, etc. Simulation parameters can be defined after the machine configuration section.
+- **Run the `compile.sh` script:**  
+  This will create the `set_run` folder. Inside, you will find the `results` folder and the `sc_compiled` folder, which contains the compiled source code and the main executable (`flow36`).
+- **Run the simulation:**  
+  Use `mpirun` or edit/create a SLURM file for your target machine.
+- **Access the results:**  
+  The output fields will be located in `set_run/results` and can be visualized using ParaView. ParaView files can be generated with the `paraview_output_fg` post-processing code.
 
 ## Packages/libraries required:
  - For CPU runs: 
