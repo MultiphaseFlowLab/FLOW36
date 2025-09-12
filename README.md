@@ -17,6 +17,8 @@ author = {Roccon, A. and Soligo, G. and Soldati, A.},
 }
 ```
 
+Webminar on FLOW36 available on [Cassyni](https://cassyni.com/events/QYj3h1ohsebWbK8AFdiPJd)
+
 
 ## Main Developers:
 G. Soligo (https://github.com/giovannisoligo) \
@@ -45,15 +47,21 @@ Click [here](http://calliope.dem.uniud.it) for a list of the published works
 ## Validation data and initial fields:
 Click [here](https://doi.org/10.6084/m9.figshare.26232683) for the validation data shown in the manuscript
 
-
-## How to:
-See the handbook in the flow36_handbook folder
-
+## How to run the code:
+ - Clone the repository
+ - Edit the compile.sh file; select the configurations you want to run and the modules you want to load (many EUROHPC supercomputer configs are available as well as for different compilers: GNU, Nvidia, AMD, Intel, IBM, etc.). Simulation parameters can be defined after the machine configuration section.
+ - Execute the compile.sh file (bash script); this will create the folder the set_run folder. Inside the folder, you will find the results folder and the sc_compiled folder where the source code compiled and the main executable (flow36) are present.
+ - Run the code using mpirun or edit/create the SLURM file for the respective machine.
+ - The resulting fields will be located in set_run/results and can be visualized using paraview. Paraview files can be generated using the paraview_output_fg post-processing code.
 
 ## Packages/libraries required:
- - Fortran compiler (tested with gfortran, ifort, nvfortran, ftn and xlf)
- - MPI Library (tested with MPICH, Spectrum, IntelMPI, OpenMPI)
- - FFTW library (for CPU runs)
- - cuFFT library (for GPU runs, please install the Nvidia HPC-SDK)
+ - For CPU runs: 
+   - Fortran compiler (tested with gfortran, ifort, nvfortran, ftn and xlf)
+   - MPI Library (tested with MPICH, Spectrum, IntelMPI, OpenMPI)
+   - FFTW library or MKL library (if using intel)
+- For GPU runs:
+   - Nvidia HPC-SDK (> 22.X), this by default contains the compiler, the cuFFT and the openMPI libraries.
 
-
+## Contributing
+We welcome all contributions that can enhance FLOW36, including bug fixes, performance improvements, and new features. 
+If you would like to contribute, please contact aroccon or open an Issue in the repository.
