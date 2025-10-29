@@ -33,12 +33,10 @@ endif
 
 if(check.eqv..true.)then
  call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
-
  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'external32',mpi_info_null,ierr)
  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'internal',mpi_info_null,ierr)
  call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype,'native',mpi_info_null,ierr)
-
- call mpi_file_read_all(f_handle,u,nx*fpy*fpz,mpi_double_precision,mpi_status_ignore,ierr)
+ call mpi_file_read(f_handle,u,nx*fpy*fpz,mpi_double_precision,mpi_status_ignore,ierr)
  call mpi_file_close(f_handle,ierr)
 else
  ! stop simulation
@@ -94,11 +92,8 @@ if(check.eqv..true.)then
  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'external32',mpi_info_null,ierr)
  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'internal',mpi_info_null,ierr)
  call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype,'native',mpi_info_null,ierr)
-
- call mpi_file_read_all(f_handle,ucd,dimc(1)*dimc(2)*dimc(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
-
+ call mpi_file_read(f_handle,ucd,dimc(1)*dimc(2)*dimc(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
  call mpi_file_close(f_handle,ierr)
-
  call expand_domain(ucd,u)
 else
  ! stop simulation
@@ -148,12 +143,10 @@ endif
 
 if(check.eqv..true.)then
  call mpi_file_open(flow_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
-
  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'external32',mpi_info_null,ierr)
  !call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'internal',mpi_info_null,ierr)
  call mpi_file_set_view(f_handle,offset,mpi_double_precision,ftype_fg,'native',mpi_info_null,ierr)
-
- call mpi_file_read_all(f_handle,u,npsix*fpypsi*fpzpsi,mpi_double_precision,mpi_status_ignore,ierr)
+ call mpi_file_read(f_handle,u,npsix*fpypsi*fpzpsi,mpi_double_precision,mpi_status_ignore,ierr)
  call mpi_file_close(f_handle,ierr)
 else
  ! stop simulation
@@ -206,13 +199,9 @@ endif
 
 if(check.eqv..true.)then
  call mpi_file_open(sp_save_comm_fg,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
-
- call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'internal',mpi_info_null,ierr)
-
- call mpi_file_read_all(f_handle,ucd,dimc_fg(1)*dimc_fg(2)*dimc_fg(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
-
+ call mpi_file_set_view(f_handle,offset,mpi_double_precision,stype_fg,'native',mpi_info_null,ierr)
+ call mpi_file_read(f_handle,ucd,dimc_fg(1)*dimc_fg(2)*dimc_fg(3)*2,mpi_double_precision,mpi_status_ignore,ierr)
  call mpi_file_close(f_handle,ierr)
-
  call expand_domain_fg(ucd,u)
 else
  ! stop simulation
@@ -307,12 +296,10 @@ do j=1,nset
 
   if(check.eqv..true.)then
    call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
-
    !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
    !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
    call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
-
-   call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+   call mpi_file_read(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
    call mpi_file_close(f_handle,ierr)
    xp(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
   else
@@ -362,12 +349,10 @@ do j=1,nset
 
   if(check.eqv..true.)then
    call mpi_file_open(part_comm,fname,mpi_mode_rdonly,mpi_info_null,f_handle,ierr)
-
    !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'external32',mpi_info_null,ierr)
    !call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'internal',mpi_info_null,ierr)
    call mpi_file_set_view(f_handle,offset,mpi_double_precision,part_save,'native',mpi_info_null,ierr)
-
-   call mpi_file_read_all(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
+   call mpi_file_read(f_handle,varloc,part_index(rank_loc+1,2)*3,mpi_double_precision,mpi_status_ignore,ierr)
    call mpi_file_close(f_handle,ierr)
    up(part_index(rank_loc+1,1)+1:part_index(rank_loc+1,1)+part_index(rank_loc+1,2),:,j)=varloc
   else

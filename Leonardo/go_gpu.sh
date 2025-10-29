@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account="IscrB_TORNADO"
+#SBATCH --account="IscrB_EXCEED"
 #SBATCH --job-name="flo36gpu_test"
 #SBATCH --time=00:05:00
 #SBATCH --nodes=1      ##adjust
