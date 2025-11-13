@@ -104,7 +104,7 @@ if(spectral.eq.0)then
     close(669,status='keep')
   endif
   if(psiflag.eq.1 .or. marflag.eq.1)then
-    namefile=trim(namedir)//'psi_fg_'//numfile//'.dat'
+    namefile=trim(namedir)//'psi_'//numfile//'.dat'
     open(670,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(670) psi
     close(670,status='keep')
@@ -167,7 +167,7 @@ else
   endif
   if(phiflag.eq.1 .or. marflag.eq.1 .or. div2dflag.eq.1)then
     ! reading phi
-    namefile=trim(namedir)//'phic_fg_'//numfile//'.dat'
+    namefile=trim(namedir)//'phic_'//numfile//'.dat'
     open(669,file=trim(namefile),form='unformatted',access='stream',status='old',convert='little_endian')
     read(669) tmp
     close(669,status='keep')
