@@ -16,6 +16,8 @@ allocate(phi(nx,nz,ny))
 dx=6.28318530717959d0/real(nx)
 dy=3.14159265358979d0/real(ny)
 ch=0.01d0
+re=180
+dt=0.5e-4
 
 call read_grid
 

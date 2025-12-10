@@ -48,9 +48,7 @@ character(len=40) :: namefile
  read(3) z
  close(3,status='keep')
 
- x=x*re
- y=y*re
- z=(z+1.0d0)*re
+ z=(z+1.0d0)
 
 return
 end

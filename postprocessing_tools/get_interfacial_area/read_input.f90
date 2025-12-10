@@ -16,13 +16,6 @@ double precision :: Lx, Ly
  read(66,'(i5)') nz
  read(66,*)
  read(66,*)
-
- re=1.0d0
- Lx=2.0d0
- Ly=2.0d0
- xl=Lx*pi
- yl=Ly*pi
-
  close(66)
 
  open(unit=66,file='input_int.f90',form='formatted',status='old',action='read')
@@ -31,11 +24,6 @@ double precision :: Lx, Ly
  read(66,'(i8)') ndump
  read(66,'(i8)') sdump
  read(66,'(i8)') nend
-
- Lx=2.0d0
- Ly=2.0d0
- xl=Lx*pi
- yl=Ly*pi
 
  close(66)
 
