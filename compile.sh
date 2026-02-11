@@ -346,6 +346,8 @@ module load openmpi/4.1.6--nvhpc--24.3
 module list
 cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
+cp ./Leonardo/binder.sh ./binder.sh
+cp ./Leonardo/go_binder.sh ./go_bind.sh
 savespectral="0"
 openacc_flag="1"
 
@@ -435,7 +437,7 @@ nstart="0" # integer
 nend="10" #integer (up to 8 digits)
 
 # frequency of solution saving in physical space
-dump="10" # integer
+dump="500" # integer
 
 # frequency of solution saving in spectral space
 sdump="-1" # integer
