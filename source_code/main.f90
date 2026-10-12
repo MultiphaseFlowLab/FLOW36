@@ -14,6 +14,14 @@ use temperature
 use particle
 use wavenumber
 use comm_pattern
+#ifdef USE_NVTX
+! NVTX ranges for profiling (nsys): one range per time step
+use nvtx
+#endif
+#ifdef _CUDA
+! GPU memory report after the first time step (cudaMemGetInfo)
+use cudafor
+#endif
 
 #define machine machineflag
 #define openaccflag openacccompflag
@@ -37,6 +45,13 @@ integer :: g_size(3),s_size(3)
 integer :: fysize(nycpu),fzsize(nzcpu)
 integer :: cysize(nzcpu),cxsize(nycpu)
 integer :: local_comm
+integer :: rank_dir0,rank_dir1
+character(len=16) :: nvtx_label
+#ifdef _CUDA
+integer(kind=cuda_count_kind) :: gpu_free,gpu_total
+integer :: gpu_istat
+double precision :: gpu_used,gpu_used_max
+#endif
 integer :: numdevices, devicenum
 
 double precision :: stime,etime,dtime,mtime,gstime,getime,time
@@ -85,6 +100,18 @@ if(rank.lt.flow_comm_lim)then
   reorder=.false.
 
   call mpi_cart_create(flow_comm,2,dims,periodic,reorder,cart_comm,ierr)
+
+  ! sub-communicators along the two directions, used by the all-to-all transposes
+  call mpi_cart_sub(cart_comm,[.true.,.false.],cart_comm_dir(0),ierr)
+  call mpi_cart_sub(cart_comm,[.false.,.true.],cart_comm_dir(1),ierr)
+  ! the transposes index the all-to-all blocks with the Cartesian coordinate of the partner:
+  ! check that the rank in each sub-communicator is that coordinate
+  call mpi_comm_rank(cart_comm_dir(0),rank_dir0,ierr)
+  call mpi_comm_rank(cart_comm_dir(1),rank_dir1,ierr)
+  if(rank_dir0.ne.rank/nycpu .or. rank_dir1.ne.mod(rank,nycpu))then
+    write(*,*) 'rank',rank,': unexpected sub-communicator ranks',rank_dir0,rank_dir1
+    call mpi_abort(mpi_comm_world,1,ierr)
+  endif
 
 
   ! create derived datatype used in MPI I/O and commit it
@@ -249,6 +276,10 @@ endif
   do i=nstart+1,nend
 
     stime=mpi_wtime()
+#ifdef USE_NVTX
+    write(nvtx_label,'(a,i0)') 'step ',i
+    call nvtxStartRange(trim(nvtx_label),i)
+#endif
 
     time=time+dt
 
@@ -321,12 +352,26 @@ endif
 !    endif
      if(rank.eq.0) call write_time(string,dtime)
 
+#ifdef _CUDA
+    ! GPU memory in use after the first time step (all work arrays allocated): max over the ranks
+    if(i.eq.nstart+1)then
+      gpu_istat=cudaMemGetInfo(gpu_free,gpu_total)
+      gpu_used=dble(gpu_total-gpu_free)/1024.0d0**3
+      call mpi_reduce(gpu_used,gpu_used_max,1,mpi_double_precision,mpi_max,0,flow_comm,ierr)
+      if(rank.eq.0) write(*,'(1x,a,f8.2,a,f8.2,a)') 'GPU memory in use (max over ranks): ',gpu_used_max, &
+                                                  ' GB of ',dble(gpu_total)/1024.0d0**3,' GB'
+    endif
+#endif
+
 
     ! write temporary output files from which the simulation can be restarted if it crashes or stops
     if(mod(i,dump_failure).eq.0)then
       call write_failure(i)
     endif
 
+#ifdef USE_NVTX
+    call nvtxEndRange
+#endif
   enddo
 
   if(rank.eq.0)then
@@ -399,7 +444,9 @@ endif
      call mpi_type_free(stype_fg,ierr)
      call mpi_comm_free(sp_save_comm_fg,ierr)
    endif
-   ! destroy cartesian communicator
+   ! destroy cartesian communicator and its sub-communicators
+   call mpi_comm_free(cart_comm_dir(0),ierr)
+   call mpi_comm_free(cart_comm_dir(1),ierr)
    call mpi_comm_free(cart_comm,ierr)
    deallocate(kxpsi)
    deallocate(kypsi)

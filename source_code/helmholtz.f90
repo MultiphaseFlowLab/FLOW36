@@ -3,88 +3,118 @@ subroutine helmholtz(f,beta2,p,q,r,z_p)
 ! y"-beta2*y=f
 ! with boundary conditions
 ! p(i)*y(z(i))+q(i)*y'(z(i))=r(i)       @ z(i) , i=1,2
+!
+! Same algorithm and operations as the previous version (system assembled in the 3D arrays
+! a,b,c,d,e,h and solved by gauss_solver), fused in one kernel per (i,j) column:
+! - a(k-2)=-beta2*k, c(k-2)=-beta2*(k-2) and the initial b(k-2) are computed on the fly
+! - d,e depend only on k: 1D arrays d0,e0
+! - during the elimination (k=nz..3) the modified b(k-4), d(k-2), e(k-2), h(k-2) are used two
+!   steps later (index of the same parity): they are kept in parity slots bq,dq,eq,hq
+! - only the final h(k) and b(k-2) needed by the forward substitution are stored (hs,bs)
+! - the solution is written directly in f (no f=h copy)
 
 use commondata
 use par_size
 
-double precision, dimension(spx,nz,spy,2) :: f,h
+double precision, dimension(spx,nz,spy,2) :: f
 double precision, dimension(spx,spy) :: beta2
 double precision, dimension(2) :: p,q,r,z_p
-double precision :: a(spx,nz-2,spy),b(spx,nz-2,spy),c(spx,nz-4,spy),d(spx,nz,spy),e(spx,nz,spy)
-double precision :: t0,dt0,t,dert
+! work arrays, allocated once (managed memory: no allocation or transfer at every call)
+double precision, allocatable, save :: hs(:,:,:,:),bs(:,:,:),d0(:),e0(:)
+double precision :: t,dert,bt,ak2,bk2,rc,rd,re,d1,d2,e1,e2
+double precision :: bq(0:1),dq(0:1),eq(0:1),hq(0:1,2),xs(0:1,2),hk(2),h1(2),h2(2),x1(2),x2(2)
+integer :: i,j,k,kk,pk,c
 
-integer :: i,j,k
+if(.not.allocated(hs))then
+ allocate(hs(spx,nz,spy,2),bs(spx,nz-2,spy),d0(nz),e0(nz))
+endif
 
-! system has line 1 and 2 full and then it is tridiagonal from line 3 to Nz
-! a is the lower diagonal, b the diagonal, c the upper diagonal, d the first row, e the second row
-! in the diagonal are excluded the first 2 rows (already in the arrays d and e)
-
-
-! assemble diagonals
-!$acc kernels
-do j=1,spy
-  do k=3,nz
-    do i=1,spx
-      a(i,k-2,j)=-beta2(i,j)*dble(k)
-      b(i,k-2,j)=4.0d0*dble(k*(k-1)*(k-2))+dble(2*(k-1))*beta2(i,j)
-    enddo
-  enddo
-enddo
-!$acc end kernels
-
-!$acc kernels
-do j=1,spy
-  do k=3,nz-2
-    do i=1,spx
-      c(i,k-2,j)=-beta2(i,j)*dble(k-2)
-    enddo
-  enddo
-enddo
-!$acc end kernels
-
-! assemble 1st row
-!$acc kernels
-t0=1.0d0
-dt0=0.0d0
-d(:,1,:)=0.5d0*(p(1)*t0+q(1)*dt0)
-do k=2,nz
-! see Canuto et al. 2006, pag. 85
+! first and second row (boundary conditions), see Canuto et al. 2006, pag. 85
+!$acc parallel loop private(t,dert)
+do k=1,nz
+ if(k.eq.1)then
+  d0(1)=0.5d0*(p(1)*1.0d0+q(1)*0.0d0)
+  e0(1)=0.5d0*(p(2)*1.0d0+q(2)*0.0d0)
+ else
   t=dble((z_p(1))**(k-1))
   dert=dble((z_p(1))**(k)*(k-1)**2)
-  d(:,k,:)=p(1)*t+q(1)*dert
-enddo
-!$acc end kernels
-
-! assemble 2nd ro
-!$acc kernels
-t0=1.0d0
-dt0=0.0d0
-e(:,1,:)=0.5d0*(p(2)*t0+q(2)*dt0)
-do k=2,nz
-! see Canuto et al. 2006, pag. 85
+  d0(k)=p(1)*t+q(1)*dert
   t=dble((z_p(2))**(k-1))
   dert=dble((z_p(2))**(k)*(k-1)**2)
-  e(:,k,:)=p(2)*t+q(2)*dert
+  e0(k)=p(2)*t+q(2)*dert
+ endif
 enddo
-!$acc end kernels
 
-! assemble RHS of equation
-!$acc kernels
-h(:,1,:,:)=r(1)
-h(:,2,:,:)=r(2)
-
-do k=3,nz-2
-  h(:,k,:,:)=dble(k)*f(:,k-2,:,:)-dble(2*(k-1))*f(:,k,:,:)+dble(k-2)*f(:,k+2,:,:)
+!$acc parallel loop collapse(2) private(bq,dq,eq,hq,xs,hk,h1,h2,x1,x2)
+do j=1,spy
+ do i=1,spx
+  bt=beta2(i,j)
+  ! slots for the first two steps (k=nz, nz-1): values not modified yet
+  do kk=nz-1,nz
+   pk=mod(kk,2)
+   bq(pk)=4.0d0*dble(kk*(kk-1)*(kk-2))+dble(2*(kk-1))*bt
+   dq(pk)=d0(kk)
+   eq(pk)=e0(kk)
+  enddo
+  do c=1,2
+   hq(mod(nz,2),c)=dble(nz)*f(i,nz-2,j,c)-dble(2*(nz-1))*f(i,nz,j,c)
+   hq(mod(nz-1,2),c)=dble(nz-1)*f(i,nz-3,j,c)-dble(2*(nz-2))*f(i,nz-1,j,c)
+   h1(c)=r(1)
+   h2(c)=r(2)
+  enddo
+  ! elimination, k=nz..3 (gauss_solver: upper diagonal c only for k>=5)
+  do k=nz,3,-1
+   pk=mod(k,2)
+   bk2=bq(pk)
+   bs(i,k-2,j)=bk2
+   ak2=-bt*dble(k)
+   do c=1,2
+    hk(c)=hq(pk,c)
+    hs(i,k,j,c)=hk(c)
+   enddo
+   if(k.ge.5)then
+    ! cancel upper diagonal c
+    rc=(-bt*dble(k-4))/bk2
+    kk=k-2
+    bq(pk)=(4.0d0*dble(kk*(kk-1)*(kk-2))+dble(2*(kk-1))*bt)-rc*ak2
+    do c=1,2
+     hq(pk,c)=(dble(kk)*f(i,kk-2,j,c)-dble(2*(kk-1))*f(i,kk,j,c)+dble(kk-2)*f(i,kk+2,j,c))-rc*hk(c)
+    enddo
+   endif
+   ! cancel part of row d
+   rd=dq(pk)/bk2
+   dq(pk)=d0(k-2)-rd*ak2
+   ! cancel part of row e
+   re=eq(pk)/bk2
+   eq(pk)=e0(k-2)-re*ak2
+   do c=1,2
+    h1(c)=h1(c)-rd*hk(c)
+    h2(c)=h2(c)-re*hk(c)
+   enddo
+  enddo
+  ! remains only 2x2 array (rows d,e reduced to their first two entries)
+  d1=dq(1)
+  d2=dq(0)
+  e1=eq(1)
+  e2=eq(0)
+  do c=1,2
+   x1(c)=(h1(c)-h2(c)*d2/e2)/(d1-e1*d2/e2)
+   x2(c)=(h2(c)-x1(c)*e1)/(e2)
+   f(i,1,j,c)=x1(c)
+   f(i,2,j,c)=x2(c)
+   xs(1,c)=x1(c)
+   xs(0,c)=x2(c)
+  enddo
+  ! forward-substitute variable from k=3,nz, solution stored in f
+  do k=3,nz
+   pk=mod(k,2)
+   do c=1,2
+    xs(pk,c)=(hs(i,k,j,c)-(-bt*dble(k))*xs(pk,c))/bs(i,k-2,j)
+    f(i,k,j,c)=xs(pk,c)
+   enddo
+  enddo
+ enddo
 enddo
-h(:,nz-1,:,:)=dble(nz-1)*f(:,nz-3,:,:)-dble(2*(nz-2))*f(:,nz-1,:,:)
-h(:,nz,:,:)=dble(nz)*f(:,nz-2,:,:)-dble(2*(nz-1))*f(:,nz,:,:)
-!$acc end kernels
-
-call gauss_solver(a,b,c,d,e,h)
-
-!$acc kernels
-f=h
-!$acc end kernels
 
 return
 end

@@ -9,6 +9,10 @@ module commondata
 ! for use mpi_f08
 !type(mpi_comm) :: cart_comm
  integer :: cart_comm,flow_comm,part_comm,comm_comm,lacc_rank
+! sub-communicators of cart_comm used by the all-to-all transposes:
+! cart_comm_dir(0): the nzcpu ranks with the same y coordinate (direction 0, xy2xz/xz2xy)
+! cart_comm_dir(1): the nycpu ranks with the same z coordinate (direction 1, xz2yz/yz2xz)
+ integer :: cart_comm_dir(0:1)
  double precision :: xl,yl
  character(len=50) :: folder='./results'
 end module commondata
@@ -187,6 +191,43 @@ module comm_pattern
  integer, dimension(4) :: chunk_size
  integer, allocatable, dimension(:,:) ::saved_size,address_start
 end module comm_pattern
+
+
+
+! send/receive buffers of the all-to-all transposes (xy2xz, xz2xy, xz2yz, yz2xz and _fg),
+! allocated once and grown only if a larger transpose needs more space: no allocation,
+! first-touch page faults or device synchronization at every transpose (managed memory)
+module a2a_buffers
+ implicit none
+ ! GPU build (-cuda): device memory (cudaMalloc), not managed, so the network card can access it
+ ! directly (GPUDirect RDMA); CPU builds: ordinary arrays
+#ifdef _CUDA
+ double precision, device, allocatable :: a2a_send(:), a2a_recv(:)
+#else
+ double precision, allocatable :: a2a_send(:), a2a_recv(:)
+#endif
+contains
+ subroutine a2a_reserve(n)
+  integer(kind=8), intent(in) :: n
+  if(allocated(a2a_send))then
+   if(size(a2a_send,kind=8).ge.n) return
+   deallocate(a2a_send,a2a_recv)
+  endif
+  allocate(a2a_send(n),a2a_recv(n))
+ end subroutine a2a_reserve
+
+ ! persistent work array of the transforms (spectral_to_phys/phys_to_spectral): allocated on the
+ ! first call, reallocated only if the requested shape changes (managed memory)
+ subroutine stage_alloc(a,n1,n2,n3)
+  double precision, allocatable, intent(inout) :: a(:,:,:,:)
+  integer, intent(in) :: n1,n2,n3
+  if(allocated(a))then
+   if(size(a,1).eq.n1 .and. size(a,2).eq.n2 .and. size(a,3).eq.n3) return
+   deallocate(a)
+  endif
+  allocate(a(n1,n2,n3,2))
+ end subroutine stage_alloc
+end module a2a_buffers
 
 
 

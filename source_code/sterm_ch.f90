@@ -1088,6 +1088,7 @@ phinx=a1f
 
 allocate(convf(nx,fpz,fpy))
 
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1455,6 +1456,7 @@ call spectral_to_phys(a1,a1f,1)
 !! Check min and max of curvature
 maxk=0.0d0
 mink=0.0d0
+!$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
@@ -1466,6 +1468,7 @@ enddo
 !! Check min and max of curvature
 maxk=0.0d0
 mink=0.0d0
+!$acc parallel loop collapse(3) reduction(max:maxk) reduction(min:mink)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx

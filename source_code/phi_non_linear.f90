@@ -435,9 +435,13 @@ call dz(a6,a4)
 ! add to S term a4+a7
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
+!$acc kernels
 s1=s1+(a4+a7)/(re*rhor)
+!$acc end kernels
 #else
+!$acc kernels
 s1=s1+(a4+a7)/re
+!$acc end kernels
 #endif
 
 deallocate(a4)
@@ -513,9 +517,13 @@ call dz(a6,a4)
 
 ! add to S term a4+a7
 #if match_dens == 2
+!$acc kernels
 s2=s2+(a4+a7)/(re*rhor)
+!$acc end kernels
 #else
+!$acc kernels
 s2=s2+(a4+a7)/re
+!$acc end kernels
 #endif
 
 deallocate(a4)
@@ -1223,9 +1231,11 @@ call phys_to_spectral(a4f,a4,0)
 
 deallocate(a4f)
 
+!$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
 s2=s2+1.0d0/fr**2*a4*grav(3)
 s3=s3+1.0d0/fr**2*a4*grav(2)
+!$acc end kernels
 
 deallocate(a4)
 

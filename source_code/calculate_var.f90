@@ -14,6 +14,7 @@ double precision, allocatable :: ddw1(:,:,:,:),ddw2(:,:,:),ddw3(:,:,:)
 double precision, allocatable, dimension(:,:) :: a11,a12,a21,a22,fr1,fr2,fc1,fc2
 double precision, allocatable :: A(:,:,:),B(:,:,:)
 double precision :: det
+double precision :: t1,t2,t3,t4
 
 integer :: i,j,k
 
@@ -73,71 +74,107 @@ allocate(ddw3(spx,nz,spy))
 ! lower boundary: z=-1
 #if bc_down==0
 ! no-slip at z=-1
-!$acc kernels
-a11(:,:)=0.5d0*dw2(:,1,:)
-a12(:,:)=0.5d0*dw3(:,1,:)
-fr1(:,:)=0.5d0*dw1(:,1,:,1)
-fc1(:,:)=0.5d0*dw1(:,1,:,2)
-do k=2,nz
-! -1**(k-1) needed to evaluate derivative at boundary, see Canuto et al. 2006, pag. 85
-  a11(:,:)=a11(:,:)+(zp(1))**(k-1)*dw2(:,k,:)
-  a12(:,:)=a12(:,:)+(zp(1))**(k-1)*dw3(:,k,:)
-  fr1(:,:)=fr1(:,:)+(zp(1))**(k-1)*dw1(:,k,:,1)
-  fc1(:,:)=fc1(:,:)+(zp(1))**(k-1)*dw1(:,k,:,2)
+! one kernel: each (i,j) sums over k on the GPU (same terms and order as the
+! array-syntax version, which ran the k loop on the host with 4 kernels per k)
+!$acc parallel loop collapse(2) private(t1,t2,t3,t4)
+do j=1,spy
+ do i=1,spx
+  t1=0.5d0*dw2(i,1,j)
+  t2=0.5d0*dw3(i,1,j)
+  t3=0.5d0*dw1(i,1,j,1)
+  t4=0.5d0*dw1(i,1,j,2)
+  do k=2,nz
+   ! -1**(k-1) needed to evaluate derivative at boundary, see Canuto et al. 2006, pag. 85
+   t1=t1+(zp(1))**(k-1)*dw2(i,k,j)
+   t2=t2+(zp(1))**(k-1)*dw3(i,k,j)
+   t3=t3+(zp(1))**(k-1)*dw1(i,k,j,1)
+   t4=t4+(zp(1))**(k-1)*dw1(i,k,j,2)
+  enddo
+  a11(i,j)=t1
+  a12(i,j)=t2
+  fr1(i,j)=t3
+  fc1(i,j)=t4
+ enddo
 enddo
-!$acc end kernels
 #else
 ! free-slip at z=-1
 call dz(dw1,ddw1)
 call dz_red(dw2,ddw2)
 call dz_red(dw3,ddw3)
-!$acc kernels
-a11(:,:)=0.5d0*ddw2(:,1,:)
-a12(:,:)=0.5d0*ddw3(:,1,:)
-fr1(:,:)=0.5d0*ddw1(:,1,:,1)
-fc1(:,:)=0.5d0*ddw1(:,1,:,2)
-do k=2,nz
-  a11(:,:)=a11(:,:)+(zp(1))**(k-1)*ddw2(:,k,:)
-  a12(:,:)=a12(:,:)+(zp(1))**(k-1)*ddw3(:,k,:)
-  fr1(:,:)=fr1(:,:)+(zp(1))**(k-1)*ddw1(:,k,:,1)
-  fc1(:,:)=fc1(:,:)+(zp(1))**(k-1)*ddw1(:,k,:,2)
+! one kernel: each (i,j) sums over k on the GPU (same terms and order as the
+! array-syntax version, which ran the k loop on the host with 4 kernels per k)
+!$acc parallel loop collapse(2) private(t1,t2,t3,t4)
+do j=1,spy
+ do i=1,spx
+  t1=0.5d0*ddw2(i,1,j)
+  t2=0.5d0*ddw3(i,1,j)
+  t3=0.5d0*ddw1(i,1,j,1)
+  t4=0.5d0*ddw1(i,1,j,2)
+  do k=2,nz
+   t1=t1+(zp(1))**(k-1)*ddw2(i,k,j)
+   t2=t2+(zp(1))**(k-1)*ddw3(i,k,j)
+   t3=t3+(zp(1))**(k-1)*ddw1(i,k,j,1)
+   t4=t4+(zp(1))**(k-1)*ddw1(i,k,j,2)
+  enddo
+  a11(i,j)=t1
+  a12(i,j)=t2
+  fr1(i,j)=t3
+  fc1(i,j)=t4
+ enddo
 enddo
-!$acc end kernels
 #endif
 
 
 ! upper boundary: z=+1
 #if bc_up==0
 ! no-slip at z=+1
-!$acc kernels
-a21(:,:)=0.5d0*dw2(:,1,:)
-a22(:,:)=0.5d0*dw3(:,1,:)
-fr2(:,:)=0.5d0*dw1(:,1,:,1)
-fc2(:,:)=0.5d0*dw1(:,1,:,2)
-do k=2,nz
-  a21(:,:)=a21(:,:)+dw2(:,k,:)
-  a22(:,:)=a22(:,:)+dw3(:,k,:)
-  fr2(:,:)=fr2(:,:)+dw1(:,k,:,1)
-  fc2(:,:)=fc2(:,:)+dw1(:,k,:,2)
+! one kernel: each (i,j) sums over k on the GPU (same terms and order as the
+! array-syntax version, which ran the k loop on the host with 4 kernels per k)
+!$acc parallel loop collapse(2) private(t1,t2,t3,t4)
+do j=1,spy
+ do i=1,spx
+  t1=0.5d0*dw2(i,1,j)
+  t2=0.5d0*dw3(i,1,j)
+  t3=0.5d0*dw1(i,1,j,1)
+  t4=0.5d0*dw1(i,1,j,2)
+  do k=2,nz
+   t1=t1+dw2(i,k,j)
+   t2=t2+dw3(i,k,j)
+   t3=t3+dw1(i,k,j,1)
+   t4=t4+dw1(i,k,j,2)
+  enddo
+  a21(i,j)=t1
+  a22(i,j)=t2
+  fr2(i,j)=t3
+  fc2(i,j)=t4
+ enddo
 enddo
-!$acc end kernels
 #else
 ! free-slip at z=+1
 call dz(dw1,ddw1)
 call dz_red(dw2,ddw2)
 call dz_red(dw3,ddw3)
-!$acc kernels
-a21(:,:)=0.5d0*ddw2(:,1,:)
-a22(:,:)=0.5d0*ddw3(:,1,:)
-fr2(:,:)=0.5d0*ddw1(:,1,:,1)
-fc2(:,:)=0.5d0*ddw1(:,1,:,2)
-do k=2,nz
-  a21(:,:)=a21(:,:)+ddw2(:,k,:)
-  a22(:,:)=a22(:,:)+ddw3(:,k,:)
-  fr2(:,:)=fr2(:,:)+ddw1(:,k,:,1)
-  fc2(:,:)=fc2(:,:)+ddw1(:,k,:,2)
+! one kernel: each (i,j) sums over k on the GPU (same terms and order as the
+! array-syntax version, which ran the k loop on the host with 4 kernels per k)
+!$acc parallel loop collapse(2) private(t1,t2,t3,t4)
+do j=1,spy
+ do i=1,spx
+  t1=0.5d0*ddw2(i,1,j)
+  t2=0.5d0*ddw3(i,1,j)
+  t3=0.5d0*ddw1(i,1,j,1)
+  t4=0.5d0*ddw1(i,1,j,2)
+  do k=2,nz
+   t1=t1+ddw2(i,k,j)
+   t2=t2+ddw3(i,k,j)
+   t3=t3+ddw1(i,k,j,1)
+   t4=t4+ddw1(i,k,j,2)
+  enddo
+  a21(i,j)=t1
+  a22(i,j)=t2
+  fr2(i,j)=t3
+  fc2(i,j)=t4
+ enddo
 enddo
-!$acc end kernels
 #endif
 
 

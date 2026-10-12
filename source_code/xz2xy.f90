@@ -1,95 +1,14 @@
 subroutine xz2xy(wa,uc,dims,ngxx,nsxx,ngyy,npyy,ngzz,npzz)
 
-use mpi
 use commondata
-
-!type(mpi_request) :: req,reqs(2)
-integer :: req
-integer :: iadd
+use a2a_buffers
 
 integer :: dims(2)
-integer :: source,dest,disp,direction,numel,indy,indz,ry,rz
-integer :: sendy,recvz
 integer :: nsxx,npyy,npzz,ngxx,ngyy,ngzz
-
 double precision :: uc(nsxx,nz,npyy,2),wa(nsxx,npzz,ny,2)
-double precision, allocatable, asynchronous :: bufs(:,:,:,:),bufr(:,:,:,:)
 
-! Vesta needs mpi_async_protects_nonblocking to be logical
-!onlyforvesta
-
-
-ry=mod(ny,nzcpu)
-rz=mod(nz,nzcpu)
-
-allocate(bufs(ngxx,ngzz,ngyy,2))
-allocate(bufr(ngxx,ngzz,ngyy,2))
-
-direction=0
-
-do disp=1,dims(direction+1)-1
- call mpi_cart_shift(cart_comm,direction,disp,source,dest,ierr)
-
- numel=ngxx*ngyy*ngzz*2
-  !$acc kernels
- bufs=0.0d0*bufs
- !$acc end kernels
-
- if((floor(real(dest)/real(nycpu)).lt.ry).or.ry.eq.0)then
-  indy=floor(real(dest)/real(nycpu))*ngyy
-  sendy=ngyy
- else
-  indy=(floor(real(dest)/real(nycpu))-ry)*(ngyy-1)+ry*ngyy
-  sendy=ngyy-1
- endif
- !$acc kernels
- bufs(1:nsxx,1:npzz,1:sendy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+sendy,1:2)
- !$acc end kernels
-
- ! isend + recv (blocking recv needs no wait)
- !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
- !$acc host_data use_device(bufs,bufr)
- call mpi_isend(bufs,numel,mpi_double_precision,dest,16,cart_comm,req,ierr)
- call mpi_recv(bufr,numel,mpi_double_precision,source,16,cart_comm,mpi_status_ignore,ierr)
- !$acc end host_data
-
- if((floor(real(source)/real(nycpu)).lt.rz).or.rz.eq.0)then
-  indz=floor(real(source)/real(nycpu))*ngzz
-  recvz=ngzz
- else
-  indz=(floor(real(source)/real(nycpu))-rz)*(ngzz-1)+rz*ngzz
-  recvz=ngzz-1
- endif
-
-! for use mpi_f08
-! if(.not.mpi_async_protects_nonblocking) call mpi_f_sync_reg(bufs,ierr)
- call mpi_wait(req,mpi_status_ignore,ierr)
- if(.not.mpi_async_protects_nonblocking) call mpi_get_address(bufs,iadd,ierr)
-
-! write(*,*) 'rank',rank,'to',dest,indy+1,indy+sendy,'from',source,indz+1,indz+recvz
- !$acc kernels
- uc(1:nsxx,indz+1:indz+recvz,1:npyy,1:2)=bufr(1:nsxx,1:recvz,1:npyy,1:2)
- !$acc end kernels
-enddo
-
-! copy data in place (avoid communication rank n to rank n)
-if((floor(real(rank)/real(nycpu)).lt.ry).or.ry.eq.0)then
- indy=floor(real(rank)/real(nycpu))*ngyy
-else
- indy=(floor(real(rank)/real(nycpu))-ry)*(ngyy-1)+ry*ngyy
-endif
-if((floor(real(rank)/real(nycpu)).lt.rz).or.rz.eq.0)then
- indz=floor(real(rank)/real(nycpu))*ngzz
-else
- indz=(floor(real(rank)/real(nycpu))-rz)*(ngzz-1)+rz*ngzz
-endif
-!write(*,*) 'rank',rank,'to',rank,indy+1,indy+npyy,'from',rank,indz+1,indz+npzz
-!$acc kernels
-uc(1:nsxx,indz+1:indz+npzz,1:npyy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)
-!$acc end kernels
-
-deallocate(bufs)
-deallocate(bufr)
+call a2a_reserve(int(ngxx,8)*int(ngzz,8)*int(ngyy,8)*2_8*int(nzcpu,8))
+call xz2xy_a2a(wa,uc,ngxx,nsxx,ngyy,npyy,ngzz,npzz,ny,nz)
 
 return
 end
@@ -100,100 +19,120 @@ end
 
 subroutine xz2xy_fg(wa,uc,dims,ngxx,nsxx,ngyy,npyy,ngzz,npzz)
 
-use mpi
 use commondata
 use dual_grid
-
-!type(mpi_request) :: req,reqs(2)
-integer :: req
-integer :: iadd
+use a2a_buffers
 
 integer :: dims(2)
-integer :: source,dest,disp,direction,numel,indy,indz,ry,rz
-integer :: sendy,recvz
 integer :: nsxx,npyy,npzz,ngxx,ngyy,ngzz
-
 double precision :: uc(nsxx,npsiz,npyy,2),wa(nsxx,npzz,npsiy,2)
-double precision, allocatable, asynchronous :: bufs(:,:,:,:),bufr(:,:,:,:)
 
-! Vesta needs mpi_async_protects_nonblocking to be logical
-!onlyforvesta
+call a2a_reserve(int(ngxx,8)*int(ngzz,8)*int(ngyy,8)*2_8*int(nzcpu,8))
+call xz2xy_a2a(wa,uc,ngxx,nsxx,ngyy,npyy,ngzz,npzz,npsiy,npsiz)
 
+return
+end
 
-ry=mod(npsiy,nzcpu)
-rz=mod(npsiz,nzcpu)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-allocate(bufs(ngxx,ngzz,ngyy,2))
-allocate(bufr(ngxx,ngzz,ngyy,2))
+! x-z to x-y pencils (direction 0, nzcpu ranks with the same y coordinate), gny x gnz grid
+! wa: y complete, z split -> uc: z complete, y split
+! Buffers: a2a_send/a2a_recv of module a2a_buffers, device memory allocated once (1D,
+! block j at offset j*numel, ordered as (ngxx,ngzz,ngyy,2)); device (not managed) memory so
+! that CUDA-aware MPI uses GPUDirect RDMA across nodes instead of staging through the host.
+! All the blocks are packed with one kernel, exchanged with non-blocking messages on cart_comm_dir(0)
+! and unpacked with one kernel. Blocks have the padded size ngxx*ngzz*ngyy*2 as in the previous
+! pairwise exchange; block j goes to / comes from the rank with z coordinate j.
+subroutine xz2xy_a2a(wa,uc,ngxx,nsxx,ngyy,npyy,ngzz,npzz,gny,gnz)
 
-direction=0
+use mpi
+use commondata
+use a2a_buffers
 
-do disp=1,dims(direction+1)-1
- call mpi_cart_shift(cart_comm,direction,disp,source,dest,ierr)
+integer :: nsxx,npyy,npzz,ngxx,ngyy,ngzz,gny,gnz
+integer :: me,nreq,req(2*nzcpu)
+integer :: i,ky,kz,c,j,ry,rz,numel,i0,cnt
+double precision :: uc(nsxx,gnz,npyy,2),wa(nsxx,npzz,gny,2)
+integer(kind=8) :: nb,ib
 
- numel=ngxx*ngyy*ngzz*2
- !$acc kernels
- bufs=0.0d0*bufs
- !$acc end kernels
+ry=mod(gny,nzcpu)
+rz=mod(gnz,nzcpu)
 
- if((floor(real(dest)/real(nycpu)).lt.ry).or.ry.eq.0)then
-  indy=floor(real(dest)/real(nycpu))*ngyy
-  sendy=ngyy
- else
-  indy=(floor(real(dest)/real(nycpu))-ry)*(ngyy-1)+ry*ngyy
-  sendy=ngyy-1
- endif
+numel=ngxx*ngyy*ngzz*2
+nb=int(numel,8)
 
- !$acc kernels
- bufs(1:nsxx,1:npzz,1:sendy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+sendy,1:2)
- !$acc end kernels
-
- ! isend + recv (blocking recv needs no wait)
- !CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
- !$acc host_data use_device(bufs,bufr)
- call mpi_isend(bufs,numel,mpi_double_precision,dest,16,cart_comm,req,ierr)
- call mpi_recv(bufr,numel,mpi_double_precision,source,16,cart_comm,mpi_status_ignore,ierr)
- !$acc end host_data
-
-
- if((floor(real(source)/real(nycpu)).lt.rz).or.rz.eq.0)then
-  indz=floor(real(source)/real(nycpu))*ngzz
-  recvz=ngzz
- else
-  indz=(floor(real(source)/real(nycpu))-rz)*(ngzz-1)+rz*ngzz
-  recvz=ngzz-1
- endif
-
-! for use mpi_f08
-! if(.not.mpi_async_protects_nonblocking) call mpi_f_sync_reg(bufs,ierr)
- call mpi_wait(req,mpi_status_ignore,ierr)
- if(.not.mpi_async_protects_nonblocking) call mpi_get_address(bufs,iadd,ierr)
-
-
-! write(*,*) 'rank',rank,'to',dest,indy+1,indy+sendy,'from',source,indz+1,indz+recvz
-!$acc kernels
- uc(1:nsxx,indz+1:indz+recvz,1:npyy,1:2)=bufr(1:nsxx,1:recvz,1:npyy,1:2)
- !$acc end kernels
+! pack: block j holds the y slab of rank j (offset i0, cnt points), all local z
+!$acc parallel loop collapse(5) private(i0,cnt,ib)
+do j=0,nzcpu-1
+ do c=1,2
+  do ky=1,ngyy
+   do kz=1,npzz
+    do i=1,nsxx
+     ib=int(j,8)*nb+int(i+ngxx*((kz-1)+ngzz*((ky-1)+ngyy*(c-1))),8)
+     if(j.lt.ry .or. ry.eq.0)then
+      i0=j*ngyy
+      cnt=ngyy
+     else
+      i0=(j-ry)*(ngyy-1)+ry*ngyy
+      cnt=ngyy-1
+     endif
+     if(ky.le.cnt) a2a_send(ib)=wa(i,kz,i0+ky,c)
+    enddo
+   enddo
+  enddo
+ enddo
 enddo
 
-! copy data in place (avoid communication rank n to rank n)
-if((floor(real(rank)/real(nycpu)).lt.ry).or.ry.eq.0)then
- indy=floor(real(rank)/real(nycpu))*ngyy
-else
- indy=(floor(real(rank)/real(nycpu))-ry)*(ngyy-1)+ry*ngyy
-endif
-if((floor(real(rank)/real(nycpu)).lt.rz).or.rz.eq.0)then
- indz=floor(real(rank)/real(nycpu))*ngzz
-else
- indz=(floor(real(rank)/real(nycpu))-rz)*(ngzz-1)+rz*ngzz
-endif
-!write(*,*) 'rank',rank,'to',rank,indy+1,indy+npyy,'from',rank,indz+1,indz+npzz
-!$acc kernels
-uc(1:nsxx,indz+1:indz+npzz,1:npyy,1:2)=wa(1:nsxx,1:npzz,indy+1:indy+npyy,1:2)
-!$acc end kernels
+! exchange with all the other ranks of cart_comm_dir(0) at once: all the receives and sends
+! are posted together (no sequential rounds); the own block (j=me) is not sent, the unpack
+! kernel takes it directly from a2a_send. Point-to-point instead of mpi_alltoall: the collective
+! would copy the own block (and possibly stage blocks) on the host with managed memory.
+call mpi_comm_rank(cart_comm_dir(0),me,ierr)
+nreq=0
+!CUDA-aware MPI GPU-GPU communicaton (by default hpc-sdk is CUDA-aware)
+do j=0,nzcpu-1
+ if(j.ne.me)then
+  nreq=nreq+1
+  call mpi_irecv(a2a_recv(1+int(j,8)*nb),numel,mpi_double_precision,j,0,cart_comm_dir(0),req(nreq),ierr)
+ endif
+enddo
+do j=0,nzcpu-1
+ if(j.ne.me)then
+  nreq=nreq+1
+  call mpi_isend(a2a_send(1+int(j,8)*nb),numel,mpi_double_precision,j,0,cart_comm_dir(0),req(nreq),ierr)
+ endif
+enddo
+call mpi_waitall(nreq,req,mpi_statuses_ignore,ierr)
 
-deallocate(bufs)
-deallocate(bufr)
+! unpack: block j holds the local y points with the z slab of rank j (offset i0, cnt points)
+!$acc parallel loop collapse(5) private(i0,cnt,ib)
+do j=0,nzcpu-1
+ do c=1,2
+  do ky=1,npyy
+   do kz=1,ngzz
+    do i=1,nsxx
+     ib=int(j,8)*nb+int(i+ngxx*((kz-1)+ngzz*((ky-1)+ngyy*(c-1))),8)
+     if(j.lt.rz .or. rz.eq.0)then
+      i0=j*ngzz
+      cnt=ngzz
+     else
+      i0=(j-rz)*(ngzz-1)+rz*ngzz
+      cnt=ngzz-1
+     endif
+     if(kz.le.cnt)then
+      if(j.eq.me)then
+       uc(i,i0+kz,ky,c)=a2a_send(ib)
+      else
+       uc(i,i0+kz,ky,c)=a2a_recv(ib)
+      endif
+     endif
+    enddo
+   enddo
+  enddo
+ enddo
+enddo
 
 return
 end

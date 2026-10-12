@@ -341,13 +341,15 @@ openacc_flag="0"
 elif [ "$machine" == "22" ]; then
 echo "=                              Leonardo (GPU)                             ="
 module purge
-module load nvhpc/24.3
-module load openmpi/4.1.6--nvhpc--24.3
+module load nvhpc/25.11
+# MPI: HPC-X (CUDA-aware Open MPI) bundled with NVHPC 25.11, CUDA 12.9 build
+NVHPC_DIR=$(dirname "$(readlink -f "$(which nvfortran)")")/../..
+source "$NVHPC_DIR/comm_libs/12.9/hpcx/hpcx-2.25.1/hpcx-init.sh"
+hpcx_load
 module list
+which mpif90
 cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
-cp ./Leonardo/binder.sh ./binder.sh
-cp ./Leonardo/go_binder.sh ./go_bind.sh
 savespectral="0"
 openacc_flag="1"
 
@@ -836,6 +838,8 @@ fi
 
 # copy executable and edit it
 cp ./go.sh ./set_run
+# Leonardo GPU: binder that sets the InfiniBand card of each GPU (UCX_NET_DEVICES)
+if [ "$machine" == "22" ]; then cp ./Leonardo/binder_leo.sh ./set_run/; chmod +x ./set_run/binder_leo.sh; fi
 if [ "$machine" == "0" ]; then
 sed -i "" "s/NUMTASKS/$NNT/g" ./set_run/go.sh
 else
@@ -1380,7 +1384,13 @@ echo ""
 
 #Single make should be fine in all machines
 #If problems with module, restore the double make
+if [ "$machine" == "22" ]; then
+# Leonardo GPU: the makefile compiles the module files first, in dependency order (see
+# Leonardo/makefile_gpu); -j 8: compile 8 files at a time (one object file per source)
+make -j 8
+else
 make
+fi
 
 #make
 

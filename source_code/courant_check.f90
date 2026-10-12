@@ -11,6 +11,9 @@ use surfactant
 
 double precision, dimension(nx,fpz,fpy) :: u,v,w
 double precision :: lcomax,gcomax,dx,dy,dz(nz)
+! host copies of the values checked for NaN: with -cuda and managed memory, ieee_is_nan on a
+! managed array element resolves to the device version (NVFORTRAN-S-0155 illegal call from host)
+double precision :: chk_phi,chk_psi
 
 integer :: i,j,k
 
@@ -59,45 +62,47 @@ if(isnan(gradpx).eqv..true.) lcomax=7.0d0
 #endif
 
 #if phi_flag == 1
+chk_phi=phic(1,1,1,1)
 #if machine == 4
-if(isnan(phic(1,1,1,1)).eq.1) lcomax=7.0d0
+if(isnan(chk_phi).eq.1) lcomax=7.0d0
 #elif machine == 7
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 14
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 16
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 17
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 19
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 20
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 22
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #else
-if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(isnan(chk_phi).eqv..true.) lcomax=7.0d0
 #endif
 
 #if psi_flag == 1
+chk_psi=psic_fg(1,1,1,1)
 #if machine == 4
-if(isnan(psic_fg(1,1,1,1)).eq.1) lcomax=7.0d0
+if(isnan(chk_psi).eq.1) lcomax=7.0d0
 #elif machine == 7
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 14
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 16
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 17
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 19
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 20
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #elif machine == 22
-if(ieee_is_nan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(ieee_is_nan(chk_phi).eqv..true.) lcomax=7.0d0
 #else
-if(isnan(phic(1,1,1,1)).eqv..true.) lcomax=7.0d0
+if(isnan(chk_phi).eqv..true.) lcomax=7.0d0
 #endif
 #endif
 #endif

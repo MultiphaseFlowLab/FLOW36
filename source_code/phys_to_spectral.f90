@@ -6,6 +6,7 @@ use mpi
 use fftx_fwd_module
 use ffty_fwd_module
 use dctz_fwd_module
+use a2a_buffers, only: stage_alloc
 !use nvtx
 
 integer :: dims(2) !,coord(2)
@@ -14,7 +15,11 @@ integer :: ngx,ngy,ngz,npx,npy,npz
 integer :: aliasing
 !double precision :: stime,etime,dtime,mtime
 double precision :: u(nx,fpz,fpy),uout(spx,nz,spy,2)
-double precision, allocatable :: uc(:,:,:,:),wa(:,:,:,:)
+! one persistent array per stage of the transform (allocated once; managed memory: no
+! allocation, first-touch page faults or free at every call); uc points to the current stage.
+! The transposes write directly into the array of the next stage (no wa=uc copies).
+double precision, allocatable, target, save :: s1(:,:,:,:),s2(:,:,:,:),s3(:,:,:,:)
+double precision, pointer, contiguous :: uc(:,:,:,:)
 
 !! just to check code
 !if(rank.eq.0) then
@@ -54,7 +59,8 @@ endif
 ! 1)    fft x direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-allocate(uc(npx,npz,npy,2))
+call stage_alloc(s1,npx,npz,npy)
+uc=>s1
 !call nvtxStartRange("FFTX-FWD",1)
 call fftx_fwd(u,uc,aliasing)
 !call fftx_fwd(u,uc,nx,npz,npy,0)
@@ -90,17 +96,12 @@ npx=nsx
 #if nycpu>1
 !if(nycpu.gt.1)then ! substituted with conditional compilation
 
- allocate(wa(nx/2+1,npz,npy,2))
- !$acc kernels
- wa=uc
- !$acc end kernels
- deallocate(uc)
- allocate(uc(nsx,npz,ny,2))
+ call stage_alloc(s2,nsx,npz,ny)
 
  !call nvtxStartRange("YZ2XZ",2)
- call yz2xz(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
+ call yz2xz(uc,s2,dims,ngx,npx,ngy,npy,ngz,npz)
  !call nvtxEndRange
- deallocate(wa)
+ uc=>s2
 
 !endif
 #else
@@ -136,17 +137,12 @@ rz=mod(nz,nzcpu)
 #if nzcpu>1
 !if(nzcpu.gt.1)then ! substituted with conditional compilation
 
- allocate(wa(nsx,npz,ny,2))
- !$acc kernels
- wa=uc
- !$acc end kernels
- deallocate(uc)
- allocate(uc(nsx,nz,npy,2))
+ call stage_alloc(s3,nsx,nz,npy)
 
  !call nvtxStartRange("XZ2XY",2)
- call xz2xy(wa,uc,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xz2xy(uc,s3,dims,ngx,npx,ngy,npy,ngz,npz)
  !call nvtxEndRange
- deallocate(wa)
+ uc=>s3
 
 !endif
 #else
@@ -164,7 +160,7 @@ call dctz_fwd(uc,uout,aliasing)
 !uout=uc
 
 
-deallocate(uc)
+nullify(uc)
 
 
 !etime=mpi_wtime()

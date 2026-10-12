@@ -6,13 +6,18 @@ use mpi
 use fftx_bwd_module
 use ffty_bwd_module
 use dctz_bwd_module
+use a2a_buffers, only: stage_alloc
 !use nvtx
 
 integer :: dims(2)
 integer :: rx,ry,rz
 integer :: aliasing
 double precision :: uc(spx,nz,spy,2),uout(nx,fpz,fpy)
-double precision, allocatable :: u(:,:,:,:),wa(:,:,:,:)
+! one persistent array per stage of the transform (allocated once; managed memory: no
+! allocation, first-touch page faults or free at every call); u points to the current stage.
+! The transposes write directly into the array of the next stage (no wa=u copies).
+double precision, allocatable, target, save :: s1(:,:,:,:),s2(:,:,:,:),s3(:,:,:,:)
+double precision, pointer, contiguous :: u(:,:,:,:)
 
 
 dims(1)=nzcpu
@@ -23,14 +28,15 @@ dims(2)=nycpu
 ! 1)    idct z direction
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-allocate(u(spx,nz,spy,2))
+call stage_alloc(s1,spx,nz,spy)
+! copy: dctz_bwd modifies its input (dealiasing, last mode), uc must be preserved
 !$acc kernels
-u=uc
+s1=uc
 !$acc end kernels
+u=>s1
 !call nvtxStartRange("DCTZ-BWD",1)
 call dctz_bwd(u,u,aliasing)
 !call nvtxEndRange
-!write(*,*) "After bwd"
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2)    change parallelization x-y to x-z
@@ -78,17 +84,11 @@ endif
 #if nzcpu>1
 !if(nzcpu.gt.1)then ! substituted with conditional compilation
 
- allocate(wa(spx,nz,spy,2))
- !$acc kernels
- wa=u
- !$acc end kernels
- deallocate(u)
- allocate(u(spx,npz,ny,2))
-
+ call stage_alloc(s2,spx,npz,ny)
 ! call nvtxStartRange("XY2XZ",2)
- call xy2xz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xy2xz(u,s2,dims,ngx,npx,ngy,npy,ngz,npz)
  !call nvtxEndRange
- deallocate(wa)
+ u=>s2
 
 !endif
 #else
@@ -126,17 +126,11 @@ endif
 #if nycpu>1
 !if(nycpu.gt.1)then ! substituted with conditional compilation
 
- allocate(wa(spx,npz,ny,2))
- !$acc kernels
- wa=u
- !$acc end kernels
- deallocate(u)
- allocate(u(nx/2+1,npz,npy,2))
-
+ call stage_alloc(s3,nx/2+1,npz,npy)
  !call nvtxStartRange("XZ2YZ",2)
- call xz2yz(wa,u,dims,ngx,npx,ngy,npy,ngz,npz)
+ call xz2yz(u,s3,dims,ngx,npx,ngy,npy,ngz,npz)
  !call nvtxEndRange
- deallocate(wa)
+ u=>s3
 
 !endif
 #else
@@ -151,7 +145,7 @@ endif
 call fftx_bwd(u,uout,aliasing)
 !call nvtxEndRange
 
-deallocate(u)
+nullify(u)
 
 
 return

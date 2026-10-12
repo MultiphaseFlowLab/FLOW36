@@ -19,16 +19,23 @@ use cufftplans
 implicit none
 integer :: aliasing,nsx,ny,npz
 real(c_double), dimension(:,:,:,:) :: ui, uo
-complex(c_double_complex), allocatable :: wt(:,:,:),wot(:,:,:)
+complex(c_double_complex), allocatable, save :: wt(:,:,:),wot(:,:,:)
 
 !! get dimensions
 nsx=size(ui,1)
 npz=size(ui,2)
 ny=size(ui,3)
 !! temp for storing complex fft results
-allocate(wt(nsx,npz,ny))
-allocate(wot(nsx,npz,ny))
-
+! persistent work arrays (allocated once; managed memory: no allocation, first-touch
+! page faults or free at every call); reallocated only if the shape changes
+if(allocated(wt))then
+ if(any(shape(wt).ne.[nsx,npz,ny])) deallocate(wt)
+endif
+if(.not.allocated(wt)) allocate(wt(nsx,npz,ny))
+if(allocated(wot))then
+ if(any(shape(wot).ne.[nsx,npz,ny])) deallocate(wot)
+endif
+if(.not.allocated(wot)) allocate(wot(nsx,npz,ny))
 #if openaccflag == 0
 wt(1:nsx,1:npz,1:ny)=dcmplx(ui(1:nsx,1:npz,1:ny,1),ui(1:nsx,1:npz,1:ny,2))
 
@@ -64,7 +71,7 @@ endif
 !$acc end data
 #endif
 
-deallocate(wt,wot)
+! wt,wot kept allocated for the next call
 end subroutine
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
