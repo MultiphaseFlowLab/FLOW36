@@ -9,14 +9,22 @@ use sim_par
 use velocity_old
 use surfactant
 use dual_grid
+use a2a_buffers, only: work_alloc
 
 
 double precision, dimension(spx,nz,spy,2) :: s1,s2,s3
-double precision, allocatable, dimension(:,:,:,:) :: gradphix,gradphiy,gradphiz
-double precision, allocatable, dimension(:,:,:,:) :: a4,a5,a6,a7,a8,a9
-double precision, allocatable, dimension(:,:,:) :: fgradphix,fgradphiy,fgradphiz
-double precision, allocatable, dimension(:,:,:) :: a4f,a5f,a6f,a7f,a8f,a9f,a10f,a11f,a12f,viscnon
-double precision, allocatable, dimension(:,:,:) :: sigma
+! persistent work arrays (save): allocated on the first call (work_alloc), never freed, so no
+! allocation, first-touch page faults or device synchronization at every call (managed memory).
+! Each array always has the same shape: the fine-grid (surface tension) ones are the *_fg arrays.
+double precision, allocatable, save, dimension(:,:,:,:) :: gradphix,gradphiy,gradphiz
+double precision, allocatable, save, dimension(:,:,:,:) :: a4,a5,a6,a7,a8,a9
+double precision, allocatable, save, dimension(:,:,:) :: fgradphix,fgradphiy,fgradphiz
+double precision, allocatable, save, dimension(:,:,:) :: a4f,a5f,a6f,a7f,a8f,a9f,a10f,a11f,a12f,viscnon
+double precision, allocatable, save, dimension(:,:,:,:) :: gradphix_fg,gradphiy_fg,gradphiz_fg
+double precision, allocatable, save, dimension(:,:,:,:) :: a4_fg,a5_fg,a6_fg
+double precision, allocatable, save, dimension(:,:,:) :: fgradphix_fg,fgradphiy_fg,fgradphiz_fg
+double precision, allocatable, save, dimension(:,:,:) :: a4f_fg,a5f_fg,a6f_fg
+double precision, allocatable, save, dimension(:,:,:) :: sigma
 double precision :: phif,gammadot
 
 double precision :: modg,threshold,gthreshold
@@ -40,12 +48,12 @@ call spectral_to_phys(phic,phi,1)
 call coarse2fine(phic,phic_fg)
 call spectral_to_phys_fg(phic_fg,phi_fg,1)
 
-allocate(gradphix(spxpsi,npsiz,spypsi,2))
-allocate(gradphiy(spxpsi,npsiz,spypsi,2))
-allocate(gradphiz(spxpsi,npsiz,spypsi,2))
-allocate(fgradphix(npsix,fpzpsi,fpypsi))
-allocate(fgradphiy(npsix,fpzpsi,fpypsi))
-allocate(fgradphiz(npsix,fpzpsi,fpypsi))
+call work_alloc(gradphix_fg,spxpsi,npsiz,spypsi,2)
+call work_alloc(gradphiy_fg,spxpsi,npsiz,spypsi,2)
+call work_alloc(gradphiz_fg,spxpsi,npsiz,spypsi,2)
+call work_alloc(fgradphix_fg,npsix,fpzpsi,fpypsi)
+call work_alloc(fgradphiy_fg,npsix,fpzpsi,fpypsi)
+call work_alloc(fgradphiz_fg,npsix,fpzpsi,fpypsi)
 
 
 ! calculate gradient of phi
@@ -54,25 +62,25 @@ allocate(fgradphiz(npsix,fpzpsi,fpypsi))
 do j=1,spypsi
   do k=1,npsiz
     do i=1,spxpsi
-      gradphix(i,k,j,1)=-kxpsi(i+cstartpsi(1))*phic_fg(i,k,j,2)
-      gradphix(i,k,j,2)=+kxpsi(i+cstartpsi(1))*phic_fg(i,k,j,1)
-      gradphiy(i,k,j,1)=-kypsi(j+cstartpsi(3))*phic_fg(i,k,j,2)
-      gradphiy(i,k,j,2)=+kypsi(j+cstartpsi(3))*phic_fg(i,k,j,1)
+      gradphix_fg(i,k,j,1)=-kxpsi(i+cstartpsi(1))*phic_fg(i,k,j,2)
+      gradphix_fg(i,k,j,2)=+kxpsi(i+cstartpsi(1))*phic_fg(i,k,j,1)
+      gradphiy_fg(i,k,j,1)=-kypsi(j+cstartpsi(3))*phic_fg(i,k,j,2)
+      gradphiy_fg(i,k,j,2)=+kypsi(j+cstartpsi(3))*phic_fg(i,k,j,1)
     enddo
   enddo
 enddo
 
-call spectral_to_phys_fg(gradphix,fgradphix,1)
-call spectral_to_phys_fg(gradphiy,fgradphiy,1)
+call spectral_to_phys_fg(gradphix_fg,fgradphix_fg,1)
+call spectral_to_phys_fg(gradphiy_fg,fgradphiy_fg,1)
 
 ! z component
-call dz_fg(phic_fg,gradphiz)
+call dz_fg(phic_fg,gradphiz_fg)
 
-call spectral_to_phys_fg(gradphiz,fgradphiz,1)
+call spectral_to_phys_fg(gradphiz_fg,fgradphiz_fg,1)
 
-! phi gradient in physical space in fgradphix,fgradphiy,fgradphiz
+! phi gradient in physical space in fgradphix_fg,fgradphiy_fg,fgradphiz_fg
 
-allocate(sigma(npsix,fpzpsi,fpypsi))
+call work_alloc(sigma,npsix,fpzpsi,fpypsi)
 
 #if psiflag == 0
 ! constant fixed surface tension, no surfactant
@@ -90,12 +98,12 @@ sigma=max(sigma,0.5d0)
 #endif
 
 
-allocate(a4f(npsix,fpzpsi,fpypsi))
-allocate(a5f(npsix,fpzpsi,fpypsi))
-allocate(a6f(npsix,fpzpsi,fpypsi))
-allocate(a4(spxpsi,npsiz,spypsi,2))
-allocate(a5(spxpsi,npsiz,spypsi,2))
-allocate(a6(spxpsi,npsiz,spypsi,2))
+call work_alloc(a4f_fg,npsix,fpzpsi,fpypsi)
+call work_alloc(a5f_fg,npsix,fpzpsi,fpypsi)
+call work_alloc(a6f_fg,npsix,fpzpsi,fpypsi)
+call work_alloc(a4_fg,spxpsi,npsiz,spypsi,2)
+call work_alloc(a5_fg,spxpsi,npsiz,spypsi,2)
+call work_alloc(a6_fg,spxpsi,npsiz,spypsi,2)
 
 
 ! assemble x component of surface tension force
@@ -103,27 +111,27 @@ allocate(a6(spxpsi,npsiz,spypsi,2))
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
-      a4f(i,k,j)=sigma(i,k,j)*((fgradphiy(i,k,j))**2+(fgradphiz(i,k,j))**2)
-      a5f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiy(i,k,j)
-      a6f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiz(i,k,j)
+      a4f_fg(i,k,j)=sigma(i,k,j)*((fgradphiy_fg(i,k,j))**2+(fgradphiz_fg(i,k,j))**2)
+      a5f_fg(i,k,j)=-sigma(i,k,j)*fgradphix_fg(i,k,j)*fgradphiy_fg(i,k,j)
+      a6f_fg(i,k,j)=-sigma(i,k,j)*fgradphix_fg(i,k,j)*fgradphiz_fg(i,k,j)
     enddo
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f_fg,gradphix_fg,1)
+call phys_to_spectral_fg(a5f_fg,gradphiy_fg,1)
+call phys_to_spectral_fg(a6f_fg,gradphiz_fg,1)
 
-call dz_fg(gradphiz,a4)
+call dz_fg(gradphiz_fg,a4_fg)
 
 !$acc parallel loop collapse(3)
 do j=1,spypsi
   do k=1,npsiz
     do i=1,spxpsi
-      a4(i,k,j,1)=a4(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix(i,k,j,2) &
-                           & -kypsi(j+cstartpsi(3))*gradphiy(i,k,j,2)
-      a4(i,k,j,2)=a4(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix(i,k,j,1) &
-                           & +kypsi(j+cstartpsi(3))*gradphiy(i,k,j,1)
+      a4_fg(i,k,j,1)=a4_fg(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix_fg(i,k,j,2) &
+                           & -kypsi(j+cstartpsi(3))*gradphiy_fg(i,k,j,2)
+      a4_fg(i,k,j,2)=a4_fg(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix_fg(i,k,j,1) &
+                           & +kypsi(j+cstartpsi(3))*gradphiy_fg(i,k,j,1)
     enddo
   enddo
 enddo
@@ -133,27 +141,27 @@ enddo
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
-      a4f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiy(i,k,j)
-      a5f(i,k,j)=sigma(i,k,j)*((fgradphix(i,k,j))**2+(fgradphiz(i,k,j))**2)
-      a6f(i,k,j)=-sigma(i,k,j)*fgradphiy(i,k,j)*fgradphiz(i,k,j)
+      a4f_fg(i,k,j)=-sigma(i,k,j)*fgradphix_fg(i,k,j)*fgradphiy_fg(i,k,j)
+      a5f_fg(i,k,j)=sigma(i,k,j)*((fgradphix_fg(i,k,j))**2+(fgradphiz_fg(i,k,j))**2)
+      a6f_fg(i,k,j)=-sigma(i,k,j)*fgradphiy_fg(i,k,j)*fgradphiz_fg(i,k,j)
     enddo
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f_fg,gradphix_fg,1)
+call phys_to_spectral_fg(a5f_fg,gradphiy_fg,1)
+call phys_to_spectral_fg(a6f_fg,gradphiz_fg,1)
 
-call dz_fg(gradphiz,a5)
+call dz_fg(gradphiz_fg,a5_fg)
 
 !$acc parallel loop collapse(3)
 do j=1,spypsi
   do k=1,npsiz
     do i=1,spxpsi
-      a5(i,k,j,1)=a5(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix(i,k,j,2) &
-                           & -kypsi(j+cstartpsi(3))*gradphiy(i,k,j,2)
-      a5(i,k,j,2)=a5(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix(i,k,j,1) &
-                           & +kypsi(j+cstartpsi(3))*gradphiy(i,k,j,1)
+      a5_fg(i,k,j,1)=a5_fg(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix_fg(i,k,j,2) &
+                           & -kypsi(j+cstartpsi(3))*gradphiy_fg(i,k,j,2)
+      a5_fg(i,k,j,2)=a5_fg(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix_fg(i,k,j,1) &
+                           & +kypsi(j+cstartpsi(3))*gradphiy_fg(i,k,j,1)
     enddo
   enddo
 enddo
@@ -163,57 +171,43 @@ enddo
 do j=1,fpypsi
   do k=1,fpzpsi
     do i=1,npsix
-      a4f(i,k,j)=-sigma(i,k,j)*fgradphix(i,k,j)*fgradphiz(i,k,j)
-      a5f(i,k,j)=-sigma(i,k,j)*fgradphiy(i,k,j)*fgradphiz(i,k,j)
-      a6f(i,k,j)=sigma(i,k,j)*((fgradphix(i,k,j))**2+(fgradphiy(i,k,j))**2)
+      a4f_fg(i,k,j)=-sigma(i,k,j)*fgradphix_fg(i,k,j)*fgradphiz_fg(i,k,j)
+      a5f_fg(i,k,j)=-sigma(i,k,j)*fgradphiy_fg(i,k,j)*fgradphiz_fg(i,k,j)
+      a6f_fg(i,k,j)=sigma(i,k,j)*((fgradphix_fg(i,k,j))**2+(fgradphiy_fg(i,k,j))**2)
     enddo
   enddo
 enddo
 
-call phys_to_spectral_fg(a4f,gradphix,1)
-call phys_to_spectral_fg(a5f,gradphiy,1)
-call phys_to_spectral_fg(a6f,gradphiz,1)
+call phys_to_spectral_fg(a4f_fg,gradphix_fg,1)
+call phys_to_spectral_fg(a5f_fg,gradphiy_fg,1)
+call phys_to_spectral_fg(a6f_fg,gradphiz_fg,1)
 
-deallocate(fgradphix)
-deallocate(fgradphiy)
-deallocate(fgradphiz)
-deallocate(sigma)
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
 
-call dz_fg(gradphiz,a6)
+call dz_fg(gradphiz_fg,a6_fg)
 
 !$acc parallel loop collapse(3)
 do j=1,spypsi
   do k=1,npsiz
     do i=1,spxpsi
-      a6(i,k,j,1)=a6(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix(i,k,j,2) &
-                           & -kypsi(j+cstartpsi(3))*gradphiy(i,k,j,2)
-      a6(i,k,j,2)=a6(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix(i,k,j,1) &
-                           & +kypsi(j+cstartpsi(3))*gradphiy(i,k,j,1)
+      a6_fg(i,k,j,1)=a6_fg(i,k,j,1)-kxpsi(i+cstartpsi(1))*gradphix_fg(i,k,j,2) &
+                           & -kypsi(j+cstartpsi(3))*gradphiy_fg(i,k,j,2)
+      a6_fg(i,k,j,2)=a6_fg(i,k,j,2)+kxpsi(i+cstartpsi(1))*gradphix_fg(i,k,j,1) &
+                           & +kypsi(j+cstartpsi(3))*gradphiy_fg(i,k,j,1)
     enddo
   enddo
 enddo
 
 
-deallocate(gradphix)
-deallocate(gradphiy)
-deallocate(gradphiz)
 ! a4, a5, a6 on fine grid
 ! allocate variable in coarse grid for coupling with NS
-allocate(gradphix(spx,nz,spy,2))
-allocate(gradphiy(spx,nz,spy,2))
-allocate(gradphiz(spx,nz,spy,2))
+call work_alloc(gradphix,spx,nz,spy,2)
+call work_alloc(gradphiy,spx,nz,spy,2)
+call work_alloc(gradphiz,spx,nz,spy,2)
 
 ! take a4,a5,a6 from fine to coarse grid, then add to NS S term
-call fine2coarse(a4,gradphix)
-call fine2coarse(a5,gradphiy)
-call fine2coarse(a6,gradphiz)
-
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
+call fine2coarse(a4_fg,gradphix)
+call fine2coarse(a5_fg,gradphiy)
+call fine2coarse(a6_fg,gradphiz)
 
 #if match_dens == 2
 ! rescale NS equation if rhor > 1 for improved stability
@@ -230,9 +224,6 @@ s3=s3+3.0d0/dsqrt(8.0d0)*Ch/(we)*gradphiz
 !$acc end kernels
 #endif
 
-deallocate(gradphix)
-deallocate(gradphiy)
-deallocate(gradphiz)
 
 
 
@@ -240,31 +231,32 @@ deallocate(gradphiz)
 ! electric force calculation
 #if eleflag == 1
 
-allocate(gradphix(spx,nz,spy,2))
-allocate(gradphiy(spx,nz,spy,2))
-allocate(gradphiz(spx,nz,spy,2))
-allocate(fgradphix(nx,fpz,fpy))
-allocate(fgradphiy(nx,fpz,fpy))
-allocate(fgradphiz(nx,fpz,fpy))
+call work_alloc(gradphix,spx,nz,spy,2)
+call work_alloc(gradphiy,spx,nz,spy,2)
+call work_alloc(gradphiz,spx,nz,spy,2)
+call work_alloc(fgradphix,nx,fpz,fpy)
+call work_alloc(fgradphiy,nx,fpz,fpy)
+call work_alloc(fgradphiz,nx,fpz,fpy)
 
-!$acc kernels
-do i=1,spx
-  gradphix(i,:,:,1)=-kx(i+cstart(1))*phic(i,:,:,2)
-  gradphix(i,:,:,2)=+kx(i+cstart(1))*phic(i,:,:,1)
-enddo
+!$acc parallel loop collapse(3)
 do j=1,spy
-  gradphiy(:,:,j,1)=-ky(j+cstart(3))*phic(:,:,j,2)
-  gradphiy(:,:,j,2)=+ky(j+cstart(3))*phic(:,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      gradphix(i,k,j,1)=-kx(i+cstart(1))*phic(i,k,j,2)
+      gradphix(i,k,j,2)=+kx(i+cstart(1))*phic(i,k,j,1)
+      gradphiy(i,k,j,1)=-ky(j+cstart(3))*phic(i,k,j,2)
+      gradphiy(i,k,j,2)=+ky(j+cstart(3))*phic(i,k,j,1)
+    enddo
+  enddo
 enddo
-!$acc end kernels
 call dz(phic,gradphiz)
 
 call spectral_to_phys(gradphix,fgradphix,0)
 call spectral_to_phys(gradphiy,fgradphiy,0)
 call spectral_to_phys(gradphiz,fgradphiz,0)
 
-!$acc kernels
 threshold=0.9d0
+!$acc kernels
 ! gthreshold=0.5d0*(1.0d0-threshold**2)/(dsqrt(2.0d0)*ch)
 do j=1,fpy
  do k=1,fpz
@@ -289,7 +281,6 @@ call phys_to_spectral(fgradphix,gradphix,0)
 call phys_to_spectral(fgradphiy,gradphiy,0)
 call phys_to_spectral(fgradphiz,gradphiz,0)
 
-deallocate(fgradphix,fgradphiy,fgradphiz)
 
 #if match_dens == 2
 ! rescale NS equation if rhor > 1 for improved stability
@@ -306,7 +297,6 @@ s3=s3+stuart*gradphiz
 !$acc end kernels
 #endif
 
-deallocate(gradphix,gradphiy,gradphiz)
 
 
 
@@ -374,29 +364,30 @@ deallocate(gradphix,gradphiy,gradphiz)
 ! if visr < 1
 if (rank.eq.0) print*,'Unmatched viscosities - N/N'
 ! first row
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
 
 call dz(uc,a6)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a4(i,:,j,1)=-kx(i+cstart(1))*uc(i,:,j,2)
-    a4(i,:,j,2)=+kx(i+cstart(1))*uc(i,:,j,1)
-    a5(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
-    a5(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
-    a6(i,:,j,1)=a6(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
-    a6(i,:,j,2)=a6(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a4(i,k,j,1)=-kx(i+cstart(1))*uc(i,k,j,2)
+      a4(i,k,j,2)=+kx(i+cstart(1))*uc(i,k,j,1)
+      a5(i,k,j,1)=-ky(j+cstart(3))*uc(i,k,j,2)-kx(i+cstart(1))*vc(i,k,j,2)
+      a5(i,k,j,2)=+ky(j+cstart(3))*uc(i,k,j,1)+kx(i+cstart(1))*vc(i,k,j,1)
+      a6(i,k,j,1)=a6(i,k,j,1)-kx(i+cstart(1))*wc(i,k,j,2)
+      a6(i,k,j,2)=a6(i,k,j,2)+kx(i+cstart(1))*wc(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
 
 call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
@@ -419,16 +410,17 @@ call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
 call phys_to_spectral(a6f,a6,0)
 
-allocate(a7(spx,nz,spy,2))
+call work_alloc(a7,spx,nz,spy,2)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 call dz(a6,a4)
 
@@ -444,40 +436,34 @@ s1=s1+(a4+a7)/re
 !$acc end kernels
 #endif
 
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
-deallocate(a7)
 
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
 
 
 ! second row
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
 
 call dz(vc,a6)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a4(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
-    a4(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
-    a5(i,:,j,1)=-ky(j+cstart(3))*vc(i,:,j,2)
-    a5(i,:,j,2)=+ky(j+cstart(3))*vc(i,:,j,1)
-    a6(i,:,j,1)=a6(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
-    a6(i,:,j,2)=a6(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a4(i,k,j,1)=-ky(j+cstart(3))*uc(i,k,j,2)-kx(i+cstart(1))*vc(i,k,j,2)
+      a4(i,k,j,2)=+ky(j+cstart(3))*uc(i,k,j,1)+kx(i+cstart(1))*vc(i,k,j,1)
+      a5(i,k,j,1)=-ky(j+cstart(3))*vc(i,k,j,2)
+      a5(i,k,j,2)=+ky(j+cstart(3))*vc(i,k,j,1)
+      a6(i,k,j,1)=a6(i,k,j,1)-ky(j+cstart(3))*wc(i,k,j,2)
+      a6(i,k,j,2)=a6(i,k,j,2)+ky(j+cstart(3))*wc(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
 
 call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
@@ -501,16 +487,17 @@ call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
 call phys_to_spectral(a6f,a6,0)
 
-allocate(a7(spx,nz,spy,2))
+call work_alloc(a7,spx,nz,spy,2)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
 call dz(a6,a4)
@@ -526,40 +513,34 @@ s2=s2+(a4+a7)/re
 !$acc end kernels
 #endif
 
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
-deallocate(a7)
 
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
 
 
 ! third row
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
 
 call dz(uc,a4)
 call dz(vc,a5)
 call dz(wc,a6)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a4(i,:,j,1)=a4(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
-    a4(i,:,j,2)=a4(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
-    a5(i,:,j,1)=a5(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
-    a5(i,:,j,2)=a5(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a4(i,k,j,1)=a4(i,k,j,1)-kx(i+cstart(1))*wc(i,k,j,2)
+      a4(i,k,j,2)=a4(i,k,j,2)+kx(i+cstart(1))*wc(i,k,j,1)
+      a5(i,k,j,1)=a5(i,k,j,1)-ky(j+cstart(3))*wc(i,k,j,2)
+      a5(i,k,j,2)=a5(i,k,j,2)+ky(j+cstart(3))*wc(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
 
 call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
@@ -583,16 +564,17 @@ call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
 call phys_to_spectral(a6f,a6,0)
 
-allocate(a7(spx,nz,spy,2))
+call work_alloc(a7,spx,nz,spy,2)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
 call dz(a6,a4)
@@ -608,8 +590,6 @@ s3=s3+(a4+a7)/re
 !$acc end kernels
 #endif
 
-deallocate(a4,a5,a6,a7)
-deallocate(a4f,a5f,a6f)
 
 !End Block Visc-Contarst Newtonian
 #endif
@@ -619,44 +599,45 @@ deallocate(a4f,a5f,a6f)
 if (rank.eq.0) print*,'Unmatched viscosities - N/NN'
 
 ! first row
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
-allocate(a7(spx,nz,spy,2))
-allocate(a8(spx,nz,spy,2))
-allocate(a9(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
+call work_alloc(a7,spx,nz,spy,2)
+call work_alloc(a8,spx,nz,spy,2)
+call work_alloc(a9,spx,nz,spy,2)
 
 call dz(uc,a7)
 call dz(vc,a8)
 call dz(wc,a9)
 
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a4(i,:,j,1)=-kx(i+cstart(1))*2d0*uc(i,:,j,2)
-    a4(i,:,j,2)=+kx(i+cstart(1))*2d0*uc(i,:,j,1)
-    a5(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
-    a5(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
-    a6(i,:,j,1)=-ky(j+cstart(3))*2d0*vc(i,:,j,2)
-    a6(i,:,j,2)=+ky(j+cstart(3))*2d0*vc(i,:,j,1)
-    a7(i,:,j,1)=a7(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
-    a7(i,:,j,2)=a7(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
-    a8(i,:,j,1)=a8(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
-    a8(i,:,j,2)=a8(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
-    a9(i,:,j,1)=2d0*a9(i,:,j,1)
-    a9(i,:,j,2)=2d0*a9(i,:,j,2)
+  do k=1,nz
+    do i=1,spx
+      a4(i,k,j,1)=-kx(i+cstart(1))*2d0*uc(i,k,j,2)
+      a4(i,k,j,2)=+kx(i+cstart(1))*2d0*uc(i,k,j,1)
+      a5(i,k,j,1)=-ky(j+cstart(3))*uc(i,k,j,2)-kx(i+cstart(1))*vc(i,k,j,2)
+      a5(i,k,j,2)=+ky(j+cstart(3))*uc(i,k,j,1)+kx(i+cstart(1))*vc(i,k,j,1)
+      a6(i,k,j,1)=-ky(j+cstart(3))*2d0*vc(i,k,j,2)
+      a6(i,k,j,2)=+ky(j+cstart(3))*2d0*vc(i,k,j,1)
+      a7(i,k,j,1)=a7(i,k,j,1)-kx(i+cstart(1))*wc(i,k,j,2)
+      a7(i,k,j,2)=a7(i,k,j,2)+kx(i+cstart(1))*wc(i,k,j,1)
+      a8(i,k,j,1)=a8(i,k,j,1)-ky(j+cstart(3))*wc(i,k,j,2)
+      a8(i,k,j,2)=a8(i,k,j,2)+ky(j+cstart(3))*wc(i,k,j,1)
+      a9(i,k,j,1)=2d0*a9(i,k,j,1)
+      a9(i,k,j,2)=2d0*a9(i,k,j,2)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
-allocate(a7f(nx,fpz,fpy))
-allocate(a8f(nx,fpz,fpy))
-allocate(a9f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
+call work_alloc(a7f,nx,fpz,fpy)
+call work_alloc(a8f,nx,fpz,fpy)
+call work_alloc(a9f,nx,fpz,fpy)
 
 call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
@@ -665,8 +646,7 @@ call spectral_to_phys(a7,a7f,0)
 call spectral_to_phys(a8,a8f,0)
 call spectral_to_phys(a9,a9f,0)
 
-deallocate(a4,a5,a6,a7,a8,a9)
-allocate(viscnon(nx,fpz,fpy))
+call work_alloc(viscnon,nx,fpz,fpy)
 
 !computing the viscosity map
 !$acc kernels
@@ -686,9 +666,9 @@ enddo
 !$acc end kernels
 
 ! computing the first row...
-allocate(a10f(nx,fpz,fpy))
-allocate(a11f(nx,fpz,fpy))
-allocate(a12f(nx,fpz,fpy))
+call work_alloc(a10f,nx,fpz,fpy)
+call work_alloc(a11f,nx,fpz,fpy)
+call work_alloc(a12f,nx,fpz,fpy)
 
 !$acc kernels
 do j=1,fpy
@@ -704,25 +684,25 @@ enddo
 !$acc end kernels
 
 
-deallocate(a4f)
 
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
-allocate(a7(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
+call work_alloc(a7,spx,nz,spy,2)
 
 call phys_to_spectral(a10f,a4,0)
 call phys_to_spectral(a11f,a5,0)
 call phys_to_spectral(a12f,a6,0)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
 call dz(a6,a4)
@@ -755,20 +735,20 @@ enddo
 !$acc end kernels
 
 
-deallocate(a5f,a6f)
 
 call phys_to_spectral(a10f,a4,0)
 call phys_to_spectral(a11f,a5,0)
 call phys_to_spectral(a12f,a6,0)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 call dz(a6,a4)
 
@@ -798,22 +778,21 @@ do j=1,fpy
 enddo
 !$acc end kernels
 
-deallocate(viscnon,a7f,a8f,a9f)
 
 call phys_to_spectral(a10f,a4,0)
 call phys_to_spectral(a11f,a5,0)
 call phys_to_spectral(a12f,a6,0)
 
-deallocate(a10f,a11f,a12f)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 call dz(a6,a4)
 
@@ -830,7 +809,6 @@ s3=s3+1d0/(re)*(a4+a7)
 #endif
 
 
-deallocate(a4,a5,a6,a7)
 !Closing block non-newtonian
 #endif
 
@@ -844,29 +822,30 @@ deallocate(a4,a5,a6,a7)
 ! if visr > 1
 
 ! first row
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
 
 call dz(uc,a6)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a4(i,:,j,1)=-kx(i+cstart(1))*uc(i,:,j,2)
-    a4(i,:,j,2)=+kx(i+cstart(1))*uc(i,:,j,1)
-    a5(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
-    a5(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
-    a6(i,:,j,1)=a6(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
-    a6(i,:,j,2)=a6(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a4(i,k,j,1)=-kx(i+cstart(1))*uc(i,k,j,2)
+      a4(i,k,j,2)=+kx(i+cstart(1))*uc(i,k,j,1)
+      a5(i,k,j,1)=-ky(j+cstart(3))*uc(i,k,j,2)-kx(i+cstart(1))*vc(i,k,j,2)
+      a5(i,k,j,2)=+ky(j+cstart(3))*uc(i,k,j,1)+kx(i+cstart(1))*vc(i,k,j,1)
+      a6(i,k,j,1)=a6(i,k,j,1)-kx(i+cstart(1))*wc(i,k,j,2)
+      a6(i,k,j,2)=a6(i,k,j,2)+kx(i+cstart(1))*wc(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
 
 call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
@@ -889,16 +868,17 @@ call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
 call phys_to_spectral(a6f,a6,0)
 
-allocate(a7(spx,nz,spy,2))
+call work_alloc(a7,spx,nz,spy,2)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 call dz(a6,a4)
 
@@ -914,40 +894,34 @@ s1=s1+(a4+a7)/re*visr
 !$acc end kernels
 #endif
 
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
-deallocate(a7)
 
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
 
 
 ! second row
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
 
 call dz(vc,a6)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a4(i,:,j,1)=-ky(j+cstart(3))*uc(i,:,j,2)-kx(i+cstart(1))*vc(i,:,j,2)
-    a4(i,:,j,2)=+ky(j+cstart(3))*uc(i,:,j,1)+kx(i+cstart(1))*vc(i,:,j,1)
-    a5(i,:,j,1)=-ky(j+cstart(3))*vc(i,:,j,2)
-    a5(i,:,j,2)=+ky(j+cstart(3))*vc(i,:,j,1)
-    a6(i,:,j,1)=a6(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
-    a6(i,:,j,2)=a6(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a4(i,k,j,1)=-ky(j+cstart(3))*uc(i,k,j,2)-kx(i+cstart(1))*vc(i,k,j,2)
+      a4(i,k,j,2)=+ky(j+cstart(3))*uc(i,k,j,1)+kx(i+cstart(1))*vc(i,k,j,1)
+      a5(i,k,j,1)=-ky(j+cstart(3))*vc(i,k,j,2)
+      a5(i,k,j,2)=+ky(j+cstart(3))*vc(i,k,j,1)
+      a6(i,k,j,1)=a6(i,k,j,1)-ky(j+cstart(3))*wc(i,k,j,2)
+      a6(i,k,j,2)=a6(i,k,j,2)+ky(j+cstart(3))*wc(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
 
 call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
@@ -970,16 +944,17 @@ call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
 call phys_to_spectral(a6f,a6,0)
 
-allocate(a7(spx,nz,spy,2))
+call work_alloc(a7,spx,nz,spy,2)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 call dz(a6,a4)
 
@@ -995,40 +970,34 @@ s2=s2+(a4+a7)/re*visr
 !$acc end kernels
 #endif
 
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
-deallocate(a7)
 
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
 
 
 ! third row
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
 
 call dz(uc,a4)
 call dz(vc,a5)
 call dz(wc,a6)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a4(i,:,j,1)=a4(i,:,j,1)-kx(i+cstart(1))*wc(i,:,j,2)
-    a4(i,:,j,2)=a4(i,:,j,2)+kx(i+cstart(1))*wc(i,:,j,1)
-    a5(i,:,j,1)=a5(i,:,j,1)-ky(j+cstart(3))*wc(i,:,j,2)
-    a5(i,:,j,2)=a5(i,:,j,2)+ky(j+cstart(3))*wc(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a4(i,k,j,1)=a4(i,k,j,1)-kx(i+cstart(1))*wc(i,k,j,2)
+      a4(i,k,j,2)=a4(i,k,j,2)+kx(i+cstart(1))*wc(i,k,j,1)
+      a5(i,k,j,1)=a5(i,k,j,1)-ky(j+cstart(3))*wc(i,k,j,2)
+      a5(i,k,j,2)=a5(i,k,j,2)+ky(j+cstart(3))*wc(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
 
 call spectral_to_phys(a4,a4f,0)
 call spectral_to_phys(a5,a5f,0)
@@ -1052,16 +1021,17 @@ call phys_to_spectral(a4f,a4,0)
 call phys_to_spectral(a5f,a5,0)
 call phys_to_spectral(a6f,a6,0)
 
-allocate(a7(spx,nz,spy,2))
+call work_alloc(a7,spx,nz,spy,2)
 
-!$acc kernels
+!$acc parallel loop collapse(3)
 do j=1,spy
-  do i=1,spx
-    a7(i,:,j,1)=-kx(i+cstart(1))*a4(i,:,j,2)-ky(j+cstart(3))*a5(i,:,j,2)
-    a7(i,:,j,2)=+kx(i+cstart(1))*a4(i,:,j,1)+ky(j+cstart(3))*a5(i,:,j,1)
+  do k=1,nz
+    do i=1,spx
+      a7(i,k,j,1)=-kx(i+cstart(1))*a4(i,k,j,2)-ky(j+cstart(3))*a5(i,k,j,2)
+      a7(i,k,j,2)=+kx(i+cstart(1))*a4(i,k,j,1)+ky(j+cstart(3))*a5(i,k,j,1)
+    enddo
   enddo
 enddo
-!$acc end kernels
 
 
 call dz(a6,a4)
@@ -1078,14 +1048,7 @@ s3=s3+(a4+a7)/re*visr
 !$acc end kernels
 #endif
 
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
-deallocate(a7)
 
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
 
 #endif
 
@@ -1101,7 +1064,7 @@ deallocate(a6f)
 ! gravity and buoyancy
 ! gravity array is [x,z,y] to keep the array ordering as usual in the code
 ! S term order is S1:x, S2:y, S3:z
-allocate(a4f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
 
 !$acc kernels
 do j=1,fpy
@@ -1116,11 +1079,10 @@ enddo
 !$acc end kernels
 
 
-allocate(a4(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
 
 call phys_to_spectral(a4f,a4,0)
 
-deallocate(a4f)
 
 !$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
@@ -1129,13 +1091,12 @@ s3=s3+1.0d0/fr**2*a4*grav(2)
 !$acc end kernels
 
 
-deallocate(a4)
 
 #elif b_type == 2
 ! only buoyancy
 ! gravity array is [x,z,y] to keep the array ordering as usual in the code
 ! S term order is S1:x, S2:y, S3:z
-allocate(a4f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
 
 !$acc kernels
 do j=1,fpy
@@ -1150,11 +1111,10 @@ enddo
 !$acc end kernels
 
 
-allocate(a4(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
 
 call phys_to_spectral(a4f,a4,0)
 
-deallocate(a4f)
 
 !$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
@@ -1163,7 +1123,6 @@ s3=s3+1.0d0/fr**2*a4*grav(2)
 !$acc end kernels
 
 
-deallocate(a4)
 
 #endif
 #elif match_dens == 2
@@ -1175,7 +1134,7 @@ deallocate(a4)
 ! gravity and buoyancy
 ! gravity array is [x,z,y] to keep the array ordering as usual in the code
 ! S term order is S1:x, S2:y, S3:z
-allocate(a4f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
 
 !$acc kernels
 do j=1,fpy
@@ -1190,11 +1149,10 @@ enddo
 !$acc end kernels
 
 
-allocate(a4(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
 
 call phys_to_spectral(a4f,a4,0)
 
-deallocate(a4f)
 
 !$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
@@ -1203,13 +1161,12 @@ s3=s3+1.0d0/fr**2*a4*grav(2)
 !$acc end kernels
 
 
-deallocate(a4)
 
 #elif b_type == 2
 ! only buoyancy
 ! gravity array is [x,z,y] to keep the array ordering as usual in the code
 ! S term order is S1:x, S2:y, S3:z
-allocate(a4f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
 
 !$acc kernels
 do j=1,fpy
@@ -1225,11 +1182,10 @@ enddo
 !$acc end kernels
 
 
-allocate(a4(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
 
 call phys_to_spectral(a4f,a4,0)
 
-deallocate(a4f)
 
 !$acc kernels
 s1=s1+1.0d0/fr**2*a4*grav(1)
@@ -1237,7 +1193,6 @@ s2=s2+1.0d0/fr**2*a4*grav(3)
 s3=s3+1.0d0/fr**2*a4*grav(2)
 !$acc end kernels
 
-deallocate(a4)
 
 #endif
 #endif
@@ -1245,13 +1200,24 @@ deallocate(a4)
 ! calculate non-linear part of the time derivative term (only for non-matched densities)
 
 ! phi already available in physical space from surface force calculation, no need to transform it again
-allocate(a4f(nx,fpz,fpy))
-allocate(a5f(nx,fpz,fpy))
-allocate(a6f(nx,fpz,fpy))
+call work_alloc(a4f,nx,fpz,fpy)
+call work_alloc(a5f,nx,fpz,fpy)
+call work_alloc(a6f,nx,fpz,fpy)
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a5,spx,nz,spy,2)
+call work_alloc(a6,spx,nz,spy,2)
 
-call spectral_to_phys(uc-ucp,a4f,1)
-call spectral_to_phys(vc-vcp,a5f,1)
-call spectral_to_phys(wc-wcp,a6f,1)
+! velocity increments computed on the GPU: passing uc-ucp as argument would build the
+! temporary on the host (managed memory: uc,ucp,... migrated to the host at every step)
+!$acc kernels
+a4=uc-ucp
+a5=vc-vcp
+a6=wc-wcp
+!$acc end kernels
+
+call spectral_to_phys(a4,a4f,1)
+call spectral_to_phys(a5,a5f,1)
+call spectral_to_phys(a6,a6f,1)
 
 #if match_dens == 0
 !$acc kernels
@@ -1284,17 +1250,10 @@ enddo
 #endif
 
 
-allocate(a4(spx,nz,spy,2))
-allocate(a5(spx,nz,spy,2))
-allocate(a6(spx,nz,spy,2))
-
 call phys_to_spectral(a4f,a4,1)
 call phys_to_spectral(a5f,a5,1)
 call phys_to_spectral(a6f,a6,1)
 
-deallocate(a4f)
-deallocate(a5f)
-deallocate(a6f)
 
 #if match_dens == 2
 ! rescale NS if rhor > 1 for improved stability
@@ -1311,9 +1270,6 @@ s3=s3-0.5d0*(rhor-1.0d0)*a6
 !$acc end kernels
 #endif
 
-deallocate(a4)
-deallocate(a5)
-deallocate(a6)
 
 ! update velocity previous value; uc,vc,wc will be updated in the following calculation
 !$acc kernels
@@ -1329,14 +1285,18 @@ wcp=wc
 ! body force direction array is [x,z,y] to keep the array ordering as usual in the code
 ! only active in phi=+1
 #if bodyflag == 1
-allocate(a4(spx,nz,spy,2))
-call phys_to_spectral(phi+1.0d0,a4,0)
+call work_alloc(a4,spx,nz,spy,2)
+call work_alloc(a4f,nx,fpz,fpy)
+! phi+1 computed on the GPU (an expression argument would build the temporary on the host)
+!$acc kernels
+a4f=phi+1.0d0
+!$acc end kernels
+call phys_to_spectral(a4f,a4,0)
 !$acc kernels
 s1=s1+body_d(1)*body_c*0.5d0*a4
 s2=s2+body_d(3)*body_c*0.5d0*a4
 s3=s3+body_d(2)*body_c*0.5d0*a4
 !$acc end kernels
-deallocate(a4)
 #endif
 
 
@@ -1344,13 +1304,12 @@ deallocate(a4)
 ! body force direction array is [x,z,y] to keep the array ordering as usual in the code
 ! no sense to have pressure gradient along z, i.e. sgradp_d
 #if sgradpflag == 1
-allocate(a4(spx,nz,spy,2))
+call work_alloc(a4,spx,nz,spy,2)
 call phys_to_spectral(phi,a4,0)
 !$acc kernels
 s1=s1+sgradp_d(1)*a4
 s2=s2+sgradp_d(3)*a4
 !$acc end kernels
-deallocate(a4)
 #endif
 
 return

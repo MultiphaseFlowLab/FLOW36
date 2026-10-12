@@ -206,6 +206,11 @@ module a2a_buffers
 #else
  double precision, allocatable :: a2a_send(:), a2a_recv(:)
 #endif
+ ! persistent work arrays of the other routines (e.g. phi_non_linear): allocate on the first
+ ! call, reallocate only if the requested shape changes (managed memory)
+ interface work_alloc
+  module procedure work_alloc3, work_alloc4
+ end interface work_alloc
 contains
  subroutine a2a_reserve(n)
   integer(kind=8), intent(in) :: n
@@ -227,6 +232,26 @@ contains
   endif
   allocate(a(n1,n2,n3,2))
  end subroutine stage_alloc
+
+ subroutine work_alloc3(a,n1,n2,n3)
+  double precision, allocatable, intent(inout) :: a(:,:,:)
+  integer, intent(in) :: n1,n2,n3
+  if(allocated(a))then
+   if(size(a,1).eq.n1 .and. size(a,2).eq.n2 .and. size(a,3).eq.n3) return
+   deallocate(a)
+  endif
+  allocate(a(n1,n2,n3))
+ end subroutine work_alloc3
+
+ subroutine work_alloc4(a,n1,n2,n3,n4)
+  double precision, allocatable, intent(inout) :: a(:,:,:,:)
+  integer, intent(in) :: n1,n2,n3,n4
+  if(allocated(a))then
+   if(size(a,1).eq.n1 .and. size(a,2).eq.n2 .and. size(a,3).eq.n3 .and. size(a,4).eq.n4) return
+   deallocate(a)
+  endif
+  allocate(a(n1,n2,n3,n4))
+ end subroutine work_alloc4
 end module a2a_buffers
 
 
