@@ -2,7 +2,7 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Slab decomposition, MPI processes numbering\relax }}{36}{figure.caption.2}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Pencil decomposition, MPI processes numbering\relax }}{37}{figure.caption.3}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Strong scalability\relax }}{38}{figure.caption.4}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Weak scalability\relax }}{39}{figure.caption.6}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Slab decomposition, MPI processes numbering}}{36}{figure.caption.2}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Pencil decomposition, MPI processes numbering}}{37}{figure.caption.3}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Strong scalability}}{38}{figure.caption.4}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Weak scalability}}{39}{figure.caption.6}%

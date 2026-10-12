@@ -2,5 +2,5 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Strong scaling speed-up calculated with respect to 64 MPI processes case\relax }}{38}{table.caption.5}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Weak scaling time per time step normalized with respect to 64 MPI processes case\relax }}{39}{table.caption.7}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Strong scaling speed-up calculated with respect to 64 MPI processes case}}{38}{table.caption.5}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Weak scaling time per time step normalized with respect to 64 MPI processes case}}{39}{table.caption.7}%

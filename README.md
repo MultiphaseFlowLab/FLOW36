@@ -1,6 +1,6 @@
 # FLOW36
 Github Repository of FLOW36. \
-FLOW36 is a pseudo-spectral code for direct numerical simulation of multiphase turbulence based on a phase-field model approach.
+FLOW36 is a GPU-ready pseudo-spectral code for direct numerical simulation of multiphase turbulence based on a phase-field model approach.
 
 
 If you use this code, please cite the following work: 
@@ -63,8 +63,8 @@ Click [here](https://doi.org/10.6084/m9.figshare.26232683) for the validation da
    - Fortran compiler (tested with gfortran, ifort, nvfortran, ftn and xlf)
    - MPI Library (tested with MPICH, Spectrum, IntelMPI, OpenMPI)
    - FFTW library or MKL library (if using intel)
-- For GPU runs:
-   - Nvidia HPC-SDK (> 22.X), this by default contains the compiler, the cuFFT and the openMPI libraries.
+- For GPU runs (use the -gpu branch, see release 1.1)
+   - Nvidia HPC-SDK (> 25.9), this by default contains the compiler, the cuFFT and the openMPI libraries.
 
 ## Contributing
 We welcome all contributions that can enhance FLOW36, including bug fixes, performance improvements, and new features. 
