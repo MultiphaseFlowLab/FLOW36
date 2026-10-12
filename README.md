@@ -2,6 +2,19 @@
 Github Repository of FLOW36. \
 FLOW36 is a pseudo-spectral code for direct numerical simulation of multiphase turbulence based on a phase-field model approach.
 
+This is the GPU branch, this version is not CPU compatible and has been specifically developed for Nvidia GPU architectures.
+Compared to the main branch, this version has better performance (3x faster) and better scalability (see the figure below).
+Dual grid and particles are not supported at the moment in this GPU version.
+
+## Reference performance and scaling (channel)
+Performance (NS only)
+* 256 x 256 x 257    |   4 x A100@Leonardo   |  29 ms/timestep
+* 512 x 512 x 513    |   4 x A100@Leonardo   | 150 ms/timestep 
+* 1024 x 1024 x 1025 |  32 x A100@Leonardo   | 430 ms/timestep 
+
+![](scaling/scaling_gpu.png)
+
+
 
 If you use this code, please cite the following work: 
 
@@ -26,7 +39,6 @@ A. Roccon (https://github.com/aroccon)
 
 
 ![](flow36_handbook/cop.jpeg)
-
 
 
 ## Modules available in FLOW36:
