@@ -40,8 +40,8 @@ exp_y="1" # integer, (2**iy)*exp_y
 exp_z="1" # integer, (2**iz)*exp_z+1
 
 # parallelization strategy
-NYCPU="1" # integer
-NZCPU="4" # integer
+NYCPU="4" # integer
+NZCPU="1" # integer
 # running on single shared memory environment (0) or on many (1)
 multinode="0" # integer
 # number of MPI processes per node

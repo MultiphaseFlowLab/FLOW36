@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account="IscrB_EXCEED"
+#SBATCH --account="IscrB_BMO"
 #SBATCH --job-name="flo36gpu_test"
 #SBATCH --time=00:15:00   ## profiling needs time to write the reports after the run
 #SBATCH --ntasks=NUMTASKS   ## total MPI tasks = NYCPU*NZCPU (set by compile.sh), nodes = ntasks/4
