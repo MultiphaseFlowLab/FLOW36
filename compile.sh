@@ -1,344 +1,8 @@
-# define machine
-# 0 : local (Mac)
-# 1 : local
-# 2 : Marconi A1
-# 3 : VSC3 (VSC)
-# 4 : Vesta (ANL)
-# 5 : Marconi A2 KNL
-# 6 : Theta (ANL)
-# 7 : Bridges (PSC)
-# 8 : Adelaide
-# 9 : VSC4 (VSC)
-#10 : Joliot Curie - Irene (KNL)
-#11 : Davide (CINECA)
-#12 : HAWK (HLRS - AMD Epyc Rome)
-#13 : G100 (CINECA)
-#14 : Tersicore o Zonker (Uniud)
-#15 : M100 (CINECA) - no GPU
-#16 : M100 (CINECA) - GPU (openACC)
-#17 : Discoverer (Sofiatech)
-#18 : LUMI-C (CSC)
-#19 : VSC-5 (VSC) - CPU Partition
-#20 : VSC-5 (VSC) - GPU Partition
-#21 : Leonardo - CPU Partition
-#22 : Leoanrdo - GPU (Booster)
-#23 : Marenostrum5 - CPU Partition (GPP)
-machine="1"
+# machine: Leonardo - GPU (Booster), the only supported machine on this branch
+machine="22"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
-if [ "$machine" == "0" ]; then
-echo "=                             Local machine (Mac)                            ="
-cp ./Local_Mac/makefile ./makefile
-cp ./Local_Mac/go.sh ./go.sh
-# save recovery files in modal space (1) or physical space (0)
-savespectral="1"
-openacc_flag="0"
-
-elif [ "$machine" == "1" ]; then
-# assume openMPI is employed
-echo "=                                Local machine                               ="
-cp ./Local/makefile ./makefile
-cp ./Local/go.sh ./go.sh
-savespectral="1"
-openacc_flag="0"
-
-elif [ "$machine" == "2" ]; then
-echo "=                            Marconi A1 Broadwell                            ="
-cp ./Marconi/makefile ./makefile
-cp ./Marconi/go.sh ./go.sh
-module purge
-module load profile/global
-# load modules
-module load intel/pe-xe-2017--binary
-module load intelmpi/2017--binary
-module load fftw/3.3.5--intelmpi--2017--binary
-# or
-#module load gnu/6.1.0
-#module load openmpi/1-10.3--gnu--6.1.0
-#module load fftw/3.3.4--openmpi--1-10.3--gnu--6.1.0
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "3" ]; then
-echo "=                                   VSC-3                                    ="
-cp ./VSC-3/makefile ./makefile
-cp ./VSC-3/go.sh ./go.sh
-module purge
-# load modules
-module load intel/16 intel-mpi/5.1.3 fftw/3.3.4-DP
-# or (but problem with .mod files)
-#module load gcc/5.3 intel-mpi/5.1.3 fftw/3.3.4-DP
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "4" ]; then
-echo "=                                  Vesta                                     ="
-cp ./Vesta/makefile ./makefile
-cp ./Vesta/go.sh ./go.sh
-savespectral="1"
-openacc_flag="0"
-
-elif [ "$machine" == "5" ]; then
-echo "=                              Marconi A2 KNL                                ="
-module purge
-module load env-knl
-module load profile/global
-# load modules
-module load intel/pe-xe-2017--binary
-module load intelmpi/2017--binary
-module load fftw/3.3.5--intelmpi--2017--binary
-cp ./Marconi_KNL/makefile ./makefile
-cp ./Marconi_KNL/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "6" ]; then
-echo "=                                  Theta                                     ="
-# load modules
-#module load gcc
-module load fftw
-module load craype-hugepages16M
-cp ./Theta/makefile ./makefile
-cp ./Theta/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "7" ]; then
-echo "=                                  Bridges                                   ="
-module purge
-# load modules
-module load pgi/19.4
-module load mpi/pgi_openmpi/19.4
-#module load intel
-#module load mpi/intel_mpi
-module load fftw3/3.3.4
-cp ./Bridges/makefile ./makefile
-cp ./Bridges/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "8" ]; then
-echo "=                                 Adelaide                                   ="
-module purge
-# load modules
-# IMPORTANT: if OpenMPI line 946 must be replaced with: if [[ "$machine" == "7" || "$machine" == "8"]]; then
-# Intel version
-module load intel
-module load mpich
-# GCC version
-#module load gcc
-#module load #some version of MPI/OpenMPI for gcc
-module load FFTW
-# change to makefile_intel/makefile_gnu according to needs
-cp ./Adelaide/makefile_intel ./makefile
-cp ./Adelaide/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "9" ]; then
-echo "=                                   VSC-4                                    ="
-#GCC version (openMPI is used, check MPI_GET_ADDRESS LINES)
-#cp ./VSC-4/makefile_gcc ./makefile
-#cp ./VSC-4/go_gcc.sh ./go.sh
-#module purge
-#module load gcc
-#module load fftw
-#Intel version (FFTW)
-cp ./VSC-4/makefile_intel ./makefile
-cp ./VSC-4/go_intel.sh ./go.sh
-module purge
-module load intel/19.1.3
-module load intel-mpi/2019.10.317-intel-19.1.3.304-x276qb5
-module load fftw
-module list
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "10" ]; then
-echo "=                        Joliot-Curie (Irene-KNL)                            ="
-module purge
-module load mpi
-module load fftw3
-cp ./Irene_KNL/makefile ./makefile
-cp ./Irene_KNL/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "11" ]; then
-echo "=                              Davide (no GPU)                               ="
-module purge
-# load modules
-module load gnu
-module load openmpi
-module load fftw
-cp ./Davide/makefile ./makefile
-cp ./Davide/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "12" ]; then
-echo "=                               HAWK Epyc Rome                               ="
-module purge
-# load modules
-module load gcc/9.2.0
-module load openmpi/4.0.4
-# check aocl for AMD-optimized FFTW, see https://kb.hlrs.de/platforms/index.php/Libraries(Hawk)
-module load fftw/3.3.8
-cp ./HAWK/makefile ./makefile
-cp ./HAWK/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "13" ]; then
-echo "=                                Galileo-100                                 ="
-module purge
-# load modules
-module load profile/advanced
-module load gnu
-# intel-mpi
-module load intel/oneapi-2021--binary
-module load intelmpi/oneapi-2021--binary
-module load fftw/3.3.9--intelmpi--oneapi-2021--binary
-cp ./Galileo_100/makefile ./makefile
-cp ./Galileo_100/go.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "14" ]; then
-echo "=                            Tersicore (2 x GPUs)                          ="
-#must compile with nvfortran a
-cp ./Tersicore_gpu/makefile ./makefile
-cp ./Tersicore_gpu/go.sh ./go.sh
-#Setup the environment (otherwise gfortran is used)
-NVARCH=Linux_x86_64; export NVARCH
-NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
-MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/25.7/compilers/man; export MANPATH
-PATH=$NVCOMPILERS/$NVARCH/25.7/compilers/bin:$PATH; export PATH
-export PATH=$NVCOMPILERS/$NVARCH/25.7/comm_libs/mpi/bin:$PATH
-export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/25.7/comm_libs/mpi/man
-savespectral="0"
-openacc_flag="1"
-
-elif [ "$machine" == "15" ]; then
-echo "=                           Marconi-100 (CPU only)                           ="
-module purge
-# load modules
-module load profile/advanced
-module load gnu
-module load cuda/10.1
-#module load openmpi/4.0.3--gnu--8.4.0
-#module load fftw/3.3.8--gnu--8.4.0
-# MPI spectrum implementation (please swap also go.sh and makefile)
-module load spectrum_mpi/10.3.1--binary
-module load fftw/3.3.8--spectrum_mpi--10.3.1--binary
-cp ./Marconi_100/makefile_cpu_spectrum ./makefile
-cp ./Marconi_100/go_cpu_spectrum.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "16" ]; then
-echo "=                              Marconi-100 (GPU)                             ="
-module purge
-# HPC-SDK + OPENMPI (slower)
-# module load hpc-sdk/2023--binary
-# HPC-SDK + MPI SPECTRUM (faster, M100 optimized)
-module load hpc-sdk/2023--binary
-module load spectrum_mpi/10.4.0--binary
-#cp ./Marconi_100/makefile_gpu_openmpi ./makefile
-#cp ./Marconi_100/go_gpu_openmpi.sh ./go.sh
-cp ./Marconi_100/makefile_gpu_spectrum ./makefile
-cp ./Marconi_100/go_gpu_spectrum.sh ./go.sh
-savespectral="0"
-openacc_flag="1"
-
-elif [ "$machine" == "17" ]; then
-echo "=                        Discoverer (Sofiatech)                              ="
-echo "=                         Do not run in home !                               ="
-# ---- Gcc + mpich + FFTW (CPU) ----
-#module load gcc/11/latest
-#module load mpich/3/gcc/latest
-#module load fftw/3/latest-gcc-mpich
-#cp ./Discoverer/makefile_gcc ./makefile
-#cp ./Discoverer/go_gcc.sh ./go.sh
-# ---- Nvidia HPC-SDK ----
-module load nvidia
-module load nvhpc-nompi/latest
-module load gcc/11/latest
-module load openmpi/4/nvidia/latest
-module load fftw/3/3.3.10-nvidia-openmpi
-cp ./Discoverer/makefile_nv ./makefile
-cp ./Discoverer/go_nv.sh ./go.sh
-# ---- AMD AOCC                                                                           ="
-#module purge
-#module load amd/aocc/3/latest
-#module load openmpi/4/aocc/latest
-#module load fftw/3/3.3.10-aocc-openmpi
-#cp ./Discoverer/makefile_amd ./makefile
-#cp ./Discoverer/go_amd.sh ./go.sh
-# ---- Intel (problems with MPI_Open) ----
-#module load intel compiler-rt/latest
-#module load compiler/latest
-#module load mpi/latest
-#module load mkl/latest
-#module load fftw/3/latest-intelmpi
-#cp ./Discoverer/makefile_intel ./makefile
-#cp ./Discoverer/go_intel.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "18" ]; then
-echo "=                                 LUMI-C (CSC)                               ="
-module --force purge
-# Cray version (problem with more than 1 node)
-# module load PrgEnv-cray
-# module load craype-x86-milan
-# module load cray-fftw
-# GNU version
-module load PrgEnv-gnu
-module load craype-x86-milan
-module load cray-fftw
-module list
-cp ./Lumic/makefile_gnu ./makefile
-cp ./Lumic/go_gnu.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "19" ]; then
-echo "=                                  VSC-5 (CPU)                               ="
-# load modules (SPACK)
-spack unload --all
-spack unload --all
-spack load gcc@12.2.0
-spack load mpich@4.1.1
-spack load /xgvooar
-cp ./VSC-5/makefile_cpu ./makefile
-cp ./VSC-5/go_cpu.sh    ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "20" ]; then
-echo "=                                  VSC-5 (GPU)                               ="
-# load modules (SPACK)
-spack unload --all
-spack load nvhpc
-cp ./VSC-5/makefile_gpu ./makefile
-cp ./VSC-5/go_gpu.sh    ./go.sh
-savespectral="0"
-openacc_flag="1"
-
-elif [ "$machine" == "21" ]; then
-echo "=                              Leonardo (CPU)                             ="
-module purge
-module load gcc/11.3.0
-module load openmpi/4.1.4--gcc--11.3.0-cuda-11.8
-module load fftw/3.3.10--openmpi--4.1.4--gcc--11.3.0
-cp ./Leonardo/makefile_cpu ./makefile
-cp ./Leonardo/go_cpu.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-elif [ "$machine" == "22" ]; then
 echo "=                              Leonardo (GPU)                             ="
 module purge
 module load nvhpc/25.11
@@ -353,18 +17,6 @@ cp ./Leonardo/go_gpu.sh ./go.sh
 savespectral="0"
 openacc_flag="1"
 
-elif [ "$machine" == "23" ]; then
-echo "=                            Marenostrum5 (CPU)                             ="
-module purge
-module load gcc/13.2.0
-module load openmpi/4.1.5-gcc
-module load fftw/3.3.10-gcc-ompi
-cp ./Marenostrum_5/makefile_cpu ./makefile
-cp ./Marenostrum_5/go_cpu.sh ./go.sh
-savespectral="0"
-openacc_flag="0"
-
-fi
 echo "=============================================================================="
 echo ""
 
@@ -752,26 +404,6 @@ echo "=                      END OF PARAMETER DECLARATION                       
 echo "=============================================================================="
 echo ""
 
-if [ "$machine" == "0" ]; then
-echo ""
-echo "============================= OS X Version ==================================="
-echo ""
-echo "                                   ###                                        "
-echo "                                 ####                                         "
-echo "                                  ###                                         "
-echo "                           #######   #######                                  "
-echo "                         #####################                                "
-echo "                        #####################                                 "
-echo "                        ####################                                  "
-echo "                        ####################                                  "
-echo "                        #####################                                 "
-echo "                         ######################                               "
-echo "                          ###################                                 "
-echo "                            ###############                                   "
-echo "                             ####   #####                                     "
-echo ""
-echo "=============================================================================="
-fi
 
 if [ "$openacc_flag" == "1" ]; then
 echo ""
@@ -839,12 +471,8 @@ fi
 # copy executable and edit it
 cp ./go.sh ./set_run
 # Leonardo GPU: binder that sets the InfiniBand card of each GPU (UCX_NET_DEVICES)
-if [ "$machine" == "22" ]; then cp ./Leonardo/binder_leo.sh ./set_run/; chmod +x ./set_run/binder_leo.sh; fi
-if [ "$machine" == "0" ]; then
-sed -i "" "s/NUMTASKS/$NNT/g" ./set_run/go.sh
-else
+cp ./Leonardo/binder_leo.sh ./set_run/; chmod +x ./set_run/binder_leo.sh
 sed -i "s/NUMTASKS/$NNT/g" ./set_run/go.sh
-fi
 
 # if tracer force to 0ne-way coupled
 if [ "$tracer" == "1" ]; then
@@ -853,79 +481,6 @@ fi
 
 # copy input file and edit it
 cp ./input.f90 ./set_run/sc_compiled
-if [ "$machine" == "0" ]; then
-sed -i "" "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/initialcondition/$incond/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nxxxxxx/$NX/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nyyyyyy/$NY/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nzzzzzz/$NZ/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Renum/$Re/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/courantnum/$Co/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gradpx/$gradpx/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gradpy/$gradpy/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/cpiflag/$cpi_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/repower/$repow/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/len_x/$lx/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/len_y/$ly/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nstart/$nstart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nend/$nend/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nfdump/$dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nsdump/$sdump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/faildump/$failure_dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/stats_dump/$st_dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/stats_start/$start_stats/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/delta_t/$dt/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bc_upbound/$bc_upb/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bc_lowbound/$bc_lb/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/phasephiflag/$phi_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/phaseprofflag/$phicor_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/lamcorphi/$lamcorphi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/matcheddens/$matchedrho/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/densratio/$rhor/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/matchedvisc/$matchedvis/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/viscratio/$visr/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/nonnewtonian/$non_newtonian/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/muinfmuzero/$muinfmuzero/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/expnonnew/$exp_non_new/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/webernumber/$We/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/cahnnumber/$Ch/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/pecletnumber/$Pe/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/froudnumber/$Fr/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/phinitial_condition/$in_condphi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gravitydir/$gravdir/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/gravitytype/$buoyancy/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bodyforce/$body_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bodyfcoeff/$Bd/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/bodydirection/$bodydir/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/sgradpforce/$sgradp_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/sgradpdirection/$sgradpdir/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/eleforce/$ele_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/elefcoeff/$stuart/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/surfactantflag/$psi_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/surfpeclet/$Pe_psi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/exnumber/$Ex/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/pinumber/$PI/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/surfelasticity/$El/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/psinitial_condition/$in_condpsi/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/temperatureflag/$temp_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/rayleighnumb/$Ra/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/prandtlnumb/$Pr/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Aboundary/$A/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Bboundary/$B/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Cboundary/$C/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Dboundary/$D/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Eboundary/$E/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/Fboundary/$F/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/tempinitial_condition/$in_cond_temp/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/particleflag/$part_flag/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/particlenumber/$part_number/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/npartset/$nset/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
-sed -i "" "s/numsubiteration/$subiterations/g" ./set_run/sc_compiled/input.f90
-else
 sed -i "s/restartflag/$restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/restart_iteration/$nt_restart/g" ./set_run/sc_compiled/input.f90
 sed -i "s/initialcondition/$incond/g" ./set_run/sc_compiled/input.f90
@@ -997,7 +552,6 @@ sed -i "s/incondpartpos/$in_cond_part_pos/g" ./set_run/sc_compiled/input.f90
 sed -i "s/incondpartvel/$in_cond_part_vel/g" ./set_run/sc_compiled/input.f90
 sed -i "s/particledump/$part_dump/g" ./set_run/sc_compiled/input.f90
 sed -i "s/numsubiteration/$subiterations/g" ./set_run/sc_compiled/input.f90
-fi
 # end of input file editing
 
 
@@ -1140,109 +694,6 @@ echo "nz=$NZ;" >> ./set_run/results/input_param.m
 echo "nend=$nend;" >> ./set_run/results/input_param.m
 echo "little_endian=$endianness;" >> ./set_run/results/input_param.m
 
-if [ "$machine" == "0" ]; then
-sed -i "" "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nny/$NY/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnz/$NZ/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/phys_to_spectral.f90
-sed -i "" "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/phys_to_spectral.f90
-sed -i "" "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/spectral_to_phys.f90
-sed -i "" "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/spectral_to_phys.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/convective_ns.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/wave_numbers.f90
-sed -i "" "s/boundary_conditions_up/$bc_upb/g" ./set_run/sc_compiled/calculate_var.f90
-sed -i "" "s/boundary_conditions_down/$bc_lb/g" ./set_run/sc_compiled/calculate_var.f90
-sed -i "" "s/precisionflag/$fftw_flag/g" ./set_run/sc_compiled/create_plan.f90
-sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/stats_dump_frequency/$st_dump/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/cpicompflag/$cpi_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_fwd.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/fftx_bwd.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_fwd.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/ffty_bwd.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_fwd.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/dctz_bwd.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/create_plan.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/destroy_plan.f90
-sed -i "" "s/openacccompflag/$openacc_flag/g" ./set_run/sc_compiled/statistics.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/solver.f90     
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/convective_ns.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/courant_check.f90
-sed -i "" "s/phicorcompflag/$phicor_flag/g" ./set_run/sc_compiled/sterm_ch.f90
-sed -i "" "s/bodycompflag/$body_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/sgradpcompflag/$sgradp_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/non_newtonian/$non_newtonian/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/courant_check.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/matched_viscosity/$matchedvis/g" ./set_run/sc_compiled/wave_numbers.f90
-sed -i "" "s/buoyancytype/$buoyancy/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/matched_density/$matchedrho/g" ./set_run/sc_compiled/initialize_phi.f90
-sed -i "" "s/meanflag/$mean_flag/g" ./set_run/sc_compiled/statistics.f90
-sed -i "" "s/budgetflag/$budget_flag/g" ./set_run/sc_compiled/statistics.f90
-sed -i "" "s/spectraflag/$spectra_flag/g" ./set_run/sc_compiled/statistics.f90
-sed -i "" "s/savespectralflag/$savespectral/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/sim_check.f90
-sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/boussinnesqcompflag/$boussinnesq/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/courant_check.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/module.f90
-sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/swap_grid.f90
-sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/swap_grid.f90
-sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/swap_grid.f90
-sed -i "" "s/expansionx/$exp_x/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/expansiony/$exp_y/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/expansionz/$exp_z/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/elecompflag/$ele_flag/g" ./set_run/sc_compiled/phi_non_linear.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/main.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/split_comm.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/particlecompflag/$part_flag/g" ./set_run/sc_compiled/write_output.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/solver.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/initialize_particle.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/read_input.f90
-sed -i "" "s/twowaycflag/$twoway/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/machineflag/$machine/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/phicompflag/$phi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/psicompflag/$psi_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/tempcompflag/$temp_flag/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/physical_dump_frequency/$dump/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/spectral_dump_frequency/$sdump/g" ./set_run/sc_compiled/save_flow_comm.f90
-sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/tracerflag/$tracer/g" ./set_run/sc_compiled/read_input.f90
-sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
-sed -i "" "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
-sed -i "" "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
-sed -i "" "s/npartsets/nset=\"$nset\"/g" ./set_run/results/backup/restart_copy.sh
-else
 sed -i "s/nnycpu/$NYCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnzcpu/$NZCPU/g" ./set_run/sc_compiled/module.f90
 sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/module.f90
@@ -1345,22 +796,11 @@ sed -i "s/stokesflag/$stokes_drag/g" ./set_run/sc_compiled/print_start.f90
 sed -i "s/nnx/$NX/g" ./set_run/sc_compiled/lagrangian_interpolator.f90
 sed -i "s/activategravity/$part_gravity/g" ./set_run/sc_compiled/lagrangian_tracker.f90
 sed -i "s/npartsets/nset=\"$nset\"/g" ./set_run/results/backup/restart_copy.sh
-fi
 
-if [ "$machine" == "4" ]; then
-sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/xy2xz.f90
-sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/xz2xy.f90
-sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/xz2yz.f90
-sed -i "s/!onlyforvesta/logical	:: mpi_async_protects_nonblocking/g" ./set_run/sc_compiled/yz2xz.f90
-fi
-
-if [[ "$machine" == "20" || "$machine" == "22" ]]; then
-# Using NVHPC on VSC-5 and Leonardo, fftw03 is not found (only NVHPC loaded)
+# Using NVHPC on Leonardo, fftw03 is not found (only NVHPC loaded)
 sed -i "s/include 'fftw3.f03'/!include 'fftw3.f03'/g" ./set_run/sc_compiled/module.f90
-fi
 
 
-if [[ "machine"=="1" || "$machine" == "7" || "$machine" == "9" || "$machine" == "10" || "$machine" == "11" || "$machine" == "12" || "$machine" == "14" || "$machine" == "15" || "$machine" == "16" || "$machine" == "17" || "$machine" == "19" || "$machine" == "20" || "$machine" == "22" ]]; then
 # OpenMPI requires iadd and number to be integer(kind=mpi_address_kind)
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xy2xz.f90
 sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc_compiled/xz2xy.f90
@@ -1369,7 +809,6 @@ sed -i "s/integer :: iadd/integer(kind=mpi_address_kind) :: iadd/g" ./set_run/sc
 sed -i "s/integer :: number/integer(kind=mpi_address_kind) :: number/g" ./set_run/sc_compiled/initialize_particle.f90
 # Nvfortran (ex-PGI) compiler does not have isnan
 sed -i "s/!only for PGI compiler/use, intrinsic :: ieee_arithmetic/g" ./set_run/sc_compiled/courant_check.f90
-fi
 
 
 # only for intel compiler (needed for USE MPI_F08
@@ -1382,17 +821,9 @@ echo "=                      BEGINNING OF COMPILATION                           
 echo "=============================================================================="
 echo ""
 
-#Single make should be fine in all machines
-#If problems with module, restore the double make
-if [ "$machine" == "22" ]; then
-# Leonardo GPU: the makefile compiles the module files first, in dependency order (see
+# single make: the makefile compiles the module files first, in dependency order (see
 # Leonardo/makefile_gpu); -j 8: compile 8 files at a time (one object file per source)
 make -j 8
-else
-make
-fi
-
-#make
 
 echo ""
 echo "=============================================================================="
@@ -1408,18 +839,4 @@ echo "                NYCPU=$NYCPU      NZCPU=$NZCPU    NX=$NX     NY=$NY     NZ
 echo ""
 
 # if compiled with Nvidia HPC-SDK, object files should be manually removed
-if [[ "$machine" == "16" || "$machine" == "17" || "$machine" == "20" || "$machine" == "22" ]]; then
-rm *.o
-fi
-
-# if compiling with Cray, inf files should be manually removed
-if [[ "$machine" == "18" ]]; then
-rm *.i
-fi
-
-if [[  ( "$machine" == "0" ) || ( "$machine" == "1" ) || ( "$machine" == "14" )  ]]; then
-rm *.o
-cd ./set_run
-./go.sh
-cd ..
-fi
+rm -f *.o
