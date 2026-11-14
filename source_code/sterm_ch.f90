@@ -379,7 +379,9 @@ enddo
 allocate(nabc(spx,nz,spy,2))
 !$acc kernels
 nabc=ch*ch*sphi
-sphi=-(s_coeff-lamphi)/pe*sphi
+! linear -phi term of mu kept explicit (as in profile-corrected), so that the
+! projected flux uses the full mu and the floor on |grad phi| leaves bulk CH unchanged
+sphi=-(1.0d0+s_coeff-lamphi)/pe*sphi
 !$acc end kernels
 
 !Calculate convective term
@@ -492,7 +494,7 @@ deallocate(a3)
 
 !COMPUTING THE DIVERGENCE TERM..
 !$acc kernels
-nabc=-a1+nabc
+nabc=-a1+nabc+phic
 !$acc end kernels
 
 allocate(a2(spx,nz,spy,2))
@@ -531,11 +533,15 @@ a1f=1d0-phi**(2d0)
 !$acc end kernels
 
 !!NORMALIZATION OF THE PHI GRADIENT
+! floor on |grad phi|: where |grad phi|<epsnum (bulk, walls) the normal is not
+! defined; with the floor the correction scales as |grad phi|^2/epsnum^2 and
+! fades smoothly to standard CH. epsnum=1/(50Ch) ~3% of max equilibrium gradient
+epsnum=1.0d0/(50.0d0*ch)
 !$acc parallel loop collapse(3)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      modnabphi=dsqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0)
+      modnabphi=max(epsnum,dsqrt(phinx(i,k,j)**2d0+phiny(i,k,j)**2d0+phinz(i,k,j)**2d0))
       phinx(i,k,j)=phinx(i,k,j)/modnabphi
       phiny(i,k,j)=phiny(i,k,j)/modnabphi
       phinz(i,k,j)=phinz(i,k,j)/modnabphi
@@ -552,6 +558,16 @@ do j=1,fpy
       a5f(i,k,j)=-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)*phiny(i,k,j) + normflux*phiny(i,k,j)
       a6f(i,k,j)=-lamphi/(dsqrt(2d0)*ch)*a1f(i,k,j)*phinz(i,k,j) + normflux*phinz(i,k,j)
     enddo
+  enddo
+enddo
+
+! no-flux at the walls: zero the wall-normal correction flux at z=+-1 so that
+! int dz(a6f) dz = a6f(1)-a6f(-1) = 0 -> correction conserves phi exactly
+!$acc parallel loop collapse(2)
+do j=1,fpy
+  do i=1,nx
+    if (fstart(2)+1 .eq. 1)    a6f(i,1,j)=0.0d0
+    if (fstart(2)+fpz .eq. nz) a6f(i,fpz,j)=0.0d0
   enddo
 enddo
 
