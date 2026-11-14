@@ -1281,7 +1281,7 @@ enddo
 call dz(a3,a2)
 
 
-!$acc end kernels
+!$acc kernels
 sphi=sphi+(a4+a1+a2)/pe
 !$acc end kernels
 
