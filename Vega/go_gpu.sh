@@ -15,11 +15,15 @@
 # to avoid perl warning
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-# load modules as in MHIT36: NVHPC 24.9 with HPC-X 2.20 (CUDA-aware Open MPI), CUDA 12.6
-# (no numactl: its module load hung on the compute node)
-module purge
-module load NVHPC-HPCX-CUDA12/24.9
-module load NVHPC/24.9
+# modules: NOT loaded here, Lmod hangs on the Vega compute nodes (any module load).
+# sbatch exports the login environment: load them on the login node before submitting
+#   module purge; module load NVHPC-HPCX-CUDA12/24.9 NVHPC/24.9; sbatch go.sh
+if ! mpif90 --version 2>&1 | grep -qi nvfortran; then
+  echo "NVHPC not loaded: on the login node run"
+  echo "  module purge; module load NVHPC-HPCX-CUDA12/24.9 NVHPC/24.9"
+  echo "then sbatch go.sh again"
+  exit 1
+fi
 
 # the code uses paths relative to set_run (./sc_compiled, ./results, ./initial_fields):
 # run from set_run, also when the job is submitted from the main folder (sbatch set_run/go.sh)
