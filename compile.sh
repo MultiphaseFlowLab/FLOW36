@@ -10,6 +10,7 @@ echo "=                                Vega (GPU)                               
 module purge
 # NVHPC 24.9 with HPC-X 2.20 (CUDA-aware Open MPI), CUDA 12.6: mpif90 on the PATH after the load
 module load NVHPC-HPCX-CUDA12/24.9
+module load NVHPC/24.9
 module list
 which mpif90
 cp ./Vega/makefile_gpu ./makefile
