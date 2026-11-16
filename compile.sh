@@ -1,8 +1,21 @@
-# machine: Leonardo - GPU (Booster), the only supported machine on this branch
+# cluster: "leonardo" (Leonardo Booster) or "vega" (Vega GPU partition)
+# both are NVHPC/OpenACC GPU builds: machine flag 22 in the sources (nvfortran ieee_is_nan)
+cluster="leonardo"
 machine="22"
 echo ""
 echo "=============================================================================="
 echo "=                                 Running on                                 ="
+if [ "$cluster" == "vega" ]; then
+echo "=                                Vega (GPU)                                  ="
+module purge
+# NVHPC 24.9 with HPC-X 2.20 (CUDA-aware Open MPI), CUDA 12.6: mpif90 on the PATH after the load
+module load NVHPC-HPCX-CUDA12/24.9
+module list
+which mpif90
+cp ./Vega/makefile_gpu ./makefile
+cp ./Vega/go_gpu.sh ./go.sh
+binder="./Vega/binder_vega.sh"
+elif [ "$cluster" == "leonardo" ]; then
 echo "=                              Leonardo (GPU)                             ="
 module purge
 module load nvhpc/25.11
@@ -14,6 +27,11 @@ module list
 which mpif90
 cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
+binder="./Leonardo/binder_leo.sh"
+else
+echo "unknown cluster: $cluster (use leonardo or vega)"
+exit 1
+fi
 savespectral="0"
 openacc_flag="1"
 
@@ -470,8 +488,8 @@ fi
 
 # copy executable and edit it
 cp ./go.sh ./set_run
-# Leonardo GPU: binder that sets the InfiniBand card of each GPU (UCX_NET_DEVICES)
-cp ./Leonardo/binder_leo.sh ./set_run/; chmod +x ./set_run/binder_leo.sh
+# binder that sets the InfiniBand card of each GPU (UCX_NET_DEVICES), per cluster
+cp $binder ./set_run/; chmod +x ./set_run/$(basename $binder)
 sed -i "s/NUMTASKS/$NNT/g" ./set_run/go.sh
 
 # if tracer force to 0ne-way coupled
