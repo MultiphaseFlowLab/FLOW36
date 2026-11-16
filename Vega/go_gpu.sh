@@ -42,11 +42,27 @@ if [ "$UCX_INFO" == "1" ]; then
   MPIOPT="$MPIOPT -x UCX_PROTO_INFO=y"
 fi
 
+# LAUNCHER=srun: Slurm starts the ranks (PMIx), no mpirun daemons (default on Vega)
+# LAUNCHER=mpirun: HPC-X mpirun
+LAUNCHER=srun
+
+# diagnostics: printed before the launch, so an empty log means the script never started
+echo "Job $SLURM_JOB_ID on $SLURM_JOB_NODELIST, $SLURM_NTASKS tasks, launcher $LAUNCHER, dir $(pwd)"
+echo "mpirun: $(which mpirun)"
+srun --mpi=list 2>&1 | tr '\n' ' '; echo
+nvidia-smi -L
+ls -l ./sc_compiled/flow36
+
 if [ "$PROFILE" == "1" ]; then
-  mpirun -n NUMTASKS --map-by ppr:4:node:PE=32 $MPIOPT ./binder_vega.sh nsys profile -t cuda,nvtx --sample=none --cpuctxsw=none \
-    --delay=$PROFDELAY --duration=$PROFDUR -o report_%q{OMPI_COMM_WORLD_RANK} ./sc_compiled/flow36
+  PROFCMD="nsys profile -t cuda,nvtx --sample=none --cpuctxsw=none --delay=$PROFDELAY --duration=$PROFDUR -o report_%q{SLURM_PROCID}"
 else
-  mpirun -n NUMTASKS --map-by ppr:4:node:PE=32 $MPIOPT ./binder_vega.sh ./sc_compiled/flow36
+  PROFCMD=""
+fi
+
+if [ "$LAUNCHER" == "srun" ]; then
+  srun --mpi=pmix --cpus-per-task=32 --cpu-bind=cores ./binder_vega.sh $PROFCMD ./sc_compiled/flow36
+else
+  mpirun -n NUMTASKS --map-by ppr:4:node:PE=32 $MPIOPT ./binder_vega.sh $PROFCMD ./sc_compiled/flow36
 fi
 
 # submit script with sbatch
