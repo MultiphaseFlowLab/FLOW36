@@ -1040,24 +1040,33 @@ deallocate(a3)
 
 
 ! calculate profile-corrected flux
+! clip 1-phi^2 at 0: where phi overshoots +-1 (Chebyshev ringing near the
+! walls) 1-phi^2<0 would reverse the profile flux and seed spots
 !$acc kernels
-a1f=1.0d0-phi**(2.0d0)
+a1f=max(0.0d0,1.0d0-phi**(2.0d0))
 !$acc end kernels
 
-!$acc kernels
 epsnum=1.0d0/(50.0d0*Ch)
-!$acc end kernels
+
+! smooth damping of the correction flux near the walls (|z|>0.975, as flag 3)
+!$acc parallel loop
+do k=1,fpz
+  funflux(k)=0.5d0*(1.0d0-tanh((abs(z(fstart(2)+k))-0.975d0)/0.01d0))
+enddo
 
 allocate(a4f(nx,fpz,fpy))
 allocate(a5f(nx,fpz,fpy))
 allocate(a6f(nx,fpz,fpy))
 
-!$acc parallel loop collapse(3)
+!$acc parallel loop collapse(3) private(mask,modnabphi)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
       modnabphi=dsqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
-      mask=max(modnabphi-epsnum,0d0)/(modnabphi-epsnum)
+      ! kill the gradients below epsnum (0/1 mask, no 0/0), damp at the walls
+      mask=0.0d0
+      if (modnabphi.gt.epsnum) mask=funflux(k)
+      modnabphi=max(modnabphi,epsnum)
       a4f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phinx(i,k,j)/modnabphi
       a5f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phiny(i,k,j)/modnabphi
       a6f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phinz(i,k,j)/modnabphi
