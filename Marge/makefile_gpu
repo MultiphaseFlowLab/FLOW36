@@ -1,0 +1,43 @@
+# Marge (local cluster): 2x RTX PRO 6000 Blackwell, NVHPC 26.5 with HPC-X
+FC      = mpif90
+LD      = $(FC)
+RM      = /bin/rm -f
+# cc120: code only for the Blackwell RTX PRO 6000 (sm_120); without it the compiler generates code for several
+# GPU generations (no GPU on the login node to detect), which makes the compilation much slower
+FOPTS   = -fast -acc -cuda -gpu=mem:managed,cc120 -mcmodel=medium -Mfree -Mpreprocess  -module=./set_run/sc_compiled
+#LIBS   = -I$(MPI_PATH) -cudalib=cufft #MPI path if using spectrum
+LIBS    = -cudalib=cufft
+# NVTX ranges (one per time step, main.f90) for nsys; set NVTX = 0 if the link fails
+NVTX    = 1
+ifeq ($(NVTX),1)
+FOPTS  += -DUSE_NVTX
+LIBS   += -cudalib=nvtx
+endif
+FFLAGS  = $(FOPTS)
+LDFLAGS = $(FOPTS)
+
+# one object file per source: the files can be compiled in parallel (make -j)
+SRCS    = $(shell cat list_source.list)
+OBJS    = $(SRCS:.f90=.o)
+EXEC    = ./set_run/sc_compiled/flow36
+
+# files defining modules used by the others, compiled first and in this order:
+# module.f90 (commondata, par_size, cufftplans, a2a_buffers, ...) -> the FFT/DCT modules
+# -> all the other files
+D       = ./set_run/sc_compiled
+MOD0    = $(D)/module.o
+MOD1    = $(D)/fftx_fwd.o $(D)/fftx_bwd.o $(D)/ffty_fwd.o \
+          $(D)/ffty_bwd.o $(D)/dctz_fwd.o $(D)/dctz_bwd.o
+OTHER   = $(filter-out $(MOD0) $(MOD1),$(OBJS))
+
+$(EXEC): $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+
+$(MOD1): $(MOD0)
+$(OTHER): $(MOD0) $(MOD1)
+
+%.o: %.f90
+	$(FC) -c $(FFLAGS) $< -o $@
+
+clean:
+	$(RM) $(OBJS) $(EXEC)

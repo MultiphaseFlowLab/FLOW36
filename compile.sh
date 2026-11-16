@@ -1,4 +1,4 @@
-# cluster: "leonardo" (Leonardo Booster) or "vega" (Vega GPU partition)
+# cluster: "leonardo" (Leonardo Booster), "vega" (Vega GPU partition) or "marge" (local, 2x RTX PRO 6000 Blackwell)
 # both are NVHPC/OpenACC GPU builds: machine flag 22 in the sources (nvfortran ieee_is_nan)
 cluster="leonardo"
 machine="22"
@@ -16,6 +16,17 @@ which mpif90
 cp ./Vega/makefile_gpu ./makefile
 cp ./Vega/go_gpu.sh ./go.sh
 binder="./Vega/binder_vega.sh"
+elif [ "$cluster" == "marge" ]; then
+echo "=                     Marge (2x RTX PRO 6000 Blackwell)                      ="
+# NVHPC 26.5 with HPC-X (CUDA-aware Open MPI); module path of the default HPC SDK install
+module purge 2>/dev/null
+module use /opt/nvidia/hpc_sdk/modulefiles 2>/dev/null
+module load nvhpc-hpcx/26.5
+module list
+which mpif90
+cp ./Marge/makefile_gpu ./makefile
+cp ./Marge/go_gpu.sh ./go.sh
+binder="./Marge/binder_marge.sh"
 elif [ "$cluster" == "leonardo" ]; then
 echo "=                              Leonardo (GPU)                             ="
 module purge
@@ -30,7 +41,7 @@ cp ./Leonardo/makefile_gpu ./makefile
 cp ./Leonardo/go_gpu.sh ./go.sh
 binder="./Leonardo/binder_leo.sh"
 else
-echo "unknown cluster: $cluster (use leonardo or vega)"
+echo "unknown cluster: $cluster (use leonardo, vega or marge)"
 exit 1
 fi
 savespectral="0"
