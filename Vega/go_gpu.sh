@@ -16,8 +16,8 @@
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 # load modules as in MHIT36: NVHPC 24.9 with HPC-X 2.20 (CUDA-aware Open MPI), CUDA 12.6
+# (no numactl: its module load hung on the compute node)
 module purge
-module load numactl/2.0.18-GCCcore-13.3.0
 module load NVHPC-HPCX-CUDA12/24.9
 module load NVHPC/24.9
 
