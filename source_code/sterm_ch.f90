@@ -561,7 +561,25 @@ do j=1,fpy
   enddo
 enddo
 
-! no-flux at the walls: zero the wall-normal correction flux at z=+-1 so that
+! damp the correction flux smoothly near the walls (|z|>0.975, as in flag 3):
+! Chebyshev ringing of the interface is amplified ~N^2 per derivative on the
+! clustered wall grid and the explicit projection blows it up there.
+! A hard zero at the wall node alone creates a kink that dz amplifies further.
+!$acc parallel loop
+do k=1,fpz
+  funflux(k)=0.5d0*(1.0d0-tanh((abs(z(fstart(2)+k))-0.975d0)/0.01d0))
+enddo
+!$acc parallel loop collapse(3)
+do j=1,fpy
+  do k=1,fpz
+    do i=1,nx
+      a4f(i,k,j)=funflux(k)*a4f(i,k,j)
+      a5f(i,k,j)=funflux(k)*a5f(i,k,j)
+      a6f(i,k,j)=funflux(k)*a6f(i,k,j)
+    enddo
+  enddo
+enddo
+! no-flux at the walls: wall-normal correction flux exactly zero at z=+-1, so
 ! int dz(a6f) dz = a6f(1)-a6f(-1) = 0 -> correction conserves phi exactly
 !$acc parallel loop collapse(2)
 do j=1,fpy
