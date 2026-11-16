@@ -13,9 +13,19 @@
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# NVHPC 26.5 with HPC-X (CUDA-aware Open MPI): same environment as compile.sh
-module use /opt/nvidia/hpc_sdk/modulefiles 2>/dev/null
-module load nvhpc-hpcx/26.5 2>/dev/null
+# same environment as compile.sh
+# NVHPC 26.5 from the HPC SDK install, with its bundled MPI (comm_libs/mpi = HPC-X Open MPI)
+NVHPC_VERSION=26.5
+NVARCH=Linux_x86_64; export NVARCH
+NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/compilers/man
+export PATH=$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/compilers/bin:$PATH
+export PATH=$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/comm_libs/mpi/bin:$PATH
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/comm_libs/mpi/man
+if ! mpif90 --version 2>&1 | grep -qi nvfortran; then
+  echo "mpif90 ($(which mpif90)) is not the NVHPC one: check NVCOMPILERS and NVHPC_VERSION"
+  exit 1
+fi
 
 # the code uses paths relative to set_run (./sc_compiled, ./results, ./initial_fields)
 cd "${SLURM_SUBMIT_DIR:-$(dirname "$0")}"

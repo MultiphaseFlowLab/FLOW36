@@ -18,12 +18,19 @@ cp ./Vega/go_gpu.sh ./go.sh
 binder="./Vega/binder_vega.sh"
 elif [ "$cluster" == "marge" ]; then
 echo "=                     Marge (2x RTX PRO 6000 Blackwell)                      ="
-# NVHPC 26.5 with HPC-X (CUDA-aware Open MPI); module path of the default HPC SDK install
-module purge 2>/dev/null
-module use /opt/nvidia/hpc_sdk/modulefiles 2>/dev/null
-module load nvhpc-hpcx/26.5
-module list
-which mpif90
+# NVHPC 26.5 from the HPC SDK install, with its bundled MPI (comm_libs/mpi = HPC-X Open MPI)
+NVHPC_VERSION=26.5
+NVARCH=Linux_x86_64; export NVARCH
+NVCOMPILERS=/opt/nvidia/hpc_sdk; export NVCOMPILERS
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/compilers/man
+export PATH=$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/compilers/bin:$PATH
+export PATH=$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/comm_libs/mpi/bin:$PATH
+export MANPATH=$MANPATH:$NVCOMPILERS/$NVARCH/$NVHPC_VERSION/comm_libs/mpi/man
+if ! mpif90 --version 2>&1 | grep -qi nvfortran; then
+  echo "mpif90 ($(which mpif90)) is not the NVHPC one: check NVCOMPILERS and NVHPC_VERSION"
+  exit 1
+fi
+which mpif90 nvfortran
 cp ./Marge/makefile_gpu ./makefile
 cp ./Marge/go_gpu.sh ./go.sh
 binder="./Marge/binder_marge.sh"
