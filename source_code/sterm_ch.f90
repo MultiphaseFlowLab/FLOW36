@@ -569,13 +569,17 @@ enddo
 do k=1,fpz
   funflux(k)=0.5d0*(1.0d0-tanh((abs(z(fstart(2)+k))-0.975d0)/0.01d0))
 enddo
-!$acc parallel loop collapse(3)
+! phi gate: correction active only inside the interface (|phi|<0.95), off in
+! the bulk (|phi|>0.99), where the normal is noise and the projection
+! amplifies ringing (bulk overshoot |phi|>1 growing near the walls)
+!$acc parallel loop collapse(3) private(mask)
 do j=1,fpy
   do k=1,fpz
     do i=1,nx
-      a4f(i,k,j)=funflux(k)*a4f(i,k,j)
-      a5f(i,k,j)=funflux(k)*a5f(i,k,j)
-      a6f(i,k,j)=funflux(k)*a6f(i,k,j)
+      mask=funflux(k)*0.5d0*(1.0d0-tanh((abs(phi(i,k,j))-0.97d0)/0.01d0))
+      a4f(i,k,j)=mask*a4f(i,k,j)
+      a5f(i,k,j)=mask*a5f(i,k,j)
+      a6f(i,k,j)=mask*a6f(i,k,j)
     enddo
   enddo
 enddo
