@@ -603,6 +603,37 @@ call dz(a3,a6)
 
 deallocate(a1,a2,a3)
 
+! TEMPORARY DIAGNOSTICS for the flux-corrected blow-up: set fcdebug to 0 to disable
+#define fcdebug 1
+#if fcdebug == 1
+block
+double precision, allocatable :: dbgc(:,:,:,:),dbgf(:,:,:)
+integer :: loc(3)
+allocate(dbgc(spx,nz,spy,2),dbgf(nx,fpz,fpy))
+! everything in sphi except the correction
+!$acc kernels
+dbgc=sphi
+!$acc end kernels
+call spectral_to_phys(dbgc,dbgf,1)
+loc=maxloc(abs(dbgf))
+write(*,'(a,i5,a,es11.3,a,i5,a,f9.5)') 'FCDBG rank',rank,' |sphi-corr|max',abs(dbgf(loc(1),loc(2),loc(3))), &
+ &      ' kglob',fstart(2)+loc(2),' z',z(fstart(2)+loc(2))
+! correction term div(F)/pe
+!$acc kernels
+dbgc=(a4+a5+a6)/pe
+!$acc end kernels
+call spectral_to_phys(dbgc,dbgf,1)
+loc=maxloc(abs(dbgf))
+write(*,'(a,i5,a,es11.3,a,i5,a,f9.5,a,i9)') 'FCDBG rank',rank,' |corr|max     ',abs(dbgf(loc(1),loc(2),loc(3))), &
+ &      ' kglob',fstart(2)+loc(2),' z',z(fstart(2)+loc(2)),' nNaN',count(dbgf.ne.dbgf)
+! phase field
+loc=maxloc(abs(phi))
+write(*,'(a,i5,a,es11.3,a,i5,a,f9.5,a,i9)') 'FCDBG rank',rank,' |phi|max      ',abs(phi(loc(1),loc(2),loc(3))), &
+ &      ' kglob',fstart(2)+loc(2),' z',z(fstart(2)+loc(2)),' nNaN',count(phi.ne.phi)
+deallocate(dbgc,dbgf)
+end block
+#endif
+
 !$acc kernels
 sphi=sphi+(a4+a5+a6)/pe
 !$acc end kernels
