@@ -70,7 +70,9 @@ fi
 if [ "$LAUNCHER" == "srun" ]; then
   srun --mpi=pmix --cpus-per-task=8 --cpu-bind=cores ./binder_vega.sh $PROFCMD ./sc_compiled/flow36
 else
-  mpirun -np NUMTASKS --rank-by core $MPIOPT ./binder_vega.sh $PROFCMD ./sc_compiled/flow36
+  # --bind-to none: Open MPI's own core binding picked cores outside the Slurm allocation
+  # (hwloc_set_cpubind error on gn27); the Slurm cgroup already confines the ranks
+  mpirun -np NUMTASKS --rank-by core --bind-to none $MPIOPT ./binder_vega.sh $PROFCMD ./sc_compiled/flow36
 fi
 
 # submit script with sbatch
