@@ -15,13 +15,16 @@
 # to avoid perl warning
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-# modules: NOT loaded here, Lmod hangs on the Vega compute nodes (any module load).
-# sbatch exports the login environment: load them on the login node before submitting
-#   module purge; module load NVHPC-HPCX-CUDA12/24.9 NVHPC/24.9; sbatch go.sh
+# modules: NVHPC 24.9 with HPC-X 2.20 (CUDA-aware Open MPI), CUDA 12.6, loaded only if the
+# job did not get them from the login environment (the job environment is not always exported)
+echo "$(date) loading modules"
 if ! mpif90 --version 2>&1 | grep -qi nvfortran; then
-  echo "NVHPC not loaded: on the login node run"
-  echo "  module purge; module load NVHPC-HPCX-CUDA12/24.9 NVHPC/24.9"
-  echo "then sbatch go.sh again"
+  module purge
+  module load NVHPC-HPCX-CUDA12/24.9 NVHPC/24.9
+fi
+echo "$(date) modules done"
+if ! mpif90 --version 2>&1 | grep -qi nvfortran; then
+  echo "NVHPC not loaded (module load NVHPC-HPCX-CUDA12/24.9 NVHPC/24.9 failed)"
   exit 1
 fi
 
