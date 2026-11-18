@@ -8,6 +8,7 @@ use wavenumber
 use grid
 
 double precision :: sphi(spx,nz,spy,2),epsnum,mask,epsnum6
+double precision :: gmin,gmax
 double precision :: modnabphi,normflux,funflux(nz)
 double precision :: mink,maxk
 double precision, allocatable, dimension(:,:,:,:) :: a1,a2,a3
@@ -1016,6 +1017,10 @@ a1f=max(0.0d0,1.0d0-phi**(2.0d0))
 !$acc end kernels
 
 epsnum=1.0d0/(50.0d0*Ch)
+! smooth ramp of the sharpening flux: off below gmin, fully on above gmax
+! (5% and 15% of the peak interface gradient 1/(sqrt(2)*Ch))
+gmin=0.05d0/(dsqrt(2.0d0)*Ch)
+gmax=0.15d0/(dsqrt(2.0d0)*Ch)
 
 ! smooth damping of the correction flux near the walls (|z|>0.975, as flag 3)
 !$acc parallel loop
@@ -1032,9 +1037,8 @@ do j=1,fpy
   do k=1,fpz
     do i=1,nx
       modnabphi=dsqrt(phinx(i,k,j)**2+phiny(i,k,j)**2+phinz(i,k,j)**2)
-      ! kill the gradients below epsnum (0/1 mask, no 0/0), damp at the walls
-      mask=0.0d0
-      if (modnabphi.gt.epsnum) mask=funflux(k)
+      ! ramp the flux with the gradient (no 0/0), damp at the walls
+      mask=funflux(k)*min(1.0d0,max(0.0d0,(modnabphi-gmin)/(gmax-gmin)))
       modnabphi=max(modnabphi,epsnum)
       a4f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phinx(i,k,j)/modnabphi
       a5f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phiny(i,k,j)/modnabphi
