@@ -892,7 +892,8 @@ do j=1,spy
 enddo
 
 !$acc kernels
-sphi=-(1.0d0+s_coeff-lamphi)/pe*sphi
+! lambda/Pe*nabla^2 phi is not added here: it is part of the ramped correction flux below
+sphi=-(1.0d0+s_coeff)/pe*sphi
 !$acc end kernels
 
 !Calculate convective term
@@ -1017,7 +1018,7 @@ a1f=max(0.0d0,1.0d0-phi**(2.0d0))
 !$acc end kernels
 
 epsnum=1.0d0/(50.0d0*Ch)
-! smooth ramp of the sharpening flux: off below gmin, fully on above gmax
+! smooth ramp of the correction flux: off below gmin, fully on above gmax
 ! (5% and 15% of the peak interface gradient 1/(sqrt(2)*Ch))
 gmin=0.05d0/(dsqrt(2.0d0)*Ch)
 gmax=0.15d0/(dsqrt(2.0d0)*Ch)
@@ -1040,12 +1041,11 @@ do j=1,fpy
       ! ramp the flux with the gradient (no 0/0), damp at the walls
       mask=funflux(k)*min(1.0d0,max(0.0d0,(modnabphi-gmin)/(gmax-gmin)))
       modnabphi=max(modnabphi,epsnum)
-      a4f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phinx(i,k,j)/modnabphi
-      a5f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phiny(i,k,j)/modnabphi
-      a6f(i,k,j)=-1.0d0/(dsqrt(2.0d0)*Ch)*a1f(i,k,j)*phinz(i,k,j)/modnabphi
-      a4f(i,k,j)=a4f(i,k,j)*mask
-      a5f(i,k,j)=a5f(i,k,j)*mask
-      a6f(i,k,j)=a6f(i,k,j)*mask
+      ! whole correction flux grad(phi)-(1-phi^2)/(sqrt(2)Ch)*n, ramped by mask:
+      ! zero on an equilibrium profile for any mask, off away from interfaces
+      a4f(i,k,j)=mask*(phinx(i,k,j)-a1f(i,k,j)*phinx(i,k,j)/(dsqrt(2.0d0)*Ch*modnabphi))
+      a5f(i,k,j)=mask*(phiny(i,k,j)-a1f(i,k,j)*phiny(i,k,j)/(dsqrt(2.0d0)*Ch*modnabphi))
+      a6f(i,k,j)=mask*(phinz(i,k,j)-a1f(i,k,j)*phinz(i,k,j)/(dsqrt(2.0d0)*Ch*modnabphi))
     enddo
   enddo
 enddo
